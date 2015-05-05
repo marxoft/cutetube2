@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=org.marxoft.cutetube2
+Exec=/opt/cutetube2/bin/cutetube2

@@ -1,0 +1,3 @@
+<settings title="RSS">
+    <text key="feeds" title="Feed URLs (comma-separated)" />
+</settings>
