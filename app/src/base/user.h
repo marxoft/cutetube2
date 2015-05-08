@@ -44,7 +44,7 @@ public:
     QString service() const;
     
     QUrl thumbnailUrl() const;
-        
+            
     QString username() const;
     
     Q_INVOKABLE virtual void loadUser(const User *user);
@@ -59,7 +59,7 @@ protected:
     void setService(const QString &s);
     
     void setThumbnailUrl(const QUrl &u);
-        
+            
     void setUsername(const QString &u);
 
     

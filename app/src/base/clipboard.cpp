@@ -15,8 +15,7 @@
  * Inc., 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "clipboardmonitor.h"
-#include "mainwindow.h"
+#include "clipboard.h"
 #include "settings.h"
 #include <QApplication>
 #include <QClipboard>
@@ -24,10 +23,11 @@
 #include <QTimer>
 #endif
 
-ClipboardMonitor* ClipboardMonitor::self = 0;
+Clipboard* Clipboard::self = 0;
 
-ClipboardMonitor::ClipboardMonitor(QObject *parent) :
-    QObject(parent)
+Clipboard::Clipboard(QObject *parent) :
+    QObject(parent),
+    m_monitor(false)
 #ifdef MEEGO_EDITION_HARMATTAN
     ,m_timer(0)
 #endif
@@ -35,35 +35,50 @@ ClipboardMonitor::ClipboardMonitor(QObject *parent) :
     if (!self) {
         self = this;
     }
-
-    connect(Settings::instance(), SIGNAL(clipboardMonitorEnabledChanged()),
-            this, SLOT(onClipboardMonitorEnabledChanged()));
-    onClipboardMonitorEnabledChanged();
+    
+    connect(Settings::instance(), SIGNAL(clipboardMonitorEnabledChanged()), this, SLOT(onMonitorEnabledChanged()));
+    onMonitorEnabledChanged();
 }
 
-ClipboardMonitor::~ClipboardMonitor() {
+Clipboard::~Clipboard() {
     if (self == this) {
         self = 0;
     }
 }
 
-ClipboardMonitor* ClipboardMonitor::instance() {
+Clipboard* Clipboard::instance() {
     return self;
 }
 
-void ClipboardMonitor::onClipboardMonitorEnabledChanged() {
-    if (Settings::instance()->clipboardMonitorEnabled()) {
-        connect(QApplication::clipboard(), SIGNAL(dataChanged()), this, SLOT(onClipboardTextChanged()));
-    }
-    else {
-        disconnect(QApplication::clipboard(), SIGNAL(dataChanged()), this, SLOT(onClipboardTextChanged()));
+QString Clipboard::text() const {
+    return QApplication::clipboard()->text();
+}
+
+void Clipboard::setText(const QString &text) {
+    disconnect(QApplication::clipboard(), SIGNAL(dataChanged()), this, SLOT(onTextChanged()));
+    QApplication::clipboard()->setText(text);
+    
+    if (m_monitor) {
+        connect(QApplication::clipboard(), SIGNAL(dataChanged()), this, SLOT(onTextChanged()));
     }
 }
 
-void ClipboardMonitor::onClipboardTextChanged() {
+void Clipboard::onMonitorEnabledChanged() {
+    if (Settings::instance()->clipboardMonitorEnabled()) {
+        m_monitor = true;
+        connect(QApplication::clipboard(), SIGNAL(dataChanged()), this, SLOT(onTextChanged()));
+    }
+    else {
+        m_monitor = false;
+        disconnect(QApplication::clipboard(), SIGNAL(dataChanged()), this, SLOT(onTextChanged()));
+    }
+}
+
+void Clipboard::onTextChanged() {
 #ifdef MEEGO_EDITION_HARMATTAN
     if ((m_timer) && (m_timer->isActive())) {
-        // QClipboard::dataChanged() signal is emitted twice in Harmattan, so ignore the signal if the timer is still active.
+        // QClipboard::dataChanged() signal is emitted twice in Harmattan,
+        // so ignore the signal if the timer is still active.
         return;
     }
     else {
@@ -79,8 +94,6 @@ void ClipboardMonitor::onClipboardTextChanged() {
     QString text = QApplication::clipboard()->text();
     
     if (!text.isEmpty()) {
-        if (MainWindow *window = MainWindow::instance()) {
-            window->showResource(text);
-        }
+        emit textChanged(text);
     }
 }

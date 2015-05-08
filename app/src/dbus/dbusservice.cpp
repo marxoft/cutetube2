@@ -15,11 +15,8 @@
  */
 
 #include "dbusservice.h"
-#include "mainwindow.h"
+#include "resources.h"
 #include <QDBusConnection>
-#ifdef CUTETUBE_DEBUG
-#include <QDebug>
-#endif
 
 DBusService::DBusService(QObject *parent) :
     QObject(parent)
@@ -30,11 +27,12 @@ DBusService::DBusService(QObject *parent) :
 }
 
 bool DBusService::showResource(const QString &url) {
-    if (MainWindow *window = MainWindow::instance()) {
-        return window->showResource(url);
+    QVariantMap resource = Resources::getResourceFromUrl(url);
+    
+    if (resource.isEmpty()) {
+        return false;
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "DBusService::showResource: No MainWindow instance found";
-#endif
-    return false;
+    
+    emit resourceRequested(resource);
+    return true;
 }

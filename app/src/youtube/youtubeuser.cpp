@@ -194,15 +194,15 @@ void YouTubeUser::loadUser(const QVariantMap &user) {
     QVariantMap statistics = user.value("statistics").toMap();
     QVariantMap thumbnails = user.value("snippet").toMap().value("thumbnails").toMap();
     
-    setBannerUrl(banners.value("bannerMobileImageUrl").toUrl());
+    setBannerUrl(banners.value("bannerMobileImageUrl").toString());
     setDescription(channel.value("description").toString());
     setId(YouTube::getUserId(user));
-    setLargeBannerUrl(banners.value("bannerImageUrl").toUrl());
-    setLargeThumbnailUrl(thumbnails.value("high").toMap().value("url").toUrl());
+    setLargeBannerUrl(banners.value("bannerImageUrl").toString());
+    setLargeThumbnailUrl(thumbnails.value("high").toMap().value("url").toString());
     setRelatedPlaylists(user.value("contentDetails").toMap().value("relatedPlaylists").toMap());
     setSubscribed(user.value("kind") == "youtube#subscriptionItem");
     setSubscriberCount(statistics.value("subscriberCount").toLongLong());
-    setThumbnailUrl(thumbnails.value("default").toMap().value("url").toUrl());
+    setThumbnailUrl(thumbnails.value("default").toMap().value("url").toString());
     setUsername(channel.value("title").toString());
     setViewCount(statistics.value("viewCount").toLongLong());
 }

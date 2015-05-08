@@ -41,6 +41,7 @@ YouTubeVideoModel::YouTubeVideoModel(QObject *parent) :
     m_roles[PlaylistItemIdRole] = "playlistItemId";
     m_roles[ThumbnailUrlRole] = "thumbnailUrl";
     m_roles[TitleRole] = "title";
+    m_roles[UrlRole] = "url";
     m_roles[UserIdRole] = "userId";
     m_roles[UsernameRole] = "username";
     m_roles[ViewCountRole] = "viewCount";

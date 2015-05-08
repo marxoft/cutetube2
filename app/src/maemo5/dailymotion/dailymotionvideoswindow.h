@@ -47,6 +47,7 @@ private Q_SLOTS:
     void downloadVideo();
     void playVideo(const QModelIndex &index);
     void setVideoFavourite();
+    void shareVideo();
     void showVideo(const QModelIndex &index);
     
     void showContextMenu(const QPoint &pos);
@@ -67,6 +68,7 @@ private:
     QAction *m_reloadAction;
     QMenu *m_contextMenu;
     QAction *m_downloadAction;
+    QAction *m_shareAction;
     QAction *m_favouriteAction;
     QAction *m_playlistAction;
     QLabel *m_label;

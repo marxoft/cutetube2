@@ -112,10 +112,11 @@ void DailymotionVideo::loadVideo(const QVariantMap &video) {
     setDuration(Utils::formatSecs(video.value("duration").toLongLong()));
     setFavourite(video.value("favorited_at").toLongLong() > 0);
     setId(video.value("id").toString());
-    setLargeThumbnailUrl(video.value("thumbnail_url").toUrl());
+    setLargeThumbnailUrl(video.value("thumbnail_url").toString());
+    setUrl(video.value("url").toString());
     setUserId(video.value("owner.id").toString());
     setUsername(video.value("owner.screenname").toString());
-    setThumbnailUrl(video.value("thumbnail_120_url").toUrl());
+    setThumbnailUrl(video.value("thumbnail_120_url").toString());
     setTitle(video.value("title").toString());
     setViewCount(video.value("views_total").toLongLong());
 }

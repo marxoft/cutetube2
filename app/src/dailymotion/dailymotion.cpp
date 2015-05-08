@@ -53,7 +53,7 @@ const QStringList Dailymotion::USER_FIELDS = QStringList() << "id" << "avatar_60
 const QStringList Dailymotion::VIDEO_FIELDS = QStringList() << "id" << "created_time" << "description"
                                                             << "duration" << "favorited_at" << "owner.id"
                                                             << "owner.screenname" << "thumbnail_120_url"
-                                                            << "thumbnail_url" << "title" << "views_total";
+                                                            << "thumbnail_url" << "title" << "url" << "views_total";
                                                 
 const QRegExp Dailymotion::URL_REGEXP("(http(s|)://(www.|)dailymotion.com/|http://dai.ly/)\\w+", Qt::CaseInsensitive);
 
@@ -278,4 +278,44 @@ bool Dailymotion::hasScope(const QString &scope) const {
     }
     
     return false;
+}
+
+QString Dailymotion::emailScope() {
+    return QDailymotion::EMAIL_SCOPE;
+}
+
+QString Dailymotion::manageCommentsScope() {
+    return QDailymotion::MANAGE_COMMENTS_SCOPE;
+}
+
+QString Dailymotion::manageFavouritesScope() {
+    return QDailymotion::MANAGE_FAVORITES_SCOPE;
+}
+
+QString Dailymotion::manageFriendsScope() {
+    return QDailymotion::MANAGE_FRIENDS_SCOPE;
+}
+
+QString Dailymotion::manageGroupsScope() {
+    return QDailymotion::MANAGE_GROUPS_SCOPE;
+}
+
+QString Dailymotion::managePlaylistsScope() {
+    return QDailymotion::MANAGE_PLAYLISTS_SCOPE;
+}
+
+QString Dailymotion::manageSubscriptionsScope() {
+    return QDailymotion::MANAGE_SUBSCRIPTIONS_SCOPE;
+}
+
+QString Dailymotion::manageTilesScope() {
+    return QDailymotion::MANAGE_TILES_SCOPE;
+}
+
+QString Dailymotion::manageVideosScope() {
+    return QDailymotion::MANAGE_VIDEOS_SCOPE;
+}
+
+QString Dailymotion::userInfoScope() {
+    return QDailymotion::USER_INFO_SCOPE;
 }

@@ -29,8 +29,10 @@ Video::Video(const Video *video, QObject *parent) :
     m_id(video->id()),
     m_largeThumbnailUrl(video->largeThumbnailUrl()),
     m_service(video->service()),
+    m_streamUrl(video->streamUrl()),
     m_thumbnailUrl(video->thumbnailUrl()),
     m_title(video->title()),
+    m_url(video->url()),
     m_userId(video->userId()),
     m_username(video->username()),
     m_viewCount(video->viewCount())
@@ -103,6 +105,17 @@ void Video::setService(const QString &s) {
     }
 }
 
+QUrl Video::streamUrl() const {
+    return m_streamUrl;
+}
+
+void Video::setStreamUrl(const QUrl &u) {
+    if (u != streamUrl()) {
+        m_streamUrl = u;
+        emit streamUrlChanged();
+    }
+}
+
 QUrl Video::thumbnailUrl() const {
     return m_thumbnailUrl;
 }
@@ -122,6 +135,17 @@ void Video::setTitle(const QString &t) {
     if (t != title()) {
         m_title = t;
         emit titleChanged();
+    }
+}
+
+QUrl Video::url() const {
+    return m_url;
+}
+
+void Video::setUrl(const QUrl &u) {
+    if (u != url()) {
+        m_url = u;
+        emit urlChanged();
     }
 }
 
@@ -169,8 +193,10 @@ void Video::loadVideo(const Video *video) {
     setId(video->id());
     setLargeThumbnailUrl(video->largeThumbnailUrl());
     setService(video->service());
+    setStreamUrl(video->streamUrl());
     setThumbnailUrl(video->thumbnailUrl());
     setTitle(video->title());
+    setUrl(video->url());
     setUserId(video->userId());
     setUsername(video->username());
     setViewCount(video->viewCount());

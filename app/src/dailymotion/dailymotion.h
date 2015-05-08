@@ -39,6 +39,16 @@ class Dailymotion : public QObject
     Q_PROPERTY(QString clientSecret READ clientSecret WRITE setClientSecret NOTIFY clientSecretChanged)
     Q_PROPERTY(QString redirectUri READ redirectUri WRITE setRedirectUri NOTIFY redirectUriChanged)
     Q_PROPERTY(QStringList scopes READ scopes WRITE setScopes NOTIFY scopesChanged)
+    Q_PROPERTY(QString EMAIL_SCOPE READ emailScope CONSTANT)
+    Q_PROPERTY(QString MANAGE_COMMENTS_SCOPE READ manageCommentsScope CONSTANT)
+    Q_PROPERTY(QString MANAGE_FAVOURITES_SCOPE READ manageFavouritesScope CONSTANT)
+    Q_PROPERTY(QString MANAGE_FRIENDS_SCOPE READ manageFriendsScope CONSTANT)
+    Q_PROPERTY(QString MANAGE_GROUPS_SCOPE READ manageGroupsScope CONSTANT)
+    Q_PROPERTY(QString MANAGE_PLAYLISTS_SCOPE READ managePlaylistsScope CONSTANT)
+    Q_PROPERTY(QString MANAGE_SUBSCRIPTIONS_SCOPE READ manageSubscriptionsScope CONSTANT)
+    Q_PROPERTY(QString MANAGE_TILES_SCOPE READ manageTilesScope CONSTANT)
+    Q_PROPERTY(QString MANAGE_VIDEOS_SCOPE READ manageVideosScope CONSTANT)
+    Q_PROPERTY(QString USER_INFO_SCOPE READ userInfoScope CONSTANT)
         
 public:
     explicit Dailymotion(QObject *parent = 0);
@@ -72,6 +82,17 @@ public:
     QStringList scopes() const;
     
     Q_INVOKABLE bool hasScope(const QString &scope) const;
+    
+    static QString emailScope();
+    static QString manageCommentsScope();
+    static QString manageFavouritesScope();
+    static QString manageFriendsScope();
+    static QString manageGroupsScope();
+    static QString managePlaylistsScope();
+    static QString manageSubscriptionsScope();
+    static QString manageTilesScope();
+    static QString manageVideosScope();
+    static QString userInfoScope();
     
 public Q_SLOTS:    
     void setUserId(const QString &id);

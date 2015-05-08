@@ -28,8 +28,10 @@ VideoModel::VideoModel(QObject *parent) :
     m_roles[IdRole] = "id";
     m_roles[LargeThumbnailUrlRole] = "largeThumbnailUrl";
     m_roles[ServiceRole] = "service";
+    m_roles[StreamUrlRole] = "streamUrl";
     m_roles[ThumbnailUrlRole] = "thumbnailUrl";
     m_roles[TitleRole] = "title";
+    m_roles[UrlRole] = "url";
     m_roles[ViewCountRole] = "viewCount";
 #if QT_VERSION < 0x050000
     setRoleNames(m_roles);

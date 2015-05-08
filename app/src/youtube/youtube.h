@@ -41,6 +41,12 @@ class YouTube : public QObject
     Q_PROPERTY(QString clientId READ clientId WRITE setClientId NOTIFY clientIdChanged)
     Q_PROPERTY(QString clientSecret READ clientSecret WRITE setClientSecret NOTIFY clientSecretChanged)
     Q_PROPERTY(QStringList scopes READ scopes WRITE setScopes NOTIFY scopesChanged)
+    Q_PROPERTY(QString AUDIT_SCOPE READ auditScope CONSTANT)
+    Q_PROPERTY(QString FORCE_SSL_SCOPE READ forceSslScope CONSTANT)
+    Q_PROPERTY(QString PARTNER_SCOPE READ partnerScope CONSTANT)
+    Q_PROPERTY(QString READ_ONLY_SCOPE READ readOnlyScope CONSTANT)
+    Q_PROPERTY(QString READ_WRITE_SCOPE READ readWriteScope CONSTANT)
+    Q_PROPERTY(QString UPLOAD_SCOPE READ uploadScope CONSTANT)
             
 public:
     explicit YouTube(QObject *parent = 0);
@@ -79,6 +85,13 @@ public:
     QStringList scopes() const;
     
     Q_INVOKABLE bool hasScope(const QString &scope) const;
+    
+    static QString auditScope();
+    static QString forceSslScope();
+    static QString partnerScope();
+    static QString readOnlyScope();
+    static QString readWriteScope();
+    static QString uploadScope();
     
 public Q_SLOTS:
     void setUserId(const QString &id);

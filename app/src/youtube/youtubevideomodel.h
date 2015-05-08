@@ -49,6 +49,7 @@ public:
         PlaylistItemIdRole,
         ThumbnailUrlRole,
         TitleRole,
+        UrlRole,
         UserIdRole,
         UsernameRole,
         ViewCountRole

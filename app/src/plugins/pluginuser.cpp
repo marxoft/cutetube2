@@ -69,8 +69,8 @@ void PluginUser::loadUser(const QString &service, const QVariantMap &user) {
     setService(service);
     setDescription(user.value("description").toString());
     setId(user.value("id").toString());
-    setLargeThumbnailUrl(user.value("largeThumbnailUrl").toUrl());
-    setThumbnailUrl(user.value("thumbnailUrl").toUrl());
+    setLargeThumbnailUrl(user.value("largeThumbnailUrl").toString());
+    setThumbnailUrl(user.value("thumbnailUrl").toString());
     setUsername(user.value("username").toString());
 }
 

@@ -15,8 +15,8 @@
  * Inc., 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef CLIPBOARDMONITOR_H
-#define CLIPBOARDMONITOR_H
+#ifndef CLIPBOARD_H
+#define CLIPBOARD_H
 
 #include <QObject>
 #include <qplatformdefs.h>
@@ -25,25 +25,37 @@
 class QTimer;
 #endif
 
-class ClipboardMonitor : public QObject
+class Clipboard : public QObject
 {
     Q_OBJECT
+    
+    Q_PROPERTY(QString text READ text WRITE setText NOTIFY textChanged)
 
 public:
-    explicit ClipboardMonitor(QObject *parent = 0);
-    ~ClipboardMonitor();
+    explicit Clipboard(QObject *parent = 0);
+    ~Clipboard();
     
-    static ClipboardMonitor* instance();
+    static Clipboard* instance();
+    
+    QString text() const;
+    
+public Q_SLOTS:
+    void setText(const QString &text);
 
 private Q_SLOTS:
-    void onClipboardMonitorEnabledChanged();
-    void onClipboardTextChanged();
+    void onMonitorEnabledChanged();
+    void onTextChanged();
+    
+Q_SIGNALS:
+    void textChanged(const QString &text);
 
 private:
-    static ClipboardMonitor* self;
+    static Clipboard *self;
+    
+    bool m_monitor;
 #ifdef MEEGO_EDITION_HARMATTAN
     QTimer *m_timer;
 #endif
 };
 
-#endif // CLIPBOARDMONITOR_H
+#endif // CLIPBOARD_H

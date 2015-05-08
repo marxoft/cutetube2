@@ -155,13 +155,13 @@ void DailymotionUser::loadUser(const QString &id) {
 }
 
 void DailymotionUser::loadUser(const QVariantMap &user) {
-    setBannerUrl(user.value("cover_150_url").toUrl());
+    setBannerUrl(user.value("cover_150_url").toString());
     setDescription(user.value("description").toString());
     setId(user.value("id").toString());
-    setLargeBannerUrl(user.value("cover_url").toUrl());
-    setLargeThumbnailUrl(user.value("avatar_240_url").toUrl());
+    setLargeBannerUrl(user.value("cover_url").toString());
+    setLargeThumbnailUrl(user.value("avatar_240_url").toString());
     setSubscriberCount(user.value("fans_total").toLongLong());
-    setThumbnailUrl(user.value("avatar_60_url").toUrl());
+    setThumbnailUrl(user.value("avatar_60_url").toString());
     setUsername(user.value("screenname").toString());
     setViewCount(user.value("views_total").toLongLong());
 }

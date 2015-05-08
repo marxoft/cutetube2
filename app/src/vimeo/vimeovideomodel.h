@@ -41,6 +41,7 @@ public:
         LargeThumbnailUrlRole,
         ThumbnailUrlRole,
         TitleRole,
+        UrlRole,
         UserIdRole,
         UsernameRole,
         ViewCountRole

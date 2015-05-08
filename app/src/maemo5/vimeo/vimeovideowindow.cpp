@@ -15,6 +15,7 @@
  */
 
 #include "vimeovideowindow.h"
+#include "clipboard.h"
 #include "definitions.h"
 #include "image.h"
 #include "imagecache.h"
@@ -46,6 +47,7 @@
 #include <QMessageBox>
 #include <QMenuBar>
 #include <QDesktopServices>
+#include <QMaemo5InformationBox>
 
 VimeoVideoWindow::VimeoVideoWindow(const QString &id, StackedWindow *parent) :
     StackedWindow(parent),
@@ -75,12 +77,14 @@ VimeoVideoWindow::VimeoVideoWindow(const QString &id, StackedWindow *parent) :
     m_gridAction(new QAction(tr("Grid"), this)),
     m_reloadAction(new QAction(tr("Reload"), this)),
     m_downloadAction(new QAction(tr("Download"), this)),
+    m_shareAction(new QAction(tr("Copy URL"), this)),
     m_favouriteAction(0),
     m_watchLaterAction(0),
     m_playlistAction(0),
     m_commentAction(0),
     m_contextMenu(new QMenu(this)),
     m_relatedDownloadAction(new QAction(tr("Download"), this)),
+    m_relatedShareAction(new QAction(tr("Copy URL"), this)),
     m_relatedFavouriteAction(0),
     m_relatedWatchLaterAction(0),
     m_relatedPlaylistAction(0)
@@ -120,12 +124,14 @@ VimeoVideoWindow::VimeoVideoWindow(const VimeoVideo *video, StackedWindow *paren
     m_gridAction(new QAction(tr("Grid"), this)),
     m_reloadAction(new QAction(tr("Reload"), this)),
     m_downloadAction(new QAction(tr("Download"), this)),
+    m_shareAction(new QAction(tr("Copy URL"), this)),
     m_favouriteAction(0),
     m_watchLaterAction(0),
     m_playlistAction(0),
     m_commentAction(0),
     m_contextMenu(new QMenu(this)),
     m_relatedDownloadAction(new QAction(tr("Download"), this)),
+    m_relatedShareAction(new QAction(tr("Copy URL"), this)),
     m_relatedFavouriteAction(0),
     m_relatedWatchLaterAction(0),
     m_relatedPlaylistAction(0)
@@ -168,6 +174,7 @@ void VimeoVideoWindow::loadBaseUi() {
     m_reloadAction->setEnabled(false);
     
     m_contextMenu->addAction(m_relatedDownloadAction);
+    m_contextMenu->addAction(m_relatedShareAction);
     
     QWidget *scrollWidget = new QWidget(m_scrollArea);
     QGridLayout *grid = new QGridLayout(scrollWidget);
@@ -205,6 +212,7 @@ void VimeoVideoWindow::loadBaseUi() {
     menuBar()->addAction(m_gridAction);
     menuBar()->addAction(m_reloadAction);
     menuBar()->addAction(m_downloadAction);
+    menuBar()->addAction(m_shareAction);
     
     connect(m_relatedModel, SIGNAL(statusChanged(QVimeo::ResourcesRequest::Status)), this,
             SLOT(onRelatedModelStatusChanged(QVimeo::ResourcesRequest::Status)));
@@ -220,7 +228,9 @@ void VimeoVideoWindow::loadBaseUi() {
     connect(m_avatar, SIGNAL(clicked()), this, SLOT(showUser()));
     connect(m_descriptionLabel, SIGNAL(anchorClicked(QUrl)), this, SLOT(showResource(QUrl)));
     connect(m_downloadAction, SIGNAL(triggered()), this, SLOT(downloadVideo()));
+    connect(m_shareAction, SIGNAL(triggered()), this, SLOT(shareVideo()));
     connect(m_relatedDownloadAction, SIGNAL(triggered()), this, SLOT(downloadRelatedVideo()));
+    connect(m_relatedShareAction, SIGNAL(triggered()), this, SLOT(shareRelatedVideo()));
     
     if (!Vimeo::instance()->userId().isEmpty()) {
         bool interact = Vimeo::instance()->hasScope(QVimeo::INTERACT_SCOPE);
@@ -359,6 +369,11 @@ void VimeoVideoWindow::setVideoFavourite() {
     }
 }
 
+void VimeoVideoWindow::shareVideo() {
+    Clipboard::instance()->setText(m_video->url().toString());
+    QMaemo5InformationBox::information(this, tr("URL copied to clipboard"));
+}
+
 void VimeoVideoWindow::watchVideoLater() {
     if (isBusy()) {
         return;
@@ -426,6 +441,13 @@ void VimeoVideoWindow::setRelatedVideoFavourite() {
         else {
             video->favourite();
         }        
+    }
+}
+
+void VimeoVideoWindow::shareRelatedVideo() {
+    if (const VimeoVideo *video = m_relatedModel->get(m_relatedView->currentIndex().row())) {
+        Clipboard::instance()->setText(video->url().toString());
+        QMaemo5InformationBox::information(this, tr("URL copied to clipboard"));
     }
 }
 

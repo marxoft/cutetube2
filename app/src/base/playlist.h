@@ -52,7 +52,7 @@ public:
     QUrl thumbnailUrl() const;
     
     QString title() const;
-    
+        
     QString userId() const;
     
     QString username() const;
@@ -75,7 +75,7 @@ protected:
     void setThumbnailUrl(const QUrl &u);
     
     void setTitle(const QString &t);
-    
+        
     void setUserId(const QString &i);
     
     void setUsername(const QString &u);

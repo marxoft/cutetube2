@@ -70,8 +70,8 @@ void PluginPlaylist::loadPlaylist(const QString &service, const QVariantMap &pla
     setDate(playlist.value("date").toString());
     setDescription(playlist.value("description").toString());
     setId(playlist.value("id").toString());
-    setLargeThumbnailUrl(playlist.value("largeThumbnailUrl").toUrl());
-    setThumbnailUrl(playlist.value("thumbnailUrl").toUrl());
+    setLargeThumbnailUrl(playlist.value("largeThumbnailUrl").toString());
+    setThumbnailUrl(playlist.value("thumbnailUrl").toString());
     setTitle(playlist.value("title").toString());
     setUserId(playlist.value("userId").toString());
     setUsername(playlist.value("username").toString());

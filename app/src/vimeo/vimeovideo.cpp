@@ -123,6 +123,7 @@ void VimeoVideo::loadVideo(const QVariantMap &video) {
                       .value("count").toLongLong());
     setId(video.value("uri").toString().section('/', -1));
     setLargeThumbnailUrl(QString("https://i.vimeocdn.com/video/%1_640x360.jpg").arg(id()));
+    setUrl("https://vimeo.com/" + id());
     setUserId(user.value("uri").toString().section('/', -1));
     setUsername(user.value("name").toString());
     setThumbnailUrl(QString("https://i.vimeocdn.com/video/%1_100x75.jpg").arg(id()));

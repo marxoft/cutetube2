@@ -381,3 +381,27 @@ bool YouTube::hasScope(const QString &scope) const {
     
     return false;
 }
+
+QString YouTube::auditScope() {
+    return QYouTube::AUDIT_SCOPE;
+}
+
+QString YouTube::forceSslScope() {
+    return QYouTube::FORCE_SSL_SCOPE;
+}
+
+QString YouTube::partnerScope() {
+    return QYouTube::PARTNER_SCOPE;
+}
+
+QString YouTube::readOnlyScope() {
+    return QYouTube::READ_ONLY_SCOPE;
+}
+
+QString YouTube::readWriteScope() {
+    return QYouTube::READ_WRITE_SCOPE;
+}
+
+QString YouTube::uploadScope() {
+    return QYouTube::UPLOAD_SCOPE;
+}

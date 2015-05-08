@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "clipboardmonitor.h"
+#include "clipboard.h"
 #include "database.h"
 #include "dailymotion.h"
 #include "dbusservice.h"
@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
     QSslConfiguration::setDefaultConfiguration(config);
 
     Settings settings;
-    ClipboardMonitor clipboard;
+    Clipboard clipboard;
     Dailymotion dailymotion;
     DBusService dbus;
     ResourcesPlugins plugins;
@@ -53,6 +53,9 @@ int main(int argc, char *argv[]) {
     
     MainWindow window;
     window.show();
+    
+    QObject::connect(&clipboard, SIGNAL(textChanged(QString)), &window, SLOT(showResource(QString)));
+    QObject::connect(&dbus, SIGNAL(resourceRequested(QVariantMap)), &window, SLOT(showResource(QVariantMap)));
     
     return app.exec();
 }

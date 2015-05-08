@@ -39,8 +39,10 @@ public:
         IdRole,
         LargeThumbnailUrlRole,
         ServiceRole,
+        StreamUrlRole,
         ThumbnailUrlRole,
         TitleRole,
+        UrlRole,
         UserIdRole,
         UsernameRole,
         ViewCountRole

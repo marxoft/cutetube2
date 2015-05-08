@@ -30,8 +30,10 @@ class Video : public QObject
     Q_PROPERTY(QString id READ id NOTIFY idChanged)
     Q_PROPERTY(QUrl largeThumbnailUrl READ largeThumbnailUrl NOTIFY largeThumbnailUrlChanged)
     Q_PROPERTY(QString service READ service NOTIFY serviceChanged)
+    Q_PROPERTY(QUrl streamUrl READ streamUrl NOTIFY streamUrlChanged)
     Q_PROPERTY(QUrl thumbnailUrl READ thumbnailUrl NOTIFY thumbnailUrlChanged)
     Q_PROPERTY(QString title READ title NOTIFY titleChanged)
+    Q_PROPERTY(QUrl url READ url NOTIFY urlChanged)
     Q_PROPERTY(QString userId READ userId NOTIFY userIdChanged)
     Q_PROPERTY(QString username READ username NOTIFY usernameChanged)
     Q_PROPERTY(qint64 viewCount READ viewCount NOTIFY viewCountChanged)
@@ -52,9 +54,13 @@ public:
             
     QString service() const;
     
+    QUrl streamUrl() const;
+    
     QUrl thumbnailUrl() const;
     
     QString title() const;
+    
+    QUrl url() const;
     
     QString userId() const;
     
@@ -80,9 +86,13 @@ protected:
     
     void setService(const QString &s);
     
+    void setStreamUrl(const QUrl &u);
+    
     void setThumbnailUrl(const QUrl &u);
     
     void setTitle(const QString &t);
+    
+    void setUrl(const QUrl &u);
     
     void setUserId(const QString &i);
     
@@ -98,8 +108,10 @@ Q_SIGNALS:
     void idChanged();
     void largeThumbnailUrlChanged();
     void serviceChanged();
+    void streamUrlChanged();
     void thumbnailUrlChanged();
     void titleChanged();
+    void urlChanged();
     void userIdChanged();
     void usernameChanged();
     void viewCountChanged();
@@ -111,8 +123,10 @@ protected:
     QString m_id;
     QUrl m_largeThumbnailUrl;
     QString m_service;
+    QUrl m_streamUrl;
     QUrl m_thumbnailUrl;
     QString m_title;
+    QUrl m_url;
     QString m_userId;
     QString m_username;
     qint64 m_viewCount;

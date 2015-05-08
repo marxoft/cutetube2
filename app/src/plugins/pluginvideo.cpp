@@ -71,9 +71,11 @@ void PluginVideo::loadVideo(const QString &service, const QVariantMap &video) {
     setDescription(video.value("description").toString());
     setDuration(video.value("duration").toString());
     setId(video.value("id").toString());
-    setLargeThumbnailUrl(video.value("largeThumbnailUrl").toUrl());
-    setThumbnailUrl(video.value("thumbnailUrl").toUrl());
+    setLargeThumbnailUrl(video.value("largeThumbnailUrl").toString());
+    setStreamUrl(video.value("streamUrl").toString());
+    setThumbnailUrl(video.value("thumbnailUrl").toString());
     setTitle(video.value("title").toString());
+    setUrl(video.value("url").toString());
     setUserId(video.value("userId").toString());
     setUsername(video.value("username").toString());
     setViewCount(video.value("viewCount").toInt());    

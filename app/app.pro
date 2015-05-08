@@ -180,7 +180,7 @@ maemo5 {
         src/maemo5/youtube
     
     HEADERS += \
-        src/base/clipboardmonitor.h \
+        src/base/clipboard.h \
         src/base/transfermodel.h \
         src/base/transferprioritymodel.h \
         src/imagecache/imagecache.h \
@@ -289,7 +289,7 @@ maemo5 {
         src/maemo5/youtube/youtubeview.h
         
     SOURCES += \
-        src/base/clipboardmonitor.cpp \
+        src/base/clipboard.cpp \
         src/base/transfermodel.cpp \
         src/imagecache/imagecache.cpp \
         src/maemo5/aboutdialog.cpp \
@@ -403,6 +403,38 @@ maemo5 {
     icon.path = /usr/share/icons/hicolor/64x64/apps
     
     INSTALLS += desktop icon
+} else:unix {
+    DEFINES += NAV_SEARCH
+    
+    QT += quick qml widgets
+    
+    INCLUDEPATH += src/desktop-qml
+    
+    HEADERS += \
+        src/base/clipboard.h \
+        src/base/transfermodel.h \
+    
+    SOURCES += \
+        src/base/clipboard.cpp \
+        src/base/transfermodel.cpp \
+        src/desktop-qml/main.cpp
+    
+    qml.files += \
+        src/desktop-qml/main.qml \
+        src/desktop-qml/avatar.qml \
+        src/desktop-qml/Highlight.qml \
+        src/desktop-qml/ItemView.qml \
+        src/desktop-qml/Page.qml \
+        src/desktop-qml/VideoDelegate.qml \
+        src/desktop-qml/VideoPlaceholder.qml \
+        src/desktop-qml/VideoThumbnail.qml \
+        src/desktop-qml/YouTubePage.qml \
+        src/desktop-qml/YouTubeVideoPage.qml \
+        src/desktop-qml/YouTubeVideosPage.qml
+        
+    qml.path = /opt/cutetube2/qml
+    
+    INSTALLS += qml
 }
 
 unix {

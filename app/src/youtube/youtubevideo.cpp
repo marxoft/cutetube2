@@ -231,11 +231,11 @@ void YouTubeVideo::loadVideo(const QVariantMap &video) {
     setDislikeCount(statistics.value("dislikeCount").toLongLong());
     setDuration(YouTube::formatDuration(contentDetails.value("duration").toString()));
     setFavouriteCount(statistics.value("favoriteCount").toLongLong());
-    setLargeThumbnailUrl(thumbnails.value("high").toMap().value("url").toUrl());
+    setLargeThumbnailUrl(thumbnails.value("high").toMap().value("url").toString());
     setLikeCount(statistics.value("likeCount").toLongLong());
     setUserId(snippet.value("channelId").toString());
     setUsername(snippet.value("channelTitle").toString());
-    setThumbnailUrl(thumbnails.value("default").toMap().value("url").toUrl());
+    setThumbnailUrl(thumbnails.value("default").toMap().value("url").toString());
     setTitle(snippet.value("title").toString());
     setViewCount(statistics.value("viewCount").toLongLong());
     
@@ -260,6 +260,8 @@ void YouTubeVideo::loadVideo(const QVariantMap &video) {
     else {
         setId(video.value("id").toString());
     }
+    
+    setUrl("https://www.youtube.com/watch?v=" + id());
 }
 
 void YouTubeVideo::loadVideo(const YouTubeVideo *video) {

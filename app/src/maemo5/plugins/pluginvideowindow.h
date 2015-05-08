@@ -59,9 +59,11 @@ private Q_SLOTS:
     
     void downloadVideo();
     void playVideo();
+    void shareVideo();
     
     void downloadRelatedVideo();
     void playRelatedVideo(const QModelIndex &index);
+    void shareRelatedVideo();
     void showRelatedVideo(const QModelIndex &index);
     
     void reload();
@@ -108,8 +110,10 @@ private:
     QAction *m_gridAction;
     QAction *m_reloadAction;
     QAction *m_downloadAction;
+    QAction *m_shareAction;
     QMenu *m_contextMenu;
     QAction *m_relatedDownloadAction;
+    QAction *m_relatedShareAction;
     QGridLayout *m_layout;
 };
     

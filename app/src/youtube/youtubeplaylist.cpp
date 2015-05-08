@@ -113,8 +113,8 @@ void YouTubePlaylist::loadPlaylist(const QVariantMap &playlist) {
     setDate(QDateTime::fromString(snippet.value("publishedAt").toString(), Qt::ISODate).toString("dd MMM yyyy"));
     setDescription(snippet.value("description").toString());
     setId(YouTube::getPlaylistId(playlist));
-    setLargeThumbnailUrl(thumbnails.value("high").toMap().value("url").toUrl());
-    setThumbnailUrl(thumbnails.value("default").toMap().value("url").toUrl());
+    setLargeThumbnailUrl(thumbnails.value("high").toMap().value("url").toString());
+    setThumbnailUrl(thumbnails.value("default").toMap().value("url").toString());
     setPrivacyStatus(status.value("privacyStatus").toString());
     setTitle(snippet.value("title").toString());
     setUserId(snippet.value("channelId").toString());

@@ -15,6 +15,7 @@
  */
 
 #include "pluginvideowindow.h"
+#include "clipboard.h"
 #include "image.h"
 #include "imagecache.h"
 #include "listview.h"
@@ -42,6 +43,7 @@
 #include <QMessageBox>
 #include <QMenuBar>
 #include <QDesktopServices>
+#include <QMaemo5InformationBox>
 
 PluginVideoWindow::PluginVideoWindow(const QString &service, const QString &id, StackedWindow *parent) :
     StackedWindow(parent),
@@ -71,8 +73,10 @@ PluginVideoWindow::PluginVideoWindow(const QString &service, const QString &id, 
     m_gridAction(new QAction(tr("Grid"), this)),
     m_reloadAction(new QAction(tr("Reload"), this)),
     m_downloadAction(new QAction(tr("Download"), this)),
+    m_shareAction(new QAction(tr("Copy URL"), this)),
     m_contextMenu(new QMenu(this)),
-    m_relatedDownloadAction(new QAction(tr("Download"), this))
+    m_relatedDownloadAction(new QAction(tr("Download"), this)),
+    m_relatedShareAction(new QAction(tr("Copy URL"), this))
 {
     loadBaseUi();
     connect(m_video, SIGNAL(statusChanged(ResourcesRequest::Status)),
@@ -109,8 +113,10 @@ PluginVideoWindow::PluginVideoWindow(const PluginVideo *video, StackedWindow *pa
     m_gridAction(new QAction(tr("Grid"), this)),
     m_reloadAction(new QAction(tr("Reload"), this)),
     m_downloadAction(new QAction(tr("Download"), this)),
+    m_shareAction(new QAction(tr("Copy URL"), this)),
     m_contextMenu(new QMenu(this)),
-    m_relatedDownloadAction(new QAction(tr("Download"), this))
+    m_relatedDownloadAction(new QAction(tr("Download"), this)),
+    m_relatedShareAction(new QAction(tr("Copy URL"), this))
 {
     loadBaseUi();
     loadVideoUi();
@@ -153,6 +159,7 @@ void PluginVideoWindow::loadBaseUi() {
     m_reloadAction->setEnabled(false);
     
     m_contextMenu->addAction(m_relatedDownloadAction);
+    m_contextMenu->addAction(m_relatedShareAction);
     
     QWidget *scrollWidget = new QWidget(m_scrollArea);
     QGridLayout *grid = new QGridLayout(scrollWidget);
@@ -189,6 +196,7 @@ void PluginVideoWindow::loadBaseUi() {
     menuBar()->addAction(m_gridAction);
     menuBar()->addAction(m_reloadAction);
     menuBar()->addAction(m_downloadAction);
+    menuBar()->addAction(m_shareAction);
     
     connect(m_relatedModel, SIGNAL(statusChanged(ResourcesRequest::Status)), this,
             SLOT(onRelatedModelStatusChanged(ResourcesRequest::Status)));
@@ -203,7 +211,9 @@ void PluginVideoWindow::loadBaseUi() {
     connect(m_thumbnail, SIGNAL(clicked()), this, SLOT(playVideo()));
     connect(m_descriptionLabel, SIGNAL(anchorClicked(QUrl)), this, SLOT(showResource(QUrl)));
     connect(m_downloadAction, SIGNAL(triggered()), this, SLOT(downloadVideo()));
+    connect(m_shareAction, SIGNAL(triggered()), this, SLOT(shareVideo()));
     connect(m_relatedDownloadAction, SIGNAL(triggered()), this, SLOT(downloadRelatedVideo()));
+    connect(m_relatedShareAction, SIGNAL(triggered()), this, SLOT(shareRelatedVideo()));
     
     if (Settings::instance()->defaultViewMode() == "grid") {
         m_gridAction->trigger();
@@ -272,6 +282,11 @@ void PluginVideoWindow::playVideo() {
     }
 }
 
+void PluginVideoWindow::shareVideo() {
+    Clipboard::instance()->setText(m_video->url().toString());
+    QMaemo5InformationBox::information(this, tr("URL copied to clipboard"));
+}
+
 void PluginVideoWindow::downloadRelatedVideo() {
     if ((!isBusy()) && (m_relatedView->currentIndex().isValid())) {
         QString id = m_relatedView->currentIndex().data(PluginVideoModel::IdRole).toString();
@@ -300,6 +315,13 @@ void PluginVideoWindow::playRelatedVideo(const QModelIndex &index) {
     
         PluginPlaybackDialog *dialog = new PluginPlaybackDialog(m_video->service(), id, title, this);
         dialog->open();
+    }
+}
+
+void PluginVideoWindow::shareRelatedVideo() {
+    if (const PluginVideo *video = m_relatedModel->get(m_relatedView->currentIndex().row())) {
+        Clipboard::instance()->setText(video->url().toString());
+        QMaemo5InformationBox::information(this, tr("URL copied to clipboard"));
     }
 }
 

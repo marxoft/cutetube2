@@ -70,7 +70,7 @@ void PluginComment::loadComment(const QString &service, const QVariantMap &comme
     setBody(comment.value("body").toString());
     setDate(comment.value("date").toString());
     setId(comment.value("id").toString());
-    setThumbnailUrl(comment.value("thumbnailUrl").toUrl());
+    setThumbnailUrl(comment.value("thumbnailUrl").toString());
     setUserId(comment.value("userId").toString());
     setUsername(comment.value("username").toString());
     setVideoId(comment.value("videoId").toString());

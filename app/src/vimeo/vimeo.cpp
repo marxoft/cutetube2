@@ -215,3 +215,35 @@ bool Vimeo::hasScope(const QString &scope) const {
     
     return false;
 }
+
+QString Vimeo::createScope() {
+    return QVimeo::CREATE_SCOPE;
+}
+
+QString Vimeo::deleteScope() {
+    return QVimeo::DELETE_SCOPE;
+}
+
+QString Vimeo::editScope() {
+    return QVimeo::EDIT_SCOPE;
+}
+
+QString Vimeo::interactScope() {
+    return QVimeo::INTERACT_SCOPE;
+}
+
+QString Vimeo::publicScope() {
+    return QVimeo::PUBLIC_SCOPE;
+}
+
+QString Vimeo::privateScope() {
+    return QVimeo::PRIVATE_SCOPE;
+}
+
+QString Vimeo::purchasedScope() {
+    return QVimeo::PURCHASED_SCOPE;
+}
+
+QString Vimeo::uploadScope() {
+    return QVimeo::UPLOAD_SCOPE;
+}

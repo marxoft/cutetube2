@@ -1,3 +1,11 @@
+cutetube2 (0.0.2) unstable; urgency=low
+  * Fix YouTube channel search.
+  * Add option to copy video URLs to the clipboard.
+  * Minor code re-factoring.
+
+ -- Stuart Howarth <showarth@marxoft.co.uk>  Thu, 07 May 2015 15:33:24 +0000
+
+
 cutetube2 (0.0.1) unstable; urgency=low
   * Initial release.
 

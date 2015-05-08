@@ -15,6 +15,7 @@
  */
 
 #include "youtubevideoswindow.h"
+#include "clipboard.h"
 #include "imagecache.h"
 #include "listview.h"
 #include "settings.h"
@@ -32,6 +33,7 @@
 #include <QVBoxLayout>
 #include <QMenuBar>
 #include <QMenu>
+#include <QMaemo5InformationBox>
 
 YouTubeVideosWindow::YouTubeVideosWindow(StackedWindow *parent) :
     StackedWindow(parent),
@@ -45,6 +47,7 @@ YouTubeVideosWindow::YouTubeVideosWindow(StackedWindow *parent) :
     m_reloadAction(new QAction(tr("Reload"), this)),
     m_contextMenu(new QMenu(this)),
     m_downloadAction(new QAction(tr("Download"), this)),
+    m_shareAction(new QAction(tr("Copy URL"), this)),
     m_favouriteAction(0),
     m_watchLaterAction(0),
     m_playlistAction(0),
@@ -66,7 +69,8 @@ YouTubeVideosWindow::YouTubeVideosWindow(StackedWindow *parent) :
     m_viewGroup->addAction(m_gridAction);
     m_reloadAction->setEnabled(false);
     
-    m_contextMenu->addAction(m_downloadAction);    
+    m_contextMenu->addAction(m_downloadAction);
+    m_contextMenu->addAction(m_shareAction);
     
     m_label->hide();
     
@@ -89,6 +93,7 @@ YouTubeVideosWindow::YouTubeVideosWindow(StackedWindow *parent) :
     connect(m_gridAction, SIGNAL(triggered()), this, SLOT(enableGridMode()));
     connect(m_reloadAction, SIGNAL(triggered()), m_model, SLOT(reload()));
     connect(m_downloadAction, SIGNAL(triggered()), this, SLOT(downloadVideo()));
+    connect(m_shareAction, SIGNAL(triggered()), this, SLOT(shareVideo()));
     
     if (!YouTube::instance()->userId().isEmpty()) {
         if ((YouTube::instance()->hasScope(QYouTube::READ_WRITE_SCOPE))
@@ -195,6 +200,13 @@ void YouTubeVideosWindow::setVideoFavourite() {
         else {
             video->favourite();
         }
+    }
+}
+
+void YouTubeVideosWindow::shareVideo() {
+    if (const YouTubeVideo *video = m_model->get(m_view->currentIndex().row())) {
+        Clipboard::instance()->setText(video->url().toString());
+        QMaemo5InformationBox::information(this, tr("URL copied to clipboard"));
     }
 }
 

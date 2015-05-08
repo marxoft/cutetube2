@@ -18,6 +18,7 @@
 #define DBUSSERVICE_H
 
 #include <QObject>
+#include <QVariantMap>
 
 class DBusService : public QObject
 {
@@ -26,8 +27,11 @@ class DBusService : public QObject
 public:
     explicit DBusService(QObject *parent = 0);
     
-public Q_SLOTS:
+private Q_SLOTS:
     bool showResource(const QString &url);
+    
+Q_SIGNALS:
+    void resourceRequested(const QVariantMap &resource);
 };
 
 #endif // DBUSSERVICE_H

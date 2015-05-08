@@ -15,6 +15,7 @@
  */
 
 #include "dailymotionplaylistwindow.h"
+#include "clipboard.h"
 #include "dailymotion.h"
 #include "dailymotiondownloaddialog.h"
 #include "dailymotionplaybackdialog.h"
@@ -42,6 +43,7 @@
 #include <QMessageBox>
 #include <QMenuBar>
 #include <QDesktopServices>
+#include <QMaemo5InformationBox>
 
 DailymotionPlaylistWindow::DailymotionPlaylistWindow(const QString &id, StackedWindow *parent) :
     StackedWindow(parent),
@@ -66,6 +68,7 @@ DailymotionPlaylistWindow::DailymotionPlaylistWindow(const QString &id, StackedW
     m_reloadAction(new QAction(tr("Reload"), this)),
     m_contextMenu(new QMenu(this)),
     m_downloadAction(new QAction(tr("Download"), this)),
+    m_shareAction(new QAction(tr("Copy URL"), this)),
     m_favouriteAction(0),
     m_playlistAction(0),
     m_removeAction(0)
@@ -100,6 +103,7 @@ DailymotionPlaylistWindow::DailymotionPlaylistWindow(const DailymotionPlaylist *
     m_reloadAction(new QAction(tr("Reload"), this)),
     m_contextMenu(new QMenu(this)),
     m_downloadAction(new QAction(tr("Download"), this)),
+    m_shareAction(new QAction(tr("Copy URL"), this)),
     m_favouriteAction(0),
     m_playlistAction(0),
     m_removeAction(0)
@@ -145,6 +149,7 @@ void DailymotionPlaylistWindow::loadBaseUi() {
     m_reloadAction->setEnabled(false);
     
     m_contextMenu->addAction(m_downloadAction);
+    m_contextMenu->addAction(m_shareAction);
     
     QWidget *scrollWidget = new QWidget(m_scrollArea);
     QGridLayout *grid = new QGridLayout(scrollWidget);
@@ -185,6 +190,7 @@ void DailymotionPlaylistWindow::loadBaseUi() {
     connect(m_avatar, SIGNAL(clicked()), this, SLOT(showUser()));
     connect(m_descriptionLabel, SIGNAL(anchorClicked(QUrl)), this, SLOT(showResource(QUrl)));
     connect(m_downloadAction, SIGNAL(triggered()), this, SLOT(downloadVideo()));
+    connect(m_shareAction, SIGNAL(triggered()), this, SLOT(shareVideo()));
     
     if (!Dailymotion::instance()->userId().isEmpty()) {
         if (Dailymotion::instance()->hasScope(QDailymotion::MANAGE_FAVORITES_SCOPE)) {
@@ -338,6 +344,13 @@ void DailymotionPlaylistWindow::setVideoFavourite() {
         else {
             video->favourite();
         }
+    }
+}
+
+void DailymotionPlaylistWindow::shareVideo() {
+    if (const DailymotionVideo *video = m_model->get(m_view->currentIndex().row())) {
+        Clipboard::instance()->setText(video->url().toString());
+        QMaemo5InformationBox::information(this, tr("URL copied to clipboard"));
     }
 }
 

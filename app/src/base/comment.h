@@ -46,7 +46,7 @@ public:
     QString service() const;
     
     QUrl thumbnailUrl() const;
-    
+        
     QString userId() const;
         
     QString username() const;
@@ -65,7 +65,7 @@ protected:
     void setService(const QString &s);
     
     void setThumbnailUrl(const QUrl &u);
-    
+        
     void setUserId(const QString &i);
         
     void setUsername(const QString &u);

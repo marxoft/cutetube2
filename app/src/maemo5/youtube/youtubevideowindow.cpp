@@ -15,6 +15,7 @@
  */
 
 #include "youtubevideowindow.h"
+#include "clipboard.h"
 #include "definitions.h"
 #include "image.h"
 #include "imagecache.h"
@@ -46,6 +47,7 @@
 #include <QMessageBox>
 #include <QMenuBar>
 #include <QDesktopServices>
+#include <QMaemo5InformationBox>
 
 YouTubeVideoWindow::YouTubeVideoWindow(const QString &id, StackedWindow *parent) :
     StackedWindow(parent),
@@ -75,6 +77,7 @@ YouTubeVideoWindow::YouTubeVideoWindow(const QString &id, StackedWindow *parent)
     m_gridAction(new QAction(tr("Grid"), this)),
     m_reloadAction(new QAction(tr("Reload"), this)),
     m_downloadAction(new QAction(tr("Download"), this)),
+    m_shareAction(new QAction(tr("Copy URL"), this)),
     m_likeAction(0),
     m_dislikeAction(0),
     m_favouriteAction(0),
@@ -83,6 +86,7 @@ YouTubeVideoWindow::YouTubeVideoWindow(const QString &id, StackedWindow *parent)
     m_commentAction(0),
     m_contextMenu(new QMenu(this)),
     m_relatedDownloadAction(new QAction(tr("Download"), this)),
+    m_relatedShareAction(new QAction(tr("Copy URL"), this)),
     m_relatedFavouriteAction(0),
     m_relatedWatchLaterAction(0),
     m_relatedPlaylistAction(0)
@@ -122,6 +126,7 @@ YouTubeVideoWindow::YouTubeVideoWindow(const YouTubeVideo *video, StackedWindow 
     m_gridAction(new QAction(tr("Grid"), this)),
     m_reloadAction(new QAction(tr("Reload"), this)),
     m_downloadAction(new QAction(tr("Download"), this)),
+    m_shareAction(new QAction(tr("Copy URL"), this)),
     m_likeAction(0),
     m_dislikeAction(0),
     m_favouriteAction(0),
@@ -130,6 +135,7 @@ YouTubeVideoWindow::YouTubeVideoWindow(const YouTubeVideo *video, StackedWindow 
     m_commentAction(0),
     m_contextMenu(new QMenu(this)),
     m_relatedDownloadAction(new QAction(tr("Download"), this)),
+    m_relatedShareAction(new QAction(tr("Copy URL"), this)),
     m_relatedFavouriteAction(0),
     m_relatedWatchLaterAction(0),
     m_relatedPlaylistAction(0)
@@ -172,6 +178,7 @@ void YouTubeVideoWindow::loadBaseUi() {
     m_reloadAction->setEnabled(false);
     
     m_contextMenu->addAction(m_relatedDownloadAction);
+    m_contextMenu->addAction(m_relatedShareAction);
     
     QWidget *scrollWidget = new QWidget(m_scrollArea);
     QGridLayout *grid = new QGridLayout(scrollWidget);
@@ -209,6 +216,7 @@ void YouTubeVideoWindow::loadBaseUi() {
     menuBar()->addAction(m_gridAction);
     menuBar()->addAction(m_reloadAction);
     menuBar()->addAction(m_downloadAction);
+    menuBar()->addAction(m_shareAction);
     
     connect(m_relatedModel, SIGNAL(statusChanged(QYouTube::ResourcesRequest::Status)), this,
             SLOT(onRelatedModelStatusChanged(QYouTube::ResourcesRequest::Status)));
@@ -224,7 +232,9 @@ void YouTubeVideoWindow::loadBaseUi() {
     connect(m_avatar, SIGNAL(clicked()), this, SLOT(showUser()));
     connect(m_descriptionLabel, SIGNAL(anchorClicked(QUrl)), this, SLOT(showResource(QUrl)));
     connect(m_downloadAction, SIGNAL(triggered()), this, SLOT(downloadVideo()));
+    connect(m_shareAction, SIGNAL(triggered()), this, SLOT(shareVideo()));
     connect(m_relatedDownloadAction, SIGNAL(triggered()), this, SLOT(downloadRelatedVideo()));
+    connect(m_relatedShareAction, SIGNAL(triggered()), this, SLOT(shareRelatedVideo()));
     
     if (!YouTube::instance()->userId().isEmpty()) {
         if ((YouTube::instance()->hasScope(QYouTube::READ_WRITE_SCOPE))
@@ -381,6 +391,11 @@ void YouTubeVideoWindow::playVideo() {
     }
 }
 
+void YouTubeVideoWindow::shareVideo() {
+    Clipboard::instance()->setText(m_video->url().toString());
+    QMaemo5InformationBox::information(this, tr("URL copied to clipboard"));
+}
+
 void YouTubeVideoWindow::setVideoFavourite() {
     if (isBusy()) {
         return;
@@ -464,6 +479,13 @@ void YouTubeVideoWindow::setRelatedVideoFavourite() {
         else {
             video->favourite();
         }        
+    }
+}
+
+void YouTubeVideoWindow::shareRelatedVideo() {
+    if (const YouTubeVideo *video = m_relatedModel->get(m_relatedView->currentIndex().row())) {
+        Clipboard::instance()->setText(video->url().toString());
+        QMaemo5InformationBox::information(this, tr("Copy URL to clipboard"));
     }
 }
 

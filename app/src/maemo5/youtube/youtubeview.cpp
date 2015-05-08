@@ -69,29 +69,31 @@ YouTubeView::YouTubeView(QWidget *parent) :
 }
 
 void YouTubeView::search(const QString &query, const QString &type, const QString &order) {
-    QVariantMap filters;
-    filters["q"] = query;
-    filters["type"] = type;
-    filters["order"] = order;
-    filters["maxResults"] = MAX_RESULTS;
-    filters["safeSearch"] = Settings::instance()->safeSearchEnabled() ? "strict" : "none";
+    QVariantMap params;
+    params["q"] = query;
+    params["order"] = order;
+    params["maxResults"] = MAX_RESULTS;
+    params["safeSearch"] = Settings::instance()->safeSearchEnabled() ? "strict" : "none";
     
     if (type == Resources::PLAYLIST) {
+        params["type"] = "playlist";
         YouTubePlaylistsWindow *window = new YouTubePlaylistsWindow(StackedWindow::currentWindow());
         window->setWindowTitle(QString("%1 ('%2')").arg(tr("Search")).arg(query));
-        window->list("/search", QStringList() << "snippet", QVariantMap(), filters);
+        window->list("/search", QStringList() << "snippet", QVariantMap(), params);
         window->show();
     }
     else if (type == Resources::USER) {
+        params["type"] = "channel";
         YouTubeUsersWindow *window = new YouTubeUsersWindow(StackedWindow::currentWindow());
         window->setWindowTitle(QString("%1 ('%2')").arg(tr("Search")).arg(query));
-        window->list("/search", QStringList() << "snippet", QVariantMap(), filters);
+        window->list("/search", QStringList() << "snippet", QVariantMap(), params);
         window->show();
     }
     else {
+        params["type"] = "video";
         YouTubeVideosWindow *window = new YouTubeVideosWindow(StackedWindow::currentWindow());
         window->setWindowTitle(QString("%1 ('%2')").arg(tr("Search")).arg(query));
-        window->list("/search", QStringList() << "snippet", QVariantMap(), filters);
+        window->list("/search", QStringList() << "snippet", QVariantMap(), params);
         window->show();
     }
 }

@@ -15,6 +15,7 @@
  */
 
 #include "vimeoplaylistwindow.h"
+#include "clipboard.h"
 #include "image.h"
 #include "imagecache.h"
 #include "listview.h"
@@ -42,6 +43,7 @@
 #include <QMessageBox>
 #include <QMenuBar>
 #include <QDesktopServices>
+#include <QMaemo5InformationBox>
 
 VimeoPlaylistWindow::VimeoPlaylistWindow(const QString &id, StackedWindow *parent) :
     StackedWindow(parent),
@@ -66,6 +68,7 @@ VimeoPlaylistWindow::VimeoPlaylistWindow(const QString &id, StackedWindow *paren
     m_reloadAction(new QAction(tr("Reload"), this)),
     m_contextMenu(new QMenu(this)),
     m_downloadAction(new QAction(tr("Download"), this)),
+    m_shareAction(new QAction(tr("Copy URL"), this)),
     m_favouriteAction(0),
     m_watchLaterAction(0),
     m_playlistAction(0),
@@ -101,6 +104,7 @@ VimeoPlaylistWindow::VimeoPlaylistWindow(const VimeoPlaylist *playlist, StackedW
     m_reloadAction(new QAction(tr("Reload"), this)),
     m_contextMenu(new QMenu(this)),
     m_downloadAction(new QAction(tr("Download"), this)),
+    m_shareAction(new QAction(tr("Copy URL"), this)),
     m_favouriteAction(0),
     m_watchLaterAction(0),
     m_playlistAction(0),
@@ -147,6 +151,7 @@ void VimeoPlaylistWindow::loadBaseUi() {
     m_reloadAction->setEnabled(false);
     
     m_contextMenu->addAction(m_downloadAction);
+    m_contextMenu->addAction(m_shareAction);
     
     QWidget *scrollWidget = new QWidget(m_scrollArea);
     QGridLayout *grid = new QGridLayout(scrollWidget);
@@ -187,6 +192,7 @@ void VimeoPlaylistWindow::loadBaseUi() {
     connect(m_avatar, SIGNAL(clicked()), this, SLOT(showUser()));
     connect(m_descriptionLabel, SIGNAL(anchorClicked(QUrl)), this, SLOT(showResource(QUrl)));
     connect(m_downloadAction, SIGNAL(triggered()), this, SLOT(downloadVideo()));
+    connect(m_shareAction, SIGNAL(triggered()), this, SLOT(shareVideo()));
     
     if (!Vimeo::instance()->userId().isEmpty()) {
         if (Vimeo::instance()->hasScope(QVimeo::INTERACT_SCOPE)) {
@@ -342,6 +348,13 @@ void VimeoPlaylistWindow::setVideoFavourite() {
         else {
             video->favourite();
         }
+    }
+}
+
+void VimeoPlaylistWindow::shareVideo() {
+    if (const VimeoVideo *video = m_model->get(m_view->currentIndex().row())) {
+        Clipboard::instance()->setText(video->url().toString());
+        QMaemo5InformationBox::information(this, tr("URL copied to clipboard"));
     }
 }
 

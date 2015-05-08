@@ -15,6 +15,7 @@
  */
 
 #include "pluginvideoswindow.h"
+#include "clipboard.h"
 #include "imagecache.h"
 #include "listview.h"
 #include "plugindownloaddialog.h"
@@ -29,6 +30,7 @@
 #include <QVBoxLayout>
 #include <QMenuBar>
 #include <QMenu>
+#include <QMaemo5InformationBox>
 
 PluginVideosWindow::PluginVideosWindow(StackedWindow *parent) :
     StackedWindow(parent),
@@ -42,6 +44,7 @@ PluginVideosWindow::PluginVideosWindow(StackedWindow *parent) :
     m_reloadAction(new QAction(tr("Reload"), this)),
     m_contextMenu(new QMenu(this)),
     m_downloadAction(new QAction(tr("Download"), this)),
+    m_shareAction(new QAction(tr("Copy URL"), this)),
     m_label(new QLabel(QString("<p align='center'; style='font-size: 40px; color: %1'>%2</p>")
                               .arg(palette().color(QPalette::Mid).name()).arg(tr("No videos found")), this))
 {
@@ -60,7 +63,8 @@ PluginVideosWindow::PluginVideosWindow(StackedWindow *parent) :
     m_viewGroup->addAction(m_gridAction);
     m_reloadAction->setEnabled(false);
     
-    m_contextMenu->addAction(m_downloadAction);    
+    m_contextMenu->addAction(m_downloadAction);
+    m_contextMenu->addAction(m_shareAction);
     
     m_label->hide();
     
@@ -83,6 +87,7 @@ PluginVideosWindow::PluginVideosWindow(StackedWindow *parent) :
     connect(m_gridAction, SIGNAL(triggered()), this, SLOT(enableGridMode()));
     connect(m_reloadAction, SIGNAL(triggered()), m_model, SLOT(reload()));
     connect(m_downloadAction, SIGNAL(triggered()), this, SLOT(downloadVideo()));
+    connect(m_shareAction, SIGNAL(triggered()), this, SLOT(shareVideo()));
     
     if (Settings::instance()->defaultViewMode() == "grid") {
         m_gridAction->trigger();
@@ -150,6 +155,13 @@ void PluginVideosWindow::playVideo(const QModelIndex &index) {
     
         PluginPlaybackDialog *dialog = new PluginPlaybackDialog(m_model->service(), id, title, this);
         dialog->open();
+    }
+}
+
+void PluginVideosWindow::shareVideo() {
+    if (const PluginVideo *video = m_model->get(m_view->currentIndex().row())) {
+        Clipboard::instance()->setText(video->url().toString());
+        QMaemo5InformationBox::information(this, tr("URL copied to clipboard"));
     }
 }
 

@@ -15,6 +15,7 @@
  */
 
 #include "pluginplaylistwindow.h"
+#include "clipboard.h"
 #include "image.h"
 #include "imagecache.h"
 #include "listview.h"
@@ -39,6 +40,7 @@
 #include <QMessageBox>
 #include <QMenuBar>
 #include <QDesktopServices>
+#include <QMaemo5InformationBox>
 
 PluginPlaylistWindow::PluginPlaylistWindow(const QString &service, const QString &id, StackedWindow *parent) :
     StackedWindow(parent),
@@ -62,7 +64,8 @@ PluginPlaylistWindow::PluginPlaylistWindow(const QString &service, const QString
     m_gridAction(new QAction(tr("Grid"), this)),
     m_reloadAction(new QAction(tr("Reload"), this)),
     m_contextMenu(new QMenu(this)),
-    m_downloadAction(new QAction(tr("Download"), this))
+    m_downloadAction(new QAction(tr("Download"), this)),
+    m_shareAction(new QAction(tr("Copy URL"), this))
 {
     setWindowTitle(tr("Playlist"));
     loadBaseUi();
@@ -94,7 +97,8 @@ PluginPlaylistWindow::PluginPlaylistWindow(const PluginPlaylist *playlist, Stack
     m_gridAction(new QAction(tr("Grid"), this)),
     m_reloadAction(new QAction(tr("Reload"), this)),
     m_contextMenu(new QMenu(this)),
-    m_downloadAction(new QAction(tr("Download"), this))
+    m_downloadAction(new QAction(tr("Download"), this)),
+    m_shareAction(new QAction(tr("Copy URL"), this))
 {
     setWindowTitle(tr("Playlist"));
     loadBaseUi();
@@ -138,6 +142,7 @@ void PluginPlaylistWindow::loadBaseUi() {
     m_reloadAction->setEnabled(false);
     
     m_contextMenu->addAction(m_downloadAction);
+    m_contextMenu->addAction(m_shareAction);
     
     QWidget *scrollWidget = new QWidget(m_scrollArea);
     QGridLayout *grid = new QGridLayout(scrollWidget);
@@ -177,6 +182,7 @@ void PluginPlaylistWindow::loadBaseUi() {
     connect(m_reloadAction, SIGNAL(triggered()), m_model, SLOT(reload()));
     connect(m_descriptionLabel, SIGNAL(anchorClicked(QUrl)), this, SLOT(showResource(QUrl)));
     connect(m_downloadAction, SIGNAL(triggered()), this, SLOT(downloadVideo()));
+    connect(m_shareAction, SIGNAL(triggered()), this, SLOT(shareVideo()));
     
     if (Settings::instance()->videoPlayer() == "cutetube") {
         connect(m_thumbnail, SIGNAL(clicked()), this, SLOT(playPlaylist()));
@@ -268,6 +274,13 @@ void PluginPlaylistWindow::playVideo(const QModelIndex &index) {
     
         PluginPlaybackDialog *dialog = new PluginPlaybackDialog(m_playlist->service(), id, title, this);
         dialog->open();
+    }
+}
+
+void PluginPlaylistWindow::shareVideo() {
+    if (const PluginVideo *video = m_model->get(m_view->currentIndex().row())) {
+        Clipboard::instance()->setText(video->url().toString());
+        QMaemo5InformationBox::information(this, tr("URL copied to clipboard"));
     }
 }
 

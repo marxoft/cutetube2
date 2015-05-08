@@ -38,6 +38,14 @@ class Vimeo : public QObject
     Q_PROPERTY(QString clientSecret READ clientSecret WRITE setClientSecret NOTIFY clientSecretChanged)
     Q_PROPERTY(QString redirectUri READ redirectUri WRITE setRedirectUri NOTIFY redirectUriChanged)
     Q_PROPERTY(QStringList scopes READ scopes WRITE setScopes NOTIFY scopesChanged)
+    Q_PROPERTY(QString CREATE_SCOPE READ createScope CONSTANT)
+    Q_PROPERTY(QString DELETE_SCOPE READ deleteScope CONSTANT)
+    Q_PROPERTY(QString EDIT_SCOPE READ editScope CONSTANT)
+    Q_PROPERTY(QString INTERACT_SCOPE READ interactScope CONSTANT)
+    Q_PROPERTY(QString PRIVATE_SCOPE READ privateScope CONSTANT)
+    Q_PROPERTY(QString PUBLIC_SCOPE READ publicScope CONSTANT)
+    Q_PROPERTY(QString PURCHASED_SCOPE READ purchasedScope CONSTANT)
+    Q_PROPERTY(QString UPLOAD_SCOPE READ uploadScope CONSTANT)
         
 public:
     explicit Vimeo(QObject *parent = 0);
@@ -64,6 +72,15 @@ public:
     QStringList scopes() const;
     
     Q_INVOKABLE bool hasScope(const QString &scope) const;
+    
+    static QString createScope();
+    static QString deleteScope();
+    static QString editScope();
+    static QString interactScope();
+    static QString publicScope();
+    static QString privateScope();
+    static QString purchasedScope();
+    static QString uploadScope();
     
 public Q_SLOTS:
     void setUserId(const QString &id);

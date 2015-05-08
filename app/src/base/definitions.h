@@ -32,7 +32,7 @@ static const int MAX_RESULTS = 20;
 
 static const QRegExp ILLEGAL_FILENAME_CHARS_RE("[\"@&~=\\/:?#!|<>*^]");
 
-static const QString VERSION_NUMBER("0.0.1");
+static const QString VERSION_NUMBER("0.0.2");
 
 static const QString PLUGIN_PATH("/opt/cutetube2/plugins/");
 #if QT_VERSION >= 0x050000

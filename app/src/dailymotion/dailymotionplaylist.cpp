@@ -96,8 +96,8 @@ void DailymotionPlaylist::loadPlaylist(const QVariantMap &playlist) {
     setDate(QDateTime::fromTime_t(playlist.value("created_time").toLongLong()).toString("dd MMM yyyy"));
     setDescription(playlist.value("description").toString());
     setId(playlist.value("id").toString());
-    setLargeThumbnailUrl(playlist.value("thumbnail_url").toUrl());
-    setThumbnailUrl(playlist.value("thumbnail_120_url").toUrl());
+    setLargeThumbnailUrl(playlist.value("thumbnail_url").toString());
+    setThumbnailUrl(playlist.value("thumbnail_120_url").toString());
     setTitle(playlist.value("name").toString());
     setUserId(playlist.value("owner.id").toString());
     setUsername(playlist.value("owner.screenname").toString());

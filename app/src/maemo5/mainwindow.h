@@ -18,6 +18,7 @@
 #define MAINWINDOW_H
 
 #include "stackedwindow.h"
+#include <QVariantMap>
 
 class Transfer;
 class ServiceModel;
@@ -38,6 +39,7 @@ public:
 public Q_SLOTS:
     bool search(const QString &service, const QString &query, const QString &type, const QString &order);
     bool showResource(const QString &url);
+    bool showResource(const QVariantMap &resource);
     
 private Q_SLOTS:
     void setService(const QVariant &service);

@@ -93,7 +93,7 @@ void YouTubeComment::loadComment(const QVariantMap &comment) {
     setDate(QDateTime::fromString(snippet.value("publishedAt").toString(), Qt::ISODate).toString("dd MMM yyyy"));
     setId(comment.value("id").toString());
     setParentId(snippet.value("parentId").toString());
-    setThumbnailUrl(snippet.value("authorProfileImageUrl").toUrl());
+    setThumbnailUrl(snippet.value("authorProfileImageUrl").toString());
     setUserId(snippet.value("authorChannelId").toMap().value("value").toString());
     setUsername(snippet.value("authorDisplayName").toString());
     setVideoId(snippet.value("videoId").toString());

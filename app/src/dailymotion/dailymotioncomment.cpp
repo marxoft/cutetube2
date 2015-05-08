@@ -74,7 +74,7 @@ void DailymotionComment::loadComment(const QVariantMap &comment) {
     setBody(comment.value("message").toString());
     setDate(QDateTime::fromTime_t(comment.value("created_time").toLongLong()).toString("dd MMM yyyy"));
     setId(comment.value("id").toString());
-    setThumbnailUrl(comment.value("owner.avatar_60_url").toUrl());
+    setThumbnailUrl(comment.value("owner.avatar_60_url").toString());
     setUserId(comment.value("owner.id").toString());
     setUsername(comment.value("owner.screenname").toString());
     setVideoId(comment.value("video.id").toString());

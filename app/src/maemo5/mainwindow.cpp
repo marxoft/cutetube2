@@ -91,6 +91,10 @@ bool MainWindow::showResource(const QString &url) {
         return false;
     }
     
+    return showResource(resource);
+}
+
+bool MainWindow::showResource(const QVariantMap &resource) {
     clearWindows();
     
     QVariant service = resource.value("service");
