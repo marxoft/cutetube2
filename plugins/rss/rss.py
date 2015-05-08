@@ -83,6 +83,7 @@ def list_videos(url):
             video['largeThumbnailUrl'] = thumb
             video['thumbnailUrl'] = thumb
             video['title'] = item.find('title').text
+            video['url'] = item.find('link').text
             video['userId'] = url
             video['username'] = item.find('{http://www.itunes.com/dtds/podcast-1.0.dtd}author').text
             videos.append(video)
