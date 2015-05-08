@@ -485,7 +485,7 @@ void YouTubeVideoWindow::setRelatedVideoFavourite() {
 void YouTubeVideoWindow::shareRelatedVideo() {
     if (const YouTubeVideo *video = m_relatedModel->get(m_relatedView->currentIndex().row())) {
         Clipboard::instance()->setText(video->url().toString());
-        QMaemo5InformationBox::information(this, tr("Copy URL to clipboard"));
+        QMaemo5InformationBox::information(this, tr("URL copied to clipboard"));
     }
 }
 
