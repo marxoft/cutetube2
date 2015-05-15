@@ -1,0 +1,7 @@
+<settings title="Local videos">
+    <text key="paths" title="Directories (comma-separated)" />
+    <list key="order" default="Video:Title" title="Order by">
+        <element name="Title" value="Video:Title"></element>
+        <element name="Date" value="File:Added"></element>
+    </list>
+</settings>
