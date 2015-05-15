@@ -81,6 +81,7 @@ def list_videos(url):
             video['duration'] = item.find('{http://www.itunes.com/dtds/podcast-1.0.dtd}duration').text
             video['id'] = json.dumps(id)
             video['largeThumbnailUrl'] = thumb
+            video['streamUrl'] = stream['url']
             video['thumbnailUrl'] = thumb
             video['title'] = item.find('title').text
             video['url'] = item.find('link').text
