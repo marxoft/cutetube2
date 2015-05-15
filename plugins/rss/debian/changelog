@@ -1,3 +1,8 @@
+cutetube2-rss (0.0.4) unstable; urgency=low
+  * Add python-simplejson dependency
+
+ -- Stuart Howarth <showarth@marxoft.co.uk>  Fri, 15 May 2015 14:25:27 +0000
+
 cutetube2-rss (0.0.3) unstable; urgency=low
   * Add 'streamUrl' property for videos.
 

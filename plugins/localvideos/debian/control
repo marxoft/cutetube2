@@ -8,6 +8,6 @@ Standards-Version: 3.7.3
 
 Package: cutetube2-localvideos
 Architecture: armel
-Depends: ${shlibs:Depends}, ${misc:Depends}, cutetube2, python-dbus
+Depends: ${shlibs:Depends}, ${misc:Depends}, cutetube2, python-dbus, python-simplejson
 Description: A plugin for cuteTube2 providing access to local videos
 XB-Maemo-Display-Name: cuteTube2-LocalVideos
