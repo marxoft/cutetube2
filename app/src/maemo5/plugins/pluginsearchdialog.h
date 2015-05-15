@@ -24,6 +24,7 @@ class PluginSearchOrderModel;
 class ValueSelector;
 class QLineEdit;
 class QDialogButtonBox;
+class QPushButton;
 class QGridLayout;
 
 class PluginSearchDialog : public Dialog
@@ -36,7 +37,11 @@ public:
 private Q_SLOTS:
     void search();
 
+    void showHistoryDialog();
+
+    void onSearchOrderChanged(const QVariant &order);
     void onSearchTextChanged(const QString &text);
+    void onSearchTypeChanged(const QVariant &type);
     
 private:
     PluginSearchTypeModel *m_typeModel;
@@ -46,6 +51,8 @@ private:
     ValueSelector *m_orderSelector;
     QLineEdit *m_searchEdit;
     QDialogButtonBox *m_buttonBox;
+    QPushButton *m_historyButton;
+    QPushButton *m_searchButton;
     QGridLayout *m_layout;
 };
     

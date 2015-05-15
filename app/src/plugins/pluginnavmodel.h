@@ -56,9 +56,9 @@ public Q_SLOTS:
             append(tr("Search"), "");
         }
 #endif
-        if (plugin.supportedListResources.contains(Resources::CATEGORY)) {
-            append(tr("Categories"), Resources::CATEGORY);
-        }
+        //if (plugin.supportedListResources.contains(Resources::CATEGORY)) {
+        //    append(tr("Categories"), Resources::CATEGORY);
+        //}
         
         if (plugin.supportedListResources.contains(Resources::PLAYLIST)) {
             append(tr("Playlists"), Resources::PLAYLIST);

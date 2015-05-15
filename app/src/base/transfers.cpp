@@ -64,7 +64,8 @@ void Transfers::addDownloadTransfer(const QString &service, const QString &resou
                                     bool convertToAudio) {
     Transfer *transfer = new Transfer(this);
     transfer->setNetworkAccessManager(m_nam);
-    transfer->setId(QString::number(QDateTime::currentMSecsSinceEpoch()) + "#" + resourceId);
+    transfer->setId(QByteArray(QByteArray::number(QDateTime::currentMSecsSinceEpoch()) + "#"
+                    + resourceId.toUtf8()).toBase64());
     transfer->setDownloadPath(Settings::instance()->downloadPath() + ".incomplete/" + transfer->id());
     transfer->setFileName(title + ".mp4");
     transfer->setCategory(category);

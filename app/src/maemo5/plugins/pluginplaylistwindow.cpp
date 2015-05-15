@@ -33,6 +33,7 @@
 #include "textbrowser.h"
 #include "utils.h"
 #include "videoplaybackwindow.h"
+#include "videoplayer.h"
 #include <QScrollArea>
 #include <QLabel>
 #include <QActionGroup>
@@ -269,11 +270,18 @@ void PluginPlaylistWindow::playVideo(const QModelIndex &index) {
         }
     }
     else {
-        QString id = index.data(PluginVideoModel::IdRole).toString();
-        QString title = index.data(PluginVideoModel::TitleRole).toString();
+        QString url = index.data(PluginVideoModel::StreamUrlRole).toString();
+        
+        if (!url.isEmpty()) {
+            VideoPlayer::playVideo(url);
+        }
+        else {
+            QString id = index.data(PluginVideoModel::IdRole).toString();
+            QString title = index.data(PluginVideoModel::TitleRole).toString();
     
-        PluginPlaybackDialog *dialog = new PluginPlaybackDialog(m_playlist->service(), id, title, this);
-        dialog->open();
+            PluginPlaybackDialog *dialog = new PluginPlaybackDialog(m_playlist->service(), id, title, this);
+            dialog->open();
+        }
     }
 }
 

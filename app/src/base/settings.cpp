@@ -178,6 +178,34 @@ void Settings::setDefaultPlaybackFormat(const QString &service, const QString &f
 #endif
 }
 
+QString Settings::defaultSearchOrder(const QString &service) const {
+    return QSettings().value("Search/searchOrder/" + service).toString();
+}
+
+void Settings::setDefaultSearchOrder(const QString &service, const QString &order) {
+    if (order != defaultSearchOrder(service)) {
+        QSettings().setValue("Search/searchOrder/" + service, order);
+        emit defaultSearchOrderChanged();
+    }
+#ifdef CUTETUBE_DEBUG
+    qDebug() << "Settings::setDefaultSearchOrder" << service << order;
+#endif
+}
+
+QString Settings::defaultSearchType(const QString &service) const {
+    return QSettings().value("Search/searchType/" + service).toString();
+}
+
+void Settings::setDefaultSearchType(const QString &service, const QString &type) {
+    if (type != defaultSearchType(service)) {
+        QSettings().setValue("Search/searchType/" + service, type);
+        emit defaultSearchTypeChanged();
+    }
+#ifdef CUTETUBE_DEBUG
+    qDebug() << "Settings::setDefaultSearchType" << service << type;
+#endif
+}
+
 QString Settings::defaultViewMode() const {
     return QSettings().value("Content/defaultViewMode", "list").toString();
 }
@@ -343,6 +371,34 @@ void Settings::setSafeSearchEnabled(bool enabled) {
     }
 #ifdef CUTETUBE_DEBUG
     qDebug() << "Settings::setSafeSearchEnabled" << enabled;
+#endif
+}
+
+QStringList Settings::searchHistory() const {
+    return QSettings().value("Search/searchHistory").toStringList();
+}
+
+void Settings::setSearchHistory(const QStringList &searches) {
+    QSettings().setValue("Search/searchHistory", searches);
+    emit searchHistoryChanged();
+}
+
+void Settings::addSearch(const QString &query) {
+    QStringList searches = searchHistory();
+    searches.removeOne(query);
+    searches.prepend(query);
+    setSearchHistory(searches);
+#ifdef CUTETUBE_DEBUG
+    qDebug() << "Settings::addSearch" << query;
+#endif
+}
+
+void Settings::removeSearch(const QString &query) {
+    QStringList searches = searchHistory();
+    searches.removeOne(query);
+    setSearchHistory(searches);
+#ifdef CUTETUBE_DEBUG
+    qDebug() << "Settings::removeSearch" << query;
 #endif
 }
 

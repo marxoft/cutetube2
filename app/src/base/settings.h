@@ -48,6 +48,7 @@ class Settings : public QObject
     Q_PROPERTY(QString networkProxyUsername READ networkProxyUsername WRITE setNetworkProxyUsername
                NOTIFY networkProxyChanged)
     Q_PROPERTY(bool safeSearchEnabled READ safeSearchEnabled WRITE setSafeSearchEnabled NOTIFY safeSearchEnabledChanged)
+    Q_PROPERTY(QStringList searchHistory READ searchHistory WRITE setSearchHistory NOTIFY searchHistoryChanged)
     Q_PROPERTY(bool startTransfersAutomatically READ startTransfersAutomatically WRITE setStartTransfersAutomatically
                NOTIFY startTransfersAutomaticallyChanged)
     Q_PROPERTY(bool subtitlesEnabled READ subtitlesEnabled WRITE setSubtitlesEnabled NOTIFY subtitlesEnabledChanged)
@@ -76,6 +77,9 @@ public:
     Q_INVOKABLE QString defaultDownloadFormat(const QString &service) const;
     Q_INVOKABLE QString defaultPlaybackFormat(const QString &service) const;
     
+    Q_INVOKABLE QString defaultSearchOrder(const QString &service) const;
+    Q_INVOKABLE QString defaultSearchType(const QString &service) const;
+    
     QString defaultViewMode() const;
     
     QString downloadPath() const;
@@ -91,6 +95,9 @@ public:
     QString networkProxyUsername() const;
     
     bool safeSearchEnabled() const;
+    
+    QStringList searchHistory() const;
+    void setSearchHistory(const QStringList &searches);
     
     bool startTransfersAutomatically() const;
     
@@ -112,6 +119,9 @@ public Q_SLOTS:
     void setDefaultDownloadFormat(const QString &service, const QString &format);
     void setDefaultPlaybackFormat(const QString &service, const QString &format);
     
+    void setDefaultSearchOrder(const QString &service, const QString &order);
+    void setDefaultSearchType(const QString &service, const QString &type);
+    
     void setDefaultViewMode(const QString &mode);
     
     void setDownloadPath(const QString &path);
@@ -128,6 +138,9 @@ public Q_SLOTS:
     
     void setSafeSearchEnabled(bool enabled);
     
+    void addSearch(const QString &query);
+    void removeSearch(const QString &query);
+    
     void setStartTransfersAutomatically(bool enabled);
     
     void setSubtitlesEnabled(bool enabled);
@@ -141,6 +154,8 @@ Q_SIGNALS:
     void defaultCategoryChanged();
     void clipboardMonitorEnabledChanged();
     void currentServiceChanged();
+    void defaultSearchOrderChanged();
+    void defaultSearchTypeChanged();
     void defaultViewModeChanged();
     void downloadFormatsChanged();
     void downloadPathChanged();
@@ -148,6 +163,7 @@ Q_SIGNALS:
     void networkProxyChanged();
     void playbackFormatsChanged();
     void safeSearchEnabledChanged();
+    void searchHistoryChanged();
     void startTransfersAutomaticallyChanged();
     void subtitlesEnabledChanged();
     void subtitlesLanguageChanged();

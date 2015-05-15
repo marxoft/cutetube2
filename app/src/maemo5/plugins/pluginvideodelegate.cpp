@@ -130,8 +130,23 @@ void PluginVideoDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
         painter->drawText(textRect, Qt::AlignVCenter | Qt::TextWordWrap, text);
     }
     else {
-        text.append(QString("\n%1 %2 %3 %4").arg(tr("by")).arg(index.data(PluginVideoModel::UsernameRole).toString())
-                                            .arg(tr("on")).arg(index.data(PluginVideoModel::DateRole).toString()));
+        QString username = index.data(PluginVideoModel::UsernameRole).toString();
+        QString date = index.data(PluginVideoModel::DateRole).toString();
+        
+        if (!username.isEmpty()) {
+            text.append(QString("\n%1 %2").arg(tr("by")).arg(username));
+        }
+        
+        if (!date.isEmpty()) {
+            if (username.isEmpty()) {
+                text.append("\n");
+            }
+            else {
+                text.append(QString(" %1 ").arg(tr("on")));
+            }
+            
+            text.append(date);
+        }
         
         if (textRect.width() < 600) {
             font.setPixelSize(18);

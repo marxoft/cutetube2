@@ -27,6 +27,7 @@ HEADERS += \
     src/base/networkproxytypemodel.h \
     src/base/playlist.h \
     src/base/resources.h \
+    src/base/searchhistorymodel.h \
     src/base/selectionmodel.h \
     src/base/servicemodel.h \
     src/base/settings.h \
@@ -104,6 +105,7 @@ SOURCES += \
     src/base/json.cpp \
     src/base/playlist.cpp \
     src/base/resources.cpp \
+    src/base/searchhistorymodel.cpp \
     src/base/selectionmodel.cpp \
     src/base/settings.cpp \
     src/base/transfer.cpp \
@@ -188,6 +190,7 @@ maemo5 {
         src/maemo5/banner.h \
         src/maemo5/categoriesdialog.h \
         src/maemo5/dialog.h \
+        src/maemo5/filterbox.h \
         src/maemo5/image.h \
         src/maemo5/listview.h \
         src/maemo5/mainwindow.h \
@@ -197,6 +200,7 @@ maemo5 {
         src/maemo5/playlistthumbnail.h \
         src/maemo5/qwebviewselectionsuppressor.h \
         src/maemo5/screensaver.h \
+        src/maemo5/searchhistorydialog.h \
         src/maemo5/settingsdialog.h \
         src/maemo5/stackedwindow.h \
         src/maemo5/textbrowser.h \
@@ -296,6 +300,7 @@ maemo5 {
         src/maemo5/banner.cpp \
         src/maemo5/categoriesdialog.cpp \
         src/maemo5/dialog.cpp \
+        src/maemo5/filterbox.cpp \
         src/maemo5/image.cpp \
         src/maemo5/listview.cpp \
         src/maemo5/main.cpp \
@@ -305,6 +310,7 @@ maemo5 {
         src/maemo5/newcategorydialog.cpp \
         src/maemo5/playlistthumbnail.cpp \
         src/maemo5/screensaver.cpp \
+        src/maemo5/searchhistorydialog.cpp \
         src/maemo5/settingsdialog.cpp \
         src/maemo5/stackedwindow.cpp \
         src/maemo5/textbrowser.cpp \

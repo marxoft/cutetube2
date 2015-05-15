@@ -113,7 +113,7 @@ void PluginView::showVideos() {
 void PluginView::onItemActivated(const QModelIndex &index) {
     QVariant type = index.data(PluginNavModel::ValueRole);
     
-    if (type.isNull()) {
+    if (type == "") {
         showSearchDialog();
     }
     else if (type == Resources::PLAYLIST) {

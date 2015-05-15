@@ -44,7 +44,7 @@ ResourcesPlugin ResourcesPlugins::getPluginFromName(const QString &name) const {
 }
 
 ResourcesPlugin ResourcesPlugins::getPluginFromUrl(const QString &url) const {
-    QHashIterator<QString, ResourcesPlugin> iterator(m_plugins);
+    QMapIterator<QString, ResourcesPlugin> iterator(m_plugins);
     
     ResourcesPlugin plugin;
     

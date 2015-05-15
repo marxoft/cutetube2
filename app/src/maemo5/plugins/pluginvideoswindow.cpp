@@ -24,6 +24,7 @@
 #include "pluginvideowindow.h"
 #include "settings.h"
 #include "videoplaybackwindow.h"
+#include "videoplayer.h"
 #include <QLabel>
 #include <QActionGroup>
 #include <QMessageBox>
@@ -150,11 +151,18 @@ void PluginVideosWindow::playVideo(const QModelIndex &index) {
         }
     }
     else {
-        QString id = index.data(PluginVideoModel::IdRole).toString();
-        QString title = index.data(PluginVideoModel::TitleRole).toString();
+        QString url = index.data(PluginVideoModel::StreamUrlRole).toString();
+        
+        if (!url.isEmpty()) {
+            VideoPlayer::playVideo(url);
+        }
+        else {
+            QString id = index.data(PluginVideoModel::IdRole).toString();
+            QString title = index.data(PluginVideoModel::TitleRole).toString();
     
-        PluginPlaybackDialog *dialog = new PluginPlaybackDialog(m_model->service(), id, title, this);
-        dialog->open();
+            PluginPlaybackDialog *dialog = new PluginPlaybackDialog(m_model->service(), id, title, this);
+            dialog->open();
+        }
     }
 }
 

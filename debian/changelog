@@ -1,3 +1,10 @@
+cutetube2 (0.1.0) unstable; urgency=low
+  * Add search history.
+  * Save search order/type.
+  * Bug fixes and code re-factoring.
+
+ -- Stuart Howarth <showarth@marxoft.co.uk>  Fri, 15 May 2015 03:53:41 +0000 
+
 cutetube2 (0.0.2) unstable; urgency=low
   * Fix YouTube channel search.
   * Add option to copy video URLs to the clipboard.

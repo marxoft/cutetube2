@@ -195,7 +195,12 @@ void VideoControls::hideEvent(QHideEvent *) {
 }
 
 void VideoControls::play(const Video *video) {
-    listStreams(Settings::instance()->defaultPlaybackFormat(video->service()).isEmpty());
+    if (!video->streamUrl().isEmpty()) {
+        play(video->streamUrl());
+    }
+    else {
+        listStreams(Settings::instance()->defaultPlaybackFormat(video->service()).isEmpty());
+    }
 }
 
 void VideoControls::play(const QUrl &url) {

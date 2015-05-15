@@ -18,7 +18,7 @@
 #define RESOURCESPLUGINS_H
 
 #include <QObject>
-#include <QHash>
+#include <QMap>
 #include <QStringList>
 #include <QRegExp>
 
@@ -57,7 +57,7 @@ public Q_SLOTS:
 private:
     static ResourcesPlugins *self;
     
-    QHash<QString, ResourcesPlugin> m_plugins;
+    QMap<QString, ResourcesPlugin> m_plugins;
 };
 
 #endif // RESOURCESPLUGINS_H
