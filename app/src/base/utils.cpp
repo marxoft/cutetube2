@@ -17,6 +17,7 @@
 #include "utils.h"
 #include <QString>
 #include <QRegExp>
+#include <QUrl>
 
 Utils::Utils(QObject *parent) :
     QObject(parent)
@@ -76,6 +77,10 @@ QString Utils::formatMSecs(qint64 ms) {
 
 QString Utils::formatSecs(qint64 s) {    
     return s > 0 ? QString("%1:%2").arg(s / 60, 2, 10, QChar('0')).arg(s % 60, 2, 10, QChar('0')) : QString("00:00");
+}
+
+bool Utils::isLocalFile(const QUrl &url) {
+    return (url.scheme() == "file") || (url.toString().startsWith("/"));
 }
 
 QString Utils::toRichText(QString s) {

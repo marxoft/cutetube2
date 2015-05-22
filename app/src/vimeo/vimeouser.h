@@ -46,7 +46,7 @@ public:
             
     Q_INVOKABLE void loadUser(const QString &id);
     Q_INVOKABLE void loadUser(const QVariantMap &user);
-    Q_INVOKABLE void loadUser(const VimeoUser *user);
+    Q_INVOKABLE void loadUser(VimeoUser *user);
 
 public Q_SLOTS:
     void checkIfSubscribed();
@@ -65,7 +65,7 @@ private Q_SLOTS:
     void onSubscribeCheckRequestFinished();
     void onSubscribeRequestFinished();
     void onUnsubscribeRequestFinished();
-    void onUserUpdated(const VimeoUser *user);
+    void onUserUpdated(VimeoUser *user);
     
 Q_SIGNALS:
     void statusChanged(QVimeo::ResourcesRequest::Status s);

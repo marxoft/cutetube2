@@ -43,8 +43,8 @@ DailymotionCommentModel::DailymotionCommentModel(QObject *parent) :
     connect(m_request, SIGNAL(accessTokenChanged(QString)), Dailymotion::instance(), SLOT(setAccessToken(QString)));
     connect(m_request, SIGNAL(refreshTokenChanged(QString)), Dailymotion::instance(), SLOT(setRefreshToken(QString)));
     connect(m_request, SIGNAL(finished()), this, SLOT(onRequestFinished()));
-    connect(Dailymotion::instance(), SIGNAL(commentAdded(const DailymotionComment*)),
-            this, SLOT(onCommentAdded(const DailymotionComment*)));
+    connect(Dailymotion::instance(), SIGNAL(commentAdded(DailymotionComment*)),
+            this, SLOT(onCommentAdded(DailymotionComment*)));
 }
 
 QString DailymotionCommentModel::errorString() const {
@@ -146,7 +146,9 @@ void DailymotionCommentModel::list(const QString &resourcePath, const QVariantMa
 void DailymotionCommentModel::clear() {
     if (!m_items.isEmpty()) {
         beginResetModel();
+        qDeleteAll(m_items);
         m_items.clear();
+        m_hasMore = false;
         endResetModel();
         emit countChanged(rowCount());
     }
@@ -209,7 +211,7 @@ void DailymotionCommentModel::onRequestFinished() {
     emit statusChanged(status());
 }
 
-void DailymotionCommentModel::onCommentAdded(const DailymotionComment *comment) {
+void DailymotionCommentModel::onCommentAdded(DailymotionComment *comment) {
     if (comment->videoId() == m_resourcePath.section('/', 1, 1)) {
         insert(0, new DailymotionComment(comment, this));
     }

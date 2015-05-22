@@ -27,7 +27,7 @@ class YouTubeVideo : public Video
     Q_PROPERTY(bool disliked READ isDisliked NOTIFY dislikedChanged)
     Q_PROPERTY(qint64 dislikeCount READ dislikeCount NOTIFY dislikeCountChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY statusChanged)
-    Q_PROPERTY(bool favourite READ isFavourite NOTIFY favouriteChanged)
+    Q_PROPERTY(bool favourited READ isFavourite NOTIFY favouriteChanged)
     Q_PROPERTY(qint64 favouriteCount READ favouriteCount NOTIFY favouriteCountChanged)
     Q_PROPERTY(QString favouriteId READ favouriteId NOTIFY favouriteIdChanged)
     Q_PROPERTY(bool liked READ isLiked NOTIFY likedChanged)
@@ -59,7 +59,7 @@ public:
     
     Q_INVOKABLE void loadVideo(const QString &id);
     Q_INVOKABLE void loadVideo(const QVariantMap &video);
-    Q_INVOKABLE void loadVideo(const YouTubeVideo *video);
+    Q_INVOKABLE void loadVideo(YouTubeVideo *video);
     
 public Q_SLOTS:
     void favourite();
@@ -92,7 +92,7 @@ private Q_SLOTS:
     void onLikeRequestFinished();
     void onDislikeRequestFinished();
     void onWatchLaterRequestFinished();
-    void onVideoUpdated(const YouTubeVideo *video);
+    void onVideoUpdated(YouTubeVideo *video);
     
 Q_SIGNALS:
     void dislikedChanged();

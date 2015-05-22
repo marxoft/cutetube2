@@ -99,7 +99,7 @@ void YouTubeComment::loadComment(const QVariantMap &comment) {
     setVideoId(snippet.value("videoId").toString());
 }
 
-void YouTubeComment::loadComment(const YouTubeComment *comment) {
+void YouTubeComment::loadComment(YouTubeComment *comment) {
     Comment::loadComment(comment);
     setParentId(comment->parentId());
 }
@@ -138,6 +138,11 @@ void YouTubeComment::addComment() {
         
     connect(m_request, SIGNAL(finished()), this, SLOT(onAddCommentRequestFinished()));
     emit statusChanged(status());
+}
+
+void YouTubeComment::addComment(const QVariantMap &comment) {
+    loadComment(comment);
+    addComment();
 }
 
 void YouTubeComment::initRequest() {

@@ -78,7 +78,7 @@ private:
     
 private Q_SLOTS:
     void onCountChanged(int count);
-    void onTransferAdded(const Transfer *transfer);
+    void onTransferAdded(Transfer *transfer);
     void onTransferDataChanged(int column);
     void onTransferTitleChanged();
     void onTransferCategoryChanged();

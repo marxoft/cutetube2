@@ -108,13 +108,13 @@ void VideoModel::clear() {
     }
 }
 
-void VideoModel::append(const Video *video) {
+void VideoModel::append(Video *video) {
     beginInsertRows(QModelIndex(), m_items.size(), m_items.size());
     m_items << new Video(video, this);
     endInsertRows();
 }
 
-void VideoModel::insert(int row, const Video *video) {
+void VideoModel::insert(int row, Video *video) {
     if ((row >= 0) && (row < m_items.size())) {
         beginInsertRows(QModelIndex(), row, row);
         m_items.insert(row, new Video(video, this));

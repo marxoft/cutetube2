@@ -32,6 +32,8 @@ class ResourcesRequest : public QObject
     Q_PROPERTY(QVariant result READ result NOTIFY finished)
     Q_PROPERTY(Error error READ error NOTIFY finished)
     Q_PROPERTY(QString errorString READ errorString NOTIFY finished)
+
+    Q_ENUMS(Status Error)
         
 public:
     enum Status {

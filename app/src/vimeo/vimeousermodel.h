@@ -80,8 +80,8 @@ private:
 private Q_SLOTS:
     void onRequestFinished();
     
-    void onUserSubscribed(const VimeoUser *user);
-    void onUserUnsubscribed(const VimeoUser *user);
+    void onUserSubscribed(VimeoUser *user);
+    void onUserUnsubscribed(VimeoUser *user);
     
 Q_SIGNALS:
     void countChanged(int c);

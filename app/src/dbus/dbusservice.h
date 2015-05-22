@@ -24,14 +24,22 @@ class DBusService : public QObject
 {
     Q_OBJECT
     
+    Q_PROPERTY(QVariantMap requestedResource READ requestedResource NOTIFY resourceRequested)
+    
 public:
     explicit DBusService(QObject *parent = 0);
     
-private Q_SLOTS:
+    QVariantMap requestedResource() const;
+    
+public Q_SLOTS:
     bool showResource(const QString &url);
+    bool showResource(const QStringList &url);
     
 Q_SIGNALS:
     void resourceRequested(const QVariantMap &resource);
+    
+private:
+    QVariantMap m_resource;
 };
 
 #endif // DBUSSERVICE_H

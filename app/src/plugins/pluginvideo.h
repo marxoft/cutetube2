@@ -39,6 +39,7 @@ public:
     
     Q_INVOKABLE void loadVideo(const QString &service, const QString &id);
     Q_INVOKABLE void loadVideo(const QString &service, const QVariantMap &video);
+    Q_INVOKABLE void loadVideo(PluginVideo *video);
             
 private Q_SLOTS:
     void onRequestFinished();

@@ -28,7 +28,7 @@ VimeoVideoModel::VimeoVideoModel(QObject *parent) :
     m_roles[DateRole] = "date";
     m_roles[DescriptionRole] = "description";
     m_roles[DurationRole] = "duration";
-    m_roles[FavouriteRole] = "favourite";
+    m_roles[FavouriteRole] = "favourited";
     m_roles[IdRole] = "id";
     m_roles[LargeThumbnailUrlRole] = "largeThumbnailUrl";
     m_roles[ThumbnailUrlRole] = "thumbnailUrl";
@@ -146,27 +146,29 @@ void VimeoVideoModel::list(const QString &resourcePath, const QVariantMap &filte
     disconnect(Vimeo::instance(), 0, this, 0);
         
     if (resourcePath == "/me/likes") {
-        connect(Vimeo::instance(), SIGNAL(videoFavourited(const VimeoVideo*)),
-                this, SLOT(onVideoFavourited(const VimeoVideo*)));
-        connect(Vimeo::instance(), SIGNAL(videoUnfavourited(const VimeoVideo*)),
-                this, SLOT(onVideoUnfavourited(const VimeoVideo*)));
+        connect(Vimeo::instance(), SIGNAL(videoFavourited(VimeoVideo*)),
+                this, SLOT(onVideoFavourited(VimeoVideo*)));
+        connect(Vimeo::instance(), SIGNAL(videoUnfavourited(VimeoVideo*)),
+                this, SLOT(onVideoUnfavourited(VimeoVideo*)));
     }
     else if (resourcePath == "/me/watchlater") {
-        connect(Vimeo::instance(), SIGNAL(videoWatchLater(const VimeoVideo*)),
-                this, SLOT(onVideoWatchLater(const VimeoVideo*)));
+        connect(Vimeo::instance(), SIGNAL(videoWatchLater(VimeoVideo*)),
+                this, SLOT(onVideoWatchLater(VimeoVideo*)));
     }
     else if (resourcePath.section('/', -3, -3) == "playlists") {
-        connect(Vimeo::instance(), SIGNAL(videoAddedToPlaylist(const VimeoVideo*, const VimeoPlaylist*)),
-                this, SLOT(onVideoAddedToPlaylist(const VimeoVideo*, const VimeoPlaylist*)));
-        connect(Vimeo::instance(), SIGNAL(videoRemovedFromPlaylist(const VimeoVideo*, const VimeoPlaylist*)),
-                this, SLOT(onVideoRemovedFromPlaylist(const VimeoVideo*, const VimeoPlaylist*)));
+        connect(Vimeo::instance(), SIGNAL(videoAddedToPlaylist(VimeoVideo*, VimeoPlaylist*)),
+                this, SLOT(onVideoAddedToPlaylist(VimeoVideo*, VimeoPlaylist*)));
+        connect(Vimeo::instance(), SIGNAL(videoRemovedFromPlaylist(VimeoVideo*, VimeoPlaylist*)),
+                this, SLOT(onVideoRemovedFromPlaylist(VimeoVideo*, VimeoPlaylist*)));
     }
 }
 
 void VimeoVideoModel::clear() {
     if (!m_items.isEmpty()) {
         beginResetModel();
+        qDeleteAll(m_items);
         m_items.clear();
+        m_hasMore = false;
         endResetModel();
         emit countChanged(rowCount());
     }
@@ -236,7 +238,7 @@ void VimeoVideoModel::onRequestFinished() {
     emit statusChanged(status());
 }
 
-void VimeoVideoModel::onVideoAddedToPlaylist(const VimeoVideo *video, const VimeoPlaylist *playlist) {
+void VimeoVideoModel::onVideoAddedToPlaylist(VimeoVideo *video, VimeoPlaylist *playlist) {
     if (m_resourcePath.section('/', -2, -2) == playlist->id()) {
         insert(0, new VimeoVideo(video, this));
     }
@@ -245,7 +247,7 @@ void VimeoVideoModel::onVideoAddedToPlaylist(const VimeoVideo *video, const Vime
 #endif
 }
 
-void VimeoVideoModel::onVideoRemovedFromPlaylist(const VimeoVideo *video, const VimeoPlaylist *playlist) {
+void VimeoVideoModel::onVideoRemovedFromPlaylist(VimeoVideo *video, VimeoPlaylist *playlist) {
     if (m_resourcePath.section('/', -2, -2) == playlist->id()) {
         QModelIndexList list = match(index(0), IdRole, video->id(), 1, Qt::MatchExactly);
         
@@ -258,14 +260,14 @@ void VimeoVideoModel::onVideoRemovedFromPlaylist(const VimeoVideo *video, const 
 #endif
 }
 
-void VimeoVideoModel::onVideoFavourited(const VimeoVideo *video) {
+void VimeoVideoModel::onVideoFavourited(VimeoVideo *video) {
     insert(0, new VimeoVideo(video, this));
 #ifdef CUTETUBE_DEBUG
     qDebug() << "VimeoVideoModel::onVideoFavourited" << video->id();
 #endif
 }
 
-void VimeoVideoModel::onVideoUnfavourited(const VimeoVideo *video) {
+void VimeoVideoModel::onVideoUnfavourited(VimeoVideo *video) {
     QModelIndexList list = match(index(0), IdRole, video->id(), 1, Qt::MatchExactly);
     
     if (!list.isEmpty()) {
@@ -276,7 +278,7 @@ void VimeoVideoModel::onVideoUnfavourited(const VimeoVideo *video) {
 #endif
 }
 
-void VimeoVideoModel::onVideoWatchLater(const VimeoVideo *video) {
+void VimeoVideoModel::onVideoWatchLater(VimeoVideo *video) {
     insert(0, new VimeoVideo(video, this));
 #ifdef CUTETUBE_DEBUG
     qDebug() << "VimeoVideoModel::onVideoWatchLater" << video->id();

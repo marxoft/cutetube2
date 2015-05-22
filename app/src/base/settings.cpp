@@ -43,6 +43,30 @@ Settings* Settings::instance() {
     return self;
 }
 
+#if (defined MEEGO_EDITION_HARMATTAN) || (SYMBIAN_OS)
+QString Settings::activeColor() const {
+    return value("Appearance/activeColor", "#0881cb").toString();
+}
+
+void Settings::setActiveColor(const QString &color) {
+    if (color != activeColor()) {
+        setValue("Appearance/activeColor", color);
+        emit activeColorChanged();
+    }
+}
+
+QString Settings::activeColorString() const {
+    return value("Appearance/activeColorString", "color7").toString();
+}
+
+void Settings::setActiveColorString(const QString &s) {
+    if (s != activeColorString()) {
+        setValue("Appearance/activeColorString", s);
+        emit activeColorStringChanged();
+    }
+}
+#endif
+
 QStringList Settings::categoryNames() const {
     QSettings settings;
     settings.beginGroup("Categories");
@@ -85,12 +109,9 @@ void Settings::setCategories(const QList<Category> &c) {
 
 void Settings::addCategory(const QString &name, const QString &path) {
     if (path != downloadPath(name)) {
-        QSettings().setValue("Categories/" + name, path);
+        setValue("Categories/" + name, path);
         emit categoriesChanged();
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "Settings::addCategory" << name << path;
-#endif
 }
 
 void Settings::removeCategory(const QString &name) {
@@ -103,125 +124,98 @@ void Settings::removeCategory(const QString &name) {
     }
     
     settings.endGroup();
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "Settings::removeCategory" << name;
-#endif
 }
 
 QString Settings::defaultCategory() const {
-    return QSettings().value("Transfers/defaultCategory", tr("Default")).toString();
+    return value("Transfers/defaultCategory", tr("Default")).toString();
 }
 
 void Settings::setDefaultCategory(const QString &category) {
     if (category != defaultCategory()) {
-        QSettings().setValue("Transfers/defaultCategory", category);
+        setValue("Transfers/defaultCategory", category);
         emit defaultCategoryChanged();
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "Settings::setDefaultCategory" << category;
-#endif
 }
 
 bool Settings::clipboardMonitorEnabled() const {
-    return QSettings().value("Content/clipboardMonitorEnabled", false).toBool();
+    return value("Content/clipboardMonitorEnabled", false).toBool();
 }
 
 void Settings::setClipboardMonitorEnabled(bool enabled) {
     if (enabled != clipboardMonitorEnabled()) {
-        QSettings().setValue("Content/clipboardMonitorEnabled", enabled);
+        setValue("Content/clipboardMonitorEnabled", enabled);
         emit clipboardMonitorEnabledChanged();
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "Settings::setClipboardMonitorEnabled" << enabled;
-#endif
 }
 
 QString Settings::currentService() const {
-    return QSettings().value("Content/currentService", Resources::YOUTUBE).toString();
+    return value("Content/currentService", Resources::YOUTUBE).toString();
 }
 
 void Settings::setCurrentService(const QString &service) {
     if (service != currentService()) {
-        QSettings().setValue("Content/currentService", service);
+        setValue("Content/currentService", service);
         emit currentServiceChanged();
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "Settings::setCurrentService" << service;
-#endif
 }
 
 QString Settings::defaultDownloadFormat(const QString &service) const {
-    return QSettings().value("DownloadFormats/" + service).toString();
+    return value("DownloadFormats/" + service).toString();
 }
 
 void Settings::setDefaultDownloadFormat(const QString &service, const QString &format) {
     if (format != defaultDownloadFormat(service)) {
-        QSettings().setValue("DownloadFormats/" + service, format);
+        setValue("DownloadFormats/" + service, format);
         emit downloadFormatsChanged();
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "Settings::setDefaultDownloadFormat" << service << format;
-#endif
 }
 
 QString Settings::defaultPlaybackFormat(const QString &service) const {
-    return QSettings().value("PlaybackFormats/" + service).toString();
+    return value("PlaybackFormats/" + service).toString();
 }
 
 void Settings::setDefaultPlaybackFormat(const QString &service, const QString &format) {
     if (format != defaultPlaybackFormat(service)) {
-        QSettings().setValue("PlaybackFormats/" + service, format);
+        setValue("PlaybackFormats/" + service, format);
         emit playbackFormatsChanged();
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "Settings::setDefaultPlaybackFormat" << service << format;
-#endif
 }
 
 QString Settings::defaultSearchOrder(const QString &service) const {
-    return QSettings().value("Search/searchOrder/" + service).toString();
+    return value("Search/searchOrder/" + service).toString();
 }
 
 void Settings::setDefaultSearchOrder(const QString &service, const QString &order) {
     if (order != defaultSearchOrder(service)) {
-        QSettings().setValue("Search/searchOrder/" + service, order);
+        setValue("Search/searchOrder/" + service, order);
         emit defaultSearchOrderChanged();
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "Settings::setDefaultSearchOrder" << service << order;
-#endif
 }
 
 QString Settings::defaultSearchType(const QString &service) const {
-    return QSettings().value("Search/searchType/" + service).toString();
+    return value("Search/searchType/" + service).toString();
 }
 
 void Settings::setDefaultSearchType(const QString &service, const QString &type) {
     if (type != defaultSearchType(service)) {
-        QSettings().setValue("Search/searchType/" + service, type);
+        setValue("Search/searchType/" + service, type);
         emit defaultSearchTypeChanged();
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "Settings::setDefaultSearchType" << service << type;
-#endif
 }
 
 QString Settings::defaultViewMode() const {
-    return QSettings().value("Content/defaultViewMode", "list").toString();
+    return value("Content/defaultViewMode", "list").toString();
 }
 
 void Settings::setDefaultViewMode(const QString &mode) {
     if (mode != defaultViewMode()) {
-        QSettings().setValue("Content/defaultViewMode", mode);
+        setValue("Content/defaultViewMode", mode);
         emit defaultViewModeChanged();
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "Settings::setDefaultViewMode" << mode;
-#endif
 }
 
 QString Settings::downloadPath() const {
-    QString path = QSettings().value("Transfers/downloadPath", DOWNLOAD_PATH).toString();
+    QString path = value("Transfers/downloadPath", DOWNLOAD_PATH).toString();
 
     if (!path.endsWith("/")) {
         path.append("/");
@@ -231,31 +225,25 @@ QString Settings::downloadPath() const {
 }
 
 QString Settings::downloadPath(const QString &category) const {
-    return QSettings().value("Categories/" + category, downloadPath()).toString();
+    return value("Categories/" + category, downloadPath()).toString();
 }   
 
 void Settings::setDownloadPath(const QString &path) {
     if (path != downloadPath()) {
-        QSettings().setValue("Transfers/downloadPath", path);
+        setValue("Transfers/downloadPath", path);
         emit downloadPathChanged();
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "Settings::setDownloadPath" << path;
-#endif
 }
 
 int Settings::maximumConcurrentTransfers() const {
-    return qBound(1, QSettings().value("Transfers/maximumConcurrentTransfers", 1).toInt(), MAX_CONCURRENT_TRANSFERS);
+    return qBound(1, value("Transfers/maximumConcurrentTransfers", 1).toInt(), MAX_CONCURRENT_TRANSFERS);
 }
 
 void Settings::setMaximumConcurrentTransfers(int maximum) {
     if (maximum != maximumConcurrentTransfers()) {
-        QSettings().setValue("Transfers/maximumConcurrentTransfers", qBound(1, maximum, MAX_CONCURRENT_TRANSFERS));
+        setValue("Transfers/maximumConcurrentTransfers", qBound(1, maximum, MAX_CONCURRENT_TRANSFERS));
         emit maximumConcurrentTransfersChanged();
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "Settings::setMaximumConcurrentTransfers" << maximum;
-#endif
 }
 
 void Settings::setNetworkProxy() {
@@ -275,111 +263,105 @@ void Settings::setNetworkProxy() {
 }
 
 bool Settings::networkProxyEnabled() const {
-    return QSettings().value("Network/networkProxyEnabled", false).toBool();
+    return value("Network/networkProxyEnabled", false).toBool();
 }
 
 void Settings::setNetworkProxyEnabled(bool enabled) {
     if (enabled != networkProxyEnabled()) {
-        QSettings().setValue("Network/networkProxyEnabled", enabled);
+        setValue("Network/networkProxyEnabled", enabled);
         emit networkProxyChanged();
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "Settings::setNetworkProxyEnabled" << enabled;
-#endif
 }
 
 QString Settings::networkProxyHost() const {
-    return QSettings().value("Network/networkProxyHost").toString();
+    return value("Network/networkProxyHost").toString();
 }
 
 void Settings::setNetworkProxyHost(const QString &host) {
     if (host != networkProxyHost()) {
-        QSettings().setValue("Network/networkProxyHost", host);
+        setValue("Network/networkProxyHost", host);
         emit networkProxyChanged();
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "Settings::setNetworkProxyHost" << host;
-#endif
 }
 
 QString Settings::networkProxyPassword() const {
-    return QByteArray::fromBase64(QSettings().value("Network/networkProxyPassword").toByteArray());
+    return QByteArray::fromBase64(value("Network/networkProxyPassword").toByteArray());
 }
 
 void Settings::setNetworkProxyPassword(const QString &password) {
     QByteArray pass = password.toUtf8().toBase64();
     
     if (pass != networkProxyPassword()) {
-        QSettings().setValue("Network/networkProxyPassword", pass);
+        setValue("Network/networkProxyPassword", pass);
         emit networkProxyChanged();
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "Settings::setNetworkProxyPassword" << password;
-#endif
 }
 
 int Settings::networkProxyPort() const {
-    return QSettings().value("Network/networkProxyPort", 80).toInt();
+    return value("Network/networkProxyPort", 80).toInt();
 }
 
 void Settings::setNetworkProxyPort(int port) {
     if (port != networkProxyPort()) {
-        QSettings().setValue("Network/networkProxyPort", port);
+        setValue("Network/networkProxyPort", port);
         emit networkProxyChanged();
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "Settings::setNetworkProxyPort" << port;
-#endif
 }
 
 int Settings::networkProxyType() const {
-    return QSettings().value("Network/networkProxyType", QNetworkProxy::ProxyType(QNetworkProxy::HttpProxy)).toInt();
+    return value("Network/networkProxyType", QNetworkProxy::ProxyType(QNetworkProxy::HttpProxy)).toInt();
 }
 
 void Settings::setNetworkProxyType(int type) {
     if (type != networkProxyType()) {
-        QSettings().setValue("Network/networkProxyType", type);
+        setValue("Network/networkProxyType", type);
         emit networkProxyChanged();
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "Settings::setNetworkProxyType" << type;
-#endif
 }
 
 QString Settings::networkProxyUsername() const {
-    return QSettings().value("Network/networkProxyUsername").toString();
+    return value("Network/networkProxyUsername").toString();
 }
 
 void Settings::setNetworkProxyUsername(const QString &username) {
     if (username != networkProxyUsername()) {
-        QSettings().setValue("Network/networkProxyUsername", username);
+        setValue("Network/networkProxyUsername", username);
         emit networkProxyChanged();
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "Settings::setNetworkProxyUsername" << username;
-#endif
 }
 
 bool Settings::safeSearchEnabled() const {
-    return QSettings().value("Search/safeSearchEnabled", false).toBool();
+    return value("Search/safeSearchEnabled", false).toBool();
 }
 
 void Settings::setSafeSearchEnabled(bool enabled) {
     if (enabled != safeSearchEnabled()) {
-        QSettings().setValue("Search/safeSearchEnabled", enabled);
+        setValue("Search/safeSearchEnabled", enabled);
         emit safeSearchEnabledChanged();
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "Settings::setSafeSearchEnabled" << enabled;
+}
+
+int Settings::screenOrientation() const {
+#ifdef Q_WS_MAEMO_5
+    return value("Appearance/screenOrientation", Qt::WA_Maemo5LandscapeOrientation).toInt();
+#else
+    return value("Appearance/screenOrientation", 0).toInt();
 #endif
 }
 
+void Settings::setScreenOrientation(int orientation) {
+    if (orientation != screenOrientation()) {
+        setValue("Appearance/screenOrientation", orientation);
+        emit screenOrientationChanged();
+    }
+}
+
 QStringList Settings::searchHistory() const {
-    return QSettings().value("Search/searchHistory").toStringList();
+    return value("Search/searchHistory").toStringList();
 }
 
 void Settings::setSearchHistory(const QStringList &searches) {
-    QSettings().setValue("Search/searchHistory", searches);
+    setValue("Search/searchHistory", searches);
     emit searchHistoryChanged();
 }
 
@@ -388,86 +370,75 @@ void Settings::addSearch(const QString &query) {
     searches.removeOne(query);
     searches.prepend(query);
     setSearchHistory(searches);
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "Settings::addSearch" << query;
-#endif
 }
 
 void Settings::removeSearch(const QString &query) {
     QStringList searches = searchHistory();
     searches.removeOne(query);
     setSearchHistory(searches);
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "Settings::removeSearch" << query;
-#endif
 }
 
 bool Settings::startTransfersAutomatically() const {
-    return QSettings().value("Transfers/startTransfersAutomatically", true).toBool();
+    return value("Transfers/startTransfersAutomatically", true).toBool();
 }
 
 void Settings::setStartTransfersAutomatically(bool enabled) {
     if (enabled != startTransfersAutomatically()) {
-        QSettings().setValue("Transfers/startTransfersAutomatically", enabled);
+        setValue("Transfers/startTransfersAutomatically", enabled);
         emit startTransfersAutomaticallyChanged();
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "Settings::setStartTransfersAutomatically" << enabled;
-#endif
 }
 
 bool Settings::subtitlesEnabled() const {
-    return QSettings().value("Content/subtitlesEnabled", false).toBool();
+    return value("Content/subtitlesEnabled", false).toBool();
 }
 
 void Settings::setSubtitlesEnabled(bool enabled) {
     if (enabled != subtitlesEnabled()) {
-        QSettings().setValue("Content/subtitlesEnabled", enabled);
+        setValue("Content/subtitlesEnabled", enabled);
         emit subtitlesEnabledChanged();
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "Settings::setSubtitlesEnabled" << enabled;
-#endif
 }
 
 QString Settings::subtitlesLanguage() const {
-    return QSettings().value("Content/subtitlesLanguage", "en").toString();
+    return value("Content/subtitlesLanguage", "en").toString();
 }
 
 void Settings::setSubtitlesLanguage(const QString &language) {
     if (language != subtitlesLanguage()) {
-        QSettings().setValue("Content/subtitlesLanguage", language);
+        setValue("Content/subtitlesLanguage", language);
         emit subtitlesLanguageChanged();
     }
+}
+
+QVariant Settings::value(const QString &key, const QVariant &defaultValue) const {
+    return QSettings().value(key, defaultValue);
+}
+
+void Settings::setValue(const QString &key, const QVariant &value) {
+    QSettings().setValue(key, value);
 #ifdef CUTETUBE_DEBUG
-    qDebug() << "Settings::setSubtitlesLanguage" << language;
+    qDebug() << "Settings::setValue" << key << value;
 #endif
 }
 
 QString Settings::videoPlayer() const {
-    return QSettings().value("Content/videoPlayer", "cutetube").toString().toLower();
+    return value("Content/videoPlayer", "cutetube").toString().toLower();
 }
 
 void Settings::setVideoPlayer(const QString &player) {
     if (player != videoPlayer()) {
-        QSettings().setValue("Content/videoPlayer", player.toLower());
+        setValue("Content/videoPlayer", player.toLower());
         emit videoPlayerChanged();
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "Settings::setVideoPlayer" << player;
-#endif
 }
 
 QString Settings::videoPlayerCommand() const {
-    return QSettings().value("Content/videoPlayerCommand").toString();
+    return value("Content/videoPlayerCommand").toString();
 }
 
 void Settings::setVideoPlayerCommand(const QString &command) {
     if (command != videoPlayerCommand()) {
-        QSettings().setValue("Content/videoPlayerCommand", command);
-        emit videoPlayerCommandChanged();
+        setValue("Content/videoPlayerCommand", command);
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "Settings::setVideoPlayerCommand" << command;
-#endif
 }

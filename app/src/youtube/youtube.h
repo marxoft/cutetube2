@@ -120,21 +120,21 @@ Q_SIGNALS:
     void clientSecretChanged();
     void scopesChanged();
     
-    void commentAdded(const YouTubeComment *comment);
+    void commentAdded(YouTubeComment *comment);
     
-    void playlistCreated(const YouTubePlaylist *playlist);
-    void playlistDeleted(const YouTubePlaylist *playlist);
+    void playlistCreated(YouTubePlaylist *playlist);
+    void playlistDeleted(YouTubePlaylist *playlist);
     
-    void userSubscribed(const YouTubeUser *user);
-    void userUnsubscribed(const YouTubeUser *user);
+    void userSubscribed(YouTubeUser *user);
+    void userUnsubscribed(YouTubeUser *user);
     
-    void videoAddedToPlaylist(const YouTubeVideo *video, const YouTubePlaylist *playlist);
-    void videoRemovedFromPlaylist(const YouTubeVideo *video, const YouTubePlaylist *playlist);
-    void videoDisliked(const YouTubeVideo *video);
-    void videoLiked(const YouTubeVideo *video);
-    void videoFavourited(const YouTubeVideo *video);
-    void videoUnfavourited(const YouTubeVideo *video);
-    void videoWatchLater(const YouTubeVideo *video);
+    void videoAddedToPlaylist(YouTubeVideo *video, YouTubePlaylist *playlist);
+    void videoRemovedFromPlaylist(YouTubeVideo *video, YouTubePlaylist *playlist);
+    void videoDisliked(YouTubeVideo *video);
+    void videoLiked(YouTubeVideo *video);
+    void videoFavourited(YouTubeVideo *video);
+    void videoUnfavourited(YouTubeVideo *video);
+    void videoWatchLater(YouTubeVideo *video);
 
 private:
     struct SubscriptionCache {

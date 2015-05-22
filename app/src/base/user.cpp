@@ -98,7 +98,7 @@ void User::setUsername(const QString &u) {
     }
 }
 
-void User::loadUser(const User *user) {
+void User::loadUser(User *user) {
     setDescription(user->description());
     setId(user->id());
     setLargeThumbnailUrl(user->largeThumbnailUrl());

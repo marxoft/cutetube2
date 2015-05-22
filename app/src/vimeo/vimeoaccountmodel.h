@@ -43,14 +43,14 @@ public:
     QHash<int, QByteArray> roleNames() const;
 #endif
     QVariant data(const QModelIndex &idx, int role = Qt::DisplayRole) const;
-    QVariant data(int row, const QByteArray &role) const;
+    Q_INVOKABLE QVariant data(int row, const QByteArray &role) const;
 
-public Q_SLOTS:
-    bool addAccount(const QString &userId, const QString &username, const QString &accessToken, const QString &scopes);
+    Q_INVOKABLE bool addAccount(const QString &userId, const QString &username, const QString &accessToken,
+                                const QString &scopes);
     
-    bool removeAccount(int row);
+    Q_INVOKABLE bool removeAccount(int row);
     
-    bool selectAccount(int row);
+    Q_INVOKABLE bool selectAccount(int row);
 
 Q_SIGNALS:
     void countChanged(int c);

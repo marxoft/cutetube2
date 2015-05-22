@@ -92,7 +92,9 @@ bool DailymotionAccountModel::addAccount(const QString &userId, const QString &u
     
     if (insertRecord(-1, record)) {
         Dailymotion::instance()->setUserId(userId);
-        emit countChanged(rowCount());
+        const int count = rowCount();
+        emit dataChanged(index(0, 0), index(count - 1, columnCount() - 1));
+        emit countChanged(count);
         return true;
     }
     
@@ -124,7 +126,7 @@ bool DailymotionAccountModel::selectAccount(int row) {
     
     if (!userId.isEmpty()) {
         Dailymotion::instance()->setUserId(userId);
-        emit dataChanged(index(row, 0), index(row, columnCount() - 1));
+        emit dataChanged(index(0, 0), index(rowCount() - 1, columnCount() - 1));
         return true;
     }
     

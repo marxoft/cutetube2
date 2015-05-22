@@ -38,7 +38,7 @@ public:
     
     ResourcesRequest::Status status() const;
     
-    Q_INVOKABLE void list(const QString &url);
+    Q_INVOKABLE void list(const QString &id);
         
 public Q_SLOTS:
     void cancel();
@@ -54,7 +54,7 @@ Q_SIGNALS:
 private:
     ResourcesRequest *m_request;
     
-    QString m_url;
+    QString m_id;
 };
     
 #endif // PLUGINSTREAMMODEL_H

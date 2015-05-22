@@ -29,7 +29,7 @@ DailymotionVideoModel::DailymotionVideoModel(QObject *parent) :
     m_roles[DateRole] = "date";
     m_roles[DescriptionRole] = "description";
     m_roles[DurationRole] = "duration";
-    m_roles[FavouriteRole] = "favourite";
+    m_roles[FavouriteRole] = "favourited";
     m_roles[IdRole] = "id";
     m_roles[LargeThumbnailUrlRole] = "largeThumbnailUrl";
     m_roles[ThumbnailUrlRole] = "thumbnailUrl";
@@ -149,23 +149,25 @@ void DailymotionVideoModel::list(const QString &resourcePath, const QVariantMap 
     disconnect(Dailymotion::instance(), 0, this, 0);
         
     if (resourcePath == "/me/favorites") {
-        connect(Dailymotion::instance(), SIGNAL(videoFavourited(const DailymotionVideo*)),
-                this, SLOT(onVideoFavourited(const DailymotionVideo*)));
-        connect(Dailymotion::instance(), SIGNAL(videoUnfavourited(const DailymotionVideo*)),
-                this, SLOT(onVideoUnfavourited(const DailymotionVideo*)));
+        connect(Dailymotion::instance(), SIGNAL(videoFavourited(DailymotionVideo*)),
+                this, SLOT(onVideoFavourited(DailymotionVideo*)));
+        connect(Dailymotion::instance(), SIGNAL(videoUnfavourited(DailymotionVideo*)),
+                this, SLOT(onVideoUnfavourited(DailymotionVideo*)));
     }
     else if (resourcePath.section('/', -3, -3) == "playlist") {
-        connect(Dailymotion::instance(), SIGNAL(videoAddedToPlaylist(const DailymotionVideo*, const DailymotionPlaylist*)),
-                this, SLOT(onVideoAddedToPlaylist(const DailymotionVideo*, const DailymotionPlaylist*)));
-        connect(Dailymotion::instance(), SIGNAL(videoRemovedFromPlaylist(const DailymotionVideo*, const DailymotionPlaylist*)),
-                this, SLOT(onVideoRemovedFromPlaylist(const DailymotionVideo*, const DailymotionPlaylist*)));
+        connect(Dailymotion::instance(), SIGNAL(videoAddedToPlaylist(DailymotionVideo*, DailymotionPlaylist*)),
+                this, SLOT(onVideoAddedToPlaylist(DailymotionVideo*, DailymotionPlaylist*)));
+        connect(Dailymotion::instance(), SIGNAL(videoRemovedFromPlaylist(DailymotionVideo*, DailymotionPlaylist*)),
+                this, SLOT(onVideoRemovedFromPlaylist(DailymotionVideo*, DailymotionPlaylist*)));
     }
 }
 
 void DailymotionVideoModel::clear() {
     if (!m_items.isEmpty()) {
         beginResetModel();
+        qDeleteAll(m_items);
         m_items.clear();
+        m_hasMore = false;
         endResetModel();
         emit countChanged(rowCount());
     }
@@ -228,7 +230,7 @@ void DailymotionVideoModel::onRequestFinished() {
     emit statusChanged(status());
 }
 
-void DailymotionVideoModel::onVideoAddedToPlaylist(const DailymotionVideo *video, const DailymotionPlaylist *playlist) {
+void DailymotionVideoModel::onVideoAddedToPlaylist(DailymotionVideo *video, DailymotionPlaylist *playlist) {
     if (m_resourcePath.section('/', -2, -2) == playlist->id()) {
         insert(0, new DailymotionVideo(video, this));
     }
@@ -237,7 +239,7 @@ void DailymotionVideoModel::onVideoAddedToPlaylist(const DailymotionVideo *video
 #endif
 }
 
-void DailymotionVideoModel::onVideoRemovedFromPlaylist(const DailymotionVideo *video, const DailymotionPlaylist *playlist) {
+void DailymotionVideoModel::onVideoRemovedFromPlaylist(DailymotionVideo *video, DailymotionPlaylist *playlist) {
     if (m_resourcePath.section('/', -2, -2) == playlist->id()) {
         QModelIndexList list = match(index(0), IdRole, video->id(), 1, Qt::MatchExactly);
         
@@ -250,14 +252,14 @@ void DailymotionVideoModel::onVideoRemovedFromPlaylist(const DailymotionVideo *v
 #endif
 }
 
-void DailymotionVideoModel::onVideoFavourited(const DailymotionVideo *video) {
+void DailymotionVideoModel::onVideoFavourited(DailymotionVideo *video) {
     insert(0, new DailymotionVideo(video, this));
 #ifdef CUTETUBE_DEBUG
     qDebug() << "DailymotionVideoModel::onVideoFavourited" << video->id();
 #endif
 }
 
-void DailymotionVideoModel::onVideoUnfavourited(const DailymotionVideo *video) {
+void DailymotionVideoModel::onVideoUnfavourited(DailymotionVideo *video) {
     QModelIndexList list = match(index(0), IdRole, video->id(), 1, Qt::MatchExactly);
     
     if (!list.isEmpty()) {

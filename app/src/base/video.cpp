@@ -186,7 +186,7 @@ void Video::viewed() {
     setViewCount(viewCount() + 1);
 }
 
-void Video::loadVideo(const Video *video) {
+void Video::loadVideo(Video *video) {
     setDate(video->date());
     setDescription(video->description());
     setDuration(video->duration());

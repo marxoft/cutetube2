@@ -60,7 +60,7 @@ public:
     
     Q_INVOKABLE void loadUser(const QString &id);
     Q_INVOKABLE void loadUser(const QVariantMap &user);
-    Q_INVOKABLE void loadUser(const YouTubeUser *user);
+    Q_INVOKABLE void loadUser(YouTubeUser *user);
 
 public Q_SLOTS:
     void checkIfSubscribed();
@@ -89,7 +89,7 @@ private Q_SLOTS:
     void onSubscribeCheckRequestFinished();
     void onSubscribeRequestFinished();
     void onUnsubscribeRequestFinished();
-    void onUserUpdated(const YouTubeUser *user);
+    void onUserUpdated(YouTubeUser *user);
     
 Q_SIGNALS:
     void bannerUrlChanged();

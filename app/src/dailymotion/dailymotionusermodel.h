@@ -80,8 +80,8 @@ private:
 private Q_SLOTS:
     void onRequestFinished();
     
-    void onUserSubscribed(const DailymotionUser *user);
-    void onUserUnsubscribed(const DailymotionUser *user);
+    void onUserSubscribed(DailymotionUser *user);
+    void onUserUnsubscribed(DailymotionUser *user);
     
 Q_SIGNALS:
     void countChanged(int c);

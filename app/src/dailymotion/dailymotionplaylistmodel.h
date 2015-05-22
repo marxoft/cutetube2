@@ -78,8 +78,8 @@ private:
     
 private Q_SLOTS:
     void onRequestFinished();
-    void onPlaylistCreated(const DailymotionPlaylist *playlist);
-    void onPlaylistDeleted(const DailymotionPlaylist *playlist);
+    void onPlaylistCreated(DailymotionPlaylist *playlist);
+    void onPlaylistDeleted(DailymotionPlaylist *playlist);
     
 Q_SIGNALS:
     void countChanged(int c);

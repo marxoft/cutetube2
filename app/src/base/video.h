@@ -68,7 +68,7 @@ public:
         
     qint64 viewCount() const;
     
-    Q_INVOKABLE virtual void loadVideo(const Video *video);
+    Q_INVOKABLE virtual void loadVideo(Video *video);
     
 public Q_SLOTS:
     virtual void viewed();

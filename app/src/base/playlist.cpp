@@ -146,7 +146,7 @@ void Playlist::setVideoCount(int c) {
     }
 }
 
-void Playlist::loadPlaylist(const Playlist *playlist) {
+void Playlist::loadPlaylist(Playlist *playlist) {
     setDate(playlist->date());
     setDescription(playlist->description());
     setId(playlist->id());

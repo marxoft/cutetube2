@@ -78,6 +78,10 @@ void PluginPlaylist::loadPlaylist(const QString &service, const QVariantMap &pla
     setVideoCount(playlist.value("videoCount").toInt());    
 }
 
+void PluginPlaylist::loadPlaylist(PluginPlaylist *playlist) {
+    Playlist::loadPlaylist(playlist);
+}
+
 void PluginPlaylist::onRequestFinished() {
     if (m_request->status() == ResourcesRequest::Ready) {
         loadPlaylist(m_request->service(), m_request->result().toMap());

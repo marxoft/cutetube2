@@ -142,17 +142,19 @@ void VimeoUserModel::list(const QString &resourcePath, const QVariantMap &filter
     disconnect(Vimeo::instance(), 0, this, 0);
     
     if (resourcePath == "/me/following") {
-        connect(Vimeo::instance(), SIGNAL(userSubscribed(const VimeoUser*)),
-                this, SLOT(onUserSubscribed(const VimeoUser*)));
-        connect(Vimeo::instance(), SIGNAL(userUnsubscribed(const VimeoUser*)),
-                this, SLOT(onUserUnsubscribed(const VimeoUser*)));
+        connect(Vimeo::instance(), SIGNAL(userSubscribed(VimeoUser*)),
+                this, SLOT(onUserSubscribed(VimeoUser*)));
+        connect(Vimeo::instance(), SIGNAL(userUnsubscribed(VimeoUser*)),
+                this, SLOT(onUserUnsubscribed(VimeoUser*)));
     }
 }
 
 void VimeoUserModel::clear() {
     if (!m_items.isEmpty()) {
         beginResetModel();
+        qDeleteAll(m_items);
         m_items.clear();
+        m_hasMore = false;
         endResetModel();
         emit countChanged(rowCount());
     }
@@ -215,14 +217,14 @@ void VimeoUserModel::onRequestFinished() {
     emit statusChanged(status());
 }
 
-void VimeoUserModel::onUserSubscribed(const VimeoUser *user) {
+void VimeoUserModel::onUserSubscribed(VimeoUser *user) {
     insert(0, new VimeoUser(user, this));
 #ifdef CUTETUBE_DEBUG
     qDebug() << "VimeoUserModel::onUserSubscribed" << user->id();
 #endif
 }
 
-void VimeoUserModel::onUserUnsubscribed(const VimeoUser *user) {
+void VimeoUserModel::onUserUnsubscribed(VimeoUser *user) {
     QModelIndexList list = match(index(0), IdRole, user->id(), 1, Qt::MatchExactly);
     
     if (!list.isEmpty()) {

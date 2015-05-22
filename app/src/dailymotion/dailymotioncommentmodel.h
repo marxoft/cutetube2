@@ -77,7 +77,7 @@ private:
 private Q_SLOTS:
     void onRequestFinished();
     
-    void onCommentAdded(const DailymotionComment *comment);
+    void onCommentAdded(DailymotionComment *comment);
     
 Q_SIGNALS:
     void countChanged(int c);

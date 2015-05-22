@@ -122,7 +122,7 @@ void Comment::setVideoId(const QString &i) {
     }
 }
 
-void Comment::loadComment(const Comment *comment) {
+void Comment::loadComment(Comment *comment) {
     setBody(comment->body());
     setDate(comment->date());
     setId(comment->id());

@@ -55,8 +55,8 @@ public:
     Q_INVOKABLE QVariantMap itemData(int row) const;
     
     Q_INVOKABLE Video* get(int row) const;
-    Q_INVOKABLE void append(const Video *video);
-    Q_INVOKABLE void insert(int row, const Video *video);
+    Q_INVOKABLE void append(Video *video);
+    Q_INVOKABLE void insert(int row, Video *video);
     Q_INVOKABLE void remove(int row);
 
 public Q_SLOTS:

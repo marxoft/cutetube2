@@ -33,14 +33,14 @@ YouTubeVideo::YouTubeVideo(QObject *parent) :
     m_likeCount(0)
 {
     setService(Resources::YOUTUBE);
-    connect(YouTube::instance(), SIGNAL(videoDisliked(const YouTubeVideo*)),
-            this, SLOT(onVideoUpdated(const YouTubeVideo*)));
-    connect(YouTube::instance(), SIGNAL(videoLiked(const YouTubeVideo*)),
-            this, SLOT(onVideoUpdated(const YouTubeVideo*)));
-    connect(YouTube::instance(), SIGNAL(videoFavourited(const YouTubeVideo*)),
-            this, SLOT(onVideoUpdated(const YouTubeVideo*)));
-    connect(YouTube::instance(), SIGNAL(videoUnfavourited(const YouTubeVideo*)),
-            this, SLOT(onVideoUpdated(const YouTubeVideo*)));
+    connect(YouTube::instance(), SIGNAL(videoDisliked(YouTubeVideo*)),
+            this, SLOT(onVideoUpdated(YouTubeVideo*)));
+    connect(YouTube::instance(), SIGNAL(videoLiked(YouTubeVideo*)),
+            this, SLOT(onVideoUpdated(YouTubeVideo*)));
+    connect(YouTube::instance(), SIGNAL(videoFavourited(YouTubeVideo*)),
+            this, SLOT(onVideoUpdated(YouTubeVideo*)));
+    connect(YouTube::instance(), SIGNAL(videoUnfavourited(YouTubeVideo*)),
+            this, SLOT(onVideoUpdated(YouTubeVideo*)));
 }
 
 YouTubeVideo::YouTubeVideo(const QString &id, QObject *parent) :
@@ -55,14 +55,14 @@ YouTubeVideo::YouTubeVideo(const QString &id, QObject *parent) :
 {
     setService(Resources::YOUTUBE);
     loadVideo(id);
-    connect(YouTube::instance(), SIGNAL(videoDisliked(const YouTubeVideo*)),
-            this, SLOT(onVideoUpdated(const YouTubeVideo*)));
-    connect(YouTube::instance(), SIGNAL(videoLiked(const YouTubeVideo*)),
-            this, SLOT(onVideoUpdated(const YouTubeVideo*)));
-    connect(YouTube::instance(), SIGNAL(videoFavourited(const YouTubeVideo*)),
-            this, SLOT(onVideoUpdated(const YouTubeVideo*)));
-    connect(YouTube::instance(), SIGNAL(videoUnfavourited(const YouTubeVideo*)),
-            this, SLOT(onVideoUpdated(const YouTubeVideo*)));
+    connect(YouTube::instance(), SIGNAL(videoDisliked(YouTubeVideo*)),
+            this, SLOT(onVideoUpdated(YouTubeVideo*)));
+    connect(YouTube::instance(), SIGNAL(videoLiked(YouTubeVideo*)),
+            this, SLOT(onVideoUpdated(YouTubeVideo*)));
+    connect(YouTube::instance(), SIGNAL(videoFavourited(YouTubeVideo*)),
+            this, SLOT(onVideoUpdated(YouTubeVideo*)));
+    connect(YouTube::instance(), SIGNAL(videoUnfavourited(YouTubeVideo*)),
+            this, SLOT(onVideoUpdated(YouTubeVideo*)));
 }
 
 YouTubeVideo::YouTubeVideo(const QVariantMap &video, QObject *parent) :
@@ -77,14 +77,14 @@ YouTubeVideo::YouTubeVideo(const QVariantMap &video, QObject *parent) :
 {
     setService(Resources::YOUTUBE);
     loadVideo(video);
-    connect(YouTube::instance(), SIGNAL(videoDisliked(const YouTubeVideo*)),
-            this, SLOT(onVideoUpdated(const YouTubeVideo*)));
-    connect(YouTube::instance(), SIGNAL(videoLiked(const YouTubeVideo*)),
-            this, SLOT(onVideoUpdated(const YouTubeVideo*)));
-    connect(YouTube::instance(), SIGNAL(videoFavourited(const YouTubeVideo*)),
-            this, SLOT(onVideoUpdated(const YouTubeVideo*)));
-    connect(YouTube::instance(), SIGNAL(videoUnfavourited(const YouTubeVideo*)),
-            this, SLOT(onVideoUpdated(const YouTubeVideo*)));
+    connect(YouTube::instance(), SIGNAL(videoDisliked(YouTubeVideo*)),
+            this, SLOT(onVideoUpdated(YouTubeVideo*)));
+    connect(YouTube::instance(), SIGNAL(videoLiked(YouTubeVideo*)),
+            this, SLOT(onVideoUpdated(YouTubeVideo*)));
+    connect(YouTube::instance(), SIGNAL(videoFavourited(YouTubeVideo*)),
+            this, SLOT(onVideoUpdated(YouTubeVideo*)));
+    connect(YouTube::instance(), SIGNAL(videoUnfavourited(YouTubeVideo*)),
+            this, SLOT(onVideoUpdated(YouTubeVideo*)));
 }
 
 YouTubeVideo::YouTubeVideo(const YouTubeVideo *video, QObject *parent) :
@@ -99,14 +99,14 @@ YouTubeVideo::YouTubeVideo(const YouTubeVideo *video, QObject *parent) :
     m_likeCount(video->likeCount()),
     m_playlistItemId(video->playlistItemId())
 {
-    connect(YouTube::instance(), SIGNAL(videoDisliked(const YouTubeVideo*)),
-            this, SLOT(onVideoUpdated(const YouTubeVideo*)));
-    connect(YouTube::instance(), SIGNAL(videoLiked(const YouTubeVideo*)),
-            this, SLOT(onVideoUpdated(const YouTubeVideo*)));
-    connect(YouTube::instance(), SIGNAL(videoFavourited(const YouTubeVideo*)),
-            this, SLOT(onVideoUpdated(const YouTubeVideo*)));
-    connect(YouTube::instance(), SIGNAL(videoUnfavourited(const YouTubeVideo*)),
-            this, SLOT(onVideoUpdated(const YouTubeVideo*)));
+    connect(YouTube::instance(), SIGNAL(videoDisliked(YouTubeVideo*)),
+            this, SLOT(onVideoUpdated(YouTubeVideo*)));
+    connect(YouTube::instance(), SIGNAL(videoLiked(YouTubeVideo*)),
+            this, SLOT(onVideoUpdated(YouTubeVideo*)));
+    connect(YouTube::instance(), SIGNAL(videoFavourited(YouTubeVideo*)),
+            this, SLOT(onVideoUpdated(YouTubeVideo*)));
+    connect(YouTube::instance(), SIGNAL(videoUnfavourited(YouTubeVideo*)),
+            this, SLOT(onVideoUpdated(YouTubeVideo*)));
 }
 
 bool YouTubeVideo::isDisliked() const {
@@ -264,7 +264,7 @@ void YouTubeVideo::loadVideo(const QVariantMap &video) {
     setUrl("https://www.youtube.com/watch?v=" + id());
 }
 
-void YouTubeVideo::loadVideo(const YouTubeVideo *video) {
+void YouTubeVideo::loadVideo(YouTubeVideo *video) {
     Video::loadVideo(video);
     setDisliked(video->isDisliked());
     setDislikeCount(video->dislikeCount());
@@ -475,7 +475,7 @@ void YouTubeVideo::onWatchLaterRequestFinished() {
     emit statusChanged(status());
 }
 
-void YouTubeVideo::onVideoUpdated(const YouTubeVideo *video) {
+void YouTubeVideo::onVideoUpdated(YouTubeVideo *video) {
     if ((video->id() == id()) && (video != this)) {
         loadVideo(video);
     }

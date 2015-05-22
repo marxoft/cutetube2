@@ -29,10 +29,10 @@ YouTubeUser::YouTubeUser(QObject *parent) :
     m_viewCount(0)
 {
     setService(Resources::YOUTUBE);
-    connect(YouTube::instance(), SIGNAL(userSubscribed(const YouTubeUser*)),
-            this, SLOT(onUserUpdated(const YouTubeUser*)));
-    connect(YouTube::instance(), SIGNAL(userUnsubscribed(const YouTubeUser*)),
-            this, SLOT(onUserUpdated(const YouTubeUser*)));
+    connect(YouTube::instance(), SIGNAL(userSubscribed(YouTubeUser*)),
+            this, SLOT(onUserUpdated(YouTubeUser*)));
+    connect(YouTube::instance(), SIGNAL(userUnsubscribed(YouTubeUser*)),
+            this, SLOT(onUserUpdated(YouTubeUser*)));
 }
 
 YouTubeUser::YouTubeUser(const QString &id, QObject *parent) :
@@ -44,10 +44,10 @@ YouTubeUser::YouTubeUser(const QString &id, QObject *parent) :
 {
     setService(Resources::YOUTUBE);
     loadUser(id);
-    connect(YouTube::instance(), SIGNAL(userSubscribed(const YouTubeUser*)),
-            this, SLOT(onUserUpdated(const YouTubeUser*)));
-    connect(YouTube::instance(), SIGNAL(userUnsubscribed(const YouTubeUser*)),
-            this, SLOT(onUserUpdated(const YouTubeUser*)));
+    connect(YouTube::instance(), SIGNAL(userSubscribed(YouTubeUser*)),
+            this, SLOT(onUserUpdated(YouTubeUser*)));
+    connect(YouTube::instance(), SIGNAL(userUnsubscribed(YouTubeUser*)),
+            this, SLOT(onUserUpdated(YouTubeUser*)));
 }
 
 YouTubeUser::YouTubeUser(const QVariantMap &user, QObject *parent) :
@@ -59,10 +59,10 @@ YouTubeUser::YouTubeUser(const QVariantMap &user, QObject *parent) :
 {
     setService(Resources::YOUTUBE);
     loadUser(user);
-    connect(YouTube::instance(), SIGNAL(userSubscribed(const YouTubeUser*)),
-            this, SLOT(onUserUpdated(const YouTubeUser*)));
-    connect(YouTube::instance(), SIGNAL(userUnsubscribed(const YouTubeUser*)),
-            this, SLOT(onUserUpdated(const YouTubeUser*)));
+    connect(YouTube::instance(), SIGNAL(userSubscribed(YouTubeUser*)),
+            this, SLOT(onUserUpdated(YouTubeUser*)));
+    connect(YouTube::instance(), SIGNAL(userUnsubscribed(YouTubeUser*)),
+            this, SLOT(onUserUpdated(YouTubeUser*)));
 }
 
 YouTubeUser::YouTubeUser(const YouTubeUser *user, QObject *parent) :
@@ -76,10 +76,10 @@ YouTubeUser::YouTubeUser(const YouTubeUser *user, QObject *parent) :
     m_subscriberCount(user->subscriberCount()),
     m_viewCount(user->viewCount())
 {
-    connect(YouTube::instance(), SIGNAL(userSubscribed(const YouTubeUser*)),
-            this, SLOT(onUserUpdated(const YouTubeUser*)));
-    connect(YouTube::instance(), SIGNAL(userUnsubscribed(const YouTubeUser*)),
-            this, SLOT(onUserUpdated(const YouTubeUser*)));
+    connect(YouTube::instance(), SIGNAL(userSubscribed(YouTubeUser*)),
+            this, SLOT(onUserUpdated(YouTubeUser*)));
+    connect(YouTube::instance(), SIGNAL(userUnsubscribed(YouTubeUser*)),
+            this, SLOT(onUserUpdated(YouTubeUser*)));
 }
 
 QUrl YouTubeUser::bannerUrl() const {
@@ -207,7 +207,7 @@ void YouTubeUser::loadUser(const QVariantMap &user) {
     setViewCount(statistics.value("viewCount").toLongLong());
 }
 
-void YouTubeUser::loadUser(const YouTubeUser *user) {
+void YouTubeUser::loadUser(YouTubeUser *user) {
     User::loadUser(user);
     setBannerUrl(user->bannerUrl());
     setLargeBannerUrl(user->largeBannerUrl());
@@ -370,7 +370,7 @@ void YouTubeUser::onUnsubscribeRequestFinished() {
     emit statusChanged(status());
 }
 
-void YouTubeUser::onUserUpdated(const YouTubeUser *user) {
+void YouTubeUser::onUserUpdated(YouTubeUser *user) {
     if ((user->id() == id()) && (user != this)) {
         loadUser(user);
     }

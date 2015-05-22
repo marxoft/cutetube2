@@ -103,19 +103,19 @@ Q_SIGNALS:
     void redirectUriChanged();
     void scopesChanged();
     
-    void commentAdded(const VimeoComment *comment);
+    void commentAdded(VimeoComment *comment);
     
-    void playlistCreated(const VimeoPlaylist *playlist);
-    void playlistDeleted(const VimeoPlaylist *playlist);
+    void playlistCreated(VimeoPlaylist *playlist);
+    void playlistDeleted(VimeoPlaylist *playlist);
     
-    void userSubscribed(const VimeoUser *user);
-    void userUnsubscribed(const VimeoUser *user);
+    void userSubscribed(VimeoUser *user);
+    void userUnsubscribed(VimeoUser *user);
     
-    void videoAddedToPlaylist(const VimeoVideo *video, const VimeoPlaylist *playlist);
-    void videoRemovedFromPlaylist(const VimeoVideo *video, const VimeoPlaylist *playlist);
-    void videoFavourited(const VimeoVideo *video);
-    void videoUnfavourited(const VimeoVideo *video);
-    void videoWatchLater(const VimeoVideo *video);
+    void videoAddedToPlaylist(VimeoVideo *video, VimeoPlaylist *playlist);
+    void videoRemovedFromPlaylist(VimeoVideo *video, VimeoPlaylist *playlist);
+    void videoFavourited(VimeoVideo *video);
+    void videoUnfavourited(VimeoVideo *video);
+    void videoWatchLater(VimeoVideo *video);
 
 private:
     struct SubscriptionCache {

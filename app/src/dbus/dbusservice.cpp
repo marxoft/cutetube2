@@ -17,6 +17,10 @@
 #include "dbusservice.h"
 #include "resources.h"
 #include <QDBusConnection>
+#include <QStringList>
+#ifdef CUTETUBE_DEBUG
+#include <QDebug>
+#endif
 
 DBusService::DBusService(QObject *parent) :
     QObject(parent)
@@ -26,13 +30,28 @@ DBusService::DBusService(QObject *parent) :
     connection.registerObject("/", this, QDBusConnection::ExportAllSlots);
 }
 
+QVariantMap DBusService::requestedResource() const {
+    return m_resource;
+}
+
 bool DBusService::showResource(const QString &url) {
     QVariantMap resource = Resources::getResourceFromUrl(url);
-    
+#ifdef CUTETUBE_DEBUG
+    qDebug() << "DBusService::showResource" << url << resource;
+#endif
     if (resource.isEmpty()) {
         return false;
     }
-    
+
+    m_resource = resource;
     emit resourceRequested(resource);
     return true;
+}
+
+bool DBusService::showResource(const QStringList &url) {
+    if (!url.isEmpty()) {
+        return showResource(url.first());
+    }
+
+    return false;
 }

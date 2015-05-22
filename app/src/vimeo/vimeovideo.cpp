@@ -29,10 +29,10 @@ VimeoVideo::VimeoVideo(QObject *parent) :
     m_favourite(false)
 {
     setService(Resources::VIMEO);
-    connect(Vimeo::instance(), SIGNAL(videoFavourited(const VimeoVideo*)),
-            this, SLOT(onVideoUpdated(const VimeoVideo*)));
-    connect(Vimeo::instance(), SIGNAL(videoUnfavourited(const VimeoVideo*)),
-            this, SLOT(onVideoUpdated(const VimeoVideo*)));
+    connect(Vimeo::instance(), SIGNAL(videoFavourited(VimeoVideo*)),
+            this, SLOT(onVideoUpdated(VimeoVideo*)));
+    connect(Vimeo::instance(), SIGNAL(videoUnfavourited(VimeoVideo*)),
+            this, SLOT(onVideoUpdated(VimeoVideo*)));
 }
 
 VimeoVideo::VimeoVideo(const QString &id, QObject *parent) :
@@ -42,10 +42,10 @@ VimeoVideo::VimeoVideo(const QString &id, QObject *parent) :
 {
     setService(Resources::VIMEO);
     loadVideo(id);
-    connect(Vimeo::instance(), SIGNAL(videoFavourited(const VimeoVideo*)),
-            this, SLOT(onVideoUpdated(const VimeoVideo*)));
-    connect(Vimeo::instance(), SIGNAL(videoUnfavourited(const VimeoVideo*)),
-            this, SLOT(onVideoUpdated(const VimeoVideo*)));
+    connect(Vimeo::instance(), SIGNAL(videoFavourited(VimeoVideo*)),
+            this, SLOT(onVideoUpdated(VimeoVideo*)));
+    connect(Vimeo::instance(), SIGNAL(videoUnfavourited(VimeoVideo*)),
+            this, SLOT(onVideoUpdated(VimeoVideo*)));
 }
 
 VimeoVideo::VimeoVideo(const QVariantMap &video, QObject *parent) :
@@ -55,10 +55,10 @@ VimeoVideo::VimeoVideo(const QVariantMap &video, QObject *parent) :
 {
     setService(Resources::VIMEO);
     loadVideo(video);
-    connect(Vimeo::instance(), SIGNAL(videoFavourited(const VimeoVideo*)),
-            this, SLOT(onVideoUpdated(const VimeoVideo*)));
-    connect(Vimeo::instance(), SIGNAL(videoUnfavourited(const VimeoVideo*)),
-            this, SLOT(onVideoUpdated(const VimeoVideo*)));
+    connect(Vimeo::instance(), SIGNAL(videoFavourited(VimeoVideo*)),
+            this, SLOT(onVideoUpdated(VimeoVideo*)));
+    connect(Vimeo::instance(), SIGNAL(videoUnfavourited(VimeoVideo*)),
+            this, SLOT(onVideoUpdated(VimeoVideo*)));
 }
 
 VimeoVideo::VimeoVideo(const VimeoVideo *video, QObject *parent) :
@@ -66,10 +66,10 @@ VimeoVideo::VimeoVideo(const VimeoVideo *video, QObject *parent) :
     m_request(0),
     m_favourite(video->isFavourite())
 {
-    connect(Vimeo::instance(), SIGNAL(videoFavourited(const VimeoVideo*)),
-            this, SLOT(onVideoUpdated(const VimeoVideo*)));
-    connect(Vimeo::instance(), SIGNAL(videoUnfavourited(const VimeoVideo*)),
-            this, SLOT(onVideoUpdated(const VimeoVideo*)));
+    connect(Vimeo::instance(), SIGNAL(videoFavourited(VimeoVideo*)),
+            this, SLOT(onVideoUpdated(VimeoVideo*)));
+    connect(Vimeo::instance(), SIGNAL(videoUnfavourited(VimeoVideo*)),
+            this, SLOT(onVideoUpdated(VimeoVideo*)));
 }
 
 QString VimeoVideo::errorString() const {
@@ -115,6 +115,7 @@ void VimeoVideo::loadVideo(const QString &id) {
 
 void VimeoVideo::loadVideo(const QVariantMap &video) {
     QVariantMap user = video.value("user").toMap();
+    QString thumbnailId = video.value("pictures").toMap().value("uri").toString().section('/', -1);
     
     setDate(QDateTime::fromString(video.value("created_time").toString(), Qt::ISODate).toString("dd MMM yyyy"));
     setDescription(video.value("description").toString());
@@ -122,16 +123,16 @@ void VimeoVideo::loadVideo(const QVariantMap &video) {
     setFavouriteCount(video.value("metadata").toMap().value("connections").toMap().value("likes").toMap()
                       .value("count").toLongLong());
     setId(video.value("uri").toString().section('/', -1));
-    setLargeThumbnailUrl(QString("https://i.vimeocdn.com/video/%1_640x360.jpg").arg(id()));
+    setLargeThumbnailUrl(QString("https://i.vimeocdn.com/video/%1_640x360.jpg").arg(thumbnailId));
     setUrl("https://vimeo.com/" + id());
     setUserId(user.value("uri").toString().section('/', -1));
     setUsername(user.value("name").toString());
-    setThumbnailUrl(QString("https://i.vimeocdn.com/video/%1_100x75.jpg").arg(id()));
+    setThumbnailUrl(QString("https://i.vimeocdn.com/video/%1_100x75.jpg").arg(thumbnailId));
     setTitle(video.value("name").toString());
     setViewCount(video.value("stats").toMap().value("plays").toLongLong());
 }
 
-void VimeoVideo::loadVideo(const VimeoVideo *video) {
+void VimeoVideo::loadVideo(VimeoVideo *video) {
     Video::loadVideo(video);
     setFavourite(video->isFavourite());
 }
@@ -238,7 +239,7 @@ void VimeoVideo::onWatchLaterRequestFinished() {
     emit statusChanged(status());
 }
 
-void VimeoVideo::onVideoUpdated(const VimeoVideo *video) {
+void VimeoVideo::onVideoUpdated(VimeoVideo *video) {
     if ((video->id() == id()) && (video != this)) {
         loadVideo(video);
     }

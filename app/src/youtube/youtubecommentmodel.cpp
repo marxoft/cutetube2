@@ -44,8 +44,8 @@ YouTubeCommentModel::YouTubeCommentModel(QObject *parent) :
     connect(m_request, SIGNAL(accessTokenChanged(QString)), YouTube::instance(), SLOT(setAccessToken(QString)));
     connect(m_request, SIGNAL(refreshTokenChanged(QString)), YouTube::instance(), SLOT(setRefreshToken(QString)));
     connect(m_request, SIGNAL(finished()), this, SLOT(onRequestFinished()));
-    connect(YouTube::instance(), SIGNAL(commentAdded(const YouTubeComment*)),
-            this, SLOT(onCommentAdded(const YouTubeComment*)));
+    connect(YouTube::instance(), SIGNAL(commentAdded(YouTubeComment*)),
+            this, SLOT(onCommentAdded(YouTubeComment*)));
 }
 
 QString YouTubeCommentModel::errorString() const {
@@ -152,7 +152,9 @@ void YouTubeCommentModel::list(const QString &resourcePath, const QStringList &p
 void YouTubeCommentModel::clear() {
     if (!m_items.isEmpty()) {
         beginResetModel();
+        qDeleteAll(m_items);
         m_items.clear();
+        m_nextPageToken = QString();
         endResetModel();
         emit countChanged(rowCount());
     }
@@ -228,7 +230,7 @@ void YouTubeCommentModel::onRequestFinished() {
     emit statusChanged(status());
 }
 
-void YouTubeCommentModel::onCommentAdded(const YouTubeComment *comment) {
+void YouTubeCommentModel::onCommentAdded(YouTubeComment *comment) {
     if (m_filters.value("videoId") == comment->videoId()) {
         if (comment->parentId().isEmpty()) {
             insert(0, new YouTubeComment(comment, this));

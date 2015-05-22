@@ -118,18 +118,18 @@ Q_SIGNALS:
     void redirectUriChanged();
     void scopesChanged();
 
-    void commentAdded(const DailymotionComment *comment);
+    void commentAdded(DailymotionComment *comment);
     
-    void playlistCreated(const DailymotionPlaylist *playlist);
-    void playlistDeleted(const DailymotionPlaylist *playlist);
+    void playlistCreated(DailymotionPlaylist *playlist);
+    void playlistDeleted(DailymotionPlaylist *playlist);
     
-    void userSubscribed(const DailymotionUser *user);
-    void userUnsubscribed(const DailymotionUser *user);
+    void userSubscribed(DailymotionUser *user);
+    void userUnsubscribed(DailymotionUser *user);
     
-    void videoAddedToPlaylist(const DailymotionVideo *video, const DailymotionPlaylist *playlist);
-    void videoRemovedFromPlaylist(const DailymotionVideo *video, const DailymotionPlaylist *playlist);
-    void videoFavourited(const DailymotionVideo *video);
-    void videoUnfavourited(const DailymotionVideo *video);
+    void videoAddedToPlaylist(DailymotionVideo *video, DailymotionPlaylist *playlist);
+    void videoRemovedFromPlaylist(DailymotionVideo *video, DailymotionPlaylist *playlist);
+    void videoFavourited(DailymotionVideo *video);
+    void videoUnfavourited(DailymotionVideo *video);
 
 private:
     struct SubscriptionCache {

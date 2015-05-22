@@ -20,48 +20,42 @@
 
 SearchHistoryModel::SearchHistoryModel(QObject *parent) :
     QSortFilterProxyModel(parent),
-    m_model(new QStringListModel(Settings::instance()->searchHistory(), this))
+    m_model(new QStringListModel(Settings::instance()->searchHistory(), this)),
+    m_alignment(Qt::AlignCenter)
 {
-    setFilterCaseSensitivity(Qt::CaseInsensitive);
     setSourceModel(m_model);
-    
-    m_roles[Qt::DisplayRole] = "display";
-    m_roles[OriginalStringRole] = "originalString";
-#if QT_VERSION < 0x050000
-    setRoleNames(m_roles);
-#endif
+    setFilterCaseSensitivity(Qt::CaseInsensitive);
+    setDynamicSortFilter(true);
+
     connect(Settings::instance(), SIGNAL(searchHistoryChanged()), this, SLOT(reload()));
 }
 
-#if QT_VERSION >= 0x050000
-QHash<int, QByteArray> SearchHistoryModel::roleNames() const {
-    return m_roles;
+Qt::Alignment SearchHistoryModel::textAlignment() const {
+    return m_alignment;
 }
-#endif
+
+void SearchHistoryModel::setTextAlignment(Qt::Alignment align) {
+    if (align != textAlignment()) {
+        m_alignment = align;
+        emit textAlignmentChanged();
+
+        if (rowCount() > 0) {
+            emit dataChanged(index(0, 0), index(rowCount() - 1, 0));
+        }
+    }
+}
 
 QVariant SearchHistoryModel::data(const QModelIndex &index, int role) const {
     switch (role) {
-    case Qt::DisplayRole: {        
-        if (!filterRegExp().isEmpty()) {
-            QRegExp re = filterRegExp();
-            QString os = data(index, OriginalStringRole).toString();
-        
-            if (re.indexIn(os) != -1) {
-                return os.replace(re, QString("<b>%1</b>").arg(re.cap()));
-            }
-        }
-        
-        break;
-    }
     case Qt::TextAlignmentRole:
-        return Qt::AlignCenter;
-    case OriginalStringRole:
-        return QSortFilterProxyModel::data(index, Qt::DisplayRole);
+        return QVariant(textAlignment());
     default:
-        break;
+        return QSortFilterProxyModel::data(index, role);
     }
-    
-    return QSortFilterProxyModel::data(index, role);
+}
+
+QVariant SearchHistoryModel::data(int row, const QByteArray &role) const {
+    return data(index(row, 0), roleNames().key(role));
 }
 
 void SearchHistoryModel::addSearch(const QString &query) {
@@ -73,7 +67,7 @@ void SearchHistoryModel::removeSearch(const QString &query) {
 }
 
 void SearchHistoryModel::removeSearch(int row) {
-    Settings::instance()->removeSearch(data(index(row, 0, QModelIndex()), OriginalStringRole).toString());
+    Settings::instance()->removeSearch(data(index(row, 0)).toString());
 }
 
 void SearchHistoryModel::clear() {

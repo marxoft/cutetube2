@@ -42,10 +42,11 @@ public:
     
     Q_INVOKABLE void loadComment(const QString &id);
     Q_INVOKABLE void loadComment(const QVariantMap &comment);
-    Q_INVOKABLE void loadComment(const YouTubeComment *comment);
+    Q_INVOKABLE void loadComment(YouTubeComment *comment);
 
 public Q_SLOTS:
     void addComment();
+    void addComment(const QVariantMap &comment);
     
 private:
     void initRequest();

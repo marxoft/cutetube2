@@ -47,7 +47,7 @@ public:
             
     QString username() const;
     
-    Q_INVOKABLE virtual void loadUser(const User *user);
+    Q_INVOKABLE virtual void loadUser(User *user);
     
 protected:    
     void setDescription(const QString &d);

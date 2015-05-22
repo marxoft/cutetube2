@@ -83,11 +83,11 @@ private:
     
 private Q_SLOTS:
     void onRequestFinished();
-    void onVideoAddedToPlaylist(const VimeoVideo *video, const VimeoPlaylist *playlist);
-    void onVideoRemovedFromPlaylist(const VimeoVideo *video, const VimeoPlaylist *playlist);
-    void onVideoFavourited(const VimeoVideo *video);
-    void onVideoUnfavourited(const VimeoVideo *video);
-    void onVideoWatchLater(const VimeoVideo *video);
+    void onVideoAddedToPlaylist(VimeoVideo *video, VimeoPlaylist *playlist);
+    void onVideoRemovedFromPlaylist(VimeoVideo *video, VimeoPlaylist *playlist);
+    void onVideoFavourited(VimeoVideo *video);
+    void onVideoUnfavourited(VimeoVideo *video);
+    void onVideoWatchLater(VimeoVideo *video);
     
 Q_SIGNALS:
     void countChanged(int c);

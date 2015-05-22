@@ -155,17 +155,19 @@ void YouTubePlaylistModel::list(const QString &resourcePath, const QStringList &
     disconnect(YouTube::instance(), 0, this, 0);
     
     if (filters.value("channelId") == YouTube::instance()->userId()) {
-        connect(YouTube::instance(), SIGNAL(playlistCreated(const YouTubePlaylist*)),
-                this, SLOT(onPlaylistCreated(const YouTubePlaylist*)));
-        connect(YouTube::instance(), SIGNAL(playlistDeleted(const YouTubePlaylist*)),
-                this, SLOT(onPlaylistDeleted(const YouTubePlaylist*)));
+        connect(YouTube::instance(), SIGNAL(playlistCreated(YouTubePlaylist*)),
+                this, SLOT(onPlaylistCreated(YouTubePlaylist*)));
+        connect(YouTube::instance(), SIGNAL(playlistDeleted(YouTubePlaylist*)),
+                this, SLOT(onPlaylistDeleted(YouTubePlaylist*)));
     }
 }
 
 void YouTubePlaylistModel::clear() {
     if (!m_items.isEmpty()) {
         beginResetModel();
+        qDeleteAll(m_items);
         m_items.clear();
+        m_nextPageToken = QString();
         endResetModel();
         emit countChanged(rowCount());
     }
@@ -261,15 +263,13 @@ void YouTubePlaylistModel::onRequestFinished() {
                 else {
                     loadResults();
                 }
+
+                return;
             }
         }
-        else {
-            emit statusChanged(status());
-        }
     }
-    else {
-        emit statusChanged(status());
-    }
+
+    emit statusChanged(status());
 }
 
 void YouTubePlaylistModel::onContentRequestFinished() {
@@ -292,14 +292,14 @@ void YouTubePlaylistModel::onContentRequestFinished() {
     loadResults();
 }
 
-void YouTubePlaylistModel::onPlaylistCreated(const YouTubePlaylist *playlist) {
+void YouTubePlaylistModel::onPlaylistCreated(YouTubePlaylist *playlist) {
     insert(0, new YouTubePlaylist(playlist, this));
 #ifdef CUTETUBE_DEBUG
     qDebug() << "YouTubePlaylistModel::onPlaylistCreated" << playlist->title();
 #endif
 }
 
-void YouTubePlaylistModel::onPlaylistDeleted(const YouTubePlaylist *playlist) {
+void YouTubePlaylistModel::onPlaylistDeleted(YouTubePlaylist *playlist) {
     QModelIndexList list = match(index(0), IdRole, playlist->id(), 1, Qt::MatchExactly);
     
     if (!list.isEmpty()) {

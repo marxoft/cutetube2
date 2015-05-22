@@ -79,8 +79,8 @@ private:
     
 private Q_SLOTS:
     void onRequestFinished();
-    void onPlaylistCreated(const VimeoPlaylist *playlist);
-    void onPlaylistDeleted(const VimeoPlaylist *playlist);
+    void onPlaylistCreated(VimeoPlaylist *playlist);
+    void onPlaylistDeleted(VimeoPlaylist *playlist);
     
 Q_SIGNALS:
     void countChanged(int c);

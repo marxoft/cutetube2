@@ -83,10 +83,10 @@ private:
     
 private Q_SLOTS:
     void onRequestFinished();
-    void onVideoAddedToPlaylist(const DailymotionVideo *video, const DailymotionPlaylist *playlist);
-    void onVideoRemovedFromPlaylist(const DailymotionVideo *video, const DailymotionPlaylist *playlist);
-    void onVideoFavourited(const DailymotionVideo *video);
-    void onVideoUnfavourited(const DailymotionVideo *video);
+    void onVideoAddedToPlaylist(DailymotionVideo *video, DailymotionPlaylist *playlist);
+    void onVideoRemovedFromPlaylist(DailymotionVideo *video, DailymotionPlaylist *playlist);
+    void onVideoFavourited(DailymotionVideo *video);
+    void onVideoUnfavourited(DailymotionVideo *video);
     
 Q_SIGNALS:
     void countChanged(int c);

@@ -54,7 +54,7 @@ public:
     
     Q_INVOKABLE void loadUser(const QString &id);
     Q_INVOKABLE void loadUser(const QVariantMap &user);
-    Q_INVOKABLE void loadUser(const DailymotionUser *user);
+    Q_INVOKABLE void loadUser(DailymotionUser *user);
 
 public Q_SLOTS:
     void checkIfSubscribed();
@@ -79,7 +79,7 @@ private Q_SLOTS:
     void onSubscribeCheckRequestFinished();
     void onSubscribeRequestFinished();
     void onUnsubscribeRequestFinished();
-    void onUserUpdated(const DailymotionUser *user);
+    void onUserUpdated(DailymotionUser *user);
     
 Q_SIGNALS:
     void bannerUrlChanged();

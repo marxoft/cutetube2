@@ -28,10 +28,10 @@ VimeoUser::VimeoUser(QObject *parent) :
     m_subscriberCount(0)
 {
     setService(Resources::VIMEO);
-    connect(Vimeo::instance(), SIGNAL(userSubscribed(const VimeoUser*)),
-            this, SLOT(onUserUpdated(const VimeoUser*)));
-    connect(Vimeo::instance(), SIGNAL(userUnsubscribed(const VimeoUser*)),
-            this, SLOT(onUserUpdated(const VimeoUser*)));
+    connect(Vimeo::instance(), SIGNAL(userSubscribed(VimeoUser*)),
+            this, SLOT(onUserUpdated(VimeoUser*)));
+    connect(Vimeo::instance(), SIGNAL(userUnsubscribed(VimeoUser*)),
+            this, SLOT(onUserUpdated(VimeoUser*)));
 }
 
 VimeoUser::VimeoUser(const QString &id, QObject *parent) :
@@ -42,10 +42,10 @@ VimeoUser::VimeoUser(const QString &id, QObject *parent) :
 {
     setService(Resources::VIMEO);
     loadUser(id);
-    connect(Vimeo::instance(), SIGNAL(userSubscribed(const VimeoUser*)),
-            this, SLOT(onUserUpdated(const VimeoUser*)));
-    connect(Vimeo::instance(), SIGNAL(userUnsubscribed(const VimeoUser*)),
-            this, SLOT(onUserUpdated(const VimeoUser*)));
+    connect(Vimeo::instance(), SIGNAL(userSubscribed(VimeoUser*)),
+            this, SLOT(onUserUpdated(VimeoUser*)));
+    connect(Vimeo::instance(), SIGNAL(userUnsubscribed(VimeoUser*)),
+            this, SLOT(onUserUpdated(VimeoUser*)));
 }
 
 VimeoUser::VimeoUser(const QVariantMap &user, QObject *parent) :
@@ -56,10 +56,10 @@ VimeoUser::VimeoUser(const QVariantMap &user, QObject *parent) :
 {
     setService(Resources::VIMEO);
     loadUser(user);
-    connect(Vimeo::instance(), SIGNAL(userSubscribed(const VimeoUser*)),
-            this, SLOT(onUserUpdated(const VimeoUser*)));
-    connect(Vimeo::instance(), SIGNAL(userUnsubscribed(const VimeoUser*)),
-            this, SLOT(onUserUpdated(const VimeoUser*)));
+    connect(Vimeo::instance(), SIGNAL(userSubscribed(VimeoUser*)),
+            this, SLOT(onUserUpdated(VimeoUser*)));
+    connect(Vimeo::instance(), SIGNAL(userUnsubscribed(VimeoUser*)),
+            this, SLOT(onUserUpdated(VimeoUser*)));
 }
 
 VimeoUser::VimeoUser(const VimeoUser *user, QObject *parent) :
@@ -68,10 +68,10 @@ VimeoUser::VimeoUser(const VimeoUser *user, QObject *parent) :
     m_subscribed(user->isSubscribed()),
     m_subscriberCount(user->subscriberCount())
 {
-    connect(Vimeo::instance(), SIGNAL(userSubscribed(const VimeoUser*)),
-            this, SLOT(onUserUpdated(const VimeoUser*)));
-    connect(Vimeo::instance(), SIGNAL(userUnsubscribed(const VimeoUser*)),
-            this, SLOT(onUserUpdated(const VimeoUser*)));
+    connect(Vimeo::instance(), SIGNAL(userSubscribed(VimeoUser*)),
+            this, SLOT(onUserUpdated(VimeoUser*)));
+    connect(Vimeo::instance(), SIGNAL(userUnsubscribed(VimeoUser*)),
+            this, SLOT(onUserUpdated(VimeoUser*)));
 }
 
 QString VimeoUser::errorString() const {
@@ -125,7 +125,7 @@ void VimeoUser::loadUser(const QVariantMap &user) {
     setUsername(user.value("name").toString());
 }
 
-void VimeoUser::loadUser(const VimeoUser *user) {
+void VimeoUser::loadUser(VimeoUser *user) {
     User::loadUser(user);
     setSubscribed(user->isSubscribed());
     setSubscriberCount(user->subscriberCount());
@@ -255,7 +255,7 @@ void VimeoUser::onUnsubscribeRequestFinished() {
     emit statusChanged(status());
 }
 
-void VimeoUser::onUserUpdated(const VimeoUser *user) {
+void VimeoUser::onUserUpdated(VimeoUser *user) {
     if ((user->id() == id()) && (user != this)) {
         loadUser(user);
     }

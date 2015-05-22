@@ -44,11 +44,12 @@ public:
     
     Q_INVOKABLE void loadPlaylist(const QString &id);
     Q_INVOKABLE void loadPlaylist(const QVariantMap &playlist);
-    Q_INVOKABLE void loadPlaylist(const YouTubePlaylist *playlist);
+    Q_INVOKABLE void loadPlaylist(YouTubePlaylist *playlist);
     
 public Q_SLOTS:
-    void addVideo(const YouTubeVideo *video);
-    void removeVideo(const YouTubeVideo *video);
+    void addVideo(YouTubeVideo *video);
+    void addVideo(const QVariantMap &playlist, YouTubeVideo *video);
+    void removeVideo(YouTubeVideo *video);
     
 private:
     void initRequest();
@@ -60,7 +61,7 @@ private Q_SLOTS:
     void onCreatePlaylistRequestFinished();
     void onAddVideoRequestFinished();
     void onRemoveVideoRequestFinished();
-    void onPlaylistUpdated(const YouTubeVideo*, const YouTubePlaylist*);
+    void onPlaylistUpdated(YouTubeVideo*, YouTubePlaylist*);
     
 Q_SIGNALS:
     void privacyStatusChanged();
@@ -68,7 +69,7 @@ Q_SIGNALS:
 
 private:
     QYouTube::ResourcesRequest *m_request;
-    const YouTubeVideo *m_video;
+    YouTubeVideo *m_video;
     
     QString m_privacyStatus;
 };

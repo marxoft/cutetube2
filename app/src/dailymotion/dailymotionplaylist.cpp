@@ -27,10 +27,10 @@ DailymotionPlaylist::DailymotionPlaylist(QObject *parent) :
     m_video(0)
 {
     setService(Resources::DAILYMOTION);
-    connect(Dailymotion::instance(), SIGNAL(videoAddedToPlaylist(const DailymotionVideo*, const DailymotionPlaylist*)),
-            this, SLOT(onPlaylistUpdated(const DailymotionVideo*, const DailymotionPlaylist*)));
-    connect(Dailymotion::instance(), SIGNAL(videoRemovedFromPlaylist(const DailymotionVideo*, const DailymotionPlaylist*)),
-            this, SLOT(onPlaylistUpdated(const DailymotionVideo*, const DailymotionPlaylist*)));
+    connect(Dailymotion::instance(), SIGNAL(videoAddedToPlaylist(DailymotionVideo*, DailymotionPlaylist*)),
+            this, SLOT(onPlaylistUpdated(DailymotionVideo*, DailymotionPlaylist*)));
+    connect(Dailymotion::instance(), SIGNAL(videoRemovedFromPlaylist(DailymotionVideo*, DailymotionPlaylist*)),
+            this, SLOT(onPlaylistUpdated(DailymotionVideo*, DailymotionPlaylist*)));
 }
 
 DailymotionPlaylist::DailymotionPlaylist(const QString &id, QObject *parent) :
@@ -40,10 +40,10 @@ DailymotionPlaylist::DailymotionPlaylist(const QString &id, QObject *parent) :
 {
     setService(Resources::DAILYMOTION);
     loadPlaylist(id);
-    connect(Dailymotion::instance(), SIGNAL(videoAddedToPlaylist(const DailymotionVideo*, const DailymotionPlaylist*)),
-            this, SLOT(onPlaylistUpdated(const DailymotionVideo*, const DailymotionPlaylist*)));
-    connect(Dailymotion::instance(), SIGNAL(videoRemovedFromPlaylist(const DailymotionVideo*, const DailymotionPlaylist*)),
-            this, SLOT(onPlaylistUpdated(const DailymotionVideo*, const DailymotionPlaylist*)));
+    connect(Dailymotion::instance(), SIGNAL(videoAddedToPlaylist(DailymotionVideo*, DailymotionPlaylist*)),
+            this, SLOT(onPlaylistUpdated(DailymotionVideo*, DailymotionPlaylist*)));
+    connect(Dailymotion::instance(), SIGNAL(videoRemovedFromPlaylist(DailymotionVideo*, DailymotionPlaylist*)),
+            this, SLOT(onPlaylistUpdated(DailymotionVideo*, DailymotionPlaylist*)));
 }
 
 DailymotionPlaylist::DailymotionPlaylist(const QVariantMap &playlist, QObject *parent) :
@@ -53,10 +53,10 @@ DailymotionPlaylist::DailymotionPlaylist(const QVariantMap &playlist, QObject *p
 {
     setService(Resources::DAILYMOTION);
     loadPlaylist(playlist);
-    connect(Dailymotion::instance(), SIGNAL(videoAddedToPlaylist(const DailymotionVideo*, const DailymotionPlaylist*)),
-            this, SLOT(onPlaylistUpdated(const DailymotionVideo*, const DailymotionPlaylist*)));
-    connect(Dailymotion::instance(), SIGNAL(videoRemovedFromPlaylist(const DailymotionVideo*, const DailymotionPlaylist*)),
-            this, SLOT(onPlaylistUpdated(const DailymotionVideo*, const DailymotionPlaylist*)));
+    connect(Dailymotion::instance(), SIGNAL(videoAddedToPlaylist(DailymotionVideo*, DailymotionPlaylist*)),
+            this, SLOT(onPlaylistUpdated(DailymotionVideo*, DailymotionPlaylist*)));
+    connect(Dailymotion::instance(), SIGNAL(videoRemovedFromPlaylist(DailymotionVideo*, DailymotionPlaylist*)),
+            this, SLOT(onPlaylistUpdated(DailymotionVideo*, DailymotionPlaylist*)));
 }
 
 DailymotionPlaylist::DailymotionPlaylist(const DailymotionPlaylist *playlist, QObject *parent) :
@@ -64,10 +64,10 @@ DailymotionPlaylist::DailymotionPlaylist(const DailymotionPlaylist *playlist, QO
     m_request(0),
     m_video(0)
 {
-    connect(Dailymotion::instance(), SIGNAL(videoAddedToPlaylist(const DailymotionVideo*, const DailymotionPlaylist*)),
-            this, SLOT(onPlaylistUpdated(const DailymotionVideo*, const DailymotionPlaylist*)));
-    connect(Dailymotion::instance(), SIGNAL(videoRemovedFromPlaylist(const DailymotionVideo*, const DailymotionPlaylist*)),
-            this, SLOT(onPlaylistUpdated(const DailymotionVideo*, const DailymotionPlaylist*)));
+    connect(Dailymotion::instance(), SIGNAL(videoAddedToPlaylist(DailymotionVideo*, DailymotionPlaylist*)),
+            this, SLOT(onPlaylistUpdated(DailymotionVideo*, DailymotionPlaylist*)));
+    connect(Dailymotion::instance(), SIGNAL(videoRemovedFromPlaylist(DailymotionVideo*, DailymotionPlaylist*)),
+            this, SLOT(onPlaylistUpdated(DailymotionVideo*, DailymotionPlaylist*)));
 }
 
 QString DailymotionPlaylist::errorString() const {
@@ -104,7 +104,7 @@ void DailymotionPlaylist::loadPlaylist(const QVariantMap &playlist) {
     setVideoCount(playlist.value("videos_total").toInt());    
 }
 
-void DailymotionPlaylist::addVideo(const DailymotionVideo *video) {
+void DailymotionPlaylist::addVideo(DailymotionVideo *video) {
     if (status() == QDailymotion::ResourcesRequest::Loading) {
         return;
     }
@@ -131,7 +131,12 @@ void DailymotionPlaylist::addVideo(const DailymotionVideo *video) {
     emit statusChanged(status());
 }
 
-void DailymotionPlaylist::removeVideo(const DailymotionVideo *video) {
+void DailymotionPlaylist::addVideo(const QVariantMap &playlist, DailymotionVideo *video) {
+    loadPlaylist(playlist);
+    addVideo(video);
+}
+
+void DailymotionPlaylist::removeVideo(DailymotionVideo *video) {
     if (status() == QDailymotion::ResourcesRequest::Loading) {
         return;
     }
@@ -217,7 +222,7 @@ void DailymotionPlaylist::onRemoveVideoRequestFinished() {
     emit statusChanged(status());
 }
 
-void DailymotionPlaylist::onPlaylistUpdated(const DailymotionVideo*, const DailymotionPlaylist *playlist) {
+void DailymotionPlaylist::onPlaylistUpdated(DailymotionVideo*, DailymotionPlaylist *playlist) {
     if ((playlist->id() == id()) && (playlist != this)) {
         Playlist::loadPlaylist(playlist);
     }

@@ -81,6 +81,10 @@ void PluginVideo::loadVideo(const QString &service, const QVariantMap &video) {
     setViewCount(video.value("viewCount").toInt());    
 }
 
+void PluginVideo::loadVideo(PluginVideo *video) {
+    Video::loadVideo(video);
+}
+
 void PluginVideo::onRequestFinished() {
     if (m_request->status() == ResourcesRequest::Ready) {
         loadVideo(m_request->service(), m_request->result().toMap());

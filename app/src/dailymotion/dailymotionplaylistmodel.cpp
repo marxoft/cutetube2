@@ -145,17 +145,19 @@ void DailymotionPlaylistModel::list(const QString &resourcePath, const QVariantM
     disconnect(Dailymotion::instance(), 0, this, 0);
     
     if (resourcePath == "/me/playlists") {
-        connect(Dailymotion::instance(), SIGNAL(playlistCreated(const DailymotionPlaylist*)),
-                this, SLOT(onPlaylistCreated(const DailymotionPlaylist*)));
-        connect(Dailymotion::instance(), SIGNAL(playlistDeleted(const DailymotionPlaylist*)),
-                this, SLOT(onPlaylistDeleted(const DailymotionPlaylist*)));
+        connect(Dailymotion::instance(), SIGNAL(playlistCreated(DailymotionPlaylist*)),
+                this, SLOT(onPlaylistCreated(DailymotionPlaylist*)));
+        connect(Dailymotion::instance(), SIGNAL(playlistDeleted(DailymotionPlaylist*)),
+                this, SLOT(onPlaylistDeleted(DailymotionPlaylist*)));
     }
 }
 
 void DailymotionPlaylistModel::clear() {
     if (!m_items.isEmpty()) {
         beginResetModel();
+        qDeleteAll(m_items);
         m_items.clear();
+        m_hasMore = false;
         endResetModel();
         emit countChanged(rowCount());
     }
@@ -218,14 +220,14 @@ void DailymotionPlaylistModel::onRequestFinished() {
     emit statusChanged(status());
 }
 
-void DailymotionPlaylistModel::onPlaylistCreated(const DailymotionPlaylist *playlist) {
+void DailymotionPlaylistModel::onPlaylistCreated(DailymotionPlaylist *playlist) {
     insert(0, new DailymotionPlaylist(playlist, this));
 #ifdef CUTETUBE_DEBUG
     qDebug() << "DailymotionPlaylistModel::onPlaylistCreated" << playlist->title();
 #endif
 }
 
-void DailymotionPlaylistModel::onPlaylistDeleted(const DailymotionPlaylist *playlist) {
+void DailymotionPlaylistModel::onPlaylistDeleted(DailymotionPlaylist *playlist) {
     QModelIndexList list = match(index(0), IdRole, playlist->id(), 1, Qt::MatchExactly);
     
     if (!list.isEmpty()) {

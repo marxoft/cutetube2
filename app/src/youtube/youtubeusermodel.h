@@ -88,8 +88,8 @@ private Q_SLOTS:
     void onRequestFinished();
     void onContentRequestFinished();
     
-    void onUserSubscribed(const YouTubeUser *user);
-    void onUserUnsubscribed(const YouTubeUser *user);
+    void onUserSubscribed(YouTubeUser *user);
+    void onUserUnsubscribed(YouTubeUser *user);
     
 Q_SIGNALS:
     void countChanged(int c);

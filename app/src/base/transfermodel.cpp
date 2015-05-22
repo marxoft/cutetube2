@@ -51,7 +51,7 @@ TransferModel::TransferModel(QObject *parent) :
     }
     
     connect(Transfers::instance(), SIGNAL(countChanged(int)), this, SLOT(onCountChanged(int)));
-    connect(Transfers::instance(), SIGNAL(transferAdded(const Transfer*)), this, SLOT(onTransferAdded(const Transfer*)));
+    connect(Transfers::instance(), SIGNAL(transferAdded(Transfer*)), this, SLOT(onTransferAdded(Transfer*)));
     emit countChanged(rowCount());
 }
 
@@ -218,7 +218,7 @@ void TransferModel::onCountChanged(int count) {
     emit countChanged(count);
 }
 
-void TransferModel::onTransferAdded(const Transfer *transfer) {
+void TransferModel::onTransferAdded(Transfer *transfer) {
     connect(transfer, SIGNAL(titleChanged()), this, SLOT(onTransferTitleChanged()));
     connect(transfer, SIGNAL(categoryChanged()), this, SLOT(onTransferCategoryChanged()));
     connect(transfer, SIGNAL(priorityChanged()), this, SLOT(onTransferPriorityChanged()));

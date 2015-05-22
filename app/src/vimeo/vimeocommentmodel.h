@@ -77,7 +77,7 @@ private:
 private Q_SLOTS:
     void onRequestFinished();
     
-    void onCommentAdded(const VimeoComment *comment);
+    void onCommentAdded(VimeoComment *comment);
     
 Q_SIGNALS:
     void countChanged(int c);

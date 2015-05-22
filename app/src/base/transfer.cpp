@@ -31,11 +31,19 @@
 #include <QNetworkReply>
 #include <QFile>
 #include <QDir>
+#ifdef MEEGO_EDITION_HARMATTAN
+#include <TransferUI/Client>
+#include <TransferUI/Transfer>
+#endif
 #if QT_VERSION >= 0x050000
 #include <QUrlQuery>
 #endif
 #ifdef CUTETUBE_DEBUG
 #include <QDebug>
+#endif
+
+#ifdef MEEGO_EDITION_HARMATTAN
+TransferUI::Client* Transfer::tuiClient = 0;
 #endif
 
 Transfer::Transfer(QObject *parent) :
@@ -65,9 +73,38 @@ Transfer::Transfer(QObject *parent) :
     m_status(Paused),
     m_transferType(Download)
 {
+#ifdef MEEGO_EDITION_HARMATTAN
+    if (!tuiClient) {
+        tuiClient = new TransferUI::Client;
+        tuiClient->init();
+    }
+    
+    m_tuiTransfer = tuiClient->registerTransfer(QString(), TransferUI::Client::TRANSFER_TYPES_DOWNLOAD);
+    m_tuiTransfer->waitForCommit();
+    m_tuiTransfer->setIcon("icon-m-content-videos");
+    m_tuiTransfer->setCanPause(true);
+    m_tuiTransfer->markPaused();
+    m_tuiTransfer->commit();
+
+    connect(m_tuiTransfer, SIGNAL(start()), this, SLOT(queue()));
+    connect(m_tuiTransfer, SIGNAL(pause()), this, SLOT(pause()));
+    connect(m_tuiTransfer, SIGNAL(cancel()), this, SLOT(cancel()));
+    connect(m_tuiTransfer, SIGNAL(repairError()), this, SLOT(queue()));
+#endif
 }
 
-Transfer::~Transfer() {}
+Transfer::~Transfer() {
+#ifdef MEEGO_EDITION_HARMATTAN
+    if (m_tuiTransfer) {
+        if (tuiClient) {
+            tuiClient->removeTransfer(m_tuiTransfer->transferId());
+        }
+
+        delete m_tuiTransfer;
+        m_tuiTransfer = 0;
+    }
+#endif
+}
 
 void Transfer::setNetworkAccessManager(QNetworkAccessManager *manager) {
     if ((m_nam) && (m_ownNetworkAccessManager)) {
@@ -262,6 +299,13 @@ void Transfer::setProgress(int p) {
     if (p != progress()) {
         m_progress = p;
         emit progressChanged();
+#ifdef MEEGO_EDITION_HARMATTAN
+        if ((tuiClient) && (tuiClient->isTUIVisible())) {
+            if (m_tuiTransfer) {
+                m_tuiTransfer->setProgress(float(p) / 100);
+            }
+        }
+#endif
     }
 }
 
@@ -301,7 +345,11 @@ void Transfer::setSize(qint64 s) {
     if (s != size()) {
         m_size = s;
         emit sizeChanged();
-        
+#ifdef MEEGO_EDITION_HARMATTAN
+        if (m_tuiTransfer) {
+            m_tuiTransfer->setSize(s);
+        }
+#endif
         if ((m_size > 0) && (m_bytesTransferred > 0)) {
             setProgress(m_bytesTransferred * 100 / m_size);
         }
@@ -319,6 +367,30 @@ void Transfer::setStatus(Status s) {
     if (s != status()) {
         m_status = s;
         emit statusChanged();
+#ifdef MEEGO_EDITION_HARMATTAN
+        switch (s) {
+        case Transfer::Queued:
+            if (m_tuiTransfer) m_tuiTransfer->setPending(statusString());
+            break;
+        case Transfer::Connecting:
+            if (m_tuiTransfer) m_tuiTransfer->markResumed();
+            break;
+        case Transfer::Completed:
+            if (m_tuiTransfer) m_tuiTransfer->markCompleted();
+            break;
+        case Transfer::Canceled:
+            if (m_tuiTransfer) m_tuiTransfer->markCancelled();
+            break;
+        case Transfer::Paused:
+            if (m_tuiTransfer) m_tuiTransfer->markPaused();
+            break;
+        case Transfer::Failed:
+            if (m_tuiTransfer) m_tuiTransfer->markRepairableFailure(statusString(), errorString(), tr("Retry"));
+            break;
+        default:
+            break;
+        }
+#endif
     }
 #ifdef CUTETUBE_DEBUG
     qDebug() << "Transfer::setStatus" << s;
@@ -372,6 +444,11 @@ void Transfer::setTitle(const QString &t) {
     if (t != title()) {
         m_title = t;
         emit titleChanged();
+#ifdef MEEGO_EDITION_HARMATTAN
+        if (m_tuiTransfer) {
+            m_tuiTransfer->setName(t);
+        }
+#endif
     }
 #ifdef CUTETUBE_DEBUG
     qDebug() << "Transfer::setTitle" << t;
@@ -386,6 +463,21 @@ void Transfer::setTransferType(TransferType type) {
     if (type != transferType()) {
         m_transferType = type;
         emit transferTypeChanged();
+#ifdef MEEGO_EDITION_HARMATTAN
+        if (m_tuiTransfer) {
+            switch (type) {
+            case Transfer::Upload:
+                m_tuiTransfer->setTransferType(TransferUI::Client::TRANSFER_TYPES_UPLOAD);
+                return;
+            default:
+                m_tuiTransfer->waitForCommit();
+                m_tuiTransfer->setTransferType(TransferUI::Client::TRANSFER_TYPES_DOWNLOAD);
+                m_tuiTransfer->setCanPause(true);
+                m_tuiTransfer->commit();
+                return;
+            }
+        }
+#endif
     }
 #ifdef CUTETUBE_DEBUG
     qDebug() << "Transfer::setTransferType" << type;

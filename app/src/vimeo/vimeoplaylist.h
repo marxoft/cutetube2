@@ -48,8 +48,9 @@ public:
     Q_INVOKABLE void loadPlaylist(const QVariantMap &playlist);
     
 public Q_SLOTS:
-    void addVideo(const VimeoVideo *video);
-    void removeVideo(const VimeoVideo *video);
+    void addVideo(VimeoVideo *video);
+    void addVideo(const QVariantMap &playlist, VimeoVideo *video);
+    void removeVideo(VimeoVideo *video);
     
 private:
     void initRequest();
@@ -62,7 +63,7 @@ private Q_SLOTS:
     void onCreatePlaylistRequestFinished();
     void onAddVideoRequestFinished();
     void onRemoveVideoRequestFinished();
-    void onPlaylistUpdated(const VimeoVideo*, const VimeoPlaylist*);
+    void onPlaylistUpdated(VimeoVideo*, VimeoPlaylist*);
     
 Q_SIGNALS:
     void passwordChanged();
@@ -71,7 +72,7 @@ Q_SIGNALS:
 
 private:
     QVimeo::ResourcesRequest *m_request;
-    const VimeoVideo *m_video;
+    VimeoVideo *m_video;
     
     QString m_password;
     QString m_privacy;

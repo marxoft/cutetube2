@@ -20,6 +20,7 @@
 #include <QObject>
 
 class QString;
+class QUrl;
 
 class Utils : public QObject
 {
@@ -34,6 +35,8 @@ public:
     
     Q_INVOKABLE static QString formatMSecs(qint64 ms);
     Q_INVOKABLE static QString formatSecs(qint64 s);  
+
+    Q_INVOKABLE static bool isLocalFile(const QUrl &url);
     
     Q_INVOKABLE static QString toRichText(QString s);  
     

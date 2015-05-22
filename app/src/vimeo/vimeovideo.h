@@ -25,7 +25,7 @@ class VimeoVideo : public Video
     Q_OBJECT
     
     Q_PROPERTY(QString errorString READ errorString NOTIFY statusChanged)
-    Q_PROPERTY(bool favourite READ isFavourite NOTIFY favouriteChanged)
+    Q_PROPERTY(bool favourited READ isFavourite NOTIFY favouriteChanged)
     Q_PROPERTY(qint64 favouriteCount READ favouriteCount NOTIFY favouriteCountChanged)
     Q_PROPERTY(QVimeo::ResourcesRequest::Status status READ status NOTIFY statusChanged)
 
@@ -44,7 +44,7 @@ public:
     
     Q_INVOKABLE void loadVideo(const QString &id);
     Q_INVOKABLE void loadVideo(const QVariantMap &video);
-    Q_INVOKABLE void loadVideo(const VimeoVideo *video);
+    Q_INVOKABLE void loadVideo(VimeoVideo *video);
     
 public Q_SLOTS:
     void favourite();
@@ -63,7 +63,7 @@ private Q_SLOTS:
     void onFavouriteRequestFinished();
     void onUnfavouriteRequestFinished();
     void onWatchLaterRequestFinished();
-    void onVideoUpdated(const VimeoVideo *video);
+    void onVideoUpdated(VimeoVideo *video);
     
 Q_SIGNALS:
     void favouriteChanged();

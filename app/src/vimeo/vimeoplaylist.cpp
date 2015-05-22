@@ -26,10 +26,10 @@ VimeoPlaylist::VimeoPlaylist(QObject *parent) :
     m_video(0)
 {
     setService(Resources::VIMEO);
-    connect(Vimeo::instance(), SIGNAL(videoAddedToPlaylist(const VimeoVideo*, const VimeoPlaylist*)),
-            this, SLOT(onPlaylistUpdated(const VimeoVideo*, const VimeoPlaylist*)));
-    connect(Vimeo::instance(), SIGNAL(videoRemovedFromPlaylist(const VimeoVideo*, const VimeoPlaylist*)),
-            this, SLOT(onPlaylistUpdated(const VimeoVideo*, const VimeoPlaylist*)));
+    connect(Vimeo::instance(), SIGNAL(videoAddedToPlaylist(VimeoVideo*, VimeoPlaylist*)),
+            this, SLOT(onPlaylistUpdated(VimeoVideo*, VimeoPlaylist*)));
+    connect(Vimeo::instance(), SIGNAL(videoRemovedFromPlaylist(VimeoVideo*, VimeoPlaylist*)),
+            this, SLOT(onPlaylistUpdated(VimeoVideo*, VimeoPlaylist*)));
 }
 
 VimeoPlaylist::VimeoPlaylist(const QString &id, QObject *parent) :
@@ -39,10 +39,10 @@ VimeoPlaylist::VimeoPlaylist(const QString &id, QObject *parent) :
 {
     setService(Resources::VIMEO);
     loadPlaylist(id);
-    connect(Vimeo::instance(), SIGNAL(videoAddedToPlaylist(const VimeoVideo*, const VimeoPlaylist*)),
-            this, SLOT(onPlaylistUpdated(const VimeoVideo*, const VimeoPlaylist*)));
-    connect(Vimeo::instance(), SIGNAL(videoRemovedFromPlaylist(const VimeoVideo*, const VimeoPlaylist*)),
-            this, SLOT(onPlaylistUpdated(const VimeoVideo*, const VimeoPlaylist*)));
+    connect(Vimeo::instance(), SIGNAL(videoAddedToPlaylist(VimeoVideo*, VimeoPlaylist*)),
+            this, SLOT(onPlaylistUpdated(VimeoVideo*, VimeoPlaylist*)));
+    connect(Vimeo::instance(), SIGNAL(videoRemovedFromPlaylist(VimeoVideo*, VimeoPlaylist*)),
+            this, SLOT(onPlaylistUpdated(VimeoVideo*, VimeoPlaylist*)));
 }
 
 VimeoPlaylist::VimeoPlaylist(const QVariantMap &playlist, QObject *parent) :
@@ -52,10 +52,10 @@ VimeoPlaylist::VimeoPlaylist(const QVariantMap &playlist, QObject *parent) :
 {
     setService(Resources::VIMEO);
     loadPlaylist(playlist);
-    connect(Vimeo::instance(), SIGNAL(videoAddedToPlaylist(const VimeoVideo*, const VimeoPlaylist*)),
-            this, SLOT(onPlaylistUpdated(const VimeoVideo*, const VimeoPlaylist*)));
-    connect(Vimeo::instance(), SIGNAL(videoRemovedFromPlaylist(const VimeoVideo*, const VimeoPlaylist*)),
-            this, SLOT(onPlaylistUpdated(const VimeoVideo*, const VimeoPlaylist*)));
+    connect(Vimeo::instance(), SIGNAL(videoAddedToPlaylist(VimeoVideo*, VimeoPlaylist*)),
+            this, SLOT(onPlaylistUpdated(VimeoVideo*, VimeoPlaylist*)));
+    connect(Vimeo::instance(), SIGNAL(videoRemovedFromPlaylist(VimeoVideo*, VimeoPlaylist*)),
+            this, SLOT(onPlaylistUpdated(VimeoVideo*, VimeoPlaylist*)));
 }
 
 VimeoPlaylist::VimeoPlaylist(const VimeoPlaylist *playlist, QObject *parent) :
@@ -65,10 +65,10 @@ VimeoPlaylist::VimeoPlaylist(const VimeoPlaylist *playlist, QObject *parent) :
     m_password(playlist->password()),
     m_privacy(playlist->privacy())
 {
-    connect(Vimeo::instance(), SIGNAL(videoAddedToPlaylist(const VimeoVideo*, const VimeoPlaylist*)),
-            this, SLOT(onPlaylistUpdated(const VimeoVideo*, const VimeoPlaylist*)));
-    connect(Vimeo::instance(), SIGNAL(videoRemovedFromPlaylist(const VimeoVideo*, const VimeoPlaylist*)),
-            this, SLOT(onPlaylistUpdated(const VimeoVideo*, const VimeoPlaylist*)));
+    connect(Vimeo::instance(), SIGNAL(videoAddedToPlaylist(VimeoVideo*, VimeoPlaylist*)),
+            this, SLOT(onPlaylistUpdated(VimeoVideo*, VimeoPlaylist*)));
+    connect(Vimeo::instance(), SIGNAL(videoRemovedFromPlaylist(VimeoVideo*, VimeoPlaylist*)),
+            this, SLOT(onPlaylistUpdated(VimeoVideo*, VimeoPlaylist*)));
 }
 
 QString VimeoPlaylist::errorString() const {
@@ -129,7 +129,7 @@ void VimeoPlaylist::loadPlaylist(const QVariantMap &playlist) {
                   .value("total").toInt());    
 }
 
-void VimeoPlaylist::addVideo(const VimeoVideo *video) {
+void VimeoPlaylist::addVideo(VimeoVideo *video) {
     if (status() == QVimeo::ResourcesRequest::Loading) {
         return;
     }
@@ -161,7 +161,12 @@ void VimeoPlaylist::addVideo(const VimeoVideo *video) {
     emit statusChanged(status());
 }
 
-void VimeoPlaylist::removeVideo(const VimeoVideo *video) {
+void VimeoPlaylist::addVideo(const QVariantMap &playlist, VimeoVideo *video) {
+    loadPlaylist(playlist);
+    addVideo(video);
+}
+
+void VimeoPlaylist::removeVideo(VimeoVideo *video) {
     if (status() == QVimeo::ResourcesRequest::Loading) {
         return;
     }
@@ -245,7 +250,7 @@ void VimeoPlaylist::onRemoveVideoRequestFinished() {
     emit statusChanged(status());
 }
 
-void VimeoPlaylist::onPlaylistUpdated(const VimeoVideo*, const VimeoPlaylist *playlist) {
+void VimeoPlaylist::onPlaylistUpdated(VimeoVideo*, VimeoPlaylist *playlist) {
     if ((playlist->id() == id()) && (playlist != this)) {
         Playlist::loadPlaylist(playlist);
     }

@@ -39,6 +39,7 @@ public:
     
     Q_INVOKABLE void loadUser(const QString &service, const QString &id);
     Q_INVOKABLE void loadUser(const QString &service, const QVariantMap &user);
+    Q_INVOKABLE void loadUser(PluginUser *user);
             
 private Q_SLOTS:
     void onRequestFinished();

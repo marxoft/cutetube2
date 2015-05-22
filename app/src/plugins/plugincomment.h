@@ -39,6 +39,7 @@ public:
     
     Q_INVOKABLE void loadComment(const QString &service, const QString &id);
     Q_INVOKABLE void loadComment(const QString &service, const QVariantMap &comment);
+    Q_INVOKABLE void loadComment(PluginComment *comment);
             
 private Q_SLOTS:
     void onRequestFinished();

@@ -19,6 +19,8 @@
 
 #include <QObject>
 #include <QStringList>
+#include <QVariant>
+#include <qplatformdefs.h>
 
 struct Category {
     QString name;
@@ -29,6 +31,11 @@ class Settings : public QObject
 {
     Q_OBJECT
     
+#if (defined MEEGO_EDITION_HARMATTAN) || (SYMBIAN_OS)
+    Q_PROPERTY(QString activeColor READ activeColor WRITE setActiveColor NOTIFY activeColorChanged)
+    Q_PROPERTY(QString activeColorString READ activeColorString WRITE setActiveColorString
+               NOTIFY activeColorStringChanged)
+#endif
     Q_PROPERTY(QStringList categoryNames READ categoryNames NOTIFY categoriesChanged)
     Q_PROPERTY(QString defaultCategory READ defaultCategory WRITE setDefaultCategory NOTIFY defaultCategoryChanged)
     Q_PROPERTY(bool clipboardMonitorEnabled READ clipboardMonitorEnabled WRITE setClipboardMonitorEnabled
@@ -48,6 +55,7 @@ class Settings : public QObject
     Q_PROPERTY(QString networkProxyUsername READ networkProxyUsername WRITE setNetworkProxyUsername
                NOTIFY networkProxyChanged)
     Q_PROPERTY(bool safeSearchEnabled READ safeSearchEnabled WRITE setSafeSearchEnabled NOTIFY safeSearchEnabledChanged)
+    Q_PROPERTY(int screenOrientation READ screenOrientation WRITE setScreenOrientation NOTIFY screenOrientationChanged)
     Q_PROPERTY(QStringList searchHistory READ searchHistory WRITE setSearchHistory NOTIFY searchHistoryChanged)
     Q_PROPERTY(bool startTransfersAutomatically READ startTransfersAutomatically WRITE setStartTransfersAutomatically
                NOTIFY startTransfersAutomaticallyChanged)
@@ -63,6 +71,11 @@ public:
     ~Settings();
     
     static Settings* instance();
+    
+#if (defined MEEGO_EDITION_HARMATTAN) || (SYMBIAN_OS)
+    QString activeColor() const;
+    QString activeColorString() const;
+#endif
     
     QStringList categoryNames() const;
     QList<Category> categories() const;
@@ -96,6 +109,8 @@ public:
     
     bool safeSearchEnabled() const;
     
+    int screenOrientation() const;
+    
     QStringList searchHistory() const;
     void setSearchHistory(const QStringList &searches);
     
@@ -103,11 +118,17 @@ public:
     
     bool subtitlesEnabled() const;
     QString subtitlesLanguage() const;
+
+    Q_INVOKABLE QVariant value(const QString &key, const QVariant &defaultValue = QVariant()) const;
     
     QString videoPlayer() const;
     QString videoPlayerCommand() const;
-    
+
 public Q_SLOTS:
+#if (defined MEEGO_EDITION_HARMATTAN) || (SYMBIAN_OS)
+    void setActiveColor(const QString &color);
+    void setActiveColorString(const QString &s);
+#endif
     void addCategory(const QString &name, const QString &path);
     void setDefaultCategory(const QString &category);
     void removeCategory(const QString &name);
@@ -138,6 +159,8 @@ public Q_SLOTS:
     
     void setSafeSearchEnabled(bool enabled);
     
+    void setScreenOrientation(int orientation);
+    
     void addSearch(const QString &query);
     void removeSearch(const QString &query);
     
@@ -145,11 +168,17 @@ public Q_SLOTS:
     
     void setSubtitlesEnabled(bool enabled);
     void setSubtitlesLanguage(const QString &language);
+
+    void setValue(const QString &key, const QVariant &value);
     
     void setVideoPlayer(const QString &player);
     void setVideoPlayerCommand(const QString &command);
 
 Q_SIGNALS:
+#if (defined MEEGO_EDITION_HARMATTAN) || (SYMBIAN_OS)
+    void activeColorChanged();
+    void activeColorStringChanged();
+#endif
     void categoriesChanged();
     void defaultCategoryChanged();
     void clipboardMonitorEnabledChanged();
@@ -163,6 +192,7 @@ Q_SIGNALS:
     void networkProxyChanged();
     void playbackFormatsChanged();
     void safeSearchEnabledChanged();
+    void screenOrientationChanged();
     void searchHistoryChanged();
     void startTransfersAutomaticallyChanged();
     void subtitlesEnabledChanged();

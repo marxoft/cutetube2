@@ -84,8 +84,8 @@ private:
 private Q_SLOTS:
     void onRequestFinished();
     void onContentRequestFinished();
-    void onPlaylistCreated(const YouTubePlaylist *playlist);
-    void onPlaylistDeleted(const YouTubePlaylist *playlist);
+    void onPlaylistCreated(YouTubePlaylist *playlist);
+    void onPlaylistDeleted(YouTubePlaylist *playlist);
     
 Q_SIGNALS:
     void countChanged(int c);

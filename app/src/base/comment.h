@@ -53,7 +53,7 @@ public:
     
     QString videoId() const;
     
-    Q_INVOKABLE virtual void loadComment(const Comment *comment);
+    Q_INVOKABLE virtual void loadComment(Comment *comment);
     
 protected:    
     void setBody(const QString &b);

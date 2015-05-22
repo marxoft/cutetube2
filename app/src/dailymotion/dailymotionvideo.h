@@ -25,7 +25,7 @@ class DailymotionVideo : public Video
     Q_OBJECT
     
     Q_PROPERTY(QString errorString READ errorString NOTIFY statusChanged)
-    Q_PROPERTY(bool favourite READ isFavourite NOTIFY favouriteChanged)
+    Q_PROPERTY(bool favourited READ isFavourite NOTIFY favouriteChanged)
     Q_PROPERTY(QDailymotion::ResourcesRequest::Status status READ status NOTIFY statusChanged)
 
 public:
@@ -42,7 +42,7 @@ public:
     
     Q_INVOKABLE void loadVideo(const QString &id);
     Q_INVOKABLE void loadVideo(const QVariantMap &video);
-    Q_INVOKABLE void loadVideo(const DailymotionVideo *video);
+    Q_INVOKABLE void loadVideo(DailymotionVideo *video);
     
 public Q_SLOTS:
     void favourite();
@@ -57,7 +57,7 @@ private Q_SLOTS:
     void onVideoRequestFinished();
     void onFavouriteRequestFinished();
     void onUnfavouriteRequestFinished();
-    void onVideoUpdated(const DailymotionVideo *video);
+    void onVideoUpdated(DailymotionVideo *video);
     
 Q_SIGNALS:
     void favouriteChanged();

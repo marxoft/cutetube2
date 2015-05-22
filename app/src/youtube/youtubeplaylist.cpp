@@ -26,10 +26,10 @@ YouTubePlaylist::YouTubePlaylist(QObject *parent) :
     m_video(0)
 {
     setService(Resources::YOUTUBE);
-    connect(YouTube::instance(), SIGNAL(videoAddedToPlaylist(const YouTubeVideo*, const YouTubePlaylist*)),
-            this, SLOT(onPlaylistUpdated(const YouTubeVideo*, const YouTubePlaylist*)));
-    connect(YouTube::instance(), SIGNAL(videoRemovedFromPlaylist(const YouTubeVideo*, const YouTubePlaylist*)),
-            this, SLOT(onPlaylistUpdated(const YouTubeVideo*, const YouTubePlaylist*)));
+    connect(YouTube::instance(), SIGNAL(videoAddedToPlaylist(YouTubeVideo*, YouTubePlaylist*)),
+            this, SLOT(onPlaylistUpdated(YouTubeVideo*, YouTubePlaylist*)));
+    connect(YouTube::instance(), SIGNAL(videoRemovedFromPlaylist(YouTubeVideo*, YouTubePlaylist*)),
+            this, SLOT(onPlaylistUpdated(YouTubeVideo*, YouTubePlaylist*)));
 }
 
 YouTubePlaylist::YouTubePlaylist(const QString &id, QObject *parent) :
@@ -39,10 +39,10 @@ YouTubePlaylist::YouTubePlaylist(const QString &id, QObject *parent) :
 {
     setService(Resources::YOUTUBE);
     loadPlaylist(id);
-    connect(YouTube::instance(), SIGNAL(videoAddedToPlaylist(const YouTubeVideo*, const YouTubePlaylist*)),
-            this, SLOT(onPlaylistUpdated(const YouTubeVideo*, const YouTubePlaylist*)));
-    connect(YouTube::instance(), SIGNAL(videoRemovedFromPlaylist(const YouTubeVideo*, const YouTubePlaylist*)),
-            this, SLOT(onPlaylistUpdated(const YouTubeVideo*, const YouTubePlaylist*)));
+    connect(YouTube::instance(), SIGNAL(videoAddedToPlaylist(YouTubeVideo*, YouTubePlaylist*)),
+            this, SLOT(onPlaylistUpdated(YouTubeVideo*, YouTubePlaylist*)));
+    connect(YouTube::instance(), SIGNAL(videoRemovedFromPlaylist(YouTubeVideo*, YouTubePlaylist*)),
+            this, SLOT(onPlaylistUpdated(YouTubeVideo*, YouTubePlaylist*)));
 }
 
 YouTubePlaylist::YouTubePlaylist(const QVariantMap &playlist, QObject *parent) :
@@ -52,10 +52,10 @@ YouTubePlaylist::YouTubePlaylist(const QVariantMap &playlist, QObject *parent) :
 {
     setService(Resources::YOUTUBE);
     loadPlaylist(playlist);
-    connect(YouTube::instance(), SIGNAL(videoAddedToPlaylist(const YouTubeVideo*, const YouTubePlaylist*)),
-            this, SLOT(onPlaylistUpdated(const YouTubeVideo*, const YouTubePlaylist*)));
-    connect(YouTube::instance(), SIGNAL(videoRemovedFromPlaylist(const YouTubeVideo*, const YouTubePlaylist*)),
-            this, SLOT(onPlaylistUpdated(const YouTubeVideo*, const YouTubePlaylist*)));
+    connect(YouTube::instance(), SIGNAL(videoAddedToPlaylist(YouTubeVideo*, YouTubePlaylist*)),
+            this, SLOT(onPlaylistUpdated(YouTubeVideo*, YouTubePlaylist*)));
+    connect(YouTube::instance(), SIGNAL(videoRemovedFromPlaylist(YouTubeVideo*, YouTubePlaylist*)),
+            this, SLOT(onPlaylistUpdated(YouTubeVideo*, YouTubePlaylist*)));
 }
 
 YouTubePlaylist::YouTubePlaylist(const YouTubePlaylist *playlist, QObject *parent) :
@@ -64,10 +64,10 @@ YouTubePlaylist::YouTubePlaylist(const YouTubePlaylist *playlist, QObject *paren
     m_video(0),
     m_privacyStatus(playlist->privacyStatus())
 {
-    connect(YouTube::instance(), SIGNAL(videoAddedToPlaylist(const YouTubeVideo*, const YouTubePlaylist*)),
-            this, SLOT(onPlaylistUpdated(const YouTubeVideo*, const YouTubePlaylist*)));
-    connect(YouTube::instance(), SIGNAL(videoRemovedFromPlaylist(const YouTubeVideo*, const YouTubePlaylist*)),
-            this, SLOT(onPlaylistUpdated(const YouTubeVideo*, const YouTubePlaylist*)));
+    connect(YouTube::instance(), SIGNAL(videoAddedToPlaylist(YouTubeVideo*, YouTubePlaylist*)),
+            this, SLOT(onPlaylistUpdated(YouTubeVideo*, YouTubePlaylist*)));
+    connect(YouTube::instance(), SIGNAL(videoRemovedFromPlaylist(YouTubeVideo*, YouTubePlaylist*)),
+            this, SLOT(onPlaylistUpdated(YouTubeVideo*, YouTubePlaylist*)));
 }
 
 QString YouTubePlaylist::errorString() const {
@@ -122,12 +122,12 @@ void YouTubePlaylist::loadPlaylist(const QVariantMap &playlist) {
     setVideoCount(contentDetails.value("itemCount").toInt());    
 }
 
-void YouTubePlaylist::loadPlaylist(const YouTubePlaylist *playlist) {
+void YouTubePlaylist::loadPlaylist(YouTubePlaylist *playlist) {
     Playlist::loadPlaylist(playlist);
     setPrivacyStatus(playlist->privacyStatus());
 }
 
-void YouTubePlaylist::addVideo(const YouTubeVideo *video) {
+void YouTubePlaylist::addVideo(YouTubeVideo *video) {
     if (status() == QYouTube::ResourcesRequest::Loading) {
         return;
     }
@@ -169,7 +169,12 @@ void YouTubePlaylist::addVideo(const YouTubeVideo *video) {
     emit statusChanged(status());
 }
 
-void YouTubePlaylist::removeVideo(const YouTubeVideo *video) {
+void YouTubePlaylist::addVideo(const QVariantMap &playlist, YouTubeVideo *video) {
+    loadPlaylist(playlist);
+    addVideo(video);
+}
+
+void YouTubePlaylist::removeVideo(YouTubeVideo *video) {
     if (status() == QYouTube::ResourcesRequest::Loading) {
         return;
     }
@@ -269,7 +274,7 @@ void YouTubePlaylist::onRemoveVideoRequestFinished() {
     emit statusChanged(status());
 }
 
-void YouTubePlaylist::onPlaylistUpdated(const YouTubeVideo*, const YouTubePlaylist *playlist) {
+void YouTubePlaylist::onPlaylistUpdated(YouTubeVideo*, YouTubePlaylist *playlist) {
     if ((playlist->id() == id()) && (playlist != this)) {
         loadPlaylist(playlist);
     }

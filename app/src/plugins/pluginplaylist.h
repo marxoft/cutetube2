@@ -39,6 +39,7 @@ public:
     
     Q_INVOKABLE void loadPlaylist(const QString &service, const QString &id);
     Q_INVOKABLE void loadPlaylist(const QString &service, const QVariantMap &playlist);
+    Q_INVOKABLE void loadPlaylist(PluginPlaylist *playlist);
             
 private Q_SLOTS:
     void onRequestFinished();

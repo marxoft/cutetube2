@@ -96,11 +96,11 @@ private:
 private Q_SLOTS:
     void onRequestFinished();
     void onContentRequestFinished();
-    void onVideoAddedToPlaylist(const YouTubeVideo *video, const YouTubePlaylist *playlist);
-    void onVideoRemovedFromPlaylist(const YouTubeVideo *video, const YouTubePlaylist *playlist);
-    void onVideoFavourited(const YouTubeVideo *video);
-    void onVideoUnfavourited(const YouTubeVideo *video);
-    void onVideoWatchLater(const YouTubeVideo *video);
+    void onVideoAddedToPlaylist(YouTubeVideo *video, YouTubePlaylist *playlist);
+    void onVideoRemovedFromPlaylist(YouTubeVideo *video, YouTubePlaylist *playlist);
+    void onVideoFavourited(YouTubeVideo *video);
+    void onVideoUnfavourited(YouTubeVideo *video);
+    void onVideoWatchLater(YouTubeVideo *video);
     
 Q_SIGNALS:
     void countChanged(int c);

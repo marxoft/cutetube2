@@ -59,7 +59,7 @@ public:
         
     int videoCount() const;
     
-    Q_INVOKABLE virtual void loadPlaylist(const Playlist *playlist);
+    Q_INVOKABLE virtual void loadPlaylist(Playlist *playlist);
     
 protected:
     void setDate(const QString &d);

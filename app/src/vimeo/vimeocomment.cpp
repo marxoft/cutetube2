@@ -96,6 +96,11 @@ void VimeoComment::addComment() {
     emit statusChanged(status());
 }
 
+void VimeoComment::addComment(const QVariantMap &comment) {
+    loadComment(comment);
+    addComment();
+}
+
 void VimeoComment::initRequest() {
     if (!m_request) {
         m_request = new QVimeo::ResourcesRequest(this);

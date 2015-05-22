@@ -16,9 +16,6 @@
 
 #include "pluginusermodel.h"
 #include "resources.h"
-#ifdef CUTETUBE_DEBUG
-#include <QDebug>
-#endif
 
 PluginUserModel::PluginUserModel(QObject *parent) :
     QAbstractListModel(parent),
@@ -156,7 +153,9 @@ void PluginUserModel::search(const QString &query, const QString &order) {
 void PluginUserModel::clear() {
     if (!m_items.isEmpty()) {
         beginResetModel();
+        qDeleteAll(m_items);
         m_items.clear();
+        m_next = QString();
         endResetModel();
         emit countChanged(rowCount());
     }

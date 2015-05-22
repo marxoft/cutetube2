@@ -72,7 +72,7 @@ private Q_SLOTS:
 Q_SIGNALS:
     void activeChanged(int a);
     void countChanged(int c);
-    void transferAdded(const Transfer *transfer);
+    void transferAdded(Transfer *transfer);
     
 private:
     static Transfers *self;

@@ -144,17 +144,19 @@ void VimeoPlaylistModel::list(const QString &resourcePath, const QVariantMap &fi
     disconnect(Vimeo::instance(), 0, this, 0);
     
     if (resourcePath == "/me/playlists") {
-        connect(Vimeo::instance(), SIGNAL(playlistCreated(const VimeoPlaylist*)),
-                this, SLOT(onPlaylistCreated(const VimeoPlaylist*)));
-        connect(Vimeo::instance(), SIGNAL(playlistDeleted(const VimeoPlaylist*)),
-                this, SLOT(onPlaylistDeleted(const VimeoPlaylist*)));
+        connect(Vimeo::instance(), SIGNAL(playlistCreated(VimeoPlaylist*)),
+                this, SLOT(onPlaylistCreated(VimeoPlaylist*)));
+        connect(Vimeo::instance(), SIGNAL(playlistDeleted(VimeoPlaylist*)),
+                this, SLOT(onPlaylistDeleted(VimeoPlaylist*)));
     }
 }
 
 void VimeoPlaylistModel::clear() {
     if (!m_items.isEmpty()) {
         beginResetModel();
+        qDeleteAll(m_items);
         m_items.clear();
+        m_hasMore = false;
         endResetModel();
         emit countChanged(rowCount());
     }
@@ -217,14 +219,14 @@ void VimeoPlaylistModel::onRequestFinished() {
     emit statusChanged(status());
 }
 
-void VimeoPlaylistModel::onPlaylistCreated(const VimeoPlaylist *playlist) {
+void VimeoPlaylistModel::onPlaylistCreated(VimeoPlaylist *playlist) {
     insert(0, new VimeoPlaylist(playlist, this));
 #ifdef CUTETUBE_DEBUG
     qDebug() << "VimeoPlaylistModel::onPlaylistCreated" << playlist->title();
 #endif
 }
 
-void VimeoPlaylistModel::onPlaylistDeleted(const VimeoPlaylist *playlist) {
+void VimeoPlaylistModel::onPlaylistDeleted(VimeoPlaylist *playlist) {
     QModelIndexList list = match(index(0), IdRole, playlist->id(), 1, Qt::MatchExactly);
     
     if (!list.isEmpty()) {

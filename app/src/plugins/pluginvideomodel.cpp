@@ -16,9 +16,6 @@
 
 #include "pluginvideomodel.h"
 #include "resources.h"
-#ifdef CUTETUBE_DEBUG
-#include <QDebug>
-#endif
 
 PluginVideoModel::PluginVideoModel(QObject *parent) :
     QAbstractListModel(parent),
@@ -162,7 +159,9 @@ void PluginVideoModel::search(const QString &query, const QString &order) {
 void PluginVideoModel::clear() {
     if (!m_items.isEmpty()) {
         beginResetModel();
+        qDeleteAll(m_items);
         m_items.clear();
+        m_next = QString();
         endResetModel();
         emit countChanged(rowCount());
     }

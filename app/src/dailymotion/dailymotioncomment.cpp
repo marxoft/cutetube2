@@ -94,6 +94,11 @@ void DailymotionComment::addComment() {
     emit statusChanged(status());
 }
 
+void DailymotionComment::addComment(const QVariantMap &comment) {
+    loadComment(comment);
+    addComment();
+}
+
 void DailymotionComment::initRequest() {
     if (!m_request) {
         m_request = new QDailymotion::ResourcesRequest(this);

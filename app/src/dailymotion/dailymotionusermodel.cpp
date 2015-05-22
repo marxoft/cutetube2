@@ -145,17 +145,19 @@ void DailymotionUserModel::list(const QString &resourcePath, const QVariantMap &
     disconnect(Dailymotion::instance(), 0, this, 0);
     
     if (resourcePath == "/me/following") {
-        connect(Dailymotion::instance(), SIGNAL(userSubscribed(const DailymotionUser*)),
-                this, SLOT(onUserSubscribed(const DailymotionUser*)));
-        connect(Dailymotion::instance(), SIGNAL(userUnsubscribed(const DailymotionUser*)),
-                this, SLOT(onUserUnsubscribed(const DailymotionUser*)));
+        connect(Dailymotion::instance(), SIGNAL(userSubscribed(DailymotionUser*)),
+                this, SLOT(onUserSubscribed(DailymotionUser*)));
+        connect(Dailymotion::instance(), SIGNAL(userUnsubscribed(DailymotionUser*)),
+                this, SLOT(onUserUnsubscribed(DailymotionUser*)));
     }
 }
 
 void DailymotionUserModel::clear() {
     if (!m_items.isEmpty()) {
         beginResetModel();
+        qDeleteAll(m_items);
         m_items.clear();
+        m_hasMore = false;
         endResetModel();
         emit countChanged(rowCount());
     }
@@ -218,14 +220,14 @@ void DailymotionUserModel::onRequestFinished() {
     emit statusChanged(status());
 }
 
-void DailymotionUserModel::onUserSubscribed(const DailymotionUser *user) {
+void DailymotionUserModel::onUserSubscribed(DailymotionUser *user) {
     insert(0, new DailymotionUser(user, this));
 #ifdef CUTETUBE_DEBUG
     qDebug() << "DailymotionUserModel::onUserSubscribed" << user->id();
 #endif
 }
 
-void DailymotionUserModel::onUserUnsubscribed(const DailymotionUser *user) {
+void DailymotionUserModel::onUserUnsubscribed(DailymotionUser *user) {
     QModelIndexList list = match(index(0), IdRole, user->id(), 1, Qt::MatchExactly);
     
     if (!list.isEmpty()) {

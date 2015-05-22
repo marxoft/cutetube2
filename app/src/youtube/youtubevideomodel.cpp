@@ -31,7 +31,7 @@ YouTubeVideoModel::YouTubeVideoModel(QObject *parent) :
     m_roles[DislikedRole] = "disliked";
     m_roles[DislikeCountRole] = "dislikeCount";
     m_roles[DurationRole] = "duration";
-    m_roles[FavouriteRole] = "favourite";
+    m_roles[FavouriteRole] = "favourited";
     m_roles[FavouriteCountRole] = "favouriteCount";
     m_roles[FavouriteIdRole] = "favouriteId";
     m_roles[IdRole] = "id";
@@ -167,20 +167,20 @@ void YouTubeVideoModel::list(const QString &resourcePath, const QStringList &par
         
     if (resourcePath.endsWith("playlistItems")) {
         if (filters.value("playlistId") == YouTube::instance()->relatedPlaylist("favorites")) {
-            connect(YouTube::instance(), SIGNAL(videoFavourited(const YouTubeVideo*)),
-                    this, SLOT(onVideoFavourited(const YouTubeVideo*)));
-            connect(YouTube::instance(), SIGNAL(videoUnfavourited(const YouTubeVideo*)),
-                    this, SLOT(onVideoUnfavourited(const YouTubeVideo*)));
+            connect(YouTube::instance(), SIGNAL(videoFavourited(YouTubeVideo*)),
+                    this, SLOT(onVideoFavourited(YouTubeVideo*)));
+            connect(YouTube::instance(), SIGNAL(videoUnfavourited(YouTubeVideo*)),
+                    this, SLOT(onVideoUnfavourited(YouTubeVideo*)));
         }
         else if (filters.value("playlistId") == YouTube::instance()->relatedPlaylist("watchLater")) {
-            connect(YouTube::instance(), SIGNAL(videoWatchLater(const YouTubeVideo*)),
-                    this, SLOT(onVideoWatchLater(const YouTubeVideo*)));
+            connect(YouTube::instance(), SIGNAL(videoWatchLater(YouTubeVideo*)),
+                    this, SLOT(onVideoWatchLater(YouTubeVideo*)));
         }
         else {
-            connect(YouTube::instance(), SIGNAL(videoAddedToPlaylist(const YouTubeVideo*, const YouTubePlaylist*)),
-                    this, SLOT(onVideoAddedToPlaylist(const YouTubeVideo*, const YouTubePlaylist*)));
-            connect(YouTube::instance(), SIGNAL(videoRemovedFromPlaylist(const YouTubeVideo*, const YouTubePlaylist*)),
-                    this, SLOT(onVideoRemovedFromPlaylist(const YouTubeVideo*, const YouTubePlaylist*)));
+            connect(YouTube::instance(), SIGNAL(videoAddedToPlaylist(YouTubeVideo*, YouTubePlaylist*)),
+                    this, SLOT(onVideoAddedToPlaylist(YouTubeVideo*, YouTubePlaylist*)));
+            connect(YouTube::instance(), SIGNAL(videoRemovedFromPlaylist(YouTubeVideo*, YouTubePlaylist*)),
+                    this, SLOT(onVideoRemovedFromPlaylist(YouTubeVideo*, YouTubePlaylist*)));
         }
     }
 }
@@ -188,7 +188,9 @@ void YouTubeVideoModel::list(const QString &resourcePath, const QStringList &par
 void YouTubeVideoModel::clear() {
     if (!m_items.isEmpty()) {
         beginResetModel();
+        qDeleteAll(m_items);
         m_items.clear();
+        m_nextPageToken = QString();
         endResetModel();
         emit countChanged(rowCount());
     }
@@ -292,15 +294,13 @@ void YouTubeVideoModel::onRequestFinished() {
                 else {
                     loadResults();
                 }
+
+                return;
             }
         }
-        else {
-            emit statusChanged(status());
-        }
     }
-    else {
-        emit statusChanged(status());
-    }
+
+    emit statusChanged(status());
 }
 
 void YouTubeVideoModel::onContentRequestFinished() {
@@ -324,7 +324,7 @@ void YouTubeVideoModel::onContentRequestFinished() {
     loadResults();
 }
 
-void YouTubeVideoModel::onVideoAddedToPlaylist(const YouTubeVideo *video, const YouTubePlaylist *playlist) {
+void YouTubeVideoModel::onVideoAddedToPlaylist(YouTubeVideo *video, YouTubePlaylist *playlist) {
     if (m_filters.value("playlistId") == playlist->id()) {
         insert(0, new YouTubeVideo(video, this));
     }
@@ -333,7 +333,7 @@ void YouTubeVideoModel::onVideoAddedToPlaylist(const YouTubeVideo *video, const 
 #endif
 }
 
-void YouTubeVideoModel::onVideoRemovedFromPlaylist(const YouTubeVideo *video, const YouTubePlaylist *playlist) {
+void YouTubeVideoModel::onVideoRemovedFromPlaylist(YouTubeVideo *video, YouTubePlaylist *playlist) {
     if (m_filters.value("playlistId") == playlist->id()) {
         QModelIndexList list = match(index(0), IdRole, video->id(), 1, Qt::MatchExactly);
         
@@ -346,14 +346,14 @@ void YouTubeVideoModel::onVideoRemovedFromPlaylist(const YouTubeVideo *video, co
 #endif
 }
 
-void YouTubeVideoModel::onVideoFavourited(const YouTubeVideo *video) {
+void YouTubeVideoModel::onVideoFavourited(YouTubeVideo *video) {
     insert(0, new YouTubeVideo(video, this));
 #ifdef CUTETUBE_DEBUG
     qDebug() << "YouTubeVideoModel::onVideoFavourited" << video->id();
 #endif
 }
 
-void YouTubeVideoModel::onVideoUnfavourited(const YouTubeVideo *video) {
+void YouTubeVideoModel::onVideoUnfavourited(YouTubeVideo *video) {
     QModelIndexList list = match(index(0), IdRole, video->id(), 1, Qt::MatchExactly);
     
     if (!list.isEmpty()) {
@@ -364,7 +364,7 @@ void YouTubeVideoModel::onVideoUnfavourited(const YouTubeVideo *video) {
 #endif
 }
 
-void YouTubeVideoModel::onVideoWatchLater(const YouTubeVideo *video) {
+void YouTubeVideoModel::onVideoWatchLater(YouTubeVideo *video) {
     insert(0, new YouTubeVideo(video, this));
 #ifdef CUTETUBE_DEBUG
     qDebug() << "YouTubeVideoModel::onVideoWatchLater" << video->id();

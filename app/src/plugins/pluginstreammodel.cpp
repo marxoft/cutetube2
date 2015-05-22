@@ -41,14 +41,14 @@ ResourcesRequest::Status PluginStreamModel::status() const {
     return m_request->status();
 }
 
-void PluginStreamModel::list(const QString &url) {
+void PluginStreamModel::list(const QString &id) {
     if (status() == ResourcesRequest::Loading) {
         return;
     }
     
     clear();
-    m_url = url;
-    m_request->list(Resources::STREAM, url);
+    m_id = id;
+    m_request->list(Resources::STREAM, id);
     emit statusChanged(status());
 }
 
@@ -58,7 +58,7 @@ void PluginStreamModel::cancel() {
 
 void PluginStreamModel::reload() {
     clear();
-    m_request->list(Resources::STREAM, m_url);
+    m_request->list(Resources::STREAM, m_id);
     emit statusChanged(status());
 }
 

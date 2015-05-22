@@ -76,6 +76,10 @@ void PluginComment::loadComment(const QString &service, const QVariantMap &comme
     setVideoId(comment.value("videoId").toString());
 }
 
+void PluginComment::loadComment(PluginComment *comment) {
+    Comment::loadComment(comment);
+}
+
 void PluginComment::onRequestFinished() {
     if (m_request->status() == ResourcesRequest::Ready) {
         loadComment(m_request->service(), m_request->result().toMap());

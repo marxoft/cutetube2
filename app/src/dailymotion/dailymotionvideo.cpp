@@ -29,10 +29,10 @@ DailymotionVideo::DailymotionVideo(QObject *parent) :
     m_favourite(false)
 {
     setService(Resources::DAILYMOTION);
-    connect(Dailymotion::instance(), SIGNAL(videoFavourited(const DailymotionVideo*)),
-            this, SLOT(onVideoUpdated(const DailymotionVideo*)));
-    connect(Dailymotion::instance(), SIGNAL(videoUnfavourited(const DailymotionVideo*)),
-            this, SLOT(onVideoUpdated(const DailymotionVideo*)));
+    connect(Dailymotion::instance(), SIGNAL(videoFavourited(DailymotionVideo*)),
+            this, SLOT(onVideoUpdated(DailymotionVideo*)));
+    connect(Dailymotion::instance(), SIGNAL(videoUnfavourited(DailymotionVideo*)),
+            this, SLOT(onVideoUpdated(DailymotionVideo*)));
 }
 
 DailymotionVideo::DailymotionVideo(const QString &id, QObject *parent) :
@@ -42,10 +42,10 @@ DailymotionVideo::DailymotionVideo(const QString &id, QObject *parent) :
 {
     setService(Resources::DAILYMOTION);
     loadVideo(id);
-    connect(Dailymotion::instance(), SIGNAL(videoFavourited(const DailymotionVideo*)),
-            this, SLOT(onVideoUpdated(const DailymotionVideo*)));
-    connect(Dailymotion::instance(), SIGNAL(videoUnfavourited(const DailymotionVideo*)),
-            this, SLOT(onVideoUpdated(const DailymotionVideo*)));
+    connect(Dailymotion::instance(), SIGNAL(videoFavourited(DailymotionVideo*)),
+            this, SLOT(onVideoUpdated(DailymotionVideo*)));
+    connect(Dailymotion::instance(), SIGNAL(videoUnfavourited(DailymotionVideo*)),
+            this, SLOT(onVideoUpdated(DailymotionVideo*)));
 }
 
 DailymotionVideo::DailymotionVideo(const QVariantMap &video, QObject *parent) :
@@ -55,10 +55,10 @@ DailymotionVideo::DailymotionVideo(const QVariantMap &video, QObject *parent) :
 {
     setService(Resources::DAILYMOTION);
     loadVideo(video);
-    connect(Dailymotion::instance(), SIGNAL(videoFavourited(const DailymotionVideo*)),
-            this, SLOT(onVideoUpdated(const DailymotionVideo*)));
-    connect(Dailymotion::instance(), SIGNAL(videoUnfavourited(const DailymotionVideo*)),
-            this, SLOT(onVideoUpdated(const DailymotionVideo*)));
+    connect(Dailymotion::instance(), SIGNAL(videoFavourited(DailymotionVideo*)),
+            this, SLOT(onVideoUpdated(DailymotionVideo*)));
+    connect(Dailymotion::instance(), SIGNAL(videoUnfavourited(DailymotionVideo*)),
+            this, SLOT(onVideoUpdated(DailymotionVideo*)));
 }
 
 DailymotionVideo::DailymotionVideo(const DailymotionVideo *video, QObject *parent) :
@@ -66,10 +66,10 @@ DailymotionVideo::DailymotionVideo(const DailymotionVideo *video, QObject *paren
     m_request(0),
     m_favourite(video->isFavourite())
 {
-    connect(Dailymotion::instance(), SIGNAL(videoFavourited(const DailymotionVideo*)),
-            this, SLOT(onVideoUpdated(const DailymotionVideo*)));
-    connect(Dailymotion::instance(), SIGNAL(videoUnfavourited(const DailymotionVideo*)),
-            this, SLOT(onVideoUpdated(const DailymotionVideo*)));
+    connect(Dailymotion::instance(), SIGNAL(videoFavourited(DailymotionVideo*)),
+            this, SLOT(onVideoUpdated(DailymotionVideo*)));
+    connect(Dailymotion::instance(), SIGNAL(videoUnfavourited(DailymotionVideo*)),
+            this, SLOT(onVideoUpdated(DailymotionVideo*)));
 }
 
 QString DailymotionVideo::errorString() const {
@@ -121,7 +121,7 @@ void DailymotionVideo::loadVideo(const QVariantMap &video) {
     setViewCount(video.value("views_total").toLongLong());
 }
 
-void DailymotionVideo::loadVideo(const DailymotionVideo *video) {
+void DailymotionVideo::loadVideo(DailymotionVideo *video) {
     Video::loadVideo(video);
     setFavourite(video->isFavourite());
 }
@@ -202,7 +202,7 @@ void DailymotionVideo::onUnfavouriteRequestFinished() {
     emit statusChanged(status());
 }
 
-void DailymotionVideo::onVideoUpdated(const DailymotionVideo *video) {
+void DailymotionVideo::onVideoUpdated(DailymotionVideo *video) {
     if ((video->id() == id()) && (video != this)) {
         loadVideo(video);
     }

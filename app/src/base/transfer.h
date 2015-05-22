@@ -21,6 +21,14 @@
 #include <QUrl>
 #include <QFile>
 #include <QVariantList>
+#include <qplatformdefs.h>
+
+#ifdef MEEGO_EDITION_HARMATTAN
+namespace TransferUI {
+    class Client;
+    class Transfer;
+}
+#endif
 
 namespace QDailymotion {
     class ResourcesRequest;
@@ -214,6 +222,11 @@ Q_SIGNALS:
     void transferTypeChanged();
 
 private:
+#ifdef MEEGO_EDITION_HARMATTAN
+    static TransferUI::Client *tuiClient;
+    TransferUI::Transfer *m_tuiTransfer;
+#endif
+
     QDailymotion::StreamsRequest *m_dailymotionStreamsRequest;
     QVimeo::StreamsRequest *m_vimeoStreamsRequest;
     QYouTube::StreamsRequest *m_youtubeStreamsRequest;

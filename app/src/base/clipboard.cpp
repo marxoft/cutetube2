@@ -22,6 +22,9 @@
 #ifdef MEEGO_EDITION_HARMATTAN
 #include <QTimer>
 #endif
+#ifdef CUTETUBE_DEBUG
+#include <QDebug>
+#endif
 
 Clipboard* Clipboard::self = 0;
 
@@ -72,6 +75,9 @@ void Clipboard::onMonitorEnabledChanged() {
         m_monitor = false;
         disconnect(QApplication::clipboard(), SIGNAL(dataChanged()), this, SLOT(onTextChanged()));
     }
+#ifdef CUTETUBE_DEBUG
+    qDebug() << "Clipboard::onMonitorEnabledChanged" << m_monitor;
+#endif
 }
 
 void Clipboard::onTextChanged() {
@@ -92,7 +98,9 @@ void Clipboard::onTextChanged() {
     }
 #endif
     QString text = QApplication::clipboard()->text();
-    
+#ifdef CUTETUBE_DEBUG
+    qDebug() << "Clipboard::onTextChanged" << text;
+#endif
     if (!text.isEmpty()) {
         emit textChanged(text);
     }

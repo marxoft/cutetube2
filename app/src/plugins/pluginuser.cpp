@@ -74,6 +74,10 @@ void PluginUser::loadUser(const QString &service, const QVariantMap &user) {
     setUsername(user.value("username").toString());
 }
 
+void PluginUser::loadUser(PluginUser *user) {
+    User::loadUser(user);
+}
+
 void PluginUser::onRequestFinished() {
     if (m_request->status() == ResourcesRequest::Ready) {
         loadUser(m_request->service(), m_request->result().toMap());

@@ -42,6 +42,7 @@ public:
 
 public Q_SLOTS:
     void addComment();
+    void addComment(const QVariantMap &comment);
     
 private:
     void initRequest();

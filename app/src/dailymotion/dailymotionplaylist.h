@@ -43,8 +43,9 @@ public:
     Q_INVOKABLE void loadPlaylist(const QVariantMap &playlist);
     
 public Q_SLOTS:
-    void addVideo(const DailymotionVideo *video);
-    void removeVideo(const DailymotionVideo *video);
+    void addVideo(DailymotionVideo *video);
+    void addVideo(const QVariantMap &playlist, DailymotionVideo *video);
+    void removeVideo(DailymotionVideo *video);
     
 private:
     void initRequest();
@@ -54,14 +55,14 @@ private Q_SLOTS:
     void onCreatePlaylistRequestFinished();
     void onAddVideoRequestFinished();
     void onRemoveVideoRequestFinished();
-    void onPlaylistUpdated(const DailymotionVideo*, const DailymotionPlaylist*);
+    void onPlaylistUpdated(DailymotionVideo*, DailymotionPlaylist*);
     
 Q_SIGNALS:
     void statusChanged(QDailymotion::ResourcesRequest::Status s);
 
 private:
     QDailymotion::ResourcesRequest *m_request;
-    const DailymotionVideo *m_video;
+    DailymotionVideo *m_video;
 };
 
 #endif // DAILYMOTIONPLAYLIST_H

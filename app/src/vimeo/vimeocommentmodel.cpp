@@ -40,8 +40,8 @@ VimeoCommentModel::VimeoCommentModel(QObject *parent) :
     
     connect(m_request, SIGNAL(accessTokenChanged(QString)), Vimeo::instance(), SLOT(setAccessToken(QString)));
     connect(m_request, SIGNAL(finished()), this, SLOT(onRequestFinished()));
-    connect(Vimeo::instance(), SIGNAL(commentAdded(const VimeoComment*)),
-            this, SLOT(onCommentAdded(const VimeoComment*)));
+    connect(Vimeo::instance(), SIGNAL(commentAdded(VimeoComment*)),
+            this, SLOT(onCommentAdded(VimeoComment*)));
 }
 
 QString VimeoCommentModel::errorString() const {
@@ -143,7 +143,9 @@ void VimeoCommentModel::list(const QString &resourcePath, const QVariantMap &fil
 void VimeoCommentModel::clear() {
     if (!m_items.isEmpty()) {
         beginResetModel();
+        qDeleteAll(m_items);
         m_items.clear();
+        m_hasMore = false;
         endResetModel();
         emit countChanged(rowCount());
     }
@@ -206,7 +208,7 @@ void VimeoCommentModel::onRequestFinished() {
     emit statusChanged(status());
 }
 
-void VimeoCommentModel::onCommentAdded(const VimeoComment *comment) {
+void VimeoCommentModel::onCommentAdded(VimeoComment *comment) {
     if (comment->videoId() == m_resourcePath.section('/', 1, 1)) {
         insert(0, new VimeoComment(comment, this));
     }

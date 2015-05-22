@@ -29,10 +29,17 @@ public:
     explicit ServiceModel(QObject *parent = 0) :
         SelectionModel(parent)
     {
+        reload();
+    }
+
+public Q_SLOTS:
+    inline void reload() {
+        clear();
+
         append("YouTube", Resources::YOUTUBE);
         append("Dailymotion", Resources::DAILYMOTION);
         append("Vimeo", Resources::VIMEO);
-        
+
         foreach (QString name, ResourcesPlugins::instance()->pluginNames()) {
             append(name, name);
         }

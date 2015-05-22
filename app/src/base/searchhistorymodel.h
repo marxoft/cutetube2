@@ -26,20 +26,17 @@ class SearchHistoryModel : public QSortFilterProxyModel
     Q_OBJECT
     
     Q_PROPERTY(int count READ rowCount NOTIFY countChanged)
-    
+    Q_PROPERTY(Qt::Alignment textAlignment READ textAlignment WRITE setTextAlignment NOTIFY textAlignmentChanged)
+
 public:
-    enum Roles {
-        OriginalStringRole = Qt::UserRole + 1
-    };
-    
     explicit SearchHistoryModel(QObject *parent = 0);
-    
-#if QT_VERSION >= 0x050000
-    QHash<int, QByteArray> roleNames() const;
-#endif
-    
+
+    Qt::Alignment textAlignment() const;
+    void setTextAlignment(Qt::Alignment align);
+
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
-        
+    Q_INVOKABLE QVariant data(int row, const QByteArray &role) const;
+            
     Q_INVOKABLE void addSearch(const QString &query);
     Q_INVOKABLE void removeSearch(const QString &query);
     Q_INVOKABLE void removeSearch(int row);
@@ -50,11 +47,12 @@ public Q_SLOTS:
     
 Q_SIGNALS:
     void countChanged(int c);
+    void textAlignmentChanged();
     
 private:
     QStringListModel *m_model;
-    
-    QHash<int, QByteArray> m_roles;
+
+    Qt::Alignment m_alignment;
 };
     
 #endif // SEARCHHISTORYMODEL_H

@@ -5,11 +5,6 @@ TARGET = cutetube2
 
 QT += network sql
 
-LIBS += -L/usr/lib -lqdailymotion -lqvimeo -lqyoutube
-
-CONFIG += link_prl
-PKGCONFIG += libqdailymotion libqvimeo libqyoutube
-
 INCLUDEPATH += \
     src/base \
     src/dailymotion \
@@ -23,6 +18,7 @@ HEADERS += \
     src/base/comment.h \
     src/base/concurrenttransfersmodel.h \
     src/base/database.h \
+    src/base/definitions.h \
     src/base/json.h \
     src/base/networkproxytypemodel.h \
     src/base/playlist.h \
@@ -169,6 +165,10 @@ SOURCES += \
 maemo5 {
     DEFINES += NAV_SEARCH
     
+    LIBS += -L/usr/lib -lqdailymotion -lqvimeo -lqyoutube
+    CONFIG += link_prl
+    PKGCONFIG += libqdailymotion libqvimeo libqyoutube
+    
     QT += maemo5 webkit
     CONFIG += mobility12
     MOBILITY += multimedia
@@ -182,7 +182,6 @@ maemo5 {
         src/maemo5/youtube
     
     HEADERS += \
-        src/base/clipboard.h \
         src/base/transfermodel.h \
         src/base/transferprioritymodel.h \
         src/imagecache/imagecache.h \
@@ -293,7 +292,6 @@ maemo5 {
         src/maemo5/youtube/youtubeview.h
         
     SOURCES += \
-        src/base/clipboard.cpp \
         src/base/transfermodel.cpp \
         src/imagecache/imagecache.cpp \
         src/maemo5/aboutdialog.cpp \
@@ -409,38 +407,89 @@ maemo5 {
     icon.path = /usr/share/icons/hicolor/64x64/apps
     
     INSTALLS += desktop icon
-} else:unix {
+    
+} else:contains(MEEGO_EDITION,harmattan) {
     DEFINES += NAV_SEARCH
+
+    LIBS += -L../../qdailymotion/lib -lqdailymotion
+    LIBS += -L../../qvimeo/lib -lqvimeo
+    LIBS += -L../../qyoutube/lib -lqyoutube
     
-    QT += quick qml widgets
+    QT += declarative opengl
+    CONFIG += \
+        link_pkgconfig \
+        qdeclarative-boostable \
+        libtuiclient \
+        libcontentaction \
+        shareuiinterface-maemo-meegotouch \
+        share-ui-common \
+        mdatauri \
+        qmsystem2
     
-    INCLUDEPATH += src/desktop-qml
+    INCLUDEPATH += \
+        src/harmattan
     
     HEADERS += \
-        src/base/clipboard.h \
-        src/base/transfermodel.h \
-    
-    SOURCES += \
-        src/base/clipboard.cpp \
-        src/base/transfermodel.cpp \
-        src/desktop-qml/main.cpp
-    
-    qml.files += \
-        src/desktop-qml/main.qml \
-        src/desktop-qml/avatar.qml \
-        src/desktop-qml/Highlight.qml \
-        src/desktop-qml/ItemView.qml \
-        src/desktop-qml/Page.qml \
-        src/desktop-qml/VideoDelegate.qml \
-        src/desktop-qml/VideoPlaceholder.qml \
-        src/desktop-qml/VideoThumbnail.qml \
-        src/desktop-qml/YouTubePage.qml \
-        src/desktop-qml/YouTubeVideoPage.qml \
-        src/desktop-qml/YouTubeVideosPage.qml
+        src/harmattan/activecolormodel.h \
+        src/harmattan/cookiejar.h \
+        src/harmattan/maskeditem.h \
+        src/harmattan/maskeffect.h \
+        src/harmattan/networkaccessmanagerfactory.h \
+        src/harmattan/screenorientationmodel.h \
+        src/harmattan/screensaver.h \
+        src/harmattan/shareui.h
         
-    qml.path = /opt/cutetube2/qml
+    SOURCES += \
+        src/harmattan/cookiejar.cpp \
+        src/harmattan/main.cpp \
+        src/harmattan/maskeditem.cpp \
+        src/harmattan/maskeffect.cpp \
+        src/harmattan/networkaccessmanagerfactory.cpp \
+        src/harmattan/screensaver.cpp \
+        src/harmattan/shareui.cpp
+
+    base_qml.files = $$files(src/harmattan/qml/*.qml)
+    base_qml.path = /opt/cutetube2/qml
+
+    dailymotion_qml.files = $$files(src/harmattan/qml/dailymotion/*.qml)
+    dailymotion_qml.path = /opt/cutetube2/qml/dailymotion
+
+    plugins_qml.files = $$files(src/harmattan/qml/plugins/*.qml)
+    plugins_qml.path = /opt/cutetube2/qml/plugins
+
+    vimeo_qml.files = $$files(src/harmattan/qml/vimeo/*.qml)
+    vimeo_qml.path = /opt/cutetube2/qml/vimeo
+
+    youtube_qml.files = $$files(src/harmattan/qml/youtube/*.qml)
+    youtube_qml.path = /opt/cutetube2/qml/youtube
+
+    images.files = src/harmattan/qml/images/*.png
+    images.path = /opt/cutetube2/qml/images
+
+    desktop.files = desktop/harmattan/cutetube2.desktop
+    desktop.path = /usr/share/applications
+
+    icon.files = desktop/harmattan/80/cutetube2.png
+    icon.path = /usr/share/icons/hicolor/80x80/apps
+
+    contentaction.files = desktop/harmattan/cutetube2.xml
+    contentaction.path = /usr/share/contentaction
+
+    splash.files = desktop/harmattan/splash/*.png
+    splash.path = /opt/cutetube2/splash
+
+    INSTALLS += \
+        base_qml \
+        dailymotion_qml \
+        plugins_qml \
+        vimeo_qml \
+        youtube_qml \
+        images \
+        desktop \
+        icon \
+        contentaction \
+        splash
     
-    INSTALLS += qml
 }
 
 unix {
@@ -449,19 +498,25 @@ unix {
     INCLUDEPATH += src/dbus
     
     HEADERS += \
-        src/dbus/dbusservice.h \
+        src/base/clipboard.h \
         src/base/audioconverter.h \
-        src/base/videoplayermodel.h
+        src/base/videoplayermodel.h \
+        src/dbus/dbusservice.h
         
     SOURCES += \
-        src/dbus/dbusservice.cpp \
-        src/base/audioconverter.cpp
+        src/base/audioconverter.cpp \
+        src/base/clipboard.cpp \
+        src/dbus/dbusservice.cpp
     
-    dbus.files = dbus/org.marxoft.cutetube2.service
-    dbus.path = /usr/share/dbus-1/services
+    dbus_service.files = dbus/org.marxoft.cutetube2.service
+    dbus_service.path = /usr/share/dbus-1/services
+
+    dbus_interface.files = dbus/org.marxoft.cutetube2.xml
+    dbus_interface.path = /usr/share/dbus-1/interfaces
+
     target.path = /opt/cutetube2/bin
     
-    INSTALLS += dbus
+    INSTALLS += dbus_service dbus_interface
 }
 
 INSTALLS += target

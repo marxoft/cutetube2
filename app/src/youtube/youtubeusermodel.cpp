@@ -157,17 +157,19 @@ void YouTubeUserModel::list(const QString &resourcePath, const QStringList &part
     disconnect(YouTube::instance(), 0, this, 0);
     
     if ((resourcePath.endsWith("subscriptions")) && (filters.value("channelId") == YouTube::instance()->userId())) {
-        connect(YouTube::instance(), SIGNAL(userSubscribed(const YouTubeUser*)),
-                this, SLOT(onUserSubscribed(const YouTubeUser*)));
-        connect(YouTube::instance(), SIGNAL(userUnsubscribed(const YouTubeUser*)),
-                this, SLOT(onUserUnsubscribed(const YouTubeUser*)));
+        connect(YouTube::instance(), SIGNAL(userSubscribed(YouTubeUser*)),
+                this, SLOT(onUserSubscribed(YouTubeUser*)));
+        connect(YouTube::instance(), SIGNAL(userUnsubscribed(YouTubeUser*)),
+                this, SLOT(onUserUnsubscribed(YouTubeUser*)));
     }
 }
 
 void YouTubeUserModel::clear() {
     if (!m_items.isEmpty()) {
         beginResetModel();
+        qDeleteAll(m_items);
         m_items.clear();
+        m_nextPageToken = QString();
         endResetModel();
         emit countChanged(rowCount());
     }
@@ -265,15 +267,13 @@ void YouTubeUserModel::onRequestFinished() {
                 else {
                     loadResults();
                 }
+
+                return;
             }
         }
-        else {
-            emit statusChanged(status());
-        }
     }
-    else {
-        emit statusChanged(status());
-    }
+
+    emit statusChanged(status());
 }
 
 void YouTubeUserModel::onContentRequestFinished() {
@@ -298,14 +298,14 @@ void YouTubeUserModel::onContentRequestFinished() {
     loadResults();
 }
 
-void YouTubeUserModel::onUserSubscribed(const YouTubeUser *user) {
+void YouTubeUserModel::onUserSubscribed(YouTubeUser *user) {
     insert(0, new YouTubeUser(user, this));
 #ifdef CUTETUBE_DEBUG
     qDebug() << "YouTubeUserModel::onUserSubscribed" << user->id();
 #endif
 }
 
-void YouTubeUserModel::onUserUnsubscribed(const YouTubeUser *user) {
+void YouTubeUserModel::onUserUnsubscribed(YouTubeUser *user) {
     QModelIndexList list = match(index(0), IdRole, user->id(), 1, Qt::MatchExactly);
     
     if (!list.isEmpty()) {

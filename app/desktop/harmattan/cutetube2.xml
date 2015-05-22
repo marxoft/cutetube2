@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<actions>
+    <highlight regexp="[Hh][Tt][Tt][Pp]([Ss]|)://((([Ww][Ww][Ww]\.|[Mm]\.|)([Yy][Oo][Uu][Tt][Uu][Bb][Ee]\.[Cc][Oo][Mm]/)(#/|)([Ww][Aa][Tt][Cc][Hh]))|[Yy][Oo][Uu][Tt][Uu]\.[Bb][Ee])[-_&amp;%#\./?\w=]+" name="youtube-video-url" specialCaseOf="http-url"/>
+    <highlight regexp="[Hh][Tt][Tt][Pp]([Ss]|)://((([Ww][Ww][Ww]\.|[Mm]\.|)([Dd][Aa][Ii][Ll][Yy][Mm][Oo][Tt][Ii][Oo][Nn]\.[Cc][Oo][Mm]/[Vv][Ii][Dd][Ee][Oo]))|[Dd][Aa][Ii]\.[Ll][Yy])[-_&amp;%#\./?\w=]+" name="dailymotion-video-url" specialCaseOf="http-url"/>
+    <highlight regexp="[Hh][Tt][Tt][Pp]([Ss]|)://([Vv][Ii][Mm][Ee][Oo]\.[Cc][Oo][Mm]/)[-_&amp;%#\./?\w=]+" name="vimeo-video-url" specialCaseOf="http-url"/>
+</actions>

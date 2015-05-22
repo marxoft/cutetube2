@@ -29,10 +29,10 @@ DailymotionUser::DailymotionUser(QObject *parent) :
     m_viewCount(0)
 {
     setService(Resources::DAILYMOTION);
-    connect(Dailymotion::instance(), SIGNAL(userSubscribed(const DailymotionUser*)),
-            this, SLOT(onUserUpdated(const DailymotionUser*)));
-    connect(Dailymotion::instance(), SIGNAL(userUnsubscribed(const DailymotionUser*)),
-            this, SLOT(onUserUpdated(const DailymotionUser*)));
+    connect(Dailymotion::instance(), SIGNAL(userSubscribed(DailymotionUser*)),
+            this, SLOT(onUserUpdated(DailymotionUser*)));
+    connect(Dailymotion::instance(), SIGNAL(userUnsubscribed(DailymotionUser*)),
+            this, SLOT(onUserUpdated(DailymotionUser*)));
 }
 
 DailymotionUser::DailymotionUser(const QString &id, QObject *parent) :
@@ -44,10 +44,10 @@ DailymotionUser::DailymotionUser(const QString &id, QObject *parent) :
 {
     setService(Resources::DAILYMOTION);
     loadUser(id);
-    connect(Dailymotion::instance(), SIGNAL(userSubscribed(const DailymotionUser*)),
-            this, SLOT(onUserUpdated(const DailymotionUser*)));
-    connect(Dailymotion::instance(), SIGNAL(userUnsubscribed(const DailymotionUser*)),
-            this, SLOT(onUserUpdated(const DailymotionUser*)));
+    connect(Dailymotion::instance(), SIGNAL(userSubscribed(DailymotionUser*)),
+            this, SLOT(onUserUpdated(DailymotionUser*)));
+    connect(Dailymotion::instance(), SIGNAL(userUnsubscribed(DailymotionUser*)),
+            this, SLOT(onUserUpdated(DailymotionUser*)));
 }
 
 DailymotionUser::DailymotionUser(const QVariantMap &user, QObject *parent) :
@@ -59,10 +59,10 @@ DailymotionUser::DailymotionUser(const QVariantMap &user, QObject *parent) :
 {
     setService(Resources::DAILYMOTION);
     loadUser(user);
-    connect(Dailymotion::instance(), SIGNAL(userSubscribed(const DailymotionUser*)),
-            this, SLOT(onUserUpdated(const DailymotionUser*)));
-    connect(Dailymotion::instance(), SIGNAL(userUnsubscribed(const DailymotionUser*)),
-            this, SLOT(onUserUpdated(const DailymotionUser*)));
+    connect(Dailymotion::instance(), SIGNAL(userSubscribed(DailymotionUser*)),
+            this, SLOT(onUserUpdated(DailymotionUser*)));
+    connect(Dailymotion::instance(), SIGNAL(userUnsubscribed(DailymotionUser*)),
+            this, SLOT(onUserUpdated(DailymotionUser*)));
 }
 
 DailymotionUser::DailymotionUser(const DailymotionUser *user, QObject *parent) :
@@ -74,10 +74,10 @@ DailymotionUser::DailymotionUser(const DailymotionUser *user, QObject *parent) :
     m_subscriberCount(user->subscriberCount()),
     m_viewCount(user->viewCount())
 {
-    connect(Dailymotion::instance(), SIGNAL(userSubscribed(const DailymotionUser*)),
-            this, SLOT(onUserUpdated(const DailymotionUser*)));
-    connect(Dailymotion::instance(), SIGNAL(userUnsubscribed(const DailymotionUser*)),
-            this, SLOT(onUserUpdated(const DailymotionUser*)));
+    connect(Dailymotion::instance(), SIGNAL(userSubscribed(DailymotionUser*)),
+            this, SLOT(onUserUpdated(DailymotionUser*)));
+    connect(Dailymotion::instance(), SIGNAL(userUnsubscribed(DailymotionUser*)),
+            this, SLOT(onUserUpdated(DailymotionUser*)));
 }
 
 QUrl DailymotionUser::bannerUrl() const {
@@ -166,7 +166,7 @@ void DailymotionUser::loadUser(const QVariantMap &user) {
     setViewCount(user.value("views_total").toLongLong());
 }
 
-void DailymotionUser::loadUser(const DailymotionUser *user) {
+void DailymotionUser::loadUser(DailymotionUser *user) {
     User::loadUser(user);
     setBannerUrl(user->bannerUrl());
     setLargeBannerUrl(user->largeBannerUrl());
@@ -302,7 +302,7 @@ void DailymotionUser::onUnsubscribeRequestFinished() {
     emit statusChanged(status());
 }
 
-void DailymotionUser::onUserUpdated(const DailymotionUser *user) {
+void DailymotionUser::onUserUpdated(DailymotionUser *user) {
     if ((user->id() == id()) && (user != this)) {
         loadUser(user);
     }
