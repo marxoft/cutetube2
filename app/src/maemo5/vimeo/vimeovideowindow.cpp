@@ -16,6 +16,7 @@
 
 #include "vimeovideowindow.h"
 #include "clipboard.h"
+#include "commentdelegate.h"
 #include "definitions.h"
 #include "image.h"
 #include "imagecache.h"
@@ -24,10 +25,10 @@
 #include "settings.h"
 #include "textbrowser.h"
 #include "utils.h"
+#include "videodelegate.h"
 #include "videoplaybackwindow.h"
 #include "videothumbnail.h"
 #include "vimeo.h"
-#include "vimeocommentdelegate.h"
 #include "vimeocommentdialog.h"
 #include "vimeocommentmodel.h"
 #include "vimeodownloaddialog.h"
@@ -36,7 +37,6 @@
 #include "vimeoplaylistwindow.h"
 #include "vimeouser.h"
 #include "vimeouserwindow.h"
-#include "vimeovideodelegate.h"
 #include <qvimeo/urls.h>
 #include <QScrollArea>
 #include <QTabBar>
@@ -60,7 +60,9 @@ VimeoVideoWindow::VimeoVideoWindow(const QString &id, StackedWindow *parent) :
     m_avatar(new Image(this)),
     m_relatedView(new ListView(this)),
     m_commentView(0),
-    m_relatedDelegate(new VimeoVideoDelegate(m_cache, this)),
+    m_relatedDelegate(new VideoDelegate(m_cache, VimeoVideoModel::DateRole, VimeoVideoModel::DurationRole,
+                                        VimeoVideoModel::ThumbnailUrlRole, VimeoVideoModel::TitleRole,
+                                        VimeoVideoModel::UsernameRole, this)),
     m_commentDelegate(0),
     m_scrollArea(new QScrollArea(this)),
     m_tabBar(new QTabBar(this)),
@@ -107,7 +109,9 @@ VimeoVideoWindow::VimeoVideoWindow(const VimeoVideo *video, StackedWindow *paren
     m_avatar(new Image(this)),
     m_relatedView(new ListView(this)),
     m_commentView(0),
-    m_relatedDelegate(new VimeoVideoDelegate(m_cache, this)),
+    m_relatedDelegate(new VideoDelegate(m_cache, VimeoVideoModel::DateRole, VimeoVideoModel::DurationRole,
+                                        VimeoVideoModel::ThumbnailUrlRole, VimeoVideoModel::TitleRole,
+                                        VimeoVideoModel::UsernameRole, this)),
     m_commentDelegate(0),
     m_scrollArea(new QScrollArea(this)),
     m_tabBar(new QTabBar(this)),
@@ -272,7 +276,7 @@ void VimeoVideoWindow::loadBaseUi() {
 }
 
 void VimeoVideoWindow::loadUserUi() {
-    m_userLabel->setText(m_user->username());
+    m_userLabel->setText(m_userLabel->fontMetrics().elidedText(m_user->username(), Qt::ElideRight, 250));
     m_avatar->setSource(m_user->thumbnailUrl());
 }
 
@@ -411,7 +415,7 @@ void VimeoVideoWindow::playRelatedVideo(const QModelIndex &index) {
     }
     
     if (Settings::instance()->videoPlayer() == "cutetube") {
-        if (const VimeoVideo *video = m_relatedModel->get(index.row())) {
+        if (VimeoVideo *video = m_relatedModel->get(index.row())) {
             VideoPlaybackWindow *window = new VideoPlaybackWindow(this);
             window->show();
             window->addVideo(video);
@@ -499,7 +503,9 @@ void VimeoVideoWindow::showContextMenu(const QPoint &pos) {
 void VimeoVideoWindow::showComments() {
     if (!m_commentView) {
         m_commentView = new ListView(this);
-        m_commentDelegate = new VimeoCommentDelegate(m_cache, this);
+        m_commentDelegate = new CommentDelegate(m_cache, VimeoCommentModel::BodyRole, VimeoCommentModel::DateRole,
+                                                VimeoCommentModel::ThumbnailUrlRole, VimeoCommentModel::UsernameRole,
+                                                this);
         m_commentModel = new VimeoCommentModel(this);
         m_commentView->setUniformItemSizes(false);
         m_commentView->setModel(m_commentModel);

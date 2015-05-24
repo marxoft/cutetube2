@@ -89,7 +89,7 @@ void YouTubeComment::loadComment(const QString &id) {
 void YouTubeComment::loadComment(const QVariantMap &comment) {
     QVariantMap snippet = comment.value("snippet").toMap();
     
-    setBody(snippet.value("textDisplay").toString().toUtf8().replace("\ufeff", "").simplified());
+    setBody(snippet.value("textDisplay").toString());
     setDate(QDateTime::fromString(snippet.value("publishedAt").toString(), Qt::ISODate).toString("dd MMM yyyy"));
     setId(comment.value("id").toString());
     setParentId(snippet.value("parentId").toString());

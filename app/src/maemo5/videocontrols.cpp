@@ -133,7 +133,7 @@ VideoControls::~VideoControls() {
     m_cache = 0;
 }
 
-void VideoControls::addVideo(const Video *video) {
+void VideoControls::addVideo(Video *video) {
     m_model->append(video);
     
     if (m_player->mediaStatus() == QMediaPlayer::NoMedia) {
@@ -141,7 +141,7 @@ void VideoControls::addVideo(const Video *video) {
     }
 }
 
-void VideoControls::addVideos(const QList<const Video*> &videos) {
+void VideoControls::addVideos(const QList<Video*> &videos) {
     for (int i = 0; i < videos.size(); i++) {
         m_model->append(videos.at(i));
     }

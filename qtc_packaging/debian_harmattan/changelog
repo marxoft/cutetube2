@@ -1,3 +1,9 @@
+cutetube2 (0.1.1) unstable; urgency=low
+  * Fix YouTube character encoding.
+  * UI tweaks.
+
+ -- Stuart Howarth <showarth@marxoft.co.uk>  Sat, 23 May 2015 21:03:39 +0100
+
 cutetube2 (0.1.0) unstable; urgency=low
 
   * Initial Release.

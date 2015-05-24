@@ -16,22 +16,22 @@
 
 #include "pluginvideowindow.h"
 #include "clipboard.h"
+#include "commentdelegate.h"
 #include "image.h"
 #include "imagecache.h"
 #include "listview.h"
-#include "plugincommentdelegate.h"
 #include "plugincommentmodel.h"
 #include "plugindownloaddialog.h"
 #include "pluginplaybackdialog.h"
 #include "pluginplaylistwindow.h"
 #include "pluginuser.h"
 #include "pluginuserwindow.h"
-#include "pluginvideodelegate.h"
 #include "resources.h"
 #include "resourcesplugins.h"
 #include "settings.h"
 #include "textbrowser.h"
 #include "utils.h"
+#include "videodelegate.h"
 #include "videoplaybackwindow.h"
 #include "videoplayer.h"
 #include "videothumbnail.h"
@@ -57,7 +57,9 @@ PluginVideoWindow::PluginVideoWindow(const QString &service, const QString &id, 
     m_avatar(new Image(this)),
     m_relatedView(new ListView(this)),
     m_commentView(0),
-    m_relatedDelegate(new PluginVideoDelegate(m_cache, this)),
+    m_relatedDelegate(new VideoDelegate(m_cache, PluginVideoModel::DateRole, PluginVideoModel::DurationRole,
+                                        PluginVideoModel::ThumbnailUrlRole, PluginVideoModel::TitleRole,
+                                        PluginVideoModel::UsernameRole, this)),
     m_commentDelegate(0),
     m_scrollArea(new QScrollArea(this)),
     m_tabBar(new QTabBar(this)),
@@ -97,7 +99,9 @@ PluginVideoWindow::PluginVideoWindow(const PluginVideo *video, StackedWindow *pa
     m_avatar(new Image(this)),
     m_relatedView(new ListView(this)),
     m_commentView(0),
-    m_relatedDelegate(new PluginVideoDelegate(m_cache, this)),
+    m_relatedDelegate(new VideoDelegate(m_cache, PluginVideoModel::DateRole, PluginVideoModel::DurationRole,
+                                        PluginVideoModel::ThumbnailUrlRole, PluginVideoModel::TitleRole,
+                                        PluginVideoModel::UsernameRole, this)),
     m_commentDelegate(0),
     m_scrollArea(new QScrollArea(this)),
     m_tabBar(new QTabBar(this)),
@@ -222,7 +226,7 @@ void PluginVideoWindow::loadBaseUi() {
 }
 
 void PluginVideoWindow::loadUserUi() {
-    m_userLabel->setText(m_user->username());
+    m_userLabel->setText(m_userLabel->fontMetrics().elidedText(m_user->username(), Qt::ElideRight, 250));
     m_avatar->setSource(m_user->thumbnailUrl());
     connect(m_avatar, SIGNAL(clicked()), this, SLOT(showUser()));
 }
@@ -307,7 +311,7 @@ void PluginVideoWindow::playRelatedVideo(const QModelIndex &index) {
     }
     
     if (Settings::instance()->videoPlayer() == "cutetube") {
-        if (const PluginVideo *video = m_relatedModel->get(index.row())) {
+        if (PluginVideo *video = m_relatedModel->get(index.row())) {
             VideoPlaybackWindow *window = new VideoPlaybackWindow(this);
             window->show();
             window->addVideo(video);
@@ -367,7 +371,9 @@ void PluginVideoWindow::showContextMenu(const QPoint &pos) {
 void PluginVideoWindow::showComments() {
     if (!m_commentView) {
         m_commentView = new ListView(this);
-        m_commentDelegate = new PluginCommentDelegate(m_cache, this);
+        m_commentDelegate = new CommentDelegate(m_cache, PluginCommentModel::BodyRole, PluginCommentModel::DateRole,
+                                                PluginCommentModel::ThumbnailUrlRole, PluginCommentModel::UsernameRole,
+                                                this);
         m_commentModel = new PluginCommentModel(this);
         m_commentModel->setService(m_video->service());
         m_commentView->setUniformItemSizes(false);

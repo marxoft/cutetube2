@@ -18,7 +18,7 @@
 #include "imagecache.h"
 #include "listview.h"
 #include "settings.h"
-#include "youtubeuserdelegate.h"
+#include "userdelegate.h"
 #include "youtubeuserwindow.h"
 #include <QLabel>
 #include <QActionGroup>
@@ -31,7 +31,8 @@ YouTubeUsersWindow::YouTubeUsersWindow(StackedWindow *parent) :
     m_model(new YouTubeUserModel(this)),
     m_cache(new ImageCache),
     m_view(new ListView(this)),
-    m_delegate(new YouTubeUserDelegate(m_cache, m_view)),
+    m_delegate(new UserDelegate(m_cache, YouTubeUserModel::SubscriberCountRole, YouTubeUserModel::ThumbnailUrlRole,
+                                YouTubeUserModel::UsernameRole, m_view)),
     m_viewGroup(new QActionGroup(this)),
     m_listAction(new QAction(tr("List"), this)),
     m_gridAction(new QAction(tr("Grid"), this)),
@@ -44,7 +45,6 @@ YouTubeUsersWindow::YouTubeUsersWindow(StackedWindow *parent) :
     
     m_view->setModel(m_model);
     m_view->setItemDelegate(m_delegate);
-    
     m_listAction->setCheckable(true);
     m_listAction->setChecked(true);
     m_gridAction->setCheckable(true);

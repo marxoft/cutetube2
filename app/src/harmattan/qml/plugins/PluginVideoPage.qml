@@ -96,7 +96,7 @@ MyPage {
 
                 MyToolIcon {
                     platformIconId: "toolbar-view-menu"
-                    enabled: (video.id) && (user.id)
+                    enabled: video.id != ""
                     onClicked: menu.open()
                 }
             }

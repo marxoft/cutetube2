@@ -30,6 +30,8 @@ MySheet {
     }
 
     acceptWhenDone: false
+    showProgressIndicator: (playlist.status == QVimeo.ResourcesRequest.Loading)
+                           || (playlistModel.status == QVimeo.ResourcesRequest.Loading)
     acceptButtonText: (view.currentTab == newPlaylistTab) && (titleField.text) ? qsTr("Done") : ""
     rejectButtonText: qsTr("Cancel")
     content: Item {
@@ -89,12 +91,6 @@ MySheet {
 
                 ScrollDecorator {
                     flickableItem: playlistView
-                }
-
-                MyBusyIndicator {
-                    size: "large"
-                    anchors.centerIn: parent
-                    visible: (playlistModel.status == QVimeo.ResourcesRequest.Loading) && (playlistModel.count == 0)
                 }
 
                 Label {

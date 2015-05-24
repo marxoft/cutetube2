@@ -20,7 +20,7 @@
 #include "stackedwindow.h"
 #include "youtubeplaylistmodel.h"
 
-class YouTubePlaylistDelegate;
+class PlaylistDelegate;
 class ImageCache;
 class ListView;
 class QLabel;
@@ -53,7 +53,7 @@ private:
     ImageCache *m_cache;
     
     ListView *m_view;
-    YouTubePlaylistDelegate *m_delegate;
+    PlaylistDelegate *m_delegate;
     QActionGroup *m_viewGroup;
     QAction *m_listAction;
     QAction *m_gridAction;

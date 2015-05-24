@@ -27,6 +27,8 @@ class Image : public QWidget
     Q_OBJECT
     
     Q_PROPERTY(QUrl source READ source WRITE setSource)
+    Q_PROPERTY(Qt::AspectRatioMode aspectRatioMode READ aspectRatioMode WRITE setAspectRatioMode)
+    Q_PROPERTY(Qt::TransformationMode transformationMode READ transformationMode WRITE setTransformationMode)
     
 public:
     explicit Image(QWidget *parent = 0);
@@ -34,6 +36,12 @@ public:
     
     QUrl source() const;
     void setSource(const QUrl &url);
+    
+    Qt::AspectRatioMode aspectRatioMode() const;
+    void setAspectRatioMode(Qt::AspectRatioMode mode);
+    
+    Qt::TransformationMode transformationMode() const;
+    void setTransformationMode(Qt::TransformationMode mode);
     
 Q_SIGNALS:
     void clicked();
@@ -47,6 +55,9 @@ protected:
     ImageCache *m_cache;
     
     QUrl m_source;
+    
+    Qt::AspectRatioMode m_aspectRatioMode;
+    Qt::TransformationMode m_transformationMode;
     
     bool m_pressed;
 };  

@@ -91,7 +91,6 @@ void VimeoUserWindow::loadBaseUi() {
     
     m_avatar->setFixedSize(100, 100);
     
-    m_titleLabel->setWordWrap(true);
     m_statsLabel->setStyleSheet("font-size: 18px");
     
     m_subscribeButton->setEnabled(false);
@@ -126,7 +125,7 @@ void VimeoUserWindow::loadUserUi() {
                                   && (m_user->id() != Vimeo::instance()->userId())
                                   && (Vimeo::instance()->hasScope(QVimeo::INTERACT_SCOPE)));
     m_subscribeButton->setText(m_user->isSubscribed() ? tr("Unsubscribe") : tr("Subscribe"));
-    m_titleLabel->setText(m_user->username());
+    m_titleLabel->setText(m_titleLabel->fontMetrics().elidedText(m_user->username(), Qt::ElideRight, 250));
     m_statsLabel->setText(tr("%1 subscribers").arg(Utils::formatLargeNumber(m_user->subscriberCount())));
     m_descriptionLabel->setHtml(Utils::toRichText(m_user->description()));
     m_avatar->setSource(m_user->largeThumbnailUrl());

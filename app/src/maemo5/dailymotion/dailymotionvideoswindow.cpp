@@ -20,11 +20,11 @@
 #include "dailymotiondownloaddialog.h"
 #include "dailymotionplaybackdialog.h"
 #include "dailymotionplaylistdialog.h"
-#include "dailymotionvideodelegate.h"
 #include "dailymotionvideowindow.h"
 #include "imagecache.h"
 #include "listview.h"
 #include "settings.h"
+#include "videodelegate.h"
 #include "videoplaybackwindow.h"
 #include <qdailymotion/urls.h>
 #include <QLabel>
@@ -40,7 +40,9 @@ DailymotionVideosWindow::DailymotionVideosWindow(StackedWindow *parent) :
     m_model(new DailymotionVideoModel(this)),
     m_cache(new ImageCache),
     m_view(new ListView(this)),
-    m_delegate(new DailymotionVideoDelegate(m_cache, m_view)),
+    m_delegate(new VideoDelegate(m_cache, DailymotionVideoModel::DateRole, DailymotionVideoModel::DurationRole,
+                                 DailymotionVideoModel::ThumbnailUrlRole, DailymotionVideoModel::TitleRole,
+                                 DailymotionVideoModel::UsernameRole, this)),
     m_viewGroup(new QActionGroup(this)),
     m_listAction(new QAction(tr("List"), this)),
     m_gridAction(new QAction(tr("Grid"), this)),
@@ -141,7 +143,7 @@ void DailymotionVideosWindow::addVideoToPlaylist() {
         return;
     }
     
-    if (const DailymotionVideo *video = m_model->get(m_view->currentIndex().row())) {
+    if (DailymotionVideo *video = m_model->get(m_view->currentIndex().row())) {
         DailymotionPlaylistDialog *dialog = new DailymotionPlaylistDialog(video, this);
         dialog->open();
     }
@@ -167,7 +169,7 @@ void DailymotionVideosWindow::playVideo(const QModelIndex &index) {
     }
     
     if (Settings::instance()->videoPlayer() == "cutetube") {
-        if (const DailymotionVideo *video = m_model->get(index.row())) {
+        if (DailymotionVideo *video = m_model->get(index.row())) {
             VideoPlaybackWindow *window = new VideoPlaybackWindow(this);
             window->show();
             window->addVideo(video);

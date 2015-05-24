@@ -20,9 +20,9 @@
 #include "listview.h"
 #include "plugindownloaddialog.h"
 #include "pluginplaybackdialog.h"
-#include "pluginvideodelegate.h"
 #include "pluginvideowindow.h"
 #include "settings.h"
+#include "videodelegate.h"
 #include "videoplaybackwindow.h"
 #include "videoplayer.h"
 #include <QLabel>
@@ -38,7 +38,9 @@ PluginVideosWindow::PluginVideosWindow(StackedWindow *parent) :
     m_model(new PluginVideoModel(this)),
     m_cache(new ImageCache),
     m_view(new ListView(this)),
-    m_delegate(new PluginVideoDelegate(m_cache, m_view)),
+    m_delegate(new VideoDelegate(m_cache, PluginVideoModel::DateRole, PluginVideoModel::DurationRole,
+                                 PluginVideoModel::ThumbnailUrlRole, PluginVideoModel::TitleRole,
+                                 PluginVideoModel::UsernameRole, this)),
     m_viewGroup(new QActionGroup(this)),
     m_listAction(new QAction(tr("List"), this)),
     m_gridAction(new QAction(tr("Grid"), this)),
@@ -144,7 +146,7 @@ void PluginVideosWindow::playVideo(const QModelIndex &index) {
     }
     
     if (Settings::instance()->videoPlayer() == "cutetube") {
-        if (const PluginVideo *video = m_model->get(index.row())) {
+        if (PluginVideo *video = m_model->get(index.row())) {
             VideoPlaybackWindow *window = new VideoPlaybackWindow(this);
             window->show();
             window->addVideo(video);

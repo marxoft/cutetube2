@@ -21,7 +21,7 @@ import com.nokia.meego 1.0
 SelectionDialog {
     id: root
 
-    property bool showProgressIndicator
+    property bool showProgressIndicator: false
 
     title: Item {
         id: header

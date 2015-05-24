@@ -22,9 +22,7 @@
 #include <QPushButton>
 #include <QAction>
 #include <QHBoxLayout>
-#include <QPainter>
 #include <QKeyEvent>
-#include <QStaticText>
 
 SearchHistoryDialog::SearchHistoryDialog(QWidget *parent) :
     Dialog(parent),
@@ -40,7 +38,6 @@ SearchHistoryDialog::SearchHistoryDialog(QWidget *parent) :
     setMinimumHeight(340);
     
     m_view->setModel(m_model);
-    m_view->setItemDelegate(new SearchHistoryDelegate(m_view));
     m_view->addAction(m_removeAction);
     m_view->setContextMenuPolicy(Qt::ActionsContextMenu);
     m_view->setFocusPolicy(Qt::NoFocus);
@@ -77,12 +74,12 @@ void SearchHistoryDialog::keyPressEvent(QKeyEvent *e) {
 }
 
 void SearchHistoryDialog::chooseSearch(const QModelIndex &index) {
-    emit searchChosen(index.data(SearchHistoryModel::OriginalStringRole).toString());
+    emit searchChosen(index.data().toString());
     accept();
 }
 
 void SearchHistoryDialog::removeSearch() {
-    m_model->removeSearch(m_view->currentIndex().data(SearchHistoryModel::OriginalStringRole).toString());
+    m_model->removeSearch(m_view->currentIndex().data().toString());
 }
 
 void SearchHistoryDialog::onCountChanged(int count) {
@@ -91,32 +88,5 @@ void SearchHistoryDialog::onCountChanged(int count) {
 
 void SearchHistoryDialog::onFilterTextChanged(const QString &text) {
     m_model->setFilterFixedString(text);
-    m_view->viewport()->update(m_view->viewport()->rect());
     m_filterBox->setVisible(!text.isEmpty());
-}
-
-SearchHistoryDelegate::SearchHistoryDelegate(QObject *parent) :
-    QStyledItemDelegate(parent)
-{
-}
-
-void SearchHistoryDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
-                                  const QModelIndex &index) const {
-    
-    if ((option.state) & (QStyle::State_Selected)) {
-        painter->drawImage(option.rect, QImage("/etc/hildon/theme/images/TouchListBackgroundPressed.png"));
-    }
-    else {
-        painter->drawImage(option.rect, QImage("/etc/hildon/theme/images/TouchListBackgroundNormal.png"));
-    }
-    
-    QRect rect = option.rect;
-    rect.setLeft(rect.left() + 8);
-    rect.setRight(rect.right() - 8);
-
-    QStaticText text(index.data().toString());
-    text.setTextOption(QTextOption(Qt::AlignCenter));
-    text.setTextWidth(rect.width());
-
-    painter->drawStaticText(rect.left(), rect.center().y() - text.size().height() / 2, text);
 }

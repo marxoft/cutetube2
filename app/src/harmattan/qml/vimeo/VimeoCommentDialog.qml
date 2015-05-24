@@ -27,6 +27,7 @@ MySheet {
     property string videoId
 
     acceptWhenDone: false
+    showProgressIndicator: comment.status == QVimeo.ResourcesRequest.Loading
     rejectButtonText: qsTr("Cancel")
     acceptButtonText: commentField.text ? qsTr("Done") : ""
     content: Item {

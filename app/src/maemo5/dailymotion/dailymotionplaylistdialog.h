@@ -37,7 +37,7 @@ class DailymotionPlaylistDialog : public Dialog
     Q_OBJECT
     
 public:
-    explicit DailymotionPlaylistDialog(const DailymotionVideo *video, QWidget *parent);
+    explicit DailymotionPlaylistDialog(DailymotionVideo *video, QWidget *parent);
     ~DailymotionPlaylistDialog();
     
 protected:
@@ -60,7 +60,7 @@ private Q_SLOTS:
     void onTitleChanged(const QString &text);
         
 private:
-    const DailymotionVideo *m_video;
+    DailymotionVideo *m_video;
     DailymotionPlaylist *m_playlist;
     DailymotionPlaylistModel *m_model;
     ImageCache *m_cache;

@@ -16,6 +16,7 @@
 
 #include "youtubevideowindow.h"
 #include "clipboard.h"
+#include "commentdelegate.h"
 #include "definitions.h"
 #include "image.h"
 #include "imagecache.h"
@@ -24,10 +25,10 @@
 #include "settings.h"
 #include "textbrowser.h"
 #include "utils.h"
+#include "videodelegate.h"
 #include "videoplaybackwindow.h"
 #include "videothumbnail.h"
 #include "youtube.h"
-#include "youtubecommentdelegate.h"
 #include "youtubecommentdialog.h"
 #include "youtubecommentmodel.h"
 #include "youtubedownloaddialog.h"
@@ -36,7 +37,6 @@
 #include "youtubeplaylistwindow.h"
 #include "youtubeuser.h"
 #include "youtubeuserwindow.h"
-#include "youtubevideodelegate.h"
 #include <qyoutube/urls.h>
 #include <QScrollArea>
 #include <QTabBar>
@@ -60,7 +60,9 @@ YouTubeVideoWindow::YouTubeVideoWindow(const QString &id, StackedWindow *parent)
     m_avatar(new Image(this)),
     m_relatedView(new ListView(this)),
     m_commentView(0),
-    m_relatedDelegate(new YouTubeVideoDelegate(m_cache, this)),
+    m_relatedDelegate(new VideoDelegate(m_cache, YouTubeVideoModel::DateRole, YouTubeVideoModel::DurationRole,
+                                        YouTubeVideoModel::ThumbnailUrlRole, YouTubeVideoModel::TitleRole,
+                                        YouTubeVideoModel::UsernameRole, this)),
     m_commentDelegate(0),
     m_scrollArea(new QScrollArea(this)),
     m_tabBar(new QTabBar(this)),
@@ -109,7 +111,9 @@ YouTubeVideoWindow::YouTubeVideoWindow(const YouTubeVideo *video, StackedWindow 
     m_avatar(new Image(this)),
     m_relatedView(new ListView(this)),
     m_commentView(0),
-    m_relatedDelegate(new YouTubeVideoDelegate(m_cache, this)),
+    m_relatedDelegate(new VideoDelegate(m_cache, YouTubeVideoModel::DateRole, YouTubeVideoModel::DurationRole,
+                                        YouTubeVideoModel::ThumbnailUrlRole, YouTubeVideoModel::TitleRole,
+                                        YouTubeVideoModel::UsernameRole, this)),
     m_commentDelegate(0),
     m_scrollArea(new QScrollArea(this)),
     m_tabBar(new QTabBar(this)),
@@ -279,7 +283,7 @@ void YouTubeVideoWindow::loadBaseUi() {
 }
 
 void YouTubeVideoWindow::loadUserUi() {
-    m_userLabel->setText(m_user->username());
+    m_userLabel->setText(m_userLabel->fontMetrics().elidedText(m_user->username(), Qt::ElideRight, 250));
     m_avatar->setSource(m_user->thumbnailUrl());
 }
 
@@ -449,7 +453,7 @@ void YouTubeVideoWindow::playRelatedVideo(const QModelIndex &index) {
     }
     
     if (Settings::instance()->videoPlayer() == "cutetube") {
-        if (const YouTubeVideo *video = m_relatedModel->get(index.row())) {
+        if (YouTubeVideo *video = m_relatedModel->get(index.row())) {
             VideoPlaybackWindow *window = new VideoPlaybackWindow(this);
             window->show();
             window->addVideo(video);
@@ -537,7 +541,9 @@ void YouTubeVideoWindow::showContextMenu(const QPoint &pos) {
 void YouTubeVideoWindow::showComments() {
     if (!m_commentView) {
         m_commentView = new ListView(this);
-        m_commentDelegate = new YouTubeCommentDelegate(m_cache, this);
+        m_commentDelegate = new CommentDelegate(m_cache, YouTubeCommentModel::BodyRole, YouTubeCommentModel::DateRole,
+                                                YouTubeCommentModel::ThumbnailUrlRole,
+                                                YouTubeCommentModel::UsernameRole, this);
         m_commentModel = new YouTubeCommentModel(this);
         m_commentView->setUniformItemSizes(false);
         m_commentView->setModel(m_commentModel);

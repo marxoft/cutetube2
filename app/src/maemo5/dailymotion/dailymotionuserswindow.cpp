@@ -15,11 +15,11 @@
  */
 
 #include "dailymotionuserswindow.h"
-#include "dailymotionuserdelegate.h"
 #include "dailymotionuserwindow.h"
 #include "imagecache.h"
 #include "listview.h"
 #include "settings.h"
+#include "userdelegate.h"
 #include <QLabel>
 #include <QActionGroup>
 #include <QMessageBox>
@@ -31,7 +31,8 @@ DailymotionUsersWindow::DailymotionUsersWindow(StackedWindow *parent) :
     m_model(new DailymotionUserModel(this)),
     m_cache(new ImageCache),
     m_view(new ListView(this)),
-    m_delegate(new DailymotionUserDelegate(m_cache, m_view)),
+    m_delegate(new UserDelegate(m_cache, DailymotionUserModel::SubscriberCountRole,
+                                DailymotionUserModel::ThumbnailUrlRole, DailymotionUserModel::UsernameRole, m_view)),
     m_viewGroup(new QActionGroup(this)),
     m_listAction(new QAction(tr("List"), this)),
     m_gridAction(new QAction(tr("Grid"), this)),

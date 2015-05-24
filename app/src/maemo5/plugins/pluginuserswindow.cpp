@@ -17,9 +17,9 @@
 #include "pluginuserswindow.h"
 #include "imagecache.h"
 #include "listview.h"
-#include "pluginuserdelegate.h"
 #include "pluginuserwindow.h"
 #include "settings.h"
+#include "userdelegate.h"
 #include <QLabel>
 #include <QActionGroup>
 #include <QMessageBox>
@@ -31,7 +31,7 @@ PluginUsersWindow::PluginUsersWindow(StackedWindow *parent) :
     m_model(new PluginUserModel(this)),
     m_cache(new ImageCache),
     m_view(new ListView(this)),
-    m_delegate(new PluginUserDelegate(m_cache, m_view)),
+    m_delegate(new UserDelegate(m_cache, -1, PluginUserModel::ThumbnailUrlRole, PluginUserModel::UsernameRole, m_view)),
     m_viewGroup(new QActionGroup(this)),
     m_listAction(new QAction(tr("List"), this)),
     m_gridAction(new QAction(tr("Grid"), this)),

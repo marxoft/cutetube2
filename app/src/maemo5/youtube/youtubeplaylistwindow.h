@@ -20,8 +20,8 @@
 #include "stackedwindow.h"
 #include "youtubeplaylist.h"
 
+class VideoDelegate;
 class YouTubeUser;
-class YouTubeVideoDelegate;
 class YouTubeVideoModel;
 class Image;
 class ImageCache;
@@ -86,7 +86,7 @@ private:
     PlaylistThumbnail *m_thumbnail;
     Image *m_avatar;
     ListView *m_view;
-    YouTubeVideoDelegate *m_delegate;
+    VideoDelegate *m_delegate;
     QScrollArea *m_scrollArea;
     QLabel *m_titleLabel;
     TextBrowser *m_descriptionLabel;

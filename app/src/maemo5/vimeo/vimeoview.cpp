@@ -48,20 +48,20 @@ VimeoView::VimeoView(QWidget *parent) :
     m_layout->addWidget(m_view);
     
     connect(m_view, SIGNAL(activated(QModelIndex)), this, SLOT(onItemActivated(QModelIndex)));
-    connect(Vimeo::instance(), SIGNAL(commentAdded(const VimeoComment*)),
+    connect(Vimeo::instance(), SIGNAL(commentAdded(VimeoComment*)),
             this, SLOT(onCommentAdded()));
-    connect(Vimeo::instance(), SIGNAL(userSubscribed(const VimeoUser*)),
-            this, SLOT(onUserSubscribed(const VimeoUser*)));
-    connect(Vimeo::instance(), SIGNAL(userUnsubscribed(const VimeoUser*)),
-            this, SLOT(onUserUnsubscribed(const VimeoUser*)));
-    connect(Vimeo::instance(), SIGNAL(videoFavourited(const VimeoVideo*)),
-            this, SLOT(onVideoFavourited(const VimeoVideo*)));
-    connect(Vimeo::instance(), SIGNAL(videoUnfavourited(const VimeoVideo*)),
-            this, SLOT(onVideoUnfavourited(const VimeoVideo*)));
-    connect(Vimeo::instance(), SIGNAL(videoWatchLater(const VimeoVideo*)),
-            this, SLOT(onVideoWatchLater(const VimeoVideo*)));
-    connect(Vimeo::instance(), SIGNAL(videoAddedToPlaylist(const VimeoVideo*, const VimeoPlaylist*)),
-            this, SLOT(onVideoAddedToPlaylist(const VimeoVideo*, const VimeoPlaylist*)));
+    connect(Vimeo::instance(), SIGNAL(userSubscribed(VimeoUser*)),
+            this, SLOT(onUserSubscribed(VimeoUser*)));
+    connect(Vimeo::instance(), SIGNAL(userUnsubscribed(VimeoUser*)),
+            this, SLOT(onUserUnsubscribed(VimeoUser*)));
+    connect(Vimeo::instance(), SIGNAL(videoFavourited(VimeoVideo*)),
+            this, SLOT(onVideoFavourited(VimeoVideo*)));
+    connect(Vimeo::instance(), SIGNAL(videoUnfavourited(VimeoVideo*)),
+            this, SLOT(onVideoUnfavourited(VimeoVideo*)));
+    connect(Vimeo::instance(), SIGNAL(videoWatchLater(VimeoVideo*)),
+            this, SLOT(onVideoWatchLater(VimeoVideo*)));
+    connect(Vimeo::instance(), SIGNAL(videoAddedToPlaylist(VimeoVideo*, VimeoPlaylist*)),
+            this, SLOT(onVideoAddedToPlaylist(VimeoVideo*, VimeoPlaylist*)));
 }
 
 void VimeoView::search(const QString &query, const QString &type, const QString &order) {
@@ -204,26 +204,26 @@ void VimeoView::onCommentAdded() {
     QMaemo5InformationBox::information(this, tr("Your comment has been added"));
 }
 
-void VimeoView::onUserSubscribed(const VimeoUser *user) {
+void VimeoView::onUserSubscribed(VimeoUser *user) {
     QMaemo5InformationBox::information(this, tr("You have subscribed to %1").arg(user->username()));
 }
 
-void VimeoView::onUserUnsubscribed(const VimeoUser *user) {
+void VimeoView::onUserUnsubscribed(VimeoUser *user) {
     QMaemo5InformationBox::information(this, tr("You have unsubscribed to %1").arg(user->username()));
 }
 
-void VimeoView::onVideoFavourited(const VimeoVideo *video) {
+void VimeoView::onVideoFavourited(VimeoVideo *video) {
     QMaemo5InformationBox::information(this, tr("'%1' added to likes").arg(video->title()));
 }
 
-void VimeoView::onVideoUnfavourited(const VimeoVideo *video) {
+void VimeoView::onVideoUnfavourited(VimeoVideo *video) {
     QMaemo5InformationBox::information(this, tr("'%1' removed from likes").arg(video->title()));
 }
 
-void VimeoView::onVideoWatchLater(const VimeoVideo *video) {
+void VimeoView::onVideoWatchLater(VimeoVideo *video) {
     QMaemo5InformationBox::information(this, tr("'%1' added to your watch later playlist").arg(video->title()));
 }
 
-void VimeoView::onVideoAddedToPlaylist(const VimeoVideo *video, const VimeoPlaylist *playlist) {
+void VimeoView::onVideoAddedToPlaylist(VimeoVideo *video, VimeoPlaylist *playlist) {
     QMaemo5InformationBox::information(this, tr("'%1' added to album '%2'").arg(video->title()).arg(playlist->title()));
 }

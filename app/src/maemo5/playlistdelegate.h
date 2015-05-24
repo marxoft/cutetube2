@@ -14,22 +14,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef YOUTUBEVIDEODELEGATE_H
-#define YOUTUBEVIDEODELEGATE_H
+#ifndef PLAYLISTDELEGATE_H
+#define PLAYLISTDELEGATE_H
 
 #include <QStyledItemDelegate>
 
 class ImageCache;
 
-class YouTubeVideoDelegate : public QStyledItemDelegate
+class PlaylistDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
     
 public:
-    explicit YouTubeVideoDelegate(ImageCache *cache, QObject *parent = 0);
-    
-    bool editorEvent(QEvent *event, QAbstractItemModel *, const QStyleOptionViewItem &option,
-                     const QModelIndex &index);
+    explicit PlaylistDelegate(ImageCache *cache, int dateRole, int thumbnailRole, int titleRole, int usernameRole,
+                              int videoCountRole, QObject *parent = 0);
     
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
     
@@ -38,14 +36,16 @@ public:
     bool gridMode() const;
     void setGridMode(bool enabled);
     
-Q_SIGNALS:
-    void thumbnailClicked(const QModelIndex &index);
-    
 private:
     ImageCache *m_cache;
     
+    int m_dateRole;
+    int m_thumbnailRole;
+    int m_titleRole;
+    int m_usernameRole;
+    int m_videoCountRole;
+    
     bool m_gridMode;
-    int m_pressedRow;
 };
 
-#endif // YOUTUBEVIDEODELEGATE_H
+#endif // PLAYLISTDELEGATE_H

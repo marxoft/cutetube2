@@ -31,6 +31,8 @@ MySheet {
         streamModel.list(resourceId);
     }
 
+    showProgressIndicator: (streamModel.status == QDailymotion.StreamsRequest.Loading)
+                           || (subtitleModel.status == QDailymotion.ResourcesRequest.Loading)
     acceptButtonText: streamModel.status == QDailymotion.StreamsRequest.Ready ? qsTr("Done") : ""
     rejectButtonText: qsTr("Cancel")
     content: Item {

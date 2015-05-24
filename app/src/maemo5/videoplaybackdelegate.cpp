@@ -15,8 +15,9 @@
  */
 
 #include "videoplaybackdelegate.h"
-#include "videomodel.h"
+#include "drawing.h"
 #include "imagecache.h"
+#include "videomodel.h"
 #include <QPainter>
 #include <QUrl>
 #include <QApplication>
@@ -43,12 +44,8 @@ void VideoPlaybackDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
     imageRect.setWidth(80);
     imageRect.setHeight(60);
     
-    if (!image.isNull()) {
-        painter->drawImage(imageRect, image);
-    }
-    else {
-        painter->fillRect(imageRect, Qt::black);
-    }
+    painter->fillRect(imageRect, Qt::black);
+    drawCenteredImage(painter, imageRect, image);
     
     QString duration = index.data(VideoModel::DurationRole).toString();
     QFont font;

@@ -67,10 +67,11 @@ ImageCache::~ImageCache() {
     }
 }
 
-QImage ImageCache::image(const QUrl &url, const QSize &size) {
+QImage ImageCache::image(const QUrl &url, const QSize &size, Qt::AspectRatioMode aspectRatioMode,
+                         Qt::TransformationMode transformationMode) {
     if (CachedImage *ci = cache.object(url)) {
         return (!size.isEmpty())
-               && (!ci->image.isNull()) ? ci->image.scaled(size, Qt::IgnoreAspectRatio, Qt::SmoothTransformation)
+               && (!ci->image.isNull()) ? ci->image.scaled(size, aspectRatioMode, transformationMode)
                                         : ci->image;
     }
     

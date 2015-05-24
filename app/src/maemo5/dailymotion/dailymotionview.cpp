@@ -48,18 +48,18 @@ DailymotionView::DailymotionView(QWidget *parent) :
     m_layout->addWidget(m_view);
     
     connect(m_view, SIGNAL(activated(QModelIndex)), this, SLOT(onItemActivated(QModelIndex)));
-    connect(Dailymotion::instance(), SIGNAL(commentAdded(const DailymotionComment*)),
+    connect(Dailymotion::instance(), SIGNAL(commentAdded(DailymotionComment*)),
             this, SLOT(onCommentAdded()));
-    connect(Dailymotion::instance(), SIGNAL(userSubscribed(const DailymotionUser*)),
-            this, SLOT(onUserSubscribed(const DailymotionUser*)));
-    connect(Dailymotion::instance(), SIGNAL(userUnsubscribed(const DailymotionUser*)),
-            this, SLOT(onUserUnsubscribed(const DailymotionUser*)));
-    connect(Dailymotion::instance(), SIGNAL(videoFavourited(const DailymotionVideo*)),
-            this, SLOT(onVideoFavourited(const DailymotionVideo*)));
-    connect(Dailymotion::instance(), SIGNAL(videoUnfavourited(const DailymotionVideo*)),
-            this, SLOT(onVideoUnfavourited(const DailymotionVideo*)));
-    connect(Dailymotion::instance(), SIGNAL(videoAddedToPlaylist(const DailymotionVideo*, const DailymotionPlaylist*)),
-            this, SLOT(onVideoAddedToPlaylist(const DailymotionVideo*, const DailymotionPlaylist*)));
+    connect(Dailymotion::instance(), SIGNAL(userSubscribed(DailymotionUser*)),
+            this, SLOT(onUserSubscribed(DailymotionUser*)));
+    connect(Dailymotion::instance(), SIGNAL(userUnsubscribed(DailymotionUser*)),
+            this, SLOT(onUserUnsubscribed(DailymotionUser*)));
+    connect(Dailymotion::instance(), SIGNAL(videoFavourited(DailymotionVideo*)),
+            this, SLOT(onVideoFavourited(DailymotionVideo*)));
+    connect(Dailymotion::instance(), SIGNAL(videoUnfavourited(DailymotionVideo*)),
+            this, SLOT(onVideoUnfavourited(DailymotionVideo*)));
+    connect(Dailymotion::instance(), SIGNAL(videoAddedToPlaylist(DailymotionVideo*, DailymotionPlaylist*)),
+            this, SLOT(onVideoAddedToPlaylist(DailymotionVideo*, DailymotionPlaylist*)));
 }
 
 void DailymotionView::search(const QString &query, const QString &type, const QString &order) {
@@ -196,22 +196,22 @@ void DailymotionView::onCommentAdded() {
     QMaemo5InformationBox::information(this, tr("Your comment has been added"));
 }
 
-void DailymotionView::onUserSubscribed(const DailymotionUser *user) {
+void DailymotionView::onUserSubscribed(DailymotionUser *user) {
     QMaemo5InformationBox::information(this, tr("You have subscribed to %1").arg(user->username()));
 }
 
-void DailymotionView::onUserUnsubscribed(const DailymotionUser *user) {
+void DailymotionView::onUserUnsubscribed(DailymotionUser *user) {
     QMaemo5InformationBox::information(this, tr("You have unsubscribed to %1").arg(user->username()));
 }
 
-void DailymotionView::onVideoFavourited(const DailymotionVideo *video) {
+void DailymotionView::onVideoFavourited(DailymotionVideo *video) {
     QMaemo5InformationBox::information(this, tr("'%1' added to favourites").arg(video->title()));
 }
 
-void DailymotionView::onVideoUnfavourited(const DailymotionVideo *video) {
+void DailymotionView::onVideoUnfavourited(DailymotionVideo *video) {
     QMaemo5InformationBox::information(this, tr("'%1' removed from favourites").arg(video->title()));
 }
 
-void DailymotionView::onVideoAddedToPlaylist(const DailymotionVideo *video, const DailymotionPlaylist *playlist) {
+void DailymotionView::onVideoAddedToPlaylist(DailymotionVideo *video, DailymotionPlaylist *playlist) {
     QMaemo5InformationBox::information(this, tr("'%1' added to playlist '%2'").arg(video->title()).arg(playlist->title()));
 }

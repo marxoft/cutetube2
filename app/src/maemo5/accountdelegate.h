@@ -14,31 +14,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef YOUTUBEUSERDELEGATE_H
-#define YOUTUBEUSERDELEGATE_H
+#ifndef ACCOUNTDELEGATE_H
+#define ACCOUNTDELEGATE_H
 
 #include <QStyledItemDelegate>
 
-class ImageCache;
-
-class YouTubeUserDelegate : public QStyledItemDelegate
+class AccountDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
     
 public:
-    explicit YouTubeUserDelegate(ImageCache *cache, QObject *parent = 0);
+    explicit AccountDelegate(int activeRole, QObject *parent = 0);
     
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-    
-    QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &) const;
-    
-    bool gridMode() const;
-    void setGridMode(bool enabled);
-    
+
 private:
-    ImageCache *m_cache;
-    
-    bool m_gridMode;
+    int m_activeRole;  
 };
 
-#endif // YOUTUBEUSERDELEGATE_H
+#endif // ACCOUNTDELEGATE_H

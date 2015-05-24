@@ -18,8 +18,8 @@
 #include "definitions.h"
 #include "imagecache.h"
 #include "listview.h"
+#include "playlistdelegate.h"
 #include "youtube.h"
-#include "youtubeplaylistdelegate.h"
 #include "youtubevideo.h"
 #include <QTabBar>
 #include <QStackedWidget>
@@ -33,7 +33,7 @@
 #include <QGridLayout>
 #include <QMessageBox>
 
-YouTubePlaylistDialog::YouTubePlaylistDialog(const YouTubeVideo *video, QWidget *parent) :
+YouTubePlaylistDialog::YouTubePlaylistDialog(YouTubeVideo *video, QWidget *parent) :
     Dialog(parent),
     m_video(video),
     m_playlist(0),
@@ -55,7 +55,10 @@ YouTubePlaylistDialog::YouTubePlaylistDialog(const YouTubeVideo *video, QWidget 
     setMinimumHeight(340);
     
     m_view->setModel(m_model);
-    m_view->setItemDelegate(new YouTubePlaylistDelegate(m_cache, m_view));
+    m_view->setItemDelegate(new PlaylistDelegate(m_cache, YouTubePlaylistModel::DateRole,
+                                                 YouTubePlaylistModel::ThumbnailUrlRole, YouTubePlaylistModel::TitleRole,
+                                                 YouTubePlaylistModel::UsernameRole,
+                                                 YouTubePlaylistModel::VideoCountRole, m_view));
     
     m_tabBar->addTab(tr("Playlists"));
     m_tabBar->addTab(tr("New playlist"));

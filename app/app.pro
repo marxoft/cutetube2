@@ -174,7 +174,6 @@ maemo5 {
     MOBILITY += multimedia
     
     INCLUDEPATH += \
-        src/imagecache \
         src/maemo5 \
         src/maemo5/dailymotion \
         src/maemo5/plugins \
@@ -184,18 +183,22 @@ maemo5 {
     HEADERS += \
         src/base/transfermodel.h \
         src/base/transferprioritymodel.h \
-        src/imagecache/imagecache.h \
         src/maemo5/aboutdialog.h \
+        src/maemo5/accountdelegate.h \
         src/maemo5/banner.h \
         src/maemo5/categoriesdialog.h \
+        src/maemo5/commentdelegate.h \
         src/maemo5/dialog.h \
+        src/maemo5/drawing.h \
         src/maemo5/filterbox.h \
         src/maemo5/image.h \
+        src/maemo5/imagecache.h \
         src/maemo5/listview.h \
         src/maemo5/mainwindow.h \
         src/maemo5/navdelegate.h \
         src/maemo5/networkproxydialog.h \
         src/maemo5/newcategorydialog.h \
+        src/maemo5/playlistdelegate.h \
         src/maemo5/playlistthumbnail.h \
         src/maemo5/qwebviewselectionsuppressor.h \
         src/maemo5/screensaver.h \
@@ -204,38 +207,33 @@ maemo5 {
         src/maemo5/stackedwindow.h \
         src/maemo5/textbrowser.h \
         src/maemo5/transferswindow.h \
+        src/maemo5/userdelegate.h \
         src/maemo5/valueselector.h \
         src/maemo5/valueselectoraction.h \
         src/maemo5/videocontrols.h \
+        src/maemo5/videodelegate.h \
         src/maemo5/videoplaybackdelegate.h \
         src/maemo5/videoplaybackwindow.h \
         src/maemo5/videoplayerbutton.h \
         src/maemo5/videothumbnail.h \
         src/maemo5/videowidget.h \
         src/maemo5/webview.h \
-        src/maemo5/dailymotion/dailymotionaccountdelegate.h \
         src/maemo5/dailymotion/dailymotionaccountswindow.h \
         src/maemo5/dailymotion/dailymotionauthdialog.h \
-        src/maemo5/dailymotion/dailymotioncommentdelegate.h \
         src/maemo5/dailymotion/dailymotioncommentdialog.h \
         src/maemo5/dailymotion/dailymotiondownloaddialog.h \
         src/maemo5/dailymotion/dailymotionplaybackdialog.h \
-        src/maemo5/dailymotion/dailymotionplaylistdelegate.h \
         src/maemo5/dailymotion/dailymotionplaylistdialog.h \
         src/maemo5/dailymotion/dailymotionplaylistswindow.h \
         src/maemo5/dailymotion/dailymotionplaylistwindow.h \
         src/maemo5/dailymotion/dailymotionsearchdialog.h \
-        src/maemo5/dailymotion/dailymotionuserdelegate.h \
         src/maemo5/dailymotion/dailymotionuserswindow.h \
         src/maemo5/dailymotion/dailymotionuserwindow.h \
-        src/maemo5/dailymotion/dailymotionvideodelegate.h \
         src/maemo5/dailymotion/dailymotionvideoswindow.h \
         src/maemo5/dailymotion/dailymotionvideowindow.h \
         src/maemo5/dailymotion/dailymotionview.h \
-        src/maemo5/plugins/plugincommentdelegate.h \
         src/maemo5/plugins/plugindownloaddialog.h \
         src/maemo5/plugins/pluginplaybackdialog.h \
-        src/maemo5/plugins/pluginplaylistdelegate.h \
         src/maemo5/plugins/pluginplaylistswindow.h \
         src/maemo5/plugins/pluginplaylistwindow.h \
         src/maemo5/plugins/pluginsearchdialog.h \
@@ -245,67 +243,58 @@ maemo5 {
         src/maemo5/plugins/pluginsettingsselector.h \
         src/maemo5/plugins/pluginsettingsslider.h \
         src/maemo5/plugins/pluginsettingsspinbox.h \
-        src/maemo5/plugins/pluginuserdelegate.h \
         src/maemo5/plugins/pluginuserswindow.h \
         src/maemo5/plugins/pluginuserwindow.h \
-        src/maemo5/plugins/pluginvideodelegate.h \
         src/maemo5/plugins/pluginvideoswindow.h \
         src/maemo5/plugins/pluginvideowindow.h \
         src/maemo5/plugins/pluginview.h \
-        src/maemo5/vimeo/vimeoaccountdelegate.h \
         src/maemo5/vimeo/vimeoaccountswindow.h \
         src/maemo5/vimeo/vimeoauthdialog.h \
-        src/maemo5/vimeo/vimeocommentdelegate.h \
         src/maemo5/vimeo/vimeocommentdialog.h \
         src/maemo5/vimeo/vimeodownloaddialog.h \
         src/maemo5/vimeo/vimeoplaybackdialog.h \
-        src/maemo5/vimeo/vimeoplaylistdelegate.h \
         src/maemo5/vimeo/vimeoplaylistdialog.h \
         src/maemo5/vimeo/vimeoplaylistswindow.h \
         src/maemo5/vimeo/vimeoplaylistwindow.h \
         src/maemo5/vimeo/vimeosearchdialog.h \
-        src/maemo5/vimeo/vimeouserdelegate.h \
         src/maemo5/vimeo/vimeouserswindow.h \
         src/maemo5/vimeo/vimeouserwindow.h \
-        src/maemo5/vimeo/vimeovideodelegate.h \
         src/maemo5/vimeo/vimeovideoswindow.h \
         src/maemo5/vimeo/vimeovideowindow.h \
         src/maemo5/vimeo/vimeoview.h \
-        src/maemo5/youtube/youtubeaccountdelegate.h \
         src/maemo5/youtube/youtubeaccountswindow.h \
         src/maemo5/youtube/youtubeauthdialog.h \
-        src/maemo5/youtube/youtubecommentdelegate.h \
         src/maemo5/youtube/youtubecommentdialog.h \
         src/maemo5/youtube/youtubedownloaddialog.h \
         src/maemo5/youtube/youtubeplaybackdialog.h \
-        src/maemo5/youtube/youtubeplaylistdelegate.h \
         src/maemo5/youtube/youtubeplaylistdialog.h \
         src/maemo5/youtube/youtubeplaylistswindow.h \
         src/maemo5/youtube/youtubeplaylistwindow.h \
         src/maemo5/youtube/youtubesearchdialog.h \
-        src/maemo5/youtube/youtubeuserdelegate.h \
         src/maemo5/youtube/youtubeuserswindow.h \
         src/maemo5/youtube/youtubeuserwindow.h \
-        src/maemo5/youtube/youtubevideodelegate.h \
         src/maemo5/youtube/youtubevideoswindow.h \
         src/maemo5/youtube/youtubevideowindow.h \
         src/maemo5/youtube/youtubeview.h
         
     SOURCES += \
         src/base/transfermodel.cpp \
-        src/imagecache/imagecache.cpp \
         src/maemo5/aboutdialog.cpp \
+        src/maemo5/accountdelegate.cpp \
         src/maemo5/banner.cpp \
         src/maemo5/categoriesdialog.cpp \
+        src/maemo5/commentdelegate.cpp \
         src/maemo5/dialog.cpp \
         src/maemo5/filterbox.cpp \
         src/maemo5/image.cpp \
+        src/maemo5/imagecache.cpp \
         src/maemo5/listview.cpp \
         src/maemo5/main.cpp \
         src/maemo5/mainwindow.cpp \
         src/maemo5/navdelegate.cpp \
         src/maemo5/networkproxydialog.cpp \
         src/maemo5/newcategorydialog.cpp \
+        src/maemo5/playlistdelegate.cpp \
         src/maemo5/playlistthumbnail.cpp \
         src/maemo5/screensaver.cpp \
         src/maemo5/searchhistorydialog.cpp \
@@ -313,38 +302,33 @@ maemo5 {
         src/maemo5/stackedwindow.cpp \
         src/maemo5/textbrowser.cpp \
         src/maemo5/transferswindow.cpp \
+        src/maemo5/userdelegate.cpp \
         src/maemo5/valueselector.cpp \
         src/maemo5/valueselectoraction.cpp \
         src/maemo5/videocontrols.cpp \
+        src/maemo5/videodelegate.cpp \
         src/maemo5/videoplaybackdelegate.cpp \
         src/maemo5/videoplaybackwindow.cpp \
         src/maemo5/videoplayerbutton.cpp \
         src/maemo5/videothumbnail.cpp \
         src/maemo5/videowidget.cpp \
         src/maemo5/webview.cpp \
-        src/maemo5/dailymotion/dailymotionaccountdelegate.cpp \
         src/maemo5/dailymotion/dailymotionaccountswindow.cpp \
         src/maemo5/dailymotion/dailymotionauthdialog.cpp \
-        src/maemo5/dailymotion/dailymotioncommentdelegate.cpp \
         src/maemo5/dailymotion/dailymotioncommentdialog.cpp \
         src/maemo5/dailymotion/dailymotiondownloaddialog.cpp \
         src/maemo5/dailymotion/dailymotionplaybackdialog.cpp \
-        src/maemo5/dailymotion/dailymotionplaylistdelegate.cpp \
         src/maemo5/dailymotion/dailymotionplaylistdialog.cpp \
         src/maemo5/dailymotion/dailymotionplaylistswindow.cpp \
         src/maemo5/dailymotion/dailymotionplaylistwindow.cpp \
         src/maemo5/dailymotion/dailymotionsearchdialog.cpp \
-        src/maemo5/dailymotion/dailymotionuserdelegate.cpp \
         src/maemo5/dailymotion/dailymotionuserswindow.cpp \
         src/maemo5/dailymotion/dailymotionuserwindow.cpp \
-        src/maemo5/dailymotion/dailymotionvideodelegate.cpp \
         src/maemo5/dailymotion/dailymotionvideoswindow.cpp \
         src/maemo5/dailymotion/dailymotionvideowindow.cpp \
         src/maemo5/dailymotion/dailymotionview.cpp \
-        src/maemo5/plugins/plugincommentdelegate.cpp \
         src/maemo5/plugins/plugindownloaddialog.cpp \
         src/maemo5/plugins/pluginplaybackdialog.cpp \
-        src/maemo5/plugins/pluginplaylistdelegate.cpp \
         src/maemo5/plugins/pluginplaylistswindow.cpp \
         src/maemo5/plugins/pluginplaylistwindow.cpp \
         src/maemo5/plugins/pluginsearchdialog.cpp \
@@ -354,48 +338,36 @@ maemo5 {
         src/maemo5/plugins/pluginsettingsselector.cpp \
         src/maemo5/plugins/pluginsettingsslider.cpp \
         src/maemo5/plugins/pluginsettingsspinbox.cpp \
-        src/maemo5/plugins/pluginuserdelegate.cpp \
         src/maemo5/plugins/pluginuserswindow.cpp \
         src/maemo5/plugins/pluginuserwindow.cpp \
-        src/maemo5/plugins/pluginvideodelegate.cpp \
         src/maemo5/plugins/pluginvideoswindow.cpp \
         src/maemo5/plugins/pluginvideowindow.cpp \
         src/maemo5/plugins/pluginview.cpp \
-        src/maemo5/vimeo/vimeoaccountdelegate.cpp \
         src/maemo5/vimeo/vimeoaccountswindow.cpp \
         src/maemo5/vimeo/vimeoauthdialog.cpp \
-        src/maemo5/vimeo/vimeocommentdelegate.cpp \
         src/maemo5/vimeo/vimeocommentdialog.cpp \
         src/maemo5/vimeo/vimeodownloaddialog.cpp \
         src/maemo5/vimeo/vimeoplaybackdialog.cpp \
-        src/maemo5/vimeo/vimeoplaylistdelegate.cpp \
         src/maemo5/vimeo/vimeoplaylistdialog.cpp \
         src/maemo5/vimeo/vimeoplaylistswindow.cpp \
         src/maemo5/vimeo/vimeoplaylistwindow.cpp \
         src/maemo5/vimeo/vimeosearchdialog.cpp \
-        src/maemo5/vimeo/vimeouserdelegate.cpp \
         src/maemo5/vimeo/vimeouserswindow.cpp \
         src/maemo5/vimeo/vimeouserwindow.cpp \
-        src/maemo5/vimeo/vimeovideodelegate.cpp \
         src/maemo5/vimeo/vimeovideoswindow.cpp \
         src/maemo5/vimeo/vimeovideowindow.cpp \
         src/maemo5/vimeo/vimeoview.cpp \
-        src/maemo5/youtube/youtubeaccountdelegate.cpp \
         src/maemo5/youtube/youtubeaccountswindow.cpp \
         src/maemo5/youtube/youtubeauthdialog.cpp \
-        src/maemo5/youtube/youtubecommentdelegate.cpp \
         src/maemo5/youtube/youtubecommentdialog.cpp \
         src/maemo5/youtube/youtubedownloaddialog.cpp \
         src/maemo5/youtube/youtubeplaybackdialog.cpp \
-        src/maemo5/youtube/youtubeplaylistdelegate.cpp \
         src/maemo5/youtube/youtubeplaylistdialog.cpp \
         src/maemo5/youtube/youtubeplaylistswindow.cpp \
         src/maemo5/youtube/youtubeplaylistwindow.cpp \
         src/maemo5/youtube/youtubesearchdialog.cpp \
-        src/maemo5/youtube/youtubeuserdelegate.cpp \
         src/maemo5/youtube/youtubeuserswindow.cpp \
         src/maemo5/youtube/youtubeuserwindow.cpp \
-        src/maemo5/youtube/youtubevideodelegate.cpp \
         src/maemo5/youtube/youtubevideoswindow.cpp \
         src/maemo5/youtube/youtubevideowindow.cpp \
         src/maemo5/youtube/youtubeview.cpp

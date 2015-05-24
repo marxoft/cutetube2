@@ -38,7 +38,7 @@ class VimeoPlaylistDialog : public Dialog
     Q_OBJECT
     
 public:
-    explicit VimeoPlaylistDialog(const VimeoVideo *video, QWidget *parent);
+    explicit VimeoPlaylistDialog(VimeoVideo *video, QWidget *parent);
     ~VimeoPlaylistDialog();
     
 protected:
@@ -61,7 +61,7 @@ private Q_SLOTS:
     void onTitleChanged(const QString &text);
         
 private:
-    const VimeoVideo *m_video;
+    VimeoVideo *m_video;
     VimeoPlaylist *m_playlist;
     VimeoPlaylistModel *m_model;
     ImageCache *m_cache;

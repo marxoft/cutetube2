@@ -20,7 +20,7 @@
 #include "stackedwindow.h"
 #include "pluginvideomodel.h"
 
-class PluginVideoDelegate;
+class VideoDelegate;
 class ImageCache;
 class ListView;
 class QLabel;
@@ -59,7 +59,7 @@ private:
     ImageCache *m_cache;
     
     ListView *m_view;
-    PluginVideoDelegate *m_delegate;
+    VideoDelegate *m_delegate;
     QActionGroup *m_viewGroup;
     QAction *m_listAction;
     QAction *m_gridAction;

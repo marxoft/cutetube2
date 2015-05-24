@@ -20,7 +20,7 @@
 #include "stackedwindow.h"
 #include "youtubevideomodel.h"
 
-class YouTubeVideoDelegate;
+class VideoDelegate;
 class ImageCache;
 class ListView;
 class QLabel;
@@ -63,7 +63,7 @@ private:
     ImageCache *m_cache;
     
     ListView *m_view;
-    YouTubeVideoDelegate *m_delegate;
+    VideoDelegate *m_delegate;
     QActionGroup *m_viewGroup;
     QAction *m_listAction;
     QAction *m_gridAction;

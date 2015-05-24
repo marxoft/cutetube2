@@ -21,7 +21,7 @@
 #include "pluginplaylist.h"
 
 class PluginUser;
-class PluginVideoDelegate;
+class VideoDelegate;
 class PluginVideoModel;
 class Image;
 class ImageCache;
@@ -80,7 +80,7 @@ private:
     PlaylistThumbnail *m_thumbnail;
     Image *m_avatar;
     ListView *m_view;
-    PluginVideoDelegate *m_delegate;
+    VideoDelegate *m_delegate;
     QScrollArea *m_scrollArea;
     QLabel *m_titleLabel;
     TextBrowser *m_descriptionLabel;

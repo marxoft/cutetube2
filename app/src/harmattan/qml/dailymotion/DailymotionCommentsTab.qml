@@ -53,7 +53,10 @@ Tab {
     ListView {
         id: view
 
-        anchors.fill: parent
+        anchors {
+            fill: parent
+            topMargin: UI.PADDING_DOUBLE
+        }
         cacheBuffer: 400
         highlightFollowsCurrentItem: false
         model: DailymotionCommentModel {

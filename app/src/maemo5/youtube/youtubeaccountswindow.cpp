@@ -15,9 +15,9 @@
  */
 
 #include "youtubeaccountswindow.h"
+#include "accountdelegate.h"
 #include "listview.h"
 #include "youtube.h"
-#include "youtubeaccountdelegate.h"
 #include "youtubeaccountmodel.h"
 #include "youtubeauthdialog.h"
 #include <qyoutube/authenticationrequest.h>
@@ -46,7 +46,7 @@ YouTubeAccountsWindow::YouTubeAccountsWindow(StackedWindow *parent) :
         
     m_view->setModel(m_model);
     m_view->setModelColumn(1);
-    m_view->setItemDelegate(new YouTubeAccountDelegate(m_view));
+    m_view->setItemDelegate(new AccountDelegate(YouTubeAccountModel::ActiveRole, m_view));
     m_view->addAction(m_removeAction);
     
     m_label->setAlignment(Qt::AlignHCenter);

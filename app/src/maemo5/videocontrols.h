@@ -45,8 +45,8 @@ public:
     explicit VideoControls(QMediaPlayer *player, QWidget *parent = 0);
     ~VideoControls();
     
-    void addVideo(const Video *video);
-    void addVideos(const QList<const Video*> &videos);
+    void addVideo(Video *video);
+    void addVideos(const QList<Video*> &videos);
 
     void keyPressEvent(QKeyEvent *e);
 

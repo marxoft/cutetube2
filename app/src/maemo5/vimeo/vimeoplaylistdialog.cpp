@@ -18,8 +18,8 @@
 #include "definitions.h"
 #include "imagecache.h"
 #include "listview.h"
+#include "playlistdelegate.h"
 #include "vimeo.h"
-#include "vimeoplaylistdelegate.h"
 #include "vimeovideo.h"
 #include <QTabBar>
 #include <QStackedWidget>
@@ -32,7 +32,7 @@
 #include <QGridLayout>
 #include <QMessageBox>
 
-VimeoPlaylistDialog::VimeoPlaylistDialog(const VimeoVideo *video, QWidget *parent) :
+VimeoPlaylistDialog::VimeoPlaylistDialog(VimeoVideo *video, QWidget *parent) :
     Dialog(parent),
     m_video(video),
     m_playlist(0),
@@ -54,7 +54,10 @@ VimeoPlaylistDialog::VimeoPlaylistDialog(const VimeoVideo *video, QWidget *paren
     setMinimumHeight(340);
     
     m_view->setModel(m_model);
-    m_view->setItemDelegate(new VimeoPlaylistDelegate(m_cache, m_view));
+    m_view->setItemDelegate(new PlaylistDelegate(m_cache, VimeoPlaylistModel::DateRole,
+                                                 VimeoPlaylistModel::ThumbnailUrlRole, VimeoPlaylistModel::TitleRole,
+                                                 VimeoPlaylistModel::UsernameRole, VimeoPlaylistModel::VideoCountRole,
+                                                 m_view));
     
     m_tabBar->addTab(tr("Albums"));
     m_tabBar->addTab(tr("New album"));

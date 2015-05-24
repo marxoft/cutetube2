@@ -22,8 +22,8 @@
 #include "youtubevideomodel.h"
 
 class YouTubeUser;
-class YouTubeVideoDelegate;
-class YouTubeCommentDelegate;
+class VideoDelegate;
+class CommentDelegate;
 class Image;
 class ImageCache;
 class ListView;
@@ -104,8 +104,8 @@ private:
     Image *m_avatar;
     ListView *m_relatedView;
     ListView *m_commentView;
-    YouTubeVideoDelegate *m_relatedDelegate;
-    YouTubeCommentDelegate *m_commentDelegate;
+    VideoDelegate *m_relatedDelegate;
+    CommentDelegate *m_commentDelegate;
     QScrollArea *m_scrollArea;
     QTabBar *m_tabBar;
     QStackedWidget *m_stack;

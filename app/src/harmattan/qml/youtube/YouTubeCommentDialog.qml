@@ -28,6 +28,7 @@ MySheet {
     property string parentId
 
     acceptWhenDone: false
+    showProgressIndicator: comment.status == QYouTube.ResourcesRequest.Loading
     rejectButtonText: qsTr("Cancel")
     acceptButtonText: commentField.text ? qsTr("Done") : ""
     content: Item {

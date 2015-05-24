@@ -21,7 +21,7 @@
 #include "vimeoplaylist.h"
 
 class VimeoUser;
-class VimeoVideoDelegate;
+class VideoDelegate;
 class VimeoVideoModel;
 class Image;
 class ImageCache;
@@ -86,7 +86,7 @@ private:
     PlaylistThumbnail *m_thumbnail;
     Image *m_avatar;
     ListView *m_view;
-    VimeoVideoDelegate *m_delegate;
+    VideoDelegate *m_delegate;
     QScrollArea *m_scrollArea;
     QLabel *m_titleLabel;
     TextBrowser *m_descriptionLabel;

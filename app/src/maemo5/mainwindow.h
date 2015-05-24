@@ -48,7 +48,7 @@ private Q_SLOTS:
     void showSettingsDialog();
     void showTransfers();
     
-    void onTransferAdded(const Transfer *transfer);
+    void onTransferAdded(Transfer *transfer);
         
 private:
     static MainWindow *self;

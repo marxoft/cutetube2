@@ -62,11 +62,11 @@ void VideoPlayer::playVideo(const QString &url) {
         QStringList args = Settings::instance()->videoPlayerCommand().split(' ', QString::SkipEmptyParts);
         QProcess *player = new QProcess;
         QObject::connect(player, SIGNAL(finished(int, QProcess::ExitStatus)), player, SLOT(deleteLater()));
-        player->start(args.takeFirst(), args << QByteArray::fromPercentEncoding(url.toUtf8()));
+        player->start(args.takeFirst(), args << url);
     }
     else if (Settings::instance()->videoPlayer() == "mplayer") {
         QStringList args;
-        args << "-cache" << "2048" << "-fs" << QByteArray::fromPercentEncoding(url.toUtf8());
+        args << "-cache" << "2048" << "-fs" << url;
         QProcess *player = new QProcess;
         QObject::connect(player, SIGNAL(finished(int, QProcess::ExitStatus)), player, SLOT(deleteLater()));
         player->start("/usr/bin/mplayer", args);

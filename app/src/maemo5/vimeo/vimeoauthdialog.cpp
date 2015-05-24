@@ -46,7 +46,7 @@ void VimeoAuthDialog::onWebViewUrlChanged(const QUrl &url) {
     qDebug() << "VimeoAuthDialog::onWebViewUrlChanged" << url;
 #endif
     if (url.toString() == "https://vimeo.com/") {
-        //Work-around as for some reason Vimeo sends you to the homepage on the first attempt.
+        // Work-around as for some reason Vimeo sends you to the homepage on the first attempt.
         m_view->setUrl(Vimeo::instance()->authUrl());
     }
     else if (url.hasQueryItem("code")) {

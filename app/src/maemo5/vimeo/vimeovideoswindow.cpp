@@ -19,12 +19,12 @@
 #include "imagecache.h"
 #include "listview.h"
 #include "settings.h"
+#include "videodelegate.h"
 #include "videoplaybackwindow.h"
 #include "vimeo.h"
 #include "vimeodownloaddialog.h"
 #include "vimeoplaybackdialog.h"
 #include "vimeoplaylistdialog.h"
-#include "vimeovideodelegate.h"
 #include "vimeovideowindow.h"
 #include <qvimeo/urls.h>
 #include <QLabel>
@@ -40,7 +40,9 @@ VimeoVideosWindow::VimeoVideosWindow(StackedWindow *parent) :
     m_model(new VimeoVideoModel(this)),
     m_cache(new ImageCache),
     m_view(new ListView(this)),
-    m_delegate(new VimeoVideoDelegate(m_cache, m_view)),
+    m_delegate(new VideoDelegate(m_cache, VimeoVideoModel::DateRole, VimeoVideoModel::DurationRole,
+                                 VimeoVideoModel::ThumbnailUrlRole, VimeoVideoModel::TitleRole,
+                                 VimeoVideoModel::UsernameRole, m_view)),
     m_viewGroup(new QActionGroup(this)),
     m_listAction(new QAction(tr("List"), this)),
     m_gridAction(new QAction(tr("Grid"), this)),
@@ -145,7 +147,7 @@ void VimeoVideosWindow::addVideoToPlaylist() {
         return;
     }
     
-    if (const VimeoVideo *video = m_model->get(m_view->currentIndex().row())) {
+    if (VimeoVideo *video = m_model->get(m_view->currentIndex().row())) {
         VimeoPlaylistDialog *dialog = new VimeoPlaylistDialog(video, this);
         dialog->open();
     }
@@ -171,7 +173,7 @@ void VimeoVideosWindow::playVideo(const QModelIndex &index) {
     }
     
     if (Settings::instance()->videoPlayer() == "cutetube") {
-        if (const VimeoVideo *video = m_model->get(index.row())) {
+        if (VimeoVideo *video = m_model->get(index.row())) {
             VideoPlaybackWindow *window = new VideoPlaybackWindow(this);
             window->show();
             window->addVideo(video);

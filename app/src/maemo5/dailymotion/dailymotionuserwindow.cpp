@@ -91,7 +91,6 @@ void DailymotionUserWindow::loadBaseUi() {
     
     m_banner->setFixedSize(400, 100);
     
-    m_titleLabel->setWordWrap(true);
     m_statsLabel->setStyleSheet("font-size: 18px");
     
     m_subscribeButton->setEnabled(false);
@@ -126,7 +125,7 @@ void DailymotionUserWindow::loadUserUi() {
                                   && (m_user->id() != Dailymotion::instance()->userId())
                                   && (Dailymotion::instance()->hasScope(QDailymotion::MANAGE_SUBSCRIPTIONS_SCOPE)));
     m_subscribeButton->setText(m_user->isSubscribed() ? tr("Unsubscribe") : tr("Subscribe"));
-    m_titleLabel->setText(m_user->username());
+    m_titleLabel->setText(m_titleLabel->fontMetrics().elidedText(m_user->username(), Qt::ElideRight, 250));
     m_statsLabel->setText(tr("%1 %2\n%3 %4").arg(Utils::formatLargeNumber(m_user->subscriberCount()))
                                             .arg(tr("subscribers"))
                                             .arg(Utils::formatLargeNumber(m_user->viewCount()))

@@ -16,8 +16,8 @@
 
 #include "dailymotionvideowindow.h"
 #include "clipboard.h"
+#include "commentdelegate.h"
 #include "dailymotion.h"
-#include "dailymotioncommentdelegate.h"
 #include "dailymotioncommentdialog.h"
 #include "dailymotioncommentmodel.h"
 #include "dailymotiondownloaddialog.h"
@@ -26,7 +26,6 @@
 #include "dailymotionplaylistwindow.h"
 #include "dailymotionuser.h"
 #include "dailymotionuserwindow.h"
-#include "dailymotionvideodelegate.h"
 #include "definitions.h"
 #include "image.h"
 #include "imagecache.h"
@@ -35,6 +34,7 @@
 #include "settings.h"
 #include "textbrowser.h"
 #include "utils.h"
+#include "videodelegate.h"
 #include "videoplaybackwindow.h"
 #include "videothumbnail.h"
 #include <qdailymotion/urls.h>
@@ -60,7 +60,9 @@ DailymotionVideoWindow::DailymotionVideoWindow(const QString &id, StackedWindow 
     m_avatar(new Image(this)),
     m_relatedView(new ListView(this)),
     m_commentView(0),
-    m_relatedDelegate(new DailymotionVideoDelegate(m_cache, this)),
+    m_relatedDelegate(new VideoDelegate(m_cache, DailymotionVideoModel::DateRole, DailymotionVideoModel::DurationRole,
+                                        DailymotionVideoModel::ThumbnailUrlRole, DailymotionVideoModel::TitleRole,
+                                        DailymotionVideoModel::UsernameRole, this)),
     m_commentDelegate(0),
     m_scrollArea(new QScrollArea(this)),
     m_tabBar(new QTabBar(this)),
@@ -105,7 +107,9 @@ DailymotionVideoWindow::DailymotionVideoWindow(const DailymotionVideo *video, St
     m_avatar(new Image(this)),
     m_relatedView(new ListView(this)),
     m_commentView(0),
-    m_relatedDelegate(new DailymotionVideoDelegate(m_cache, this)),
+    m_relatedDelegate(new VideoDelegate(m_cache, DailymotionVideoModel::DateRole, DailymotionVideoModel::DurationRole,
+                                        DailymotionVideoModel::ThumbnailUrlRole, DailymotionVideoModel::TitleRole,
+                                        DailymotionVideoModel::UsernameRole, this)),
     m_commentDelegate(0),
     m_scrollArea(new QScrollArea(this)),
     m_tabBar(new QTabBar(this)),
@@ -260,7 +264,7 @@ void DailymotionVideoWindow::loadBaseUi() {
 }
 
 void DailymotionVideoWindow::loadUserUi() {
-    m_userLabel->setText(m_user->username());
+    m_userLabel->setText(m_userLabel->fontMetrics().elidedText(m_user->username(), Qt::ElideRight, 250));
     m_avatar->setSource(m_user->thumbnailUrl());
 }
 
@@ -389,7 +393,7 @@ void DailymotionVideoWindow::playRelatedVideo(const QModelIndex &index) {
     }
     
     if (Settings::instance()->videoPlayer() == "cutetube") {
-        if (const DailymotionVideo *video = m_relatedModel->get(index.row())) {
+        if (DailymotionVideo *video = m_relatedModel->get(index.row())) {
             VideoPlaybackWindow *window = new VideoPlaybackWindow(this);
             window->show();
             window->addVideo(video);
@@ -465,7 +469,10 @@ void DailymotionVideoWindow::showContextMenu(const QPoint &pos) {
 void DailymotionVideoWindow::showComments() {
     if (!m_commentView) {
         m_commentView = new ListView(this);
-        m_commentDelegate = new DailymotionCommentDelegate(m_cache, this);
+        m_commentDelegate = new CommentDelegate(m_cache, DailymotionCommentModel::BodyRole,
+                                                DailymotionCommentModel::DateRole,
+                                                DailymotionCommentModel::ThumbnailUrlRole,
+                                                DailymotionCommentModel::UsernameRole, this);
         m_commentModel = new DailymotionCommentModel(this);
         m_commentView->setUniformItemSizes(false);
         m_commentView->setModel(m_commentModel);

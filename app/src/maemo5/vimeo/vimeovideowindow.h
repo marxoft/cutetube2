@@ -22,8 +22,8 @@
 #include "vimeovideomodel.h"
 
 class VimeoUser;
-class VimeoVideoDelegate;
-class VimeoCommentDelegate;
+class VideoDelegate;
+class CommentDelegate;
 class Image;
 class ImageCache;
 class ListView;
@@ -102,8 +102,8 @@ private:
     Image *m_avatar;
     ListView *m_relatedView;
     ListView *m_commentView;
-    VimeoVideoDelegate *m_relatedDelegate;
-    VimeoCommentDelegate *m_commentDelegate;
+    VideoDelegate *m_relatedDelegate;
+    CommentDelegate *m_commentDelegate;
     QScrollArea *m_scrollArea;
     QTabBar *m_tabBar;
     QStackedWidget *m_stack;

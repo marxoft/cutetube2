@@ -17,8 +17,8 @@
 #include "vimeoplaylistswindow.h"
 #include "imagecache.h"
 #include "listview.h"
+#include "playlistdelegate.h"
 #include "settings.h"
-#include "vimeoplaylistdelegate.h"
 #include "vimeoplaylistwindow.h"
 #include <QLabel>
 #include <QActionGroup>
@@ -31,7 +31,10 @@ VimeoPlaylistsWindow::VimeoPlaylistsWindow(StackedWindow *parent) :
     m_model(new VimeoPlaylistModel(this)),
     m_cache(new ImageCache),
     m_view(new ListView(this)),
-    m_delegate(new VimeoPlaylistDelegate(m_cache, m_view)),
+    m_delegate(new PlaylistDelegate(m_cache, VimeoPlaylistModel::DateRole,
+                                    VimeoPlaylistModel::ThumbnailUrlRole, VimeoPlaylistModel::TitleRole,
+                                    VimeoPlaylistModel::UsernameRole, VimeoPlaylistModel::VideoCountRole,
+                                    m_view)),
     m_viewGroup(new QActionGroup(this)),
     m_listAction(new QAction(tr("List"), this)),
     m_gridAction(new QAction(tr("Grid"), this)),

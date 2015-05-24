@@ -31,6 +31,8 @@ MySheet {
         streamModel.list(resourceId);
     }
 
+    showProgressIndicator: (streamModel.status == QVimeo.StreamsRequest.Loading)
+                           || (subtitleModel.status == QVimeo.ResourcesRequest.Loading)
     acceptButtonText: streamModel.status == QVimeo.StreamsRequest.Ready ? qsTr("Done") : ""
     rejectButtonText: qsTr("Cancel")
     content: Item {

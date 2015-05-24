@@ -14,19 +14,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DAILYMOTIONPLAYLISTDELEGATE_H
-#define DAILYMOTIONPLAYLISTDELEGATE_H
+#ifndef USERDELEGATE_H
+#define USERDELEGATE_H
 
 #include <QStyledItemDelegate>
 
 class ImageCache;
 
-class DailymotionPlaylistDelegate : public QStyledItemDelegate
+class UserDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
     
 public:
-    explicit DailymotionPlaylistDelegate(ImageCache *cache, QObject *parent = 0);
+    explicit UserDelegate(ImageCache *cache, int subscriberCountRole, int thumbnailRole, int usernameRole,
+                          QObject *parent = 0);
     
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
     
@@ -38,7 +39,11 @@ public:
 private:
     ImageCache *m_cache;
     
+    int m_subscriberCountRole;
+    int m_thumbnailRole;
+    int m_usernameRole;
+    
     bool m_gridMode;
 };
 
-#endif // DAILYMOTIONPLAYLISTDELEGATE_H
+#endif // USERDELEGATE_H

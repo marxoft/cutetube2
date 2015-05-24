@@ -16,11 +16,11 @@
 
 #include "dailymotionplaylistdialog.h"
 #include "dailymotion.h"
-#include "dailymotionplaylistdelegate.h"
 #include "dailymotionvideo.h"
 #include "definitions.h"
 #include "imagecache.h"
 #include "listview.h"
+#include "playlistdelegate.h"
 #include <QTabBar>
 #include <QStackedWidget>
 #include <QLineEdit>
@@ -31,7 +31,7 @@
 #include <QGridLayout>
 #include <QMessageBox>
 
-DailymotionPlaylistDialog::DailymotionPlaylistDialog(const DailymotionVideo *video, QWidget *parent) :
+DailymotionPlaylistDialog::DailymotionPlaylistDialog(DailymotionVideo *video, QWidget *parent) :
     Dialog(parent),
     m_video(video),
     m_playlist(0),
@@ -52,8 +52,11 @@ DailymotionPlaylistDialog::DailymotionPlaylistDialog(const DailymotionVideo *vid
     setMinimumHeight(340);
     
     m_view->setModel(m_model);
-    m_view->setItemDelegate(new DailymotionPlaylistDelegate(m_cache, m_view));
-    
+    m_view->setItemDelegate(new PlaylistDelegate(m_cache, DailymotionPlaylistModel::DateRole,
+                                                 DailymotionPlaylistModel::ThumbnailUrlRole,
+                                                 DailymotionPlaylistModel::TitleRole,
+                                                 DailymotionPlaylistModel::UsernameRole,
+                                                 DailymotionPlaylistModel::VideoCountRole, m_view));
     m_tabBar->addTab(tr("Playlists"));
     m_tabBar->addTab(tr("New playlist"));
     m_tabBar->setExpanding(false);

@@ -15,10 +15,10 @@
  */
 
 #include "dailymotionplaylistswindow.h"
-#include "dailymotionplaylistdelegate.h"
 #include "dailymotionplaylistwindow.h"
 #include "imagecache.h"
 #include "listview.h"
+#include "playlistdelegate.h"
 #include "settings.h"
 #include <QLabel>
 #include <QActionGroup>
@@ -31,7 +31,10 @@ DailymotionPlaylistsWindow::DailymotionPlaylistsWindow(StackedWindow *parent) :
     m_model(new DailymotionPlaylistModel(this)),
     m_cache(new ImageCache),
     m_view(new ListView(this)),
-    m_delegate(new DailymotionPlaylistDelegate(m_cache, m_view)),
+    m_delegate(new PlaylistDelegate(m_cache, DailymotionPlaylistModel::DateRole,
+                                    DailymotionPlaylistModel::ThumbnailUrlRole, DailymotionPlaylistModel::TitleRole,
+                                    DailymotionPlaylistModel::UsernameRole, DailymotionPlaylistModel::VideoCountRole,
+                                    m_view)),
     m_viewGroup(new QActionGroup(this)),
     m_listAction(new QAction(tr("List"), this)),
     m_gridAction(new QAction(tr("Grid"), this)),

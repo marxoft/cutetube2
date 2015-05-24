@@ -23,7 +23,6 @@
 #include "dailymotionplaylistwindow.h"
 #include "dailymotionuser.h"
 #include "dailymotionuserwindow.h"
-#include "dailymotionvideodelegate.h"
 #include "dailymotionvideomodel.h"
 #include "dailymotionvideowindow.h"
 #include "image.h"
@@ -34,6 +33,7 @@
 #include "settings.h"
 #include "textbrowser.h"
 #include "utils.h"
+#include "videodelegate.h"
 #include "videoplaybackwindow.h"
 #include <qdailymotion/urls.h>
 #include <QScrollArea>
@@ -54,7 +54,9 @@ DailymotionPlaylistWindow::DailymotionPlaylistWindow(const QString &id, StackedW
     m_thumbnail(new PlaylistThumbnail(this)),
     m_avatar(new Image(this)),
     m_view(new ListView(this)),
-    m_delegate(new DailymotionVideoDelegate(m_cache, this)),
+    m_delegate(new VideoDelegate(m_cache, DailymotionVideoModel::DateRole, DailymotionVideoModel::DurationRole,
+                                 DailymotionVideoModel::ThumbnailUrlRole, DailymotionVideoModel::TitleRole,
+                                 DailymotionVideoModel::UsernameRole, this)),
     m_scrollArea(new QScrollArea(this)),
     m_titleLabel(new QLabel(this)),
     m_descriptionLabel(new TextBrowser(this)),
@@ -89,7 +91,9 @@ DailymotionPlaylistWindow::DailymotionPlaylistWindow(const DailymotionPlaylist *
     m_thumbnail(new PlaylistThumbnail(this)),
     m_avatar(new Image(this)),
     m_view(new ListView(this)),
-    m_delegate(new DailymotionVideoDelegate(m_cache, this)),
+    m_delegate(new VideoDelegate(m_cache, DailymotionVideoModel::DateRole, DailymotionVideoModel::DurationRole,
+                                 DailymotionVideoModel::ThumbnailUrlRole, DailymotionVideoModel::TitleRole,
+                                 DailymotionVideoModel::UsernameRole, this)),
     m_scrollArea(new QScrollArea(this)),
     m_titleLabel(new QLabel(this)),
     m_descriptionLabel(new TextBrowser(this)),
@@ -231,7 +235,7 @@ void DailymotionPlaylistWindow::loadPlaylistUi() {
 }
 
 void DailymotionPlaylistWindow::loadUserUi() {
-    m_userLabel->setText(m_user->username());
+    m_userLabel->setText(m_userLabel->fontMetrics().elidedText(m_user->username(), Qt::ElideRight, 250));
     m_avatar->setSource(m_user->thumbnailUrl());
 }
 
@@ -262,10 +266,10 @@ void DailymotionPlaylistWindow::playPlaylist() {
         return;
     }
     
-    QList<const Video*> list;
+    QList<Video*> list;
     
     for (int i = 0; i < m_model->rowCount(); i++) {
-        if (const Video *video = m_model->get(i)) {
+        if (Video *video = m_model->get(i)) {
             list << video;
         }
     }
@@ -282,7 +286,7 @@ void DailymotionPlaylistWindow::addVideoToPlaylist() {
         return;
     }
     
-    if (const DailymotionVideo *video = m_model->get(m_view->currentIndex().row())) {
+    if (DailymotionVideo *video = m_model->get(m_view->currentIndex().row())) {
         DailymotionPlaylistDialog *dialog = new DailymotionPlaylistDialog(video, this);
         dialog->open();
     }
@@ -304,7 +308,7 @@ void DailymotionPlaylistWindow::playVideo(const QModelIndex &index) {
     }
     
     if (Settings::instance()->videoPlayer() == "cutetube") {
-        if (const DailymotionVideo *video = m_model->get(index.row())) {
+        if (DailymotionVideo *video = m_model->get(index.row())) {
             VideoPlaybackWindow *window = new VideoPlaybackWindow(this);
             window->show();
             window->addVideo(video);

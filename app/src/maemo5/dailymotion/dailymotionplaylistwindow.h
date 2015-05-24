@@ -21,7 +21,7 @@
 #include "dailymotionplaylist.h"
 
 class DailymotionUser;
-class DailymotionVideoDelegate;
+class VideoDelegate;
 class DailymotionVideoModel;
 class Image;
 class ImageCache;
@@ -85,7 +85,7 @@ private:
     PlaylistThumbnail *m_thumbnail;
     Image *m_avatar;
     ListView *m_view;
-    DailymotionVideoDelegate *m_delegate;
+    VideoDelegate *m_delegate;
     QScrollArea *m_scrollArea;
     QLabel *m_titleLabel;
     TextBrowser *m_descriptionLabel;

@@ -52,12 +52,12 @@ private Q_SLOTS:
     
     void onCommentAdded();
     
-    void onUserSubscribed(const DailymotionUser *user);
-    void onUserUnsubscribed(const DailymotionUser *user);
+    void onUserSubscribed(DailymotionUser *user);
+    void onUserUnsubscribed(DailymotionUser *user);
     
-    void onVideoFavourited(const DailymotionVideo *video);
-    void onVideoUnfavourited(const DailymotionVideo *video);
-    void onVideoAddedToPlaylist(const DailymotionVideo *video, const DailymotionPlaylist *playlist);
+    void onVideoFavourited(DailymotionVideo *video);
+    void onVideoUnfavourited(DailymotionVideo *video);
+    void onVideoAddedToPlaylist(DailymotionVideo *video, DailymotionPlaylist *playlist);
     
 private:
     DailymotionNavModel *m_model;

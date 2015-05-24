@@ -25,13 +25,13 @@
 #include "pluginplaylistwindow.h"
 #include "pluginuser.h"
 #include "pluginuserwindow.h"
-#include "pluginvideodelegate.h"
 #include "pluginvideomodel.h"
 #include "pluginvideowindow.h"
 #include "resources.h"
 #include "settings.h"
 #include "textbrowser.h"
 #include "utils.h"
+#include "videodelegate.h"
 #include "videoplaybackwindow.h"
 #include "videoplayer.h"
 #include <QScrollArea>
@@ -52,7 +52,9 @@ PluginPlaylistWindow::PluginPlaylistWindow(const QString &service, const QString
     m_thumbnail(new PlaylistThumbnail(this)),
     m_avatar(new Image(this)),
     m_view(new ListView(this)),
-    m_delegate(new PluginVideoDelegate(m_cache, this)),
+    m_delegate(new VideoDelegate(m_cache, PluginVideoModel::DateRole, PluginVideoModel::DurationRole,
+                                 PluginVideoModel::ThumbnailUrlRole, PluginVideoModel::TitleRole,
+                                 PluginVideoModel::UsernameRole, this)),
     m_scrollArea(new QScrollArea(this)),
     m_titleLabel(new QLabel(this)),
     m_descriptionLabel(new TextBrowser(this)),
@@ -85,7 +87,9 @@ PluginPlaylistWindow::PluginPlaylistWindow(const PluginPlaylist *playlist, Stack
     m_thumbnail(new PlaylistThumbnail(this)),
     m_avatar(new Image(this)),
     m_view(new ListView(this)),
-    m_delegate(new PluginVideoDelegate(m_cache, this)),
+    m_delegate(new VideoDelegate(m_cache, PluginVideoModel::DateRole, PluginVideoModel::DurationRole,
+                                 PluginVideoModel::ThumbnailUrlRole, PluginVideoModel::TitleRole,
+                                 PluginVideoModel::UsernameRole, this)),
     m_scrollArea(new QScrollArea(this)),
     m_titleLabel(new QLabel(this)),
     m_descriptionLabel(new TextBrowser(this)),
@@ -203,7 +207,7 @@ void PluginPlaylistWindow::loadPlaylistUi() {
 }
 
 void PluginPlaylistWindow::loadUserUi() {
-    m_userLabel->setText(m_user->username());
+    m_userLabel->setText(m_userLabel->fontMetrics().elidedText(m_user->username(), Qt::ElideRight, 250));
     m_avatar->setSource(m_user->thumbnailUrl());
     connect(m_avatar, SIGNAL(clicked()), this, SLOT(showUser()));
 }
@@ -232,10 +236,10 @@ void PluginPlaylistWindow::playPlaylist() {
         return;
     }
     
-    QList<const Video*> list;
+    QList<Video*> list;
     
     for (int i = 0; i < m_model->rowCount(); i++) {
-        if (const Video *video = m_model->get(i)) {
+        if (Video *video = m_model->get(i)) {
             list << video;
         }
     }
@@ -263,7 +267,7 @@ void PluginPlaylistWindow::playVideo(const QModelIndex &index) {
     }
     
     if (Settings::instance()->videoPlayer() == "cutetube") {
-        if (const PluginVideo *video = m_model->get(index.row())) {
+        if (PluginVideo *video = m_model->get(index.row())) {
             VideoPlaybackWindow *window = new VideoPlaybackWindow(this);
             window->show();
             window->addVideo(video);

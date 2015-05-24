@@ -14,19 +14,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef YOUTUBECOMMENTDELEGATE_H
-#define YOUTUBECOMMENTDELEGATE_H
+#ifndef COMMENTDELEGATE_H
+#define COMMENTDELEGATE_H
 
 #include <QStyledItemDelegate>
 
 class ImageCache;
 
-class YouTubeCommentDelegate : public QStyledItemDelegate
+class CommentDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
     
 public:
-    explicit YouTubeCommentDelegate(ImageCache *cache, QObject *parent = 0);
+    explicit CommentDelegate(ImageCache *cache, int bodyRole, int dateRole, int thumbnailRole, int usernameRole,
+                             QObject *parent = 0);
     
     bool editorEvent(QEvent *event, QAbstractItemModel *, const QStyleOptionViewItem &option,
                      const QModelIndex &index);
@@ -41,7 +42,12 @@ Q_SIGNALS:
 private:
     ImageCache *m_cache;
     
+    int m_bodyRole;
+    int m_dateRole;
+    int m_thumbnailRole;
+    int m_usernameRole;
+    
     int m_pressedRow;
 };
 
-#endif // YOUTUBECOMMENTDELEGATE_H
+#endif // COMMENTDELEGATE_H

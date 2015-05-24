@@ -3,12 +3,12 @@ Section: user/multimedia
 Priority: optional
 Maintainer: Stuart Howarth <showarth@marxoft.co.uk>
 Homepage: http://marxoft.co.uk/projects/cutetube2
-Build-Depends: debhelper (>= 5), libqt4-dev, libqtm-12-dev, libx11-dev, qdailymotion-dev (>= 0.1.1), qvimeo-dev (>= 0.0.2), qyoutube-dev (>= 0.1.1)
+Build-Depends: debhelper (>= 5), libqt4-dev, libqtm-12-dev, libx11-dev, qdailymotion-dev (>= 0.1.2), qvimeo-dev (>= 0.0.3), qyoutube-dev (>= 0.1.3)
 Standards-Version: 3.7.3
 
 Package: cutetube2
 Architecture: armel
-Depends: ${shlibs:Depends}, ${misc:Depends}, ffmpeg, libqtm-12, qdailymotion (>= 0.1.1), qvimeo (>= 0.0.2), qyoutube (>= 0.1.1)
+Depends: ${shlibs:Depends}, ${misc:Depends}, ffmpeg, libqtm-12, qdailymotion (>= 0.1.2), qvimeo (>= 0.0.3), qyoutube (>= 0.1.3)
 Description: A fully-featured client for YouTube, Dailymotion and Vimeo that can be extended via plugins
  cuteTube2 is a fully-featured client for YouTube, Dailymotion and Vimeo that allows you to
  browse, search, play, and download YouTube, Dailymotion and Vimeo videos. You can also

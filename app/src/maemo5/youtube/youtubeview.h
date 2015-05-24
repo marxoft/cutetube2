@@ -44,7 +44,6 @@ private:
     void showLatestVideos();
     void showLikes();
     void showPlaylists();
-    void showRecommended();
     void showSearchDialog();
     void showSubscriptions();
     void showUploads();
@@ -56,15 +55,15 @@ private Q_SLOTS:
     
     void onCommentAdded();
     
-    void onUserSubscribed(const YouTubeUser *user);
-    void onUserUnsubscribed(const YouTubeUser *user);
+    void onUserSubscribed(YouTubeUser *user);
+    void onUserUnsubscribed(YouTubeUser *user);
     
-    void onVideoFavourited(const YouTubeVideo *video);
-    void onVideoUnfavourited(const YouTubeVideo *video);
-    void onVideoLiked(const YouTubeVideo *video);
-    void onVideoDisliked(const YouTubeVideo *video);
-    void onVideoWatchLater(const YouTubeVideo *video);
-    void onVideoAddedToPlaylist(const YouTubeVideo *video, const YouTubePlaylist *playlist);
+    void onVideoFavourited(YouTubeVideo *video);
+    void onVideoUnfavourited(YouTubeVideo *video);
+    void onVideoLiked(YouTubeVideo *video);
+    void onVideoDisliked(YouTubeVideo *video);
+    void onVideoWatchLater(YouTubeVideo *video);
+    void onVideoAddedToPlaylist(YouTubeVideo *video, YouTubePlaylist *playlist);
     
 private:
     YouTubeNavModel *m_model;

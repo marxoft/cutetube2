@@ -15,8 +15,8 @@
  */
 
 #include "dailymotionaccountswindow.h"
+#include "accountdelegate.h"
 #include "dailymotion.h"
-#include "dailymotionaccountdelegate.h"
 #include "dailymotionaccountmodel.h"
 #include "dailymotionauthdialog.h"
 #include "listview.h"
@@ -46,7 +46,7 @@ DailymotionAccountsWindow::DailymotionAccountsWindow(StackedWindow *parent) :
         
     m_view->setModel(m_model);
     m_view->setModelColumn(1);
-    m_view->setItemDelegate(new DailymotionAccountDelegate(m_view));
+    m_view->setItemDelegate(new AccountDelegate(DailymotionAccountModel::ActiveRole, m_view));
     m_view->addAction(m_removeAction);
     
     m_label->setAlignment(Qt::AlignHCenter);

@@ -14,24 +14,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "vimeovideodelegate.h"
+#include "videodelegate.h"
+#include "drawing.h"
 #include "imagecache.h"
-#include "vimeovideomodel.h"
 #include <QPainter>
 #include <QUrl>
 #include <QApplication>
 #include <QMouseEvent>
 
-VimeoVideoDelegate::VimeoVideoDelegate(ImageCache *cache, QObject *parent) :
+VideoDelegate::VideoDelegate(ImageCache *cache, int dateRole, int durationRole, int thumbnailRole,
+                             int titleRole, int usernameRole, QObject *parent) :
     QStyledItemDelegate(parent),
     m_cache(cache),
     m_gridMode(false),
+    m_dateRole(dateRole),
+    m_durationRole(durationRole),
+    m_thumbnailRole(thumbnailRole),
+    m_titleRole(titleRole),
+    m_usernameRole(usernameRole),
     m_pressedRow(-1)
 {
 }
 
-bool VimeoVideoDelegate::editorEvent(QEvent *event, QAbstractItemModel *, const QStyleOptionViewItem &option,
-                                     const QModelIndex &index) {
+bool VideoDelegate::editorEvent(QEvent *event, QAbstractItemModel *, const QStyleOptionViewItem &option,
+                                const QModelIndex &index) {
 
     if (event->type() == QEvent::MouseButtonPress) {
         QMouseEvent *mouse = static_cast<QMouseEvent*>(event);
@@ -70,7 +76,7 @@ bool VimeoVideoDelegate::editorEvent(QEvent *event, QAbstractItemModel *, const 
     return false;
 }
 
-void VimeoVideoDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const {
+void VideoDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const {
     if (((option.state) & (QStyle::State_Selected)) && (m_pressedRow != index.row())) {
         painter->drawImage(option.rect, QImage("/etc/hildon/theme/images/TouchListBackgroundPressed.png"));
     }
@@ -78,7 +84,7 @@ void VimeoVideoDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
         painter->drawImage(option.rect, QImage("/etc/hildon/theme/images/TouchListBackgroundNormal.png"));
     }
     
-    QUrl imageUrl = index.data(VimeoVideoModel::ThumbnailUrlRole).toUrl();
+    QUrl imageUrl = index.data(m_thumbnailRole).toUrl();
     QImage image = m_cache->image(imageUrl, QSize(100, 75));
     
     QRect imageRect = option.rect;
@@ -87,14 +93,10 @@ void VimeoVideoDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
     imageRect.setWidth(100);
     imageRect.setHeight(75);
     
-    if (!image.isNull()) {
-        painter->drawImage(imageRect, image);
-    }
-    else {
-        painter->fillRect(imageRect, Qt::black);
-    }
+    painter->fillRect(imageRect, Qt::black);
+    drawCenteredImage(painter, imageRect, image);
     
-    QString duration = index.data(VimeoVideoModel::DurationRole).toString();
+    QString duration = index.data(m_durationRole).toString();
     QFont font;
     QRect durationRect = imageRect;
     const int durationHeight = durationRect.height() / 4;
@@ -122,36 +124,59 @@ void VimeoVideoDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
     textRect.setRight(textRect.right() - 8);
     textRect.setBottom(textRect.bottom() - 8);
     
-    QString text = index.data(VimeoVideoModel::TitleRole).toString();
+    QString title = index.data(m_titleRole).toString();
     
     if (gridMode()) {
         font.setPixelSize(16);
         painter->setFont(font);
-        painter->drawText(textRect, Qt::AlignVCenter | Qt::TextWordWrap, text);
+        painter->drawText(textRect, Qt::AlignVCenter | Qt::TextWordWrap, title);
     }
     else {
-        text.append(QString("\n%1 %2 %3 %4").arg(tr("by")).arg(index.data(VimeoVideoModel::UsernameRole).toString())
-                                            .arg(tr("on")).arg(index.data(VimeoVideoModel::DateRole).toString()));
-        
         if (textRect.width() < 600) {
             font.setPixelSize(18);
             painter->setFont(font);
         }
         
-        painter->drawText(textRect, Qt::AlignVCenter, text);
+        QFontMetrics fm = painter->fontMetrics();
+        
+        title = fm.elidedText(title, Qt::ElideRight, textRect.width());
+        QString subTitle;
+        QString username = index.data(m_usernameRole).toString();
+        QString date = index.data(m_dateRole).toString();
+        
+        if (!username.isEmpty()) {
+            subTitle.append(QString("%1 %2").arg(tr("by")).arg(username));
+        }
+        
+        if (!date.isEmpty()) {
+            if (!username.isEmpty()) {
+                subTitle.append(QString(" %1 ").arg(tr("on")));
+            }
+            
+            subTitle.append(date);
+        }
+        
+        if (!subTitle.isEmpty()) {
+            title.append("\n");
+            subTitle = fm.elidedText(subTitle, Qt::ElideRight, textRect.width());
+            painter->drawText(textRect, Qt::AlignVCenter, title + subTitle);
+        }
+        else {                
+            painter->drawText(textRect, Qt::AlignVCenter | Qt::TextWordWrap, title);
+        }
     }
     
     painter->restore();
 }
 
-QSize VimeoVideoDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &) const {
+QSize VideoDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &) const {
     return gridMode() ? QSize(124, 132) : QSize(option.rect.width(), 91);
 }
 
-bool VimeoVideoDelegate::gridMode() const {
+bool VideoDelegate::gridMode() const {
     return m_gridMode;
 }
 
-void VimeoVideoDelegate::setGridMode(bool enabled) {
+void VideoDelegate::setGridMode(bool enabled) {
     m_gridMode = enabled;
 }

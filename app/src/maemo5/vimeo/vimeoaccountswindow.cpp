@@ -15,8 +15,8 @@
  */
 
 #include "vimeoaccountswindow.h"
+#include "accountdelegate.h"
 #include "vimeo.h"
-#include "vimeoaccountdelegate.h"
 #include "vimeoaccountmodel.h"
 #include "vimeoauthdialog.h"
 #include "listview.h"
@@ -44,7 +44,7 @@ VimeoAccountsWindow::VimeoAccountsWindow(StackedWindow *parent) :
         
     m_view->setModel(m_model);
     m_view->setModelColumn(1);
-    m_view->setItemDelegate(new VimeoAccountDelegate(m_view));
+    m_view->setItemDelegate(new AccountDelegate(VimeoAccountModel::ActiveRole, m_view));
     m_view->addAction(m_removeAction);
     
     m_label->setAlignment(Qt::AlignHCenter);

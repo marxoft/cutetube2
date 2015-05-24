@@ -169,7 +169,7 @@ void ResourcesRequest::cancel() {
 
 void ResourcesRequest::onProcessFinished(int exitCode) {
     bool ok;
-    setResult(QtJson::Json::parse(m_process->readAllStandardOutput(), ok));
+    setResult(QtJson::Json::parse(QString::fromUtf8(m_process->readAllStandardOutput()), ok));
         
     if (exitCode == 0) {
         if (ok) {

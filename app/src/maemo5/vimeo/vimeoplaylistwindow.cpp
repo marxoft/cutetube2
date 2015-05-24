@@ -24,6 +24,7 @@
 #include "settings.h"
 #include "textbrowser.h"
 #include "utils.h"
+#include "videodelegate.h"
 #include "videoplaybackwindow.h"
 #include "vimeo.h"
 #include "vimeodownloaddialog.h"
@@ -32,7 +33,6 @@
 #include "vimeoplaylistwindow.h"
 #include "vimeouser.h"
 #include "vimeouserwindow.h"
-#include "vimeovideodelegate.h"
 #include "vimeovideomodel.h"
 #include "vimeovideowindow.h"
 #include <qvimeo/urls.h>
@@ -54,7 +54,9 @@ VimeoPlaylistWindow::VimeoPlaylistWindow(const QString &id, StackedWindow *paren
     m_thumbnail(new PlaylistThumbnail(this)),
     m_avatar(new Image(this)),
     m_view(new ListView(this)),
-    m_delegate(new VimeoVideoDelegate(m_cache, this)),
+    m_delegate(new VideoDelegate(m_cache, VimeoVideoModel::DateRole, VimeoVideoModel::DurationRole,
+                                 VimeoVideoModel::ThumbnailUrlRole, VimeoVideoModel::TitleRole,
+                                 VimeoVideoModel::UsernameRole, m_view)),
     m_scrollArea(new QScrollArea(this)),
     m_titleLabel(new QLabel(this)),
     m_descriptionLabel(new TextBrowser(this)),
@@ -90,7 +92,9 @@ VimeoPlaylistWindow::VimeoPlaylistWindow(const VimeoPlaylist *playlist, StackedW
     m_thumbnail(new PlaylistThumbnail(this)),
     m_avatar(new Image(this)),
     m_view(new ListView(this)),
-    m_delegate(new VimeoVideoDelegate(m_cache, this)),
+    m_delegate(new VideoDelegate(m_cache, VimeoVideoModel::DateRole, VimeoVideoModel::DurationRole,
+                                 VimeoVideoModel::ThumbnailUrlRole, VimeoVideoModel::TitleRole,
+                                 VimeoVideoModel::UsernameRole, m_view)),
     m_scrollArea(new QScrollArea(this)),
     m_titleLabel(new QLabel(this)),
     m_descriptionLabel(new TextBrowser(this)),
@@ -236,7 +240,7 @@ void VimeoPlaylistWindow::loadPlaylistUi() {
 }
 
 void VimeoPlaylistWindow::loadUserUi() {
-    m_userLabel->setText(m_user->username());
+    m_userLabel->setText(m_userLabel->fontMetrics().elidedText(m_user->username(), Qt::ElideRight, 250));
     m_avatar->setSource(m_user->thumbnailUrl());
 }
 
@@ -266,10 +270,10 @@ void VimeoPlaylistWindow::playPlaylist() {
         return;
     }
     
-    QList<const Video*> list;
+    QList<Video*> list;
     
     for (int i = 0; i < m_model->rowCount(); i++) {
-        if (const Video *video = m_model->get(i)) {
+        if (Video *video = m_model->get(i)) {
             list << video;
         }
     }
@@ -286,7 +290,7 @@ void VimeoPlaylistWindow::addVideoToPlaylist() {
         return;
     }
     
-    if (const VimeoVideo *video = m_model->get(m_view->currentIndex().row())) {
+    if (VimeoVideo *video = m_model->get(m_view->currentIndex().row())) {
         VimeoPlaylistDialog *dialog = new VimeoPlaylistDialog(video, this);
         dialog->open();
     }
@@ -308,7 +312,7 @@ void VimeoPlaylistWindow::playVideo(const QModelIndex &index) {
     }
     
     if (Settings::instance()->videoPlayer() == "cutetube") {
-        if (const VimeoVideo *video = m_model->get(index.row())) {
+        if (VimeoVideo *video = m_model->get(index.row())) {
             VideoPlaybackWindow *window = new VideoPlaybackWindow(this);
             window->show();
             window->addVideo(video);

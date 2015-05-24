@@ -31,6 +31,8 @@ MySheet {
         streamModel.list(resourceId);
     }
 
+    showProgressIndicator: (streamModel.status == QYouTube.StreamsRequest.Loading)
+                           || (subtitleModel.status == QYouTube.SubtitlesRequest.Loading)
     acceptButtonText: streamModel.status == QYouTube.StreamsRequest.Ready ? qsTr("Done") : ""
     rejectButtonText: qsTr("Cancel")
     content: Item {

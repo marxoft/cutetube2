@@ -14,22 +14,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "dailymotionplaylistdelegate.h"
-#include "dailymotionplaylistmodel.h"
+#include "playlistdelegate.h"
+#include "drawing.h"
 #include "imagecache.h"
 #include <QPainter>
 #include <QApplication>
 
-DailymotionPlaylistDelegate::DailymotionPlaylistDelegate(ImageCache *cache, QObject *parent) :
+PlaylistDelegate::PlaylistDelegate(ImageCache *cache, int dateRole, int thumbnailRole, int titleRole, int usernameRole,
+                                   int videoCountRole, QObject *parent) :
     QStyledItemDelegate(parent),
     m_cache(cache),
+    m_dateRole(dateRole),
+    m_thumbnailRole(thumbnailRole),
+    m_titleRole(titleRole),
+    m_usernameRole(usernameRole),
+    m_videoCountRole(videoCountRole),
     m_gridMode(false)
 {
 }
 
-void DailymotionPlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
-                                        const QModelIndex &index) const {
-    
+void PlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const {
     if ((option.state) & (QStyle::State_Selected)) {
         painter->drawImage(option.rect, QImage("/etc/hildon/theme/images/TouchListBackgroundPressed.png"));
     }
@@ -37,7 +41,7 @@ void DailymotionPlaylistDelegate::paint(QPainter *painter, const QStyleOptionVie
         painter->drawImage(option.rect, QImage("/etc/hildon/theme/images/TouchListBackgroundNormal.png"));
     }
    
-    QUrl imageUrl = index.data(DailymotionPlaylistModel::ThumbnailUrlRole).toUrl();
+    QUrl imageUrl = index.data(m_thumbnailRole).toUrl();
     QImage image = m_cache->image(imageUrl, QSize(100, 75));
     
     QRect imageRect = option.rect;
@@ -46,14 +50,10 @@ void DailymotionPlaylistDelegate::paint(QPainter *painter, const QStyleOptionVie
     imageRect.setWidth(100);
     imageRect.setHeight(75);
     
-    if (!image.isNull()) {
-        painter->drawImage(imageRect, image);
-    }
-    else {
-        painter->fillRect(imageRect, Qt::black);
-    }
+    painter->fillRect(imageRect, Qt::black);
+    drawCenteredImage(painter, imageRect, image);
     
-    const int count = index.data(DailymotionPlaylistModel::VideoCountRole).toInt();
+    const int count = index.data(m_videoCountRole).toInt();
                 
     QFont font;
     QRect durationRect = imageRect;
@@ -81,36 +81,59 @@ void DailymotionPlaylistDelegate::paint(QPainter *painter, const QStyleOptionVie
     textRect.setRight(textRect.right() - 8);
     textRect.setBottom(textRect.bottom() - 8);
     
-    QString text = index.data(DailymotionPlaylistModel::TitleRole).toString();
+    QString title = index.data(m_titleRole).toString();
     
     if (gridMode()) {
         font.setPixelSize(16);
         painter->setFont(font);
-        painter->drawText(textRect, Qt::AlignVCenter | Qt::TextWordWrap, text);
+        painter->drawText(textRect, Qt::AlignVCenter | Qt::TextWordWrap, title);
     }
     else {
-        text.append(QString("\n%1 %2 %3 %4").arg(tr("by")).arg(index.data(DailymotionPlaylistModel::UsernameRole).toString())
-                                            .arg(tr("on")).arg(index.data(DailymotionPlaylistModel::DateRole).toString()));
-        
         if (textRect.width() < 600) {
             font.setPixelSize(18);
             painter->setFont(font);
         }
         
-        painter->drawText(textRect, Qt::AlignVCenter, text);
+        QFontMetrics fm = painter->fontMetrics();
+        
+        title = fm.elidedText(title, Qt::ElideRight, textRect.width());
+        QString subTitle;
+        QString username = index.data(m_usernameRole).toString();
+        QString date = index.data(m_dateRole).toString();
+        
+        if (!username.isEmpty()) {
+            subTitle.append(QString("%1 %2").arg(tr("by")).arg(username));
+        }
+        
+        if (!date.isEmpty()) {
+            if (!username.isEmpty()) {
+                subTitle.append(QString(" %1 ").arg(tr("on")));
+            }
+            
+            subTitle.append(date);
+        }
+        
+        if (!subTitle.isEmpty()) {
+            title.append("\n");
+            subTitle = fm.elidedText(subTitle, Qt::ElideRight, textRect.width());
+            painter->drawText(textRect, Qt::AlignVCenter, title + subTitle);
+        }
+        else {                
+            painter->drawText(textRect, Qt::AlignVCenter | Qt::TextWordWrap, title);
+        }
     }
     
     painter->restore();
 }
 
-QSize DailymotionPlaylistDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &) const {
+QSize PlaylistDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &) const {
     return gridMode() ? QSize(124, 132) : QSize(option.rect.width(), 91);
 }
 
-bool DailymotionPlaylistDelegate::gridMode() const {
+bool PlaylistDelegate::gridMode() const {
     return m_gridMode;
 }
 
-void DailymotionPlaylistDelegate::setGridMode(bool enabled) {
+void PlaylistDelegate::setGridMode(bool enabled) {
     m_gridMode = enabled;
 }

@@ -53,13 +53,13 @@ private Q_SLOTS:
     
     void onCommentAdded();
     
-    void onUserSubscribed(const VimeoUser *user);
-    void onUserUnsubscribed(const VimeoUser *user);
+    void onUserSubscribed(VimeoUser *user);
+    void onUserUnsubscribed(VimeoUser *user);
     
-    void onVideoFavourited(const VimeoVideo *video);
-    void onVideoUnfavourited(const VimeoVideo *video);
-    void onVideoWatchLater(const VimeoVideo *video);
-    void onVideoAddedToPlaylist(const VimeoVideo *video, const VimeoPlaylist *playlist);
+    void onVideoFavourited(VimeoVideo *video);
+    void onVideoUnfavourited(VimeoVideo *video);
+    void onVideoWatchLater(VimeoVideo *video);
+    void onVideoAddedToPlaylist(VimeoVideo *video, VimeoPlaylist *playlist);
     
 private:
     VimeoNavModel *m_model;

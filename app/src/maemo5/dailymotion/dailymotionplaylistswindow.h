@@ -20,7 +20,7 @@
 #include "stackedwindow.h"
 #include "dailymotionplaylistmodel.h"
 
-class DailymotionPlaylistDelegate;
+class PlaylistDelegate;
 class ImageCache;
 class ListView;
 class QLabel;
@@ -52,7 +52,7 @@ private:
     ImageCache *m_cache;
     
     ListView *m_view;
-    DailymotionPlaylistDelegate *m_delegate;
+    PlaylistDelegate *m_delegate;
     QActionGroup *m_viewGroup;
     QAction *m_listAction;
     QAction *m_gridAction;

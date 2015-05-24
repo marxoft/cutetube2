@@ -18,7 +18,7 @@
 #include "imagecache.h"
 #include "listview.h"
 #include "settings.h"
-#include "vimeouserdelegate.h"
+#include "userdelegate.h"
 #include "vimeouserwindow.h"
 #include <QLabel>
 #include <QActionGroup>
@@ -31,7 +31,8 @@ VimeoUsersWindow::VimeoUsersWindow(StackedWindow *parent) :
     m_model(new VimeoUserModel(this)),
     m_cache(new ImageCache),
     m_view(new ListView(this)),
-    m_delegate(new VimeoUserDelegate(m_cache, m_view)),
+    m_delegate(new UserDelegate(m_cache, VimeoUserModel::SubscriberCountRole, VimeoUserModel::ThumbnailUrlRole,
+                                VimeoUserModel::UsernameRole, m_view)),
     m_viewGroup(new QActionGroup(this)),
     m_listAction(new QAction(tr("List"), this)),
     m_gridAction(new QAction(tr("Grid"), this)),

@@ -14,19 +14,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VIMEOUSERDELEGATE_H
-#define VIMEOUSERDELEGATE_H
+#ifndef VIDEODELEGATE_H
+#define VIDEODELEGATE_H
 
 #include <QStyledItemDelegate>
 
 class ImageCache;
 
-class VimeoUserDelegate : public QStyledItemDelegate
+class VideoDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
     
 public:
-    explicit VimeoUserDelegate(ImageCache *cache, QObject *parent = 0);
+    explicit VideoDelegate(ImageCache *cache, int dateRole, int durationRole, int thumbnailRole, int titleRole,
+                           int usernameRole, QObject *parent = 0);
+    
+    bool editorEvent(QEvent *event, QAbstractItemModel *, const QStyleOptionViewItem &option,
+                     const QModelIndex &index);
     
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
     
@@ -35,10 +39,21 @@ public:
     bool gridMode() const;
     void setGridMode(bool enabled);
     
+Q_SIGNALS:
+    void thumbnailClicked(const QModelIndex &index);
+    
 private:
     ImageCache *m_cache;
     
     bool m_gridMode;
+    
+    int m_dateRole;
+    int m_durationRole;
+    int m_thumbnailRole;
+    int m_titleRole;
+    int m_usernameRole;
+    
+    int m_pressedRow;
 };
 
-#endif // VIMEOUSERDELEGATE_H
+#endif // VIDEODELEGATE_H

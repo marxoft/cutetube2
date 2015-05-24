@@ -22,6 +22,7 @@ Sheet {
     id: root
     
     property bool acceptWhenDone: true
+    property bool showProgressIndicator: false
     
     signal done
 
@@ -37,6 +38,12 @@ Sheet {
             text: root.rejectButtonText
             visible: text != ""
             onClicked: root.reject()
+        },
+
+        BusyIndicator {
+            anchors.centerIn: parent
+            running: visible
+            visible: root.showProgressIndicator
         },
 
         SheetButton {

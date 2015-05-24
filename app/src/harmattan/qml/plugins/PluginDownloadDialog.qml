@@ -62,9 +62,11 @@ MySheet {
                         service: Settings.currentService
                         onStatusChanged: {
                             switch (status) {
-                            case ResourcesRequest.Loading:
+                            case ResourcesRequest.Loading: {
+                                root.showProgressIndicator = true;
                                 streamSelector.showProgressIndicator = true;
                                 return;
+                            }
                             case ResourcesRequest.Ready:
                                 if (count > 0) {
                                     streamSelector.selectedIndex = Math.max(0, match("name",
@@ -83,6 +85,7 @@ MySheet {
                                 break;
                             }
 
+                            root.showProgressIndicator = false;
                             streamSelector.showProgressIndicator = false;
                         }
                     }

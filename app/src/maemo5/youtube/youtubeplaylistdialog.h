@@ -39,7 +39,7 @@ class YouTubePlaylistDialog : public Dialog
     Q_OBJECT
     
 public:
-    explicit YouTubePlaylistDialog(const YouTubeVideo *video, QWidget *parent);
+    explicit YouTubePlaylistDialog(YouTubeVideo *video, QWidget *parent);
     ~YouTubePlaylistDialog();
     
 protected:
@@ -62,7 +62,7 @@ private Q_SLOTS:
     void onTitleChanged(const QString &text);
         
 private:
-    const YouTubeVideo *m_video;
+    YouTubeVideo *m_video;
     YouTubePlaylist *m_playlist;
     YouTubePlaylistModel *m_model;
     ImageCache *m_cache;

@@ -14,19 +14,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "vimeoaccountdelegate.h"
-#include "vimeoaccountmodel.h"
+#include "accountdelegate.h"
 #include <QPainter>
 
-VimeoAccountDelegate::VimeoAccountDelegate(QObject *parent) :
-    QStyledItemDelegate(parent)
+AccountDelegate::AccountDelegate(int activeRole, QObject *parent) :
+    QStyledItemDelegate(parent),
+    m_activeRole(activeRole)
 {
 }
 
-void VimeoAccountDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const {
+void AccountDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const {
     QStyledItemDelegate::paint(painter, option, index);
 
-    if (index.data(VimeoAccountModel::ActiveRole).toBool()) {
+    if (index.data(m_activeRole).toBool()) {
         QRect checkRect = option.rect;
         checkRect.moveLeft(checkRect.right() - 53);
         checkRect.moveTop(checkRect.top() + 16);

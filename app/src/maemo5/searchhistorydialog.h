@@ -18,7 +18,6 @@
 #define SEARCHHISTORYDIALOG_H
 
 #include "dialog.h"
-#include <QStyledItemDelegate>
 
 class SearchHistoryModel;
 class FilterBox;
@@ -57,16 +56,6 @@ private:
     QDialogButtonBox *m_buttonBox;
     QPushButton *m_clearButton;
     QHBoxLayout *m_layout;
-};
-
-class SearchHistoryDelegate : public QStyledItemDelegate
-{
-    Q_OBJECT
-    
-public:
-    explicit SearchHistoryDelegate(QObject *parent = 0);
-    
-    void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 };
     
 #endif // SEARCHHISTORYDIALOG_H

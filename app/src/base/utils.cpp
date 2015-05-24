@@ -105,5 +105,5 @@ QString Utils::unescape(const QString &s) {
         unescapes++;
     }
 
-    return QString(us);
+    return QString::fromUtf8(us);
 }

@@ -15,13 +15,16 @@
  */
 
 #include "image.h"
+#include "drawing.h"
 #include "imagecache.h"
 #include <QPainter>
 #include <QMouseEvent>
 
 Image::Image(QWidget *parent) :
     QWidget(parent),
-    m_cache(new ImageCache)
+    m_cache(new ImageCache),
+    m_aspectRatioMode(Qt::KeepAspectRatio),
+    m_transformationMode(Qt::SmoothTransformation)
 {
     connect(m_cache, SIGNAL(imageReady()), this, SLOT(update()));
 }
@@ -36,18 +39,42 @@ QUrl Image::source() const {
 }
 
 void Image::setSource(const QUrl &url) {
-    m_source = url;
-    update();
+    if (url != source()) {
+        m_source = url;
+        update();
+    }
+}
+
+Qt::AspectRatioMode Image::aspectRatioMode() const {
+    return m_aspectRatioMode;
+}
+
+void Image::setAspectRatioMode(Qt::AspectRatioMode mode) {
+    if (mode != aspectRatioMode()) {
+        m_aspectRatioMode = mode;
+        update();
+    }
+}
+
+Qt::TransformationMode Image::transformationMode() const {
+    return m_transformationMode;
+}
+
+void Image::setTransformationMode(Qt::TransformationMode mode) {
+    if (mode != transformationMode()) {
+        m_transformationMode = mode;
+        update();
+    }
 }
 
 void Image::paintEvent(QPaintEvent *) {
     QPainter painter(this);
     
     if (source().isValid()) {    
-        QImage image = m_cache->image(source(), size());
+        QImage image = m_cache->image(source(), size(), aspectRatioMode(), transformationMode());
         
         if (!image.isNull()) {
-            painter.drawImage(rect(), image);
+            drawCenteredImage(&painter, rect(), image);
             return;
         }
     }

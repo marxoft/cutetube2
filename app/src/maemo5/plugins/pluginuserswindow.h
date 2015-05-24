@@ -20,7 +20,7 @@
 #include "stackedwindow.h"
 #include "pluginusermodel.h"
 
-class PluginUserDelegate;
+class UserDelegate;
 class ImageCache;
 class ListView;
 class QLabel;
@@ -53,7 +53,7 @@ private:
     ImageCache *m_cache;
     
     ListView *m_view;
-    PluginUserDelegate *m_delegate;
+    UserDelegate *m_delegate;
     QActionGroup *m_viewGroup;
     QAction *m_listAction;
     QAction *m_gridAction;

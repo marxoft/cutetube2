@@ -14,30 +14,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "vimeocommentdelegate.h"
-#include "vimeocommentmodel.h"
+#include "commentdelegate.h"
+#include "drawing.h"
 #include "imagecache.h"
 #include <QPainter>
 #include <QUrl>
 #include <QApplication>
 #include <QMouseEvent>
 
-VimeoCommentDelegate::VimeoCommentDelegate(ImageCache *cache, QObject *parent) :
+CommentDelegate::CommentDelegate(ImageCache *cache, int bodyRole, int dateRole, int thumbnailRole, int usernameRole,
+                                 QObject *parent) :
     QStyledItemDelegate(parent),
     m_cache(cache),
+    m_bodyRole(bodyRole),
+    m_dateRole(dateRole),
+    m_thumbnailRole(thumbnailRole),
+    m_usernameRole(usernameRole),
     m_pressedRow(-1)
 {
 }
 
-bool VimeoCommentDelegate::editorEvent(QEvent *event, QAbstractItemModel *, const QStyleOptionViewItem &option,
-                                       const QModelIndex &index) {
-
+bool CommentDelegate::editorEvent(QEvent *event, QAbstractItemModel *, const QStyleOptionViewItem &option,
+                                  const QModelIndex &index) {
     if (event->type() == QEvent::MouseButtonPress) {
         QMouseEvent *mouse = static_cast<QMouseEvent*>(event);
 
         QRect imageRect = option.rect;
-        imageRect.setLeft(imageRect.left() + 24);
-        imageRect.setTop(imageRect.top() + 16);
+        imageRect.setLeft(imageRect.left() + 8);
+        imageRect.setTop(imageRect.top() + 8);
         imageRect.setWidth(40);
         imageRect.setHeight(40);
 
@@ -51,8 +55,8 @@ bool VimeoCommentDelegate::editorEvent(QEvent *event, QAbstractItemModel *, cons
             QMouseEvent *mouse = static_cast<QMouseEvent*>(event);
 
             QRect imageRect = option.rect;
-            imageRect.setLeft(imageRect.left() + 24);
-            imageRect.setTop(imageRect.top() + 16);
+            imageRect.setLeft(imageRect.left() + 8);
+            imageRect.setTop(imageRect.top() + 8);
             imageRect.setWidth(40);
             imageRect.setHeight(40);
 
@@ -69,11 +73,12 @@ bool VimeoCommentDelegate::editorEvent(QEvent *event, QAbstractItemModel *, cons
     return false;
 }
 
-void VimeoCommentDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const {
+void CommentDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
+                                  const QModelIndex &index) const {
     qDrawBorderPixmap(painter, option.rect, QMargins(30, 60, 30, 30),
                       QPixmap("/etc/hildon/theme/images/ContactsAppletBubble.png"));
     
-    QUrl imageUrl = index.data(VimeoCommentModel::ThumbnailUrlRole).toUrl();
+    QUrl imageUrl = index.data(m_thumbnailRole).toUrl();
     QImage image = m_cache->image(imageUrl, QSize(40, 40));
     
     QRect imageRect = option.rect;
@@ -82,17 +87,12 @@ void VimeoCommentDelegate::paint(QPainter *painter, const QStyleOptionViewItem &
     imageRect.setWidth(40);
     imageRect.setHeight(40);
     
-    if (!image.isNull()) {
-        painter->drawImage(imageRect, image);
-    }
-    else {
-        painter->fillRect(imageRect, Qt::black);
-    }
+    drawCenteredImage(painter, imageRect, image);
     
     QRect textRect = option.rect;
     textRect.setLeft(imageRect.right() + 8);
     textRect.setRight(textRect.right() - 16);
-    textRect.setTop(textRect.top() + 8);
+    textRect.setTop(textRect.top() + 16);
     textRect.setHeight(40);
     
     QFont font;
@@ -102,8 +102,8 @@ void VimeoCommentDelegate::paint(QPainter *painter, const QStyleOptionViewItem &
     painter->setFont(font);
     painter->setPen(QApplication::palette().color(QPalette::Mid));
     painter->drawText(textRect, Qt::AlignVCenter | Qt::TextWordWrap,
-                      QString(tr("by %1 on %2").arg(index.data(VimeoCommentModel::UsernameRole).toString())
-                                               .arg(index.data(VimeoCommentModel::DateRole).toString())));
+                      QString(tr("by %1 on %2").arg(index.data(m_usernameRole).toString())
+                                               .arg(index.data(m_dateRole).toString())));
     
     textRect = option.rect;
     textRect.setLeft(imageRect.left());
@@ -112,11 +112,14 @@ void VimeoCommentDelegate::paint(QPainter *painter, const QStyleOptionViewItem &
     textRect.setBottom(textRect.bottom() - 16);
     
     painter->setPen(QApplication::palette().color(QPalette::Dark));
-    painter->drawText(textRect, Qt::TextWordWrap, index.data(VimeoCommentModel::BodyRole).toString());
+    painter->drawText(textRect, Qt::TextWordWrap, index.data(m_bodyRole).toString());
     painter->restore();
 }
 
-QSize VimeoCommentDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const {
-    return QSize(option.rect.width(), option.fontMetrics.boundingRect(option.rect, Qt::TextWordWrap,
-                 index.data(VimeoCommentModel::BodyRole).toString()).height() + 80);
+QSize CommentDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const {
+    return QSize(option.rect.width(), option.fontMetrics.boundingRect(QRect(option.rect.left() + 72,
+                                                                            option.rect.top() + 64,
+                                                                            option.rect.width() - 40,
+                                                                            1000),
+                 Qt::TextWordWrap, index.data(m_bodyRole).toString()).height() + 80);
 }

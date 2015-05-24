@@ -20,7 +20,7 @@
 #include "stackedwindow.h"
 #include "pluginplaylistmodel.h"
 
-class PluginPlaylistDelegate;
+class PlaylistDelegate;
 class ImageCache;
 class ListView;
 class QLabel;
@@ -53,7 +53,7 @@ private:
     ImageCache *m_cache;
     
     ListView *m_view;
-    PluginPlaylistDelegate *m_delegate;
+    PlaylistDelegate *m_delegate;
     QActionGroup *m_viewGroup;
     QAction *m_listAction;
     QAction *m_gridAction;

@@ -19,12 +19,12 @@
 #include "imagecache.h"
 #include "listview.h"
 #include "settings.h"
+#include "videodelegate.h"
 #include "videoplaybackwindow.h"
 #include "youtube.h"
 #include "youtubedownloaddialog.h"
 #include "youtubeplaybackdialog.h"
 #include "youtubeplaylistdialog.h"
-#include "youtubevideodelegate.h"
 #include "youtubevideowindow.h"
 #include <qyoutube/urls.h>
 #include <QLabel>
@@ -40,7 +40,9 @@ YouTubeVideosWindow::YouTubeVideosWindow(StackedWindow *parent) :
     m_model(new YouTubeVideoModel(this)),
     m_cache(new ImageCache),
     m_view(new ListView(this)),
-    m_delegate(new YouTubeVideoDelegate(m_cache, m_view)),
+    m_delegate(new VideoDelegate(m_cache, YouTubeVideoModel::DateRole, YouTubeVideoModel::DurationRole,
+                                 YouTubeVideoModel::ThumbnailUrlRole, YouTubeVideoModel::TitleRole,
+                                 YouTubeVideoModel::UsernameRole, m_view)),
     m_viewGroup(new QActionGroup(this)),
     m_listAction(new QAction(tr("List"), this)),
     m_gridAction(new QAction(tr("Grid"), this)),
@@ -144,7 +146,7 @@ void YouTubeVideosWindow::addVideoToPlaylist() {
         return;
     }
     
-    if (const YouTubeVideo *video = m_model->get(m_view->currentIndex().row())) {
+    if (YouTubeVideo *video = m_model->get(m_view->currentIndex().row())) {
         YouTubePlaylistDialog *dialog = new YouTubePlaylistDialog(video, this);
         dialog->open();
     }
@@ -170,7 +172,7 @@ void YouTubeVideosWindow::playVideo(const QModelIndex &index) {
     }
     
     if (Settings::instance()->videoPlayer() == "cutetube") {
-        if (const YouTubeVideo *video = m_model->get(index.row())) {
+        if (YouTubeVideo *video = m_model->get(index.row())) {
             VideoPlaybackWindow *window = new VideoPlaybackWindow(this);
             window->show();
             window->addVideo(video);

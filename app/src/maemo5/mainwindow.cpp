@@ -58,7 +58,7 @@ MainWindow::MainWindow(StackedWindow *parent) :
     connect(m_transfersAction, SIGNAL(triggered()), this, SLOT(showTransfers()));
     connect(m_settingsAction, SIGNAL(triggered()), this, SLOT(showSettingsDialog()));
     connect(m_aboutAction, SIGNAL(triggered()), this, SLOT(showAboutDialog()));
-    connect(Transfers::instance(), SIGNAL(transferAdded(const Transfer*)), this, SLOT(onTransferAdded(const Transfer*)));
+    connect(Transfers::instance(), SIGNAL(transferAdded(Transfer*)), this, SLOT(onTransferAdded(Transfer*)));
     
     setService(Settings::instance()->currentService());
 }
@@ -96,6 +96,7 @@ bool MainWindow::showResource(const QString &url) {
 
 bool MainWindow::showResource(const QVariantMap &resource) {
     clearWindows();
+    activateWindow();
     
     QVariant service = resource.value("service");
     
@@ -146,6 +147,6 @@ void MainWindow::showTransfers() {
     window->show();
 }
 
-void MainWindow::onTransferAdded(const Transfer *transfer) {
+void MainWindow::onTransferAdded(Transfer *transfer) {
     QMaemo5InformationBox::information(this, tr("'%1' added to transfers").arg(transfer->title()));
 }

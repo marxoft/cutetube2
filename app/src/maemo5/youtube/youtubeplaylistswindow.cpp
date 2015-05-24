@@ -17,8 +17,8 @@
 #include "youtubeplaylistswindow.h"
 #include "imagecache.h"
 #include "listview.h"
+#include "playlistdelegate.h"
 #include "settings.h"
-#include "youtubeplaylistdelegate.h"
 #include "youtubeplaylistwindow.h"
 #include <QLabel>
 #include <QActionGroup>
@@ -31,7 +31,9 @@ YouTubePlaylistsWindow::YouTubePlaylistsWindow(StackedWindow *parent) :
     m_model(new YouTubePlaylistModel(this)),
     m_cache(new ImageCache),
     m_view(new ListView(this)),
-    m_delegate(new YouTubePlaylistDelegate(m_cache, m_view)),
+    m_delegate(new PlaylistDelegate(m_cache, YouTubePlaylistModel::DateRole, YouTubePlaylistModel::ThumbnailUrlRole,
+                                    YouTubePlaylistModel::TitleRole, YouTubePlaylistModel::UsernameRole,
+                                    YouTubePlaylistModel::VideoCountRole, m_view)),
     m_viewGroup(new QActionGroup(this)),
     m_listAction(new QAction(tr("List"), this)),
     m_gridAction(new QAction(tr("Grid"), this)),
@@ -44,7 +46,6 @@ YouTubePlaylistsWindow::YouTubePlaylistsWindow(StackedWindow *parent) :
     
     m_view->setModel(m_model);
     m_view->setItemDelegate(m_delegate);
-    
     m_listAction->setCheckable(true);
     m_listAction->setChecked(true);
     m_gridAction->setCheckable(true);

@@ -30,6 +30,8 @@ MySheet {
     }
 
     acceptWhenDone: false
+    showProgressIndicator: (playlist.status == QDailymotion.ResourcesRequest.Loading)
+                           || (playlistModel.status == QDailymotion.ResourcesRequest.Loading)
     acceptButtonText: (view.currentTab == newPlaylistTab) && (titleField.text) ? qsTr("Done") : ""
     rejectButtonText: qsTr("Cancel")
     content: Item {
@@ -89,12 +91,6 @@ MySheet {
 
                 ScrollDecorator {
                     flickableItem: playlistView
-                }
-
-                MyBusyIndicator {
-                    size: "large"
-                    anchors.centerIn: parent
-                    visible: (playlistModel.status == QDailymotion.ResourcesRequest.Loading) && (playlistModel.count == 0)
                 }
 
                 Label {

@@ -24,6 +24,7 @@
 #include "settings.h"
 #include "textbrowser.h"
 #include "utils.h"
+#include "videodelegate.h"
 #include "videoplaybackwindow.h"
 #include "youtube.h"
 #include "youtubedownloaddialog.h"
@@ -32,7 +33,6 @@
 #include "youtubeplaylistwindow.h"
 #include "youtubeuser.h"
 #include "youtubeuserwindow.h"
-#include "youtubevideodelegate.h"
 #include "youtubevideomodel.h"
 #include "youtubevideowindow.h"
 #include <qyoutube/urls.h>
@@ -54,7 +54,9 @@ YouTubePlaylistWindow::YouTubePlaylistWindow(const QString &id, StackedWindow *p
     m_thumbnail(new PlaylistThumbnail(this)),
     m_avatar(new Image(this)),
     m_view(new ListView(this)),
-    m_delegate(new YouTubeVideoDelegate(m_cache, this)),
+    m_delegate(new VideoDelegate(m_cache, YouTubeVideoModel::DateRole, YouTubeVideoModel::DurationRole,
+                                 YouTubeVideoModel::ThumbnailUrlRole, YouTubeVideoModel::TitleRole,
+                                 YouTubeVideoModel::UsernameRole, m_view)),
     m_scrollArea(new QScrollArea(this)),
     m_titleLabel(new QLabel(this)),
     m_descriptionLabel(new TextBrowser(this)),
@@ -90,7 +92,9 @@ YouTubePlaylistWindow::YouTubePlaylistWindow(const YouTubePlaylist *playlist, St
     m_thumbnail(new PlaylistThumbnail(this)),
     m_avatar(new Image(this)),
     m_view(new ListView(this)),
-    m_delegate(new YouTubeVideoDelegate(m_cache, this)),
+    m_delegate(new VideoDelegate(m_cache, YouTubeVideoModel::DateRole, YouTubeVideoModel::DurationRole,
+                                 YouTubeVideoModel::ThumbnailUrlRole, YouTubeVideoModel::TitleRole,
+                                 YouTubeVideoModel::UsernameRole, m_view)),
     m_scrollArea(new QScrollArea(this)),
     m_titleLabel(new QLabel(this)),
     m_descriptionLabel(new TextBrowser(this)),
@@ -235,7 +239,7 @@ void YouTubePlaylistWindow::loadPlaylistUi() {
 }
 
 void YouTubePlaylistWindow::loadUserUi() {
-    m_userLabel->setText(m_user->username());
+    m_userLabel->setText(m_userLabel->fontMetrics().elidedText(m_user->username(), Qt::ElideRight, 250));
     m_avatar->setSource(m_user->thumbnailUrl());
 }
 
@@ -268,10 +272,10 @@ void YouTubePlaylistWindow::playPlaylist() {
         return;
     }
     
-    QList<const Video*> list;
+    QList<Video*> list;
     
     for (int i = 0; i < m_model->rowCount(); i++) {
-        if (const Video *video = m_model->get(i)) {
+        if (Video *video = m_model->get(i)) {
             list << video;
         }
     }
@@ -288,7 +292,7 @@ void YouTubePlaylistWindow::addVideoToPlaylist() {
         return;
     }
     
-    if (const YouTubeVideo *video = m_model->get(m_view->currentIndex().row())) {
+    if (YouTubeVideo *video = m_model->get(m_view->currentIndex().row())) {
         YouTubePlaylistDialog *dialog = new YouTubePlaylistDialog(video, this);
         dialog->open();
     }
@@ -310,7 +314,7 @@ void YouTubePlaylistWindow::playVideo(const QModelIndex &index) {
     }
     
     if (Settings::instance()->videoPlayer() == "cutetube") {
-        if (const YouTubeVideo *video = m_model->get(index.row())) {
+        if (YouTubeVideo *video = m_model->get(index.row())) {
             VideoPlaybackWindow *window = new VideoPlaybackWindow(this);
             window->show();
             window->addVideo(video);

@@ -15,12 +15,14 @@
  */
 
 #include "banner.h"
+#include "drawing.h"
 #include "imagecache.h"
 #include <QPainter>
 
 Banner::Banner(QWidget *parent) :
     Image(parent)
 {
+    setAspectRatioMode(Qt::IgnoreAspectRatio);
 }
 
 QUrl Banner::avatarSource() const {
@@ -45,9 +47,9 @@ void Banner::paintEvent(QPaintEvent *e) {
     avatarRect.setHeight(avatarRect.height() / 2);
     avatarRect.setWidth(avatarRect.height());
 
-    QImage avatar = m_cache->image(avatarSource(), avatarRect.size());
+    QImage avatar = m_cache->image(avatarSource(), avatarRect.size(), aspectRatioMode(), transformationMode());
     
     if (!avatar.isNull()) {
-        painter.drawImage(avatarRect, avatar);
+        drawCenteredImage(&painter, avatarRect, avatar);
     }
 }

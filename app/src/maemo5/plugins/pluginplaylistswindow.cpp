@@ -17,7 +17,7 @@
 #include "pluginplaylistswindow.h"
 #include "imagecache.h"
 #include "listview.h"
-#include "pluginplaylistdelegate.h"
+#include "playlistdelegate.h"
 #include "pluginplaylistwindow.h"
 #include "settings.h"
 #include <QLabel>
@@ -31,7 +31,9 @@ PluginPlaylistsWindow::PluginPlaylistsWindow(StackedWindow *parent) :
     m_model(new PluginPlaylistModel(this)),
     m_cache(new ImageCache),
     m_view(new ListView(this)),
-    m_delegate(new PluginPlaylistDelegate(m_cache, m_view)),
+    m_delegate(new PlaylistDelegate(m_cache, PluginPlaylistModel::DateRole, PluginPlaylistModel::ThumbnailUrlRole,
+                                    PluginPlaylistModel::TitleRole, PluginPlaylistModel::UsernameRole,
+                                    PluginPlaylistModel::VideoCountRole, m_view)),
     m_viewGroup(new QActionGroup(this)),
     m_listAction(new QAction(tr("List"), this)),
     m_gridAction(new QAction(tr("Grid"), this)),
