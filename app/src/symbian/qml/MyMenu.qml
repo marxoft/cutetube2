@@ -14,22 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VIDEOPLAYER_H
-#define VIDEOPLAYER_H
+import QtQuick 1.1
+import com.nokia.symbian 1.1
 
-#include <QObject>
+Menu {
+    property Item focusItem: null
 
-class QUrl;
-
-class VideoPlayer : public QObject
-{
-    Q_OBJECT
-
-public:
-    explicit VideoPlayer(QObject *parent = 0);
-        
-public Q_SLOTS:
-    static void playVideo(const QString &url);
-};
-
-#endif // VIDEOPLAYER_H
+    onStatusChanged: if ((status === DialogStatus.Closed) && (focusItem)) focusItem.forceActiveFocus();
+}

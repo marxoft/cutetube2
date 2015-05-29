@@ -20,7 +20,7 @@
 #include "video.h"
 #include "resourcesrequest.h"
 
-class PluginVideo : public Video
+class PluginVideo : public CTVideo
 {
     Q_OBJECT
     

@@ -20,7 +20,7 @@
 #include <QObject>
 #include <QUrl>
 
-class Playlist : public QObject
+class CTPlaylist : public QObject
 {
     Q_OBJECT
     
@@ -36,8 +36,8 @@ class Playlist : public QObject
     Q_PROPERTY(int videoCount READ videoCount NOTIFY videoCountChanged)
     
 public:
-    explicit Playlist(QObject *parent = 0);
-    explicit Playlist(const Playlist *playlist, QObject *parent = 0);
+    explicit CTPlaylist(QObject *parent = 0);
+    explicit CTPlaylist(const CTPlaylist *playlist, QObject *parent = 0);
         
     QString date() const;
     
@@ -59,7 +59,7 @@ public:
         
     int videoCount() const;
     
-    Q_INVOKABLE virtual void loadPlaylist(Playlist *playlist);
+    Q_INVOKABLE virtual void loadPlaylist(CTPlaylist *playlist);
     
 protected:
     void setDate(const QString &d);

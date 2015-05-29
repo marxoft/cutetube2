@@ -133,7 +133,7 @@ VideoControls::~VideoControls() {
     m_cache = 0;
 }
 
-void VideoControls::addVideo(Video *video) {
+void VideoControls::addVideo(CTVideo *video) {
     m_model->append(video);
     
     if (m_player->mediaStatus() == QMediaPlayer::NoMedia) {
@@ -141,7 +141,7 @@ void VideoControls::addVideo(Video *video) {
     }
 }
 
-void VideoControls::addVideos(const QList<Video*> &videos) {
+void VideoControls::addVideos(const QList<CTVideo*> &videos) {
     for (int i = 0; i < videos.size(); i++) {
         m_model->append(videos.at(i));
     }
@@ -194,7 +194,7 @@ void VideoControls::hideEvent(QHideEvent *) {
     disconnect(m_player, SIGNAL(durationChanged(qint64)), this, SLOT(onDurationChanged(qint64)));
 }
 
-void VideoControls::play(const Video *video) {
+void VideoControls::play(const CTVideo *video) {
     if (!video->streamUrl().isEmpty()) {
         play(video->streamUrl());
     }
@@ -254,7 +254,7 @@ void VideoControls::listViewDown() {
 }
 
 void VideoControls::listStreams(bool showDialog) {
-    const Video *video = m_model->get(m_currentIndex);
+    const CTVideo *video = m_model->get(m_currentIndex);
     
     if (!video) {
         return;
@@ -347,7 +347,7 @@ void VideoControls::next() {
         m_currentIndex++;
         m_view->setCurrentIndex(m_model->index(m_currentIndex));
         
-        if (const Video *video = m_model->get(m_currentIndex)) {
+        if (const CTVideo *video = m_model->get(m_currentIndex)) {
             play(video);
         }
     }
@@ -363,7 +363,7 @@ void VideoControls::previous() {
         if (m_currentIndex < m_model->rowCount()) {
             m_view->setCurrentIndex(m_model->index(m_currentIndex));
             
-            if (const Video *video = m_model->get(m_currentIndex)) {
+            if (const CTVideo *video = m_model->get(m_currentIndex)) {
                 play(video);
             }
         }
@@ -392,7 +392,7 @@ void VideoControls::setPosition() {
 }
 
 void VideoControls::setStream(const QModelIndex &index) {
-    if (const Video *video = m_model->get(m_currentIndex)) {
+    if (const CTVideo *video = m_model->get(m_currentIndex)) {
         Settings::instance()->setDefaultPlaybackFormat(video->service(),
                                                        index.data(SelectionModel::NameRole).toString());
     }

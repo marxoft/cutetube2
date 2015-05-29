@@ -22,7 +22,7 @@
 #endif
 
 DailymotionUser::DailymotionUser(QObject *parent) :
-    User(parent),
+    CTUser(parent),
     m_request(0),
     m_subscribed(false),
     m_subscriberCount(0),
@@ -36,7 +36,7 @@ DailymotionUser::DailymotionUser(QObject *parent) :
 }
 
 DailymotionUser::DailymotionUser(const QString &id, QObject *parent) :
-    User(parent),
+    CTUser(parent),
     m_request(0),
     m_subscribed(false),
     m_subscriberCount(0),
@@ -51,7 +51,7 @@ DailymotionUser::DailymotionUser(const QString &id, QObject *parent) :
 }
 
 DailymotionUser::DailymotionUser(const QVariantMap &user, QObject *parent) :
-    User(parent),
+    CTUser(parent),
     m_request(0),
     m_subscribed(false),
     m_subscriberCount(0),
@@ -66,7 +66,7 @@ DailymotionUser::DailymotionUser(const QVariantMap &user, QObject *parent) :
 }
 
 DailymotionUser::DailymotionUser(const DailymotionUser *user, QObject *parent) :
-    User(user, parent),
+    CTUser(user, parent),
     m_request(0),
     m_bannerUrl(user->bannerUrl()),
     m_largeBannerUrl(user->largeBannerUrl()),
@@ -167,7 +167,7 @@ void DailymotionUser::loadUser(const QVariantMap &user) {
 }
 
 void DailymotionUser::loadUser(DailymotionUser *user) {
-    User::loadUser(user);
+    CTUser::loadUser(user);
     setBannerUrl(user->bannerUrl());
     setLargeBannerUrl(user->largeBannerUrl());
     setSubscribed(user->isSubscribed());
@@ -186,7 +186,7 @@ void DailymotionUser::checkIfSubscribed() {
         return;
     }
     
-    if ((!Dailymotion::subscriptionCache.ids.isEmpty()) && (!Dailymotion::subscriptionCache.hasMore)) {
+    if (!Dailymotion::subscriptionCache.hasMore) {
 #ifdef CUTETUBE_DEBUG
         qDebug() << "DailymotionUser::checkIfSubscribed" << id() << "not found";
 #endif

@@ -16,12 +16,12 @@
 
 #include "user.h"
 
-User::User(QObject *parent) :
+CTUser::CTUser(QObject *parent) :
     QObject(parent)
 {
 }
 
-User::User(const User *user, QObject *parent) :
+CTUser::CTUser(const CTUser *user, QObject *parent) :
     QObject(parent),
     m_description(user->description()),
     m_id(user->id()),
@@ -32,73 +32,73 @@ User::User(const User *user, QObject *parent) :
 {
 }
 
-QString User::description() const {
+QString CTUser::description() const {
     return m_description;
 }
 
-void User::setDescription(const QString &d) {
+void CTUser::setDescription(const QString &d) {
     if (d != description()) {
         m_description = d;
         emit descriptionChanged();
     }
 }
 
-QString User::id() const {
+QString CTUser::id() const {
     return m_id;
 }
 
-void User::setId(const QString &i) {
+void CTUser::setId(const QString &i) {
     if (i != id()) {
         m_id = i;
         emit idChanged();
     }
 }
 
-QUrl User::largeThumbnailUrl() const {
+QUrl CTUser::largeThumbnailUrl() const {
     return m_largeThumbnailUrl;
 }
 
-void User::setLargeThumbnailUrl(const QUrl &u) {
+void CTUser::setLargeThumbnailUrl(const QUrl &u) {
     if (u != largeThumbnailUrl()) {
         m_largeThumbnailUrl = u;
         emit largeThumbnailUrlChanged();
     }
 }
 
-QString User::service() const {
+QString CTUser::service() const {
     return m_service;
 }
 
-void User::setService(const QString &s) {
+void CTUser::setService(const QString &s) {
     if (s != service()) {
         m_service = s;
         emit serviceChanged();
     }
 }
 
-QUrl User::thumbnailUrl() const {
+QUrl CTUser::thumbnailUrl() const {
     return m_thumbnailUrl;
 }
 
-void User::setThumbnailUrl(const QUrl &u) {
+void CTUser::setThumbnailUrl(const QUrl &u) {
     if (u != thumbnailUrl()) {
         m_thumbnailUrl = u;
         emit thumbnailUrlChanged();
     }
 }
 
-QString User::username() const {
+QString CTUser::username() const {
     return m_username;
 }
 
-void User::setUsername(const QString &u) {
+void CTUser::setUsername(const QString &u) {
     if (u != username()) {
         m_username = u;
         emit usernameChanged();
     }
 }
 
-void User::loadUser(User *user) {
+void CTUser::loadUser(CTUser *user) {
     setDescription(user->description());
     setId(user->id());
     setLargeThumbnailUrl(user->largeThumbnailUrl());

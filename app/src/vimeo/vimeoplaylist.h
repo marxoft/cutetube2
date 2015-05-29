@@ -22,7 +22,7 @@
 
 class VimeoVideo;
 
-class VimeoPlaylist : public Playlist
+class VimeoPlaylist : public CTPlaylist
 {
     Q_OBJECT
     

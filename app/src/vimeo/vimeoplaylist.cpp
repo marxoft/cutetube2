@@ -21,7 +21,7 @@
 #include <QDateTime>
 
 VimeoPlaylist::VimeoPlaylist(QObject *parent) :
-    Playlist(parent),
+    CTPlaylist(parent),
     m_request(0),
     m_video(0)
 {
@@ -33,7 +33,7 @@ VimeoPlaylist::VimeoPlaylist(QObject *parent) :
 }
 
 VimeoPlaylist::VimeoPlaylist(const QString &id, QObject *parent) :
-    Playlist(parent),
+    CTPlaylist(parent),
     m_request(0),
     m_video(0)
 {
@@ -46,7 +46,7 @@ VimeoPlaylist::VimeoPlaylist(const QString &id, QObject *parent) :
 }
 
 VimeoPlaylist::VimeoPlaylist(const QVariantMap &playlist, QObject *parent) :
-    Playlist(parent),
+    CTPlaylist(parent),
     m_request(0),
     m_video(0)
 {
@@ -59,7 +59,7 @@ VimeoPlaylist::VimeoPlaylist(const QVariantMap &playlist, QObject *parent) :
 }
 
 VimeoPlaylist::VimeoPlaylist(const VimeoPlaylist *playlist, QObject *parent) :
-    Playlist(playlist, parent),
+    CTPlaylist(playlist, parent),
     m_request(0),
     m_video(0),
     m_password(playlist->password()),
@@ -252,6 +252,6 @@ void VimeoPlaylist::onRemoveVideoRequestFinished() {
 
 void VimeoPlaylist::onPlaylistUpdated(VimeoVideo*, VimeoPlaylist *playlist) {
     if ((playlist->id() == id()) && (playlist != this)) {
-        Playlist::loadPlaylist(playlist);
+        CTPlaylist::loadPlaylist(playlist);
     }
 }

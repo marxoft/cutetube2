@@ -158,7 +158,11 @@ bool TransferModel::setItemData(const QModelIndex &index, const QMap<int, QVaria
 }
 
 QVariant TransferModel::data(int row, const QByteArray &role) const {
-    return data(index(row), m_roles.key(role));
+    if (Transfer *transfer = Transfers::instance()->get(row)) {
+        return transfer->property(role);
+    }
+
+    return QVariant();
 }
 
 QVariantMap TransferModel::itemData(int row) const {
@@ -174,7 +178,11 @@ QVariantMap TransferModel::itemData(int row) const {
 }
 
 bool TransferModel::setData(int row, const QVariant &value, const QByteArray &role) {
-    return setData(index(row), value, m_roles.key(role));
+    if (Transfer *transfer = Transfers::instance()->get(row)) {
+        return transfer->setProperty(role, value);
+    }
+
+    return false;
 }
 
 bool TransferModel::setItemData(int row, const QVariantMap &roles) {
@@ -184,6 +192,7 @@ bool TransferModel::setItemData(int row, const QVariantMap &roles) {
     while (iterator.hasNext()) {
         iterator.next();
         ok = setData(row, iterator.value(), iterator.key().toUtf8());
+
         if (!ok) {
             return false;
         }

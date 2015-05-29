@@ -22,7 +22,7 @@
 
 class YouTubeVideo;
 
-class YouTubePlaylist : public Playlist
+class YouTubePlaylist : public CTPlaylist
 {
     Q_OBJECT
     

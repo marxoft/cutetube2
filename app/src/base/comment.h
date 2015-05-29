@@ -20,7 +20,7 @@
 #include <QObject>
 #include <QUrl>
 
-class Comment : public QObject
+class CTComment : public QObject
 {
     Q_OBJECT
     
@@ -34,8 +34,8 @@ class Comment : public QObject
     Q_PROPERTY(QString videoId READ videoId NOTIFY videoIdChanged)
     
 public:
-    explicit Comment(QObject *parent = 0);
-    explicit Comment(const Comment *comment, QObject *parent = 0);
+    explicit CTComment(QObject *parent = 0);
+    explicit CTComment(const CTComment *comment, QObject *parent = 0);
             
     QString body() const;
     
@@ -53,7 +53,7 @@ public:
     
     QString videoId() const;
     
-    Q_INVOKABLE virtual void loadComment(Comment *comment);
+    Q_INVOKABLE virtual void loadComment(CTComment *comment);
     
 protected:    
     void setBody(const QString &b);

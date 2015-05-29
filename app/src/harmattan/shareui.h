@@ -21,7 +21,7 @@
 #include <QObject>
 #include <QVariantMap>
 
-class Video;
+class CTVideo;
 
 class ShareUi : public QObject
 {
@@ -30,7 +30,7 @@ class ShareUi : public QObject
 public:
     explicit ShareUi(QObject *parent = 0);
     
-    Q_INVOKABLE static bool shareVideo(Video *video);
+    Q_INVOKABLE static bool shareVideo(CTVideo *video);
     Q_INVOKABLE static bool share(const QString &uri);
     Q_INVOKABLE static bool share(const QString &mimeType, const QString &textData, const QVariantMap &attributes);
 };

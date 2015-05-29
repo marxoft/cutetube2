@@ -20,7 +20,7 @@
 #include "video.h"
 #include <qyoutube/resourcesrequest.h>
 
-class YouTubeVideo : public Video
+class YouTubeVideo : public CTVideo
 {
     Q_OBJECT
     

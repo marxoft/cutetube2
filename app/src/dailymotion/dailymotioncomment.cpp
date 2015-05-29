@@ -23,14 +23,14 @@
 #endif
 
 DailymotionComment::DailymotionComment(QObject *parent) :
-    Comment(parent),
+    CTComment(parent),
     m_request(0)
 {
     setService(Resources::DAILYMOTION);
 }
 
 DailymotionComment::DailymotionComment(const QString &id, QObject *parent) :
-    Comment(parent),
+    CTComment(parent),
     m_request(0)
 {
     setService(Resources::DAILYMOTION);
@@ -38,7 +38,7 @@ DailymotionComment::DailymotionComment(const QString &id, QObject *parent) :
 }
 
 DailymotionComment::DailymotionComment(const QVariantMap &comment, QObject *parent) :
-    Comment(parent),
+    CTComment(parent),
     m_request(0)
 {
     setService(Resources::DAILYMOTION);
@@ -46,7 +46,7 @@ DailymotionComment::DailymotionComment(const QVariantMap &comment, QObject *pare
 }
 
 DailymotionComment::DailymotionComment(const DailymotionComment *comment, QObject *parent) :
-    Comment(comment, parent),
+    CTComment(comment, parent),
     m_request(0)
 {
 }

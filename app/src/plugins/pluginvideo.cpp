@@ -18,14 +18,14 @@
 #include "resources.h"
 
 PluginVideo::PluginVideo(QObject *parent) :
-    Video(parent),
+    CTVideo(parent),
     m_request(new ResourcesRequest(this))
 {
     connect(m_request, SIGNAL(finished()), this, SLOT(onRequestFinished()));
 }
 
 PluginVideo::PluginVideo(const QString &service, const QString &id, QObject *parent) :
-    Video(parent),
+    CTVideo(parent),
     m_request(new ResourcesRequest(this))
 {
     loadVideo(service, id);
@@ -33,7 +33,7 @@ PluginVideo::PluginVideo(const QString &service, const QString &id, QObject *par
 }
 
 PluginVideo::PluginVideo(const QString &service, const QVariantMap &video, QObject *parent) :
-    Video(parent),
+    CTVideo(parent),
     m_request(new ResourcesRequest(this))
 {
     loadVideo(service, video);
@@ -41,7 +41,7 @@ PluginVideo::PluginVideo(const QString &service, const QVariantMap &video, QObje
 }
 
 PluginVideo::PluginVideo(const PluginVideo *video, QObject *parent) :
-    Video(video, parent),
+    CTVideo(video, parent),
     m_request(new ResourcesRequest(this))
 {
 }
@@ -82,7 +82,7 @@ void PluginVideo::loadVideo(const QString &service, const QVariantMap &video) {
 }
 
 void PluginVideo::loadVideo(PluginVideo *video) {
-    Video::loadVideo(video);
+    CTVideo::loadVideo(video);
 }
 
 void PluginVideo::onRequestFinished() {

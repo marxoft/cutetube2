@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "videoplayer.h"
+#include "videolauncher.h"
 #include "settings.h"
 #include <qplatformdefs.h>
 #include <QUrl>
@@ -37,14 +37,14 @@
 #include <QDebug>
 #endif
 
-VideoPlayer::VideoPlayer(QObject *parent) :
+VideoLauncher::VideoLauncher(QObject *parent) :
     QObject(parent)
 {
 }
 
-void VideoPlayer::playVideo(const QString &url) {
+void VideoLauncher::playVideo(const QString &url) {
 #ifdef CUTETUBE_DEBUG
-    qDebug() << "VideoPlayer::playVideo" << url;
+    qDebug() << "VideoLauncher::playVideo" << url;
 #endif
 #ifdef SYMBIAN_OS
     QTemporaryFile *temp = new QTemporaryFile;
@@ -57,7 +57,7 @@ void VideoPlayer::playVideo(const QString &url) {
     temp->close();
     QTimer::singleShot(5000, temp, SLOT(deleteLater()));
 #else
-#ifdef Q_OS_LINUX
+#ifdef Q_OS_UNIX
     if (Settings::instance()->videoPlayer() == "other") {
         QStringList args = Settings::instance()->videoPlayerCommand().split(' ', QString::SkipEmptyParts);
         QProcess *player = new QProcess;

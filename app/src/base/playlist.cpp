@@ -16,12 +16,12 @@
 
 #include "playlist.h"
 
-Playlist::Playlist(QObject *parent) :
+CTPlaylist::CTPlaylist(QObject *parent) :
     QObject(parent)
 {
 }
 
-Playlist::Playlist(const Playlist *playlist, QObject *parent) :
+CTPlaylist::CTPlaylist(const CTPlaylist *playlist, QObject *parent) :
     QObject(parent),
     m_date(playlist->date()),
     m_description(playlist->description()),
@@ -36,117 +36,117 @@ Playlist::Playlist(const Playlist *playlist, QObject *parent) :
 {
 }
 
-QString Playlist::date() const {
+QString CTPlaylist::date() const {
     return m_date;
 }
 
-void Playlist::setDate(const QString &d) {
+void CTPlaylist::setDate(const QString &d) {
     if (d != date()) {
         m_date = d;
         emit dateChanged();
     }
 }
 
-QString Playlist::description() const {
+QString CTPlaylist::description() const {
     return m_description;
 }
 
-void Playlist::setDescription(const QString &d) {
+void CTPlaylist::setDescription(const QString &d) {
     if (d != description()) {
         m_description = d;
         emit descriptionChanged();
     }
 }
 
-QString Playlist::id() const {
+QString CTPlaylist::id() const {
     return m_id;
 }
 
-void Playlist::setId(const QString &i) {
+void CTPlaylist::setId(const QString &i) {
     if (i != id()) {
         m_id = i;
         emit idChanged();
     }
 }
 
-QUrl Playlist::largeThumbnailUrl() const {
+QUrl CTPlaylist::largeThumbnailUrl() const {
     return m_largeThumbnailUrl;
 }
 
-void Playlist::setLargeThumbnailUrl(const QUrl &u) {
+void CTPlaylist::setLargeThumbnailUrl(const QUrl &u) {
     if (u != largeThumbnailUrl()) {
         m_largeThumbnailUrl = u;
         emit largeThumbnailUrlChanged();
     }
 }
 
-QString Playlist::service() const {
+QString CTPlaylist::service() const {
     return m_service;
 }
 
-void Playlist::setService(const QString &s) {
+void CTPlaylist::setService(const QString &s) {
     if (s != service()) {
         m_service = s;
         emit serviceChanged();
     }
 }
 
-QUrl Playlist::thumbnailUrl() const {
+QUrl CTPlaylist::thumbnailUrl() const {
     return m_thumbnailUrl;
 }
 
-void Playlist::setThumbnailUrl(const QUrl &u) {
+void CTPlaylist::setThumbnailUrl(const QUrl &u) {
     if (u != thumbnailUrl()) {
         m_thumbnailUrl = u;
         emit thumbnailUrlChanged();
     }
 }
 
-QString Playlist::title() const {
+QString CTPlaylist::title() const {
     return m_title;
 }
 
-void Playlist::setTitle(const QString &t) {
+void CTPlaylist::setTitle(const QString &t) {
     if (t != title()) {
         m_title = t;
         emit titleChanged();
     }
 }
 
-QString Playlist::userId() const {
+QString CTPlaylist::userId() const {
     return m_userId;
 }
 
-void Playlist::setUserId(const QString &i) {
+void CTPlaylist::setUserId(const QString &i) {
     if (i != userId()) {
         m_userId = i;
         emit userIdChanged();
     }
 }
 
-QString Playlist::username() const {
+QString CTPlaylist::username() const {
     return m_username;
 }
 
-void Playlist::setUsername(const QString &u) {
+void CTPlaylist::setUsername(const QString &u) {
     if (u != username()) {
         m_username = u;
         emit usernameChanged();
     }
 }
 
-int Playlist::videoCount() const {
+int CTPlaylist::videoCount() const {
     return m_videoCount;
 }
 
-void Playlist::setVideoCount(int c) {
+void CTPlaylist::setVideoCount(int c) {
     if (c != videoCount()) {
         m_videoCount = c;
         emit videoCountChanged();
     }
 }
 
-void Playlist::loadPlaylist(Playlist *playlist) {
+void CTPlaylist::loadPlaylist(CTPlaylist *playlist) {
     setDate(playlist->date());
     setDescription(playlist->description());
     setId(playlist->id());

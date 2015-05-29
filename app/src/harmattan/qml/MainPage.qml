@@ -374,7 +374,7 @@ MyPage {
                         break;
                     case 7:
                         appWindow.pageStack.push(Qt.resolvedUrl("vimeo/VimeoUsersPage.qml"), {title: qsTr("Subscriptions")})
-                        .model.list("/me/follwing", {per_page: MAX_RESULTS});
+                        .model.list("/me/following", {per_page: MAX_RESULTS});
                         break;
                     }
                 }

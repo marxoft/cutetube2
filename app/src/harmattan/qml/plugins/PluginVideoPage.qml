@@ -141,7 +141,7 @@ MyPage {
                         appWindow.pageStack.push(Qt.resolvedUrl("../VideoPlaybackPage.qml")).addVideos([video]);
                     }
                     else if (video.streamUrl.toString()) {
-                        VideoPlayer.playVideo(video.streamUrl);
+                        VideoLauncher.playVideo(video.streamUrl);
                     }
                     else {
                         dialogLoader.sourceComponent = playbackDialog;
@@ -265,7 +265,7 @@ MyPage {
                 id: playbackDialog
 
                 PluginPlaybackDialog {
-                    onAccepted: VideoPlayer.playVideo(value.url)
+                    onAccepted: VideoLauncher.playVideo(value.url)
                 }
             }
 

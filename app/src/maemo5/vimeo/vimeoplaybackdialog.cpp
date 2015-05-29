@@ -86,6 +86,6 @@ void VimeoPlaybackDialog::onStreamChanged() {
 }
 
 void VimeoPlaybackDialog::playVideo() {
-    VideoPlayer::playVideo(m_streamSelector->currentValue().toMap().value("url").toString());
+    VideoLauncher::playVideo(m_streamSelector->currentValue().toMap().value("url").toString());
     accept();
 }

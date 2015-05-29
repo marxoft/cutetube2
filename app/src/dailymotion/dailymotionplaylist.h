@@ -22,7 +22,7 @@
 
 class DailymotionVideo;
 
-class DailymotionPlaylist : public Playlist
+class DailymotionPlaylist : public CTPlaylist
 {
     Q_OBJECT
     

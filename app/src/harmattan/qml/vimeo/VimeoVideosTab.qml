@@ -162,7 +162,7 @@ Tab {
         id: playbackDialog
 
         VimeoPlaybackDialog {
-            onAccepted: VideoPlayer.playVideo(value.url)
+            onAccepted: VideoLauncher.playVideo(value.url)
         }
     }
 

@@ -49,7 +49,7 @@ int VideoModel::rowCount(const QModelIndex &) const {
 }
 
 QVariant VideoModel::data(const QModelIndex &index, int role) const {
-    if (Video *video = get(index.row())) {
+    if (CTVideo *video = get(index.row())) {
         return video->property(m_roles[role]);
     }
     
@@ -59,7 +59,7 @@ QVariant VideoModel::data(const QModelIndex &index, int role) const {
 QMap<int, QVariant> VideoModel::itemData(const QModelIndex &index) const {
     QMap<int, QVariant> map;
     
-    if (Video *video = get(index.row())) {
+    if (CTVideo *video = get(index.row())) {
         QHashIterator<int, QByteArray> iterator(m_roles);
         
         while (iterator.hasNext()) {
@@ -72,7 +72,7 @@ QMap<int, QVariant> VideoModel::itemData(const QModelIndex &index) const {
 }
 
 QVariant VideoModel::data(int row, const QByteArray &role) const {
-    if (Video *video = get(row)) {
+    if (CTVideo *video = get(row)) {
         return video->property(role);
     }
     
@@ -82,7 +82,7 @@ QVariant VideoModel::data(int row, const QByteArray &role) const {
 QVariantMap VideoModel::itemData(int row) const {
     QVariantMap map;
     
-    if (Video *video = get(row)) {
+    if (CTVideo *video = get(row)) {
         foreach (QByteArray role, m_roles.values()) {
             map[role] = video->property(role);
         }
@@ -91,7 +91,7 @@ QVariantMap VideoModel::itemData(int row) const {
     return map;
 }
 
-Video* VideoModel::get(int row) const {
+CTVideo* VideoModel::get(int row) const {
     if ((row >= 0) && (row < m_items.size())) {
         return m_items.at(row);
     }
@@ -108,16 +108,16 @@ void VideoModel::clear() {
     }
 }
 
-void VideoModel::append(Video *video) {
+void VideoModel::append(CTVideo *video) {
     beginInsertRows(QModelIndex(), m_items.size(), m_items.size());
-    m_items << new Video(video, this);
+    m_items << new CTVideo(video, this);
     endInsertRows();
 }
 
-void VideoModel::insert(int row, Video *video) {
+void VideoModel::insert(int row, CTVideo *video) {
     if ((row >= 0) && (row < m_items.size())) {
         beginInsertRows(QModelIndex(), row, row);
-        m_items.insert(row, new Video(video, this));
+        m_items.insert(row, new CTVideo(video, this));
         endInsertRows();
     }
     else {

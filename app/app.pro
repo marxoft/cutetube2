@@ -13,8 +13,10 @@ INCLUDEPATH += \
     src/youtube
 
 HEADERS += \
+    src/base/audioconverter.h \
     src/base/categorymodel.h \
     src/base/categorynamemodel.h \
+    src/base/clipboard.h \
     src/base/comment.h \
     src/base/concurrenttransfersmodel.h \
     src/base/database.h \
@@ -33,7 +35,8 @@ HEADERS += \
     src/base/utils.h \
     src/base/video.h \
     src/base/videomodel.h \
-    src/base/videoplayer.h \
+    src/base/videolauncher.h \
+    src/base/videoplayermodel.h \
     src/dailymotion/dailymotion.h \
     src/dailymotion/dailymotionaccountmodel.h \
     src/dailymotion/dailymotioncomment.h \
@@ -96,7 +99,9 @@ HEADERS += \
     src/youtube/youtubevideomodel.h
     
 SOURCES += \
+    src/base/audioconverter.cpp \
     src/base/categorymodel.cpp \
+    src/base/clipboard.cpp \
     src/base/comment.cpp \
     src/base/json.cpp \
     src/base/playlist.cpp \
@@ -110,7 +115,7 @@ SOURCES += \
     src/base/utils.cpp \
     src/base/video.cpp \
     src/base/videomodel.cpp \
-    src/base/videoplayer.cpp \
+    src/base/videolauncher.cpp \
     src/dailymotion/dailymotion.cpp \
     src/dailymotion/dailymotionaccountmodel.cpp \
     src/dailymotion/dailymotioncomment.cpp \
@@ -461,24 +466,106 @@ maemo5 {
         icon \
         contentaction \
         splash
+
+} else:symbian {
+    DEFINES += SYMBIAN_OS NAV_SEARCH
+
+    TARGET.UID3 = 0xE72CBA6D
+    TARGET.CAPABILITY += NetworkServices ReadUserData WriteUserData
+    TARGET.EPOCHEAPSIZE = 0x20000 0x8000000
+    TARGET.EPOCSTACKSIZE = 0x14000
+
+    VERSION = 0.1.3
+    ICON = desktop/symbian/cutetube2.svg
+
+    MMP_RULES += "DEBUGGABLE_UDEBONLY"
+
+    LIBS += -lqdailymotion
+    LIBS += -lqvimeo
+    LIBS += -lqyoutube
+    LIBS += -L\\epoc32\\release\\armv5\\lib -lremconcoreapi
+    LIBS += -L\\epoc32\\release\\armv5\\lib -lremconinterfacebase
+
+    QT += \
+        declarative \
+        script \
+        xml
     
+    CONFIG += \
+        link_pkgconfig \
+        qtcomponents
+
+    INCLUDEPATH += \
+        MW_LAYER_SYSTEMINCLUDE \
+        src/symbian
+
+    HEADERS += \
+        src/base/transfermodel.h \
+        src/base/transferprioritymodel.h \
+        src/symbian/cookiejar.h \
+        src/symbian/maskeditem.h \
+        src/symbian/maskeffect.h \
+        src/symbian/mediakeycaptureitem.h \
+        src/symbian/networkaccessmanagerfactory.h \
+        src/symbian/screenorientationmodel.h
+
+    SOURCES += \
+        src/base/transfermodel.cpp \
+        src/symbian/cookiejar.cpp \
+        src/symbian/main.cpp \
+        src/symbian/maskeditem.cpp \
+        src/symbian/maskeffect.cpp \
+        src/symbian/mediakeycaptureitem.cpp \
+        src/symbian/networkaccessmanagerfactory.cpp
+
+    base_qml.sources = $$files(src/symbian/qml/*.qml)
+    base_qml.path = !:/Private/e72cba6d/qml
+
+    dailymotion_qml.sources = $$files(src/symbian/qml/dailymotion/*.qml)
+    dailymotion_qml.path = !:/Private/e72cba6d/qml/dailymotion
+
+    plugins_qml.sources = $$files(src/symbian/qml/plugins/*.qml)
+    plugins_qml.path = !:/Private/e72cba6d/qml/plugins
+
+    vimeo_qml.sources = $$files(src/symbian/qml/vimeo/*.qml)
+    vimeo_qml.path = !:/Private/e72cba6d/qml/vimeo
+
+    youtube_qml.sources = $$files(src/symbian/qml/youtube/*.qml)
+    youtube_qml.path = !:/Private/e72cba6d/qml/youtube
+
+    images.sources = $$files(src/symbian/qml/images/*.*)
+    images.path = !:/Private/e72cba6d/qml/images
+
+    scripts.sources = $$files(src/symbian/qml/scripts/*.js)
+    scripts.path = !:/Private/e72cba6d/qml/scripts
+
+    vendorinfo += "%{\"Stuart Howarth\"}" ":\"Stuart Howarth\""
+    qtcomponentsdep = "; Default dependency to Qt Quick Components for Symbian library" \
+        "(0x200346DE), 1, 1, 0, {\"Qt Quick components for Symbian\"}"
+
+    cutetube2_deployment.pkg_prerules += vendorinfo qtcomponentsdep
+
+    DEPLOYMENT.display_name = cuteTube2
+
+    DEPLOYMENT += \
+        cutetube2_deployment \
+        base_qml \
+        dailymotion_qml \
+        plugins_qml \
+        vimeo_qml \
+        youtube_qml \
+        images \
+        scripts
+
 }
 
-unix {
+unix:!symbian {
     QT += dbus
     
     INCLUDEPATH += src/dbus
     
-    HEADERS += \
-        src/base/clipboard.h \
-        src/base/audioconverter.h \
-        src/base/videoplayermodel.h \
-        src/dbus/dbusservice.h
-        
-    SOURCES += \
-        src/base/audioconverter.cpp \
-        src/base/clipboard.cpp \
-        src/dbus/dbusservice.cpp
+    HEADERS += src/dbus/dbusservice.h
+    SOURCES += src/dbus/dbusservice.cpp
     
     dbus_service.files = dbus/org.marxoft.cutetube2.service
     dbus_service.path = /usr/share/dbus-1/services

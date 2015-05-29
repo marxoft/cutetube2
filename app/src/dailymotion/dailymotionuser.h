@@ -20,7 +20,7 @@
 #include "user.h"
 #include <qdailymotion/resourcesrequest.h>
 
-class DailymotionUser : public User
+class DailymotionUser : public CTUser
 {
     Q_OBJECT
     

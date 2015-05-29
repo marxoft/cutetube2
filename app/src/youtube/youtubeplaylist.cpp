@@ -21,7 +21,7 @@
 #include <QDateTime>
 
 YouTubePlaylist::YouTubePlaylist(QObject *parent) :
-    Playlist(parent),
+    CTPlaylist(parent),
     m_request(0),
     m_video(0)
 {
@@ -33,7 +33,7 @@ YouTubePlaylist::YouTubePlaylist(QObject *parent) :
 }
 
 YouTubePlaylist::YouTubePlaylist(const QString &id, QObject *parent) :
-    Playlist(parent),
+    CTPlaylist(parent),
     m_request(0),
     m_video(0)
 {
@@ -46,7 +46,7 @@ YouTubePlaylist::YouTubePlaylist(const QString &id, QObject *parent) :
 }
 
 YouTubePlaylist::YouTubePlaylist(const QVariantMap &playlist, QObject *parent) :
-    Playlist(parent),
+    CTPlaylist(parent),
     m_request(0),
     m_video(0)
 {
@@ -59,7 +59,7 @@ YouTubePlaylist::YouTubePlaylist(const QVariantMap &playlist, QObject *parent) :
 }
 
 YouTubePlaylist::YouTubePlaylist(const YouTubePlaylist *playlist, QObject *parent) :
-    Playlist(playlist, parent),
+    CTPlaylist(playlist, parent),
     m_request(0),
     m_video(0),
     m_privacyStatus(playlist->privacyStatus())
@@ -123,7 +123,7 @@ void YouTubePlaylist::loadPlaylist(const QVariantMap &playlist) {
 }
 
 void YouTubePlaylist::loadPlaylist(YouTubePlaylist *playlist) {
-    Playlist::loadPlaylist(playlist);
+    CTPlaylist::loadPlaylist(playlist);
     setPrivacyStatus(playlist->privacyStatus());
 }
 

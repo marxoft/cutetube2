@@ -284,6 +284,9 @@ private:
     QString m_title;
     
     TransferType m_transferType;
+#ifdef SYMBIAN_OS
+    QByteArray m_buffer;
+#endif
 };
     
 #endif // TRANSFER_H

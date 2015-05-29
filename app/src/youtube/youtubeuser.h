@@ -20,7 +20,7 @@
 #include "user.h"
 #include <qyoutube/resourcesrequest.h>
 
-class YouTubeUser : public User
+class YouTubeUser : public CTUser
 {
     Q_OBJECT
     

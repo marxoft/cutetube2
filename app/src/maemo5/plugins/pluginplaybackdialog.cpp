@@ -88,6 +88,6 @@ void PluginPlaybackDialog::onStreamChanged() {
 }
 
 void PluginPlaybackDialog::playVideo() {
-    VideoPlayer::playVideo(m_streamSelector->currentValue().toMap().value("url").toString());
+    VideoLauncher::playVideo(m_streamSelector->currentValue().toMap().value("url").toString());
     accept();
 }

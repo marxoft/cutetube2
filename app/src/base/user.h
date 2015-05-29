@@ -20,7 +20,7 @@
 #include <QObject>
 #include <QUrl>
 
-class User : public QObject
+class CTUser : public QObject
 {
     Q_OBJECT
     
@@ -32,8 +32,8 @@ class User : public QObject
     Q_PROPERTY(QString username READ username NOTIFY usernameChanged)
     
 public:
-    explicit User(QObject *parent = 0);
-    explicit User(const User *user, QObject *parent = 0);
+    explicit CTUser(QObject *parent = 0);
+    explicit CTUser(const CTUser *user, QObject *parent = 0);
             
     QString description() const;
             
@@ -47,7 +47,7 @@ public:
             
     QString username() const;
     
-    Q_INVOKABLE virtual void loadUser(User *user);
+    Q_INVOKABLE virtual void loadUser(CTUser *user);
     
 protected:    
     void setDescription(const QString &d);

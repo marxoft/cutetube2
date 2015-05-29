@@ -156,7 +156,7 @@ void PluginVideosWindow::playVideo(const QModelIndex &index) {
         QString url = index.data(PluginVideoModel::StreamUrlRole).toString();
         
         if (!url.isEmpty()) {
-            VideoPlayer::playVideo(url);
+            VideoLauncher::playVideo(url);
         }
         else {
             QString id = index.data(PluginVideoModel::IdRole).toString();

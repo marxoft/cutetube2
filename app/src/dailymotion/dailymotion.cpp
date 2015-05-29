@@ -129,7 +129,7 @@ void Dailymotion::setUserId(const QString &id) {
         QSettings().setValue("Dailymotion/userId", id);
         subscriptionCache.ids.clear();
         subscriptionCache.filters.clear();
-        subscriptionCache.hasMore = false;
+        subscriptionCache.hasMore = true;
         emit userIdChanged();
     }
 }

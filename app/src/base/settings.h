@@ -63,8 +63,10 @@ class Settings : public QObject
     Q_PROPERTY(QString subtitlesLanguage READ subtitlesLanguage WRITE setSubtitlesLanguage
                NOTIFY subtitlesLanguageChanged)
     Q_PROPERTY(QString videoPlayer READ videoPlayer WRITE setVideoPlayer NOTIFY videoPlayerChanged)
+#ifndef SYMBIAN_OS
     Q_PROPERTY(QString videoPlayerCommand READ videoPlayerCommand WRITE setVideoPlayerCommand
                NOTIFY videoPlayerCommandChanged)
+#endif
     
 public:
     explicit Settings(QObject *parent = 0);
@@ -122,7 +124,9 @@ public:
     Q_INVOKABLE QVariant value(const QString &key, const QVariant &defaultValue = QVariant()) const;
     
     QString videoPlayer() const;
+#ifndef SYMBIAN_OS
     QString videoPlayerCommand() const;
+#endif
 
 public Q_SLOTS:
 #if (defined MEEGO_EDITION_HARMATTAN) || (SYMBIAN_OS)
@@ -172,7 +176,9 @@ public Q_SLOTS:
     void setValue(const QString &key, const QVariant &value);
     
     void setVideoPlayer(const QString &player);
+#ifndef SYMBIAN_OS
     void setVideoPlayerCommand(const QString &command);
+#endif
 
 Q_SIGNALS:
 #if (defined MEEGO_EDITION_HARMATTAN) || (SYMBIAN_OS)
@@ -198,7 +204,9 @@ Q_SIGNALS:
     void subtitlesEnabledChanged();
     void subtitlesLanguageChanged();
     void videoPlayerChanged();
+#ifndef SYMBIAN_OS
     void videoPlayerCommandChanged();
+#endif
 
 private:
     static Settings *self;

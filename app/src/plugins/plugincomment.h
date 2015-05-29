@@ -20,7 +20,7 @@
 #include "comment.h"
 #include "resourcesrequest.h"
 
-class PluginComment : public Comment
+class PluginComment : public CTComment
 {
     Q_OBJECT
     

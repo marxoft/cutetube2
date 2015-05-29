@@ -25,10 +25,13 @@
 #include <QDebug>
 
 inline void initDatabase() {
-    QDir().mkpath(DATABASE_PATH);
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+#ifdef SYMBIAN_OS
+    db.setDatabaseName("cuteTube2.db");
+#else
+    QDir().mkpath(DATABASE_PATH);
     db.setDatabaseName(DATABASE_PATH + "cuteTube2.db");
-    
+#endif
     if (!db.isOpen()) {
         db.open();
     }

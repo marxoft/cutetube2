@@ -22,7 +22,7 @@
 #include <QDebug>
 
 DailymotionPlaylist::DailymotionPlaylist(QObject *parent) :
-    Playlist(parent),
+    CTPlaylist(parent),
     m_request(0),
     m_video(0)
 {
@@ -34,7 +34,7 @@ DailymotionPlaylist::DailymotionPlaylist(QObject *parent) :
 }
 
 DailymotionPlaylist::DailymotionPlaylist(const QString &id, QObject *parent) :
-    Playlist(parent),
+    CTPlaylist(parent),
     m_request(0),
     m_video(0)
 {
@@ -47,7 +47,7 @@ DailymotionPlaylist::DailymotionPlaylist(const QString &id, QObject *parent) :
 }
 
 DailymotionPlaylist::DailymotionPlaylist(const QVariantMap &playlist, QObject *parent) :
-    Playlist(parent),
+    CTPlaylist(parent),
     m_request(0),
     m_video(0)
 {
@@ -60,7 +60,7 @@ DailymotionPlaylist::DailymotionPlaylist(const QVariantMap &playlist, QObject *p
 }
 
 DailymotionPlaylist::DailymotionPlaylist(const DailymotionPlaylist *playlist, QObject *parent) :
-    Playlist(playlist, parent),
+    CTPlaylist(playlist, parent),
     m_request(0),
     m_video(0)
 {
@@ -224,6 +224,6 @@ void DailymotionPlaylist::onRemoveVideoRequestFinished() {
 
 void DailymotionPlaylist::onPlaylistUpdated(DailymotionVideo*, DailymotionPlaylist *playlist) {
     if ((playlist->id() == id()) && (playlist != this)) {
-        Playlist::loadPlaylist(playlist);
+        CTPlaylist::loadPlaylist(playlist);
     }
 }

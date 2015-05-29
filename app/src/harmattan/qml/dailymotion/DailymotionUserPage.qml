@@ -79,6 +79,17 @@ MyPage {
             width: view.width
             height: view.height
             title: user.username ? user.username + "'s " + qsTr("channel") : qsTr("Channel")
+            tools: ToolBarLayout {
+
+                BackToolIcon {}
+
+                MyToolIcon {
+                    platformIconId: user.subscribed ? "toolbar-cancle" : "toolbar-add"
+                    enabled: (Dailymotion.userId) && (Dailymotion.hasScope(Dailymotion.MANAGE_SUBSCRIPTIONS_SCOPE))
+                             && (user.id) && (user.id != Dailymotion.userId)
+                    onClicked: user.subscribed ? user.unsubscribe() : user.subscribe()
+                }
+            }
 
             Flow {
                 id: flow
@@ -118,16 +129,6 @@ MyPage {
                     font.family: UI.FONT_FAMILY_LIGHT
                     text: Utils.formatLargeNumber(user.subscriberCount) + " " + qsTr("subscribers")
                           + "\n" + Utils.formatLargeNumber(user.viewCount) + " " + qsTr("views")
-                }
-
-                MyButton {
-                    id: subscribeButton
-
-                    width: 250
-                    text: user.subscribed ? qsTr("Unsubscribe") : qsTr("Subscribe")
-                    enabled: (Dailymotion.userId) && (Dailymotion.hasScope(Dailymotion.MANAGE_SUBSCRIPTIONS_SCOPE))
-                             && (user.id) && (user.id != Dailymotion.userId)
-                    onClicked: user.subscribed ? user.unsubscribe() : user.subscribe()
                 }
             }
 

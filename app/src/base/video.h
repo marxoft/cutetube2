@@ -20,7 +20,7 @@
 #include <QObject>
 #include <QUrl>
 
-class Video : public QObject
+class CTVideo : public QObject
 {
     Q_OBJECT
     
@@ -39,8 +39,8 @@ class Video : public QObject
     Q_PROPERTY(qint64 viewCount READ viewCount NOTIFY viewCountChanged)
     
 public:
-    explicit Video(QObject *parent = 0);
-    explicit Video(const Video *video, QObject *parent = 0);
+    explicit CTVideo(QObject *parent = 0);
+    explicit CTVideo(const CTVideo *video, QObject *parent = 0);
         
     QString date() const;
     
@@ -68,7 +68,7 @@ public:
         
     qint64 viewCount() const;
     
-    Q_INVOKABLE virtual void loadVideo(Video *video);
+    Q_INVOKABLE virtual void loadVideo(CTVideo *video);
     
 public Q_SLOTS:
     virtual void viewed();

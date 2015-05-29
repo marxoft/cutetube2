@@ -58,7 +58,7 @@
 #include "transfers.h"
 #include "utils.h"
 #include "videomodel.h"
-#include "videoplayer.h"
+#include "videolauncher.h"
 #include "videoplayermodel.h"
 #include "vimeo.h"
 #include "vimeoaccountmodel.h"
@@ -82,6 +82,16 @@
 #include "youtubesubtitlemodel.h"
 #include "youtubeusermodel.h"
 #include "youtubevideomodel.h"
+#include <qdailymotion/authenticationrequest.h>
+#include <qdailymotion/resourcesrequest.h>
+#include <qdailymotion/streamsrequest.h>
+#include <qvimeo/authenticationrequest.h>
+#include <qvimeo/resourcesrequest.h>
+#include <qvimeo/streamsrequest.h>
+#include <qyoutube/authenticationrequest.h>
+#include <qyoutube/resourcesrequest.h>
+#include <qyoutube/streamsrequest.h>
+#include <qyoutube/subtitlesrequest.h>
 #include <QApplication>
 #include <QDeclarativeView>
 #include <QDeclarativeContext>
@@ -129,7 +139,7 @@ inline void registerTypes() {
     qmlRegisterType<SearchHistoryModel>("cuteTube", 2, 0, "SearchHistoryModel");
     qmlRegisterType<SelectionModel>("cuteTube", 2, 0, "SelectionModel");
     qmlRegisterType<ServiceModel>("cuteTube", 2, 0, "ServiceModel");
-    qmlRegisterType<Video>("cuteTube", 2, 0, "Video");
+    qmlRegisterType<CTVideo>("cuteTube", 2, 0, "Video");
     qmlRegisterType<VideoModel>("cuteTube", 2, 0, "VideoModel");
     qmlRegisterType<VideoPlayerModel>("cuteTube", 2, 0, "VideoPlayerModel");
     qmlRegisterType<VimeoAccountModel>("cuteTube", 2, 0, "VimeoAccountModel");
@@ -160,6 +170,19 @@ inline void registerTypes() {
     qmlRegisterType<YouTubeUserModel>("cuteTube", 2, 0, "YouTubeUserModel");
     qmlRegisterType<YouTubeVideo>("cuteTube", 2, 0, "YouTubeVideo");
     qmlRegisterType<YouTubeVideoModel>("cuteTube", 2, 0, "YouTubeVideoModel");
+
+    qmlRegisterType<QDailymotion::AuthenticationRequest>("QDailymotion", 1, 0, "AuthenticationRequest");
+    qmlRegisterType<QDailymotion::ResourcesRequest>("QDailymotion", 1, 0, "ResourcesRequest");
+    qmlRegisterType<QDailymotion::StreamsRequest>("QDailymotion", 1, 0, "StreamsRequest");
+
+    qmlRegisterType<QVimeo::AuthenticationRequest>("QVimeo", 1, 0, "AuthenticationRequest");
+    qmlRegisterType<QVimeo::ResourcesRequest>("QVimeo", 1, 0, "ResourcesRequest");
+    qmlRegisterType<QVimeo::StreamsRequest>("QVimeo", 1, 0, "StreamsRequest");
+
+    qmlRegisterType<QYouTube::AuthenticationRequest>("QYouTube", 1, 0, "AuthenticationRequest");
+    qmlRegisterType<QYouTube::ResourcesRequest>("QYouTube", 1, 0, "ResourcesRequest");
+    qmlRegisterType<QYouTube::StreamsRequest>("QYouTube", 1, 0, "StreamsRequest");
+    qmlRegisterType<QYouTube::SubtitlesRequest>("QYouTube", 1, 0, "SubtitlesRequest");
     
     qmlRegisterUncreatableType<Transfer>("cuteTube", 2, 0, "Transfer", "");
 }
@@ -179,7 +202,7 @@ Q_DECL_EXPORT int main(int argc, char *argv[]) {
     ShareUi shareui;
     Transfers transfers;
     Utils utils;
-    VideoPlayer player;
+    VideoLauncher launcher;
     Vimeo vimeo;
     YouTube youtube;
         
@@ -202,7 +225,7 @@ Q_DECL_EXPORT int main(int argc, char *argv[]) {
     context->setContextProperty("ShareUi", &shareui);
     context->setContextProperty("Transfers", &transfers);
     context->setContextProperty("Utils", &utils);
-    context->setContextProperty("VideoPlayer", &player);
+    context->setContextProperty("VideoLauncher", &launcher);
     context->setContextProperty("Vimeo", &vimeo);
     context->setContextProperty("YouTube", &youtube);
     context->setContextProperty("MAX_RESULTS", MAX_RESULTS);

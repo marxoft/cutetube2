@@ -156,7 +156,8 @@ void YouTubeUserModel::list(const QString &resourcePath, const QStringList &part
     
     disconnect(YouTube::instance(), 0, this, 0);
     
-    if ((resourcePath.endsWith("subscriptions")) && (filters.value("channelId") == YouTube::instance()->userId())) {
+    if ((resourcePath.endsWith("subscriptions")) && ((filters.contains("mine"))
+                                                     || (filters.value("channelId") == YouTube::instance()->userId()))) {
         connect(YouTube::instance(), SIGNAL(userSubscribed(YouTubeUser*)),
                 this, SLOT(onUserSubscribed(YouTubeUser*)));
         connect(YouTube::instance(), SIGNAL(userUnsubscribed(YouTubeUser*)),

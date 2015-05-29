@@ -22,7 +22,7 @@
 #endif
 
 VimeoUser::VimeoUser(QObject *parent) :
-    User(parent),
+    CTUser(parent),
     m_request(0),
     m_subscribed(false),
     m_subscriberCount(0)
@@ -35,7 +35,7 @@ VimeoUser::VimeoUser(QObject *parent) :
 }
 
 VimeoUser::VimeoUser(const QString &id, QObject *parent) :
-    User(parent),
+    CTUser(parent),
     m_request(0),
     m_subscribed(false),
     m_subscriberCount(0)
@@ -49,7 +49,7 @@ VimeoUser::VimeoUser(const QString &id, QObject *parent) :
 }
 
 VimeoUser::VimeoUser(const QVariantMap &user, QObject *parent) :
-    User(parent),
+    CTUser(parent),
     m_request(0),
     m_subscribed(false),
     m_subscriberCount(0)
@@ -63,7 +63,7 @@ VimeoUser::VimeoUser(const QVariantMap &user, QObject *parent) :
 }
 
 VimeoUser::VimeoUser(const VimeoUser *user, QObject *parent) :
-    User(user, parent),
+    CTUser(user, parent),
     m_request(0),
     m_subscribed(user->isSubscribed()),
     m_subscriberCount(user->subscriberCount())
@@ -126,7 +126,7 @@ void VimeoUser::loadUser(const QVariantMap &user) {
 }
 
 void VimeoUser::loadUser(VimeoUser *user) {
-    User::loadUser(user);
+    CTUser::loadUser(user);
     setSubscribed(user->isSubscribed());
     setSubscriberCount(user->subscriberCount());
     setUsername(user->username());
@@ -142,7 +142,7 @@ void VimeoUser::checkIfSubscribed() {
         return;
     }
     
-    if ((!Vimeo::subscriptionCache.ids.isEmpty()) && (!Vimeo::subscriptionCache.hasMore)) {
+    if (!Vimeo::subscriptionCache.hasMore) {
 #ifdef CUTETUBE_DEBUG
         qDebug() << "VimeoUser::checkIfSubscribed" << id() << "not found";
 #endif

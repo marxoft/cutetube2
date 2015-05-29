@@ -79,6 +79,17 @@ MyPage {
             width: view.width
             height: view.height
             title: user.username ? user.username + "'s " + qsTr("channel") : qsTr("Channel")
+            tools: ToolBarLayout {
+
+                BackToolIcon {}
+
+                MyToolIcon {
+                    platformIconId: user.subscribed ? "toolbar-cancle" : "toolbar-add"
+                    enabled: (Vimeo.userId) && (Vimeo.hasScope(Vimeo.INTERACT_SCOPE)) && (user.id)
+                             && (user.id != Vimeo.userId)
+                    onClicked: user.subscribed ? user.unsubscribe() : user.subscribe()
+                }
+            }
 
             Flow {
                 id: flow
@@ -92,14 +103,18 @@ MyPage {
 
                 spacing: UI.PADDING_DOUBLE
 
-                Banner {
-                    id: banner
+                Avatar {
+                    id: avatar
 
-                    width: parent.width
-                    height: Math.floor(width / 4)
-                    avatarSource: user.thumbnailUrl
-                    bannerSource: user.bannerUrl
+                    width: height
+                    height: Math.floor(parent.width / 4)
+                    source: user.thumbnailUrl
                     enabled: false
+                }
+
+                Item {
+                    width: parent.width - avatar.width - UI.PADDING_DOUBLE
+                    height: avatar.height
                 }
 
                 Label {
@@ -117,16 +132,6 @@ MyPage {
                     font.pixelSize: UI.FONT_SMALL
                     font.family: UI.FONT_FAMILY_LIGHT
                     text: Utils.formatLargeNumber(user.subscriberCount) + " " + qsTr("subscribers")
-                }
-
-                MyButton {
-                    id: subscribeButton
-
-                    width: 250
-                    text: user.subscribed ? qsTr("Unsubscribe") : qsTr("Subscribe")
-                    enabled: (Vimeo.userId) && (Vimeo.hasScope(Vimeo.INTERACT_SCOPE)) && (user.id)
-                             && (user.id != Vimeo.userId)
-                    onClicked: user.subscribed ? user.unsubscribe() : user.subscribe()
                 }
             }
 

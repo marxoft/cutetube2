@@ -154,7 +154,7 @@ void YouTubePlaylistModel::list(const QString &resourcePath, const QStringList &
     
     disconnect(YouTube::instance(), 0, this, 0);
     
-    if (filters.value("channelId") == YouTube::instance()->userId()) {
+    if ((filters.contains("mine")) || (filters.value("channelId") == YouTube::instance()->userId())) {
         connect(YouTube::instance(), SIGNAL(playlistCreated(YouTubePlaylist*)),
                 this, SLOT(onPlaylistCreated(YouTubePlaylist*)));
         connect(YouTube::instance(), SIGNAL(playlistDeleted(YouTubePlaylist*)),

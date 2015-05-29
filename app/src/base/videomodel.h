@@ -54,9 +54,9 @@ public:
     Q_INVOKABLE QVariant data(int row, const QByteArray &role) const;
     Q_INVOKABLE QVariantMap itemData(int row) const;
     
-    Q_INVOKABLE Video* get(int row) const;
-    Q_INVOKABLE void append(Video *video);
-    Q_INVOKABLE void insert(int row, Video *video);
+    Q_INVOKABLE CTVideo* get(int row) const;
+    Q_INVOKABLE void append(CTVideo *video);
+    Q_INVOKABLE void insert(int row, CTVideo *video);
     Q_INVOKABLE void remove(int row);
 
 public Q_SLOTS:
@@ -66,7 +66,7 @@ Q_SIGNALS:
     void countChanged(int c);
     
 private:
-    QList<Video*> m_items;
+    QList<CTVideo*> m_items;
     
     QHash<int, QByteArray> m_roles;
 };

@@ -16,12 +16,12 @@
 
 #include "video.h"
 
-Video::Video(QObject *parent) :
+CTVideo::CTVideo(QObject *parent) :
     QObject(parent)
 {
 }
 
-Video::Video(const Video *video, QObject *parent) :
+CTVideo::CTVideo(const CTVideo *video, QObject *parent) :
     QObject(parent),
     m_date(video->date()),
     m_description(video->description()),
@@ -39,154 +39,154 @@ Video::Video(const Video *video, QObject *parent) :
 {
 }
 
-QString Video::date() const {
+QString CTVideo::date() const {
     return m_date;
 }
 
-void Video::setDate(const QString &d) {
+void CTVideo::setDate(const QString &d) {
     if (d != date()) {
         m_date = d;
         emit dateChanged();
     }
 }
 
-QString Video::description() const {
+QString CTVideo::description() const {
     return m_description;
 }
 
-void Video::setDescription(const QString &d) {
+void CTVideo::setDescription(const QString &d) {
     if (d != description()) {
         m_description = d;
         emit descriptionChanged();
     }
 }
 
-QString Video::duration() const {
+QString CTVideo::duration() const {
     return m_duration;
 }
 
-void Video::setDuration(const QString &d) {
+void CTVideo::setDuration(const QString &d) {
     if (d != duration()) {
         m_duration = d;
         emit durationChanged();
     }
 }
 
-QString Video::id() const {
+QString CTVideo::id() const {
     return m_id;
 }
 
-void Video::setId(const QString &i) {
+void CTVideo::setId(const QString &i) {
     if (i != id()) {
         m_id = i;
         emit idChanged();
     }
 }
 
-QUrl Video::largeThumbnailUrl() const {
+QUrl CTVideo::largeThumbnailUrl() const {
     return m_largeThumbnailUrl;
 }
 
-void Video::setLargeThumbnailUrl(const QUrl &u) {
+void CTVideo::setLargeThumbnailUrl(const QUrl &u) {
     if (u != largeThumbnailUrl()) {
         m_largeThumbnailUrl = u;
         emit largeThumbnailUrlChanged();
     }
 }
 
-QString Video::service() const {
+QString CTVideo::service() const {
     return m_service;
 }
 
-void Video::setService(const QString &s) {
+void CTVideo::setService(const QString &s) {
     if (s != service()) {
         m_service = s;
         emit serviceChanged();
     }
 }
 
-QUrl Video::streamUrl() const {
+QUrl CTVideo::streamUrl() const {
     return m_streamUrl;
 }
 
-void Video::setStreamUrl(const QUrl &u) {
+void CTVideo::setStreamUrl(const QUrl &u) {
     if (u != streamUrl()) {
         m_streamUrl = u;
         emit streamUrlChanged();
     }
 }
 
-QUrl Video::thumbnailUrl() const {
+QUrl CTVideo::thumbnailUrl() const {
     return m_thumbnailUrl;
 }
 
-void Video::setThumbnailUrl(const QUrl &u) {
+void CTVideo::setThumbnailUrl(const QUrl &u) {
     if (u != thumbnailUrl()) {
         m_thumbnailUrl = u;
         emit thumbnailUrlChanged();
     }
 }
 
-QString Video::title() const {
+QString CTVideo::title() const {
     return m_title;
 }
 
-void Video::setTitle(const QString &t) {
+void CTVideo::setTitle(const QString &t) {
     if (t != title()) {
         m_title = t;
         emit titleChanged();
     }
 }
 
-QUrl Video::url() const {
+QUrl CTVideo::url() const {
     return m_url;
 }
 
-void Video::setUrl(const QUrl &u) {
+void CTVideo::setUrl(const QUrl &u) {
     if (u != url()) {
         m_url = u;
         emit urlChanged();
     }
 }
 
-QString Video::userId() const {
+QString CTVideo::userId() const {
     return m_userId;
 }
 
-void Video::setUserId(const QString &i) {
+void CTVideo::setUserId(const QString &i) {
     if (i != userId()) {
         m_userId = i;
         emit userIdChanged();
     }
 }
 
-QString Video::username() const {
+QString CTVideo::username() const {
     return m_username;
 }
 
-void Video::setUsername(const QString &u) {
+void CTVideo::setUsername(const QString &u) {
     if (u != username()) {
         m_username = u;
         emit usernameChanged();
     }
 }
 
-qint64 Video::viewCount() const {
+qint64 CTVideo::viewCount() const {
     return m_viewCount;
 }
 
-void Video::setViewCount(qint64 c) {
+void CTVideo::setViewCount(qint64 c) {
     if (c != viewCount()) {
         m_viewCount = c;
         emit viewCountChanged();
     }
 }
 
-void Video::viewed() {
+void CTVideo::viewed() {
     setViewCount(viewCount() + 1);
 }
 
-void Video::loadVideo(Video *video) {
+void CTVideo::loadVideo(CTVideo *video) {
     setDate(video->date());
     setDescription(video->description());
     setDuration(video->duration());

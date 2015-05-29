@@ -122,6 +122,11 @@ private:
         QStringList ids;
         QVariantMap filters;
         bool hasMore;
+
+        SubscriptionCache() :
+            hasMore(true)
+        {
+        }
     };
     
     static SubscriptionCache subscriptionCache;

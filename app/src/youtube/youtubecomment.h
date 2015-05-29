@@ -20,7 +20,7 @@
 #include "comment.h"
 #include <qyoutube/resourcesrequest.h>
 
-class YouTubeComment : public Comment
+class YouTubeComment : public CTComment
 {
     Q_OBJECT
     

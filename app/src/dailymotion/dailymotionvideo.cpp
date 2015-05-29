@@ -24,7 +24,7 @@
 #endif
 
 DailymotionVideo::DailymotionVideo(QObject *parent) :
-    Video(parent),
+    CTVideo(parent),
     m_request(0),
     m_favourite(false)
 {
@@ -36,7 +36,7 @@ DailymotionVideo::DailymotionVideo(QObject *parent) :
 }
 
 DailymotionVideo::DailymotionVideo(const QString &id, QObject *parent) :
-    Video(parent),
+    CTVideo(parent),
     m_request(0),
     m_favourite(false)
 {
@@ -49,7 +49,7 @@ DailymotionVideo::DailymotionVideo(const QString &id, QObject *parent) :
 }
 
 DailymotionVideo::DailymotionVideo(const QVariantMap &video, QObject *parent) :
-    Video(parent),
+    CTVideo(parent),
     m_request(0),
     m_favourite(false)
 {
@@ -62,7 +62,7 @@ DailymotionVideo::DailymotionVideo(const QVariantMap &video, QObject *parent) :
 }
 
 DailymotionVideo::DailymotionVideo(const DailymotionVideo *video, QObject *parent) :
-    Video(video, parent),
+    CTVideo(video, parent),
     m_request(0),
     m_favourite(video->isFavourite())
 {
@@ -122,7 +122,7 @@ void DailymotionVideo::loadVideo(const QVariantMap &video) {
 }
 
 void DailymotionVideo::loadVideo(DailymotionVideo *video) {
-    Video::loadVideo(video);
+    CTVideo::loadVideo(video);
     setFavourite(video->isFavourite());
 }
     

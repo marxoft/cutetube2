@@ -20,7 +20,7 @@
 #include "video.h"
 #include <qdailymotion/resourcesrequest.h>
 
-class DailymotionVideo : public Video
+class DailymotionVideo : public CTVideo
 {
     Q_OBJECT
     

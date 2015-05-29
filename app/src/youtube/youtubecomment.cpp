@@ -23,14 +23,14 @@
 #endif
 
 YouTubeComment::YouTubeComment(QObject *parent) :
-    Comment(parent),
+    CTComment(parent),
     m_request(0)
 {
     setService(Resources::YOUTUBE);
 }
 
 YouTubeComment::YouTubeComment(const QString &id, QObject *parent) :
-    Comment(parent),
+    CTComment(parent),
     m_request(0)
 {
     setService(Resources::YOUTUBE);
@@ -38,7 +38,7 @@ YouTubeComment::YouTubeComment(const QString &id, QObject *parent) :
 }
 
 YouTubeComment::YouTubeComment(const QVariantMap &comment, QObject *parent) :
-    Comment(parent),
+    CTComment(parent),
     m_request(0)
 {
     setService(Resources::YOUTUBE);
@@ -46,7 +46,7 @@ YouTubeComment::YouTubeComment(const QVariantMap &comment, QObject *parent) :
 }
 
 YouTubeComment::YouTubeComment(const YouTubeComment *comment, QObject *parent) :
-    Comment(comment, parent),
+    CTComment(comment, parent),
     m_request(0),
     m_parentId(comment->parentId())
 {
@@ -88,8 +88,7 @@ void YouTubeComment::loadComment(const QString &id) {
 
 void YouTubeComment::loadComment(const QVariantMap &comment) {
     QVariantMap snippet = comment.value("snippet").toMap();
-    
-    setBody(snippet.value("textDisplay").toString());
+    setBody(QString::fromUtf8(snippet.value("textDisplay").toString().toUtf8().replace("\ufeff", "").simplified()));
     setDate(QDateTime::fromString(snippet.value("publishedAt").toString(), Qt::ISODate).toString("dd MMM yyyy"));
     setId(comment.value("id").toString());
     setParentId(snippet.value("parentId").toString());
@@ -100,7 +99,7 @@ void YouTubeComment::loadComment(const QVariantMap &comment) {
 }
 
 void YouTubeComment::loadComment(YouTubeComment *comment) {
-    Comment::loadComment(comment);
+    CTComment::loadComment(comment);
     setParentId(comment->parentId());
 }
 

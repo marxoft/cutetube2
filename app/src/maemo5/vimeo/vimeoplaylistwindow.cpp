@@ -270,10 +270,10 @@ void VimeoPlaylistWindow::playPlaylist() {
         return;
     }
     
-    QList<Video*> list;
+    QList<CTVideo*> list;
     
     for (int i = 0; i < m_model->rowCount(); i++) {
-        if (Video *video = m_model->get(i)) {
+        if (CTVideo *video = m_model->get(i)) {
             list << video;
         }
     }

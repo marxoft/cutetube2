@@ -165,7 +165,7 @@ Tab {
         id: playbackDialog
 
         YouTubePlaybackDialog {
-            onAccepted: VideoPlayer.playVideo(value.url)
+            onAccepted: VideoLauncher.playVideo(value.url)
         }
     }
 

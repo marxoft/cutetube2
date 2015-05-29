@@ -24,7 +24,7 @@
 #endif
 
 VimeoVideo::VimeoVideo(QObject *parent) :
-    Video(parent),
+    CTVideo(parent),
     m_request(0),
     m_favourite(false)
 {
@@ -36,7 +36,7 @@ VimeoVideo::VimeoVideo(QObject *parent) :
 }
 
 VimeoVideo::VimeoVideo(const QString &id, QObject *parent) :
-    Video(parent),
+    CTVideo(parent),
     m_request(0),
     m_favourite(false)
 {
@@ -49,7 +49,7 @@ VimeoVideo::VimeoVideo(const QString &id, QObject *parent) :
 }
 
 VimeoVideo::VimeoVideo(const QVariantMap &video, QObject *parent) :
-    Video(parent),
+    CTVideo(parent),
     m_request(0),
     m_favourite(false)
 {
@@ -62,7 +62,7 @@ VimeoVideo::VimeoVideo(const QVariantMap &video, QObject *parent) :
 }
 
 VimeoVideo::VimeoVideo(const VimeoVideo *video, QObject *parent) :
-    Video(video, parent),
+    CTVideo(video, parent),
     m_request(0),
     m_favourite(video->isFavourite())
 {
@@ -133,7 +133,7 @@ void VimeoVideo::loadVideo(const QVariantMap &video) {
 }
 
 void VimeoVideo::loadVideo(VimeoVideo *video) {
-    Video::loadVideo(video);
+    CTVideo::loadVideo(video);
     setFavourite(video->isFavourite());
 }
     

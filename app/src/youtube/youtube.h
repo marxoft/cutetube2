@@ -140,6 +140,12 @@ private:
     struct SubscriptionCache {
         QHash<QString, QString> ids;
         QString nextPageToken;
+        bool loaded;
+
+        SubscriptionCache() :
+            loaded(false)
+        {
+        }
     };
     
     static SubscriptionCache subscriptionCache;

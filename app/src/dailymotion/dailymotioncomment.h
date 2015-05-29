@@ -20,7 +20,7 @@
 #include "comment.h"
 #include <qdailymotion/resourcesrequest.h>
 
-class DailymotionComment : public Comment
+class DailymotionComment : public CTComment
 {
     Q_OBJECT
     

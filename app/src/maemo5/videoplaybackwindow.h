@@ -29,8 +29,8 @@ public:
     explicit VideoPlaybackWindow(StackedWindow *parent = 0);
     ~VideoPlaybackWindow();
     
-    void addVideo(Video *video);
-    void addVideos(const QList<Video*> &videos);
+    void addVideo(CTVideo *video);
+    void addVideos(const QList<CTVideo*> &videos);
 
 protected:
     bool event(QEvent *e);

@@ -18,14 +18,14 @@
 #include "resources.h"
 
 PluginPlaylist::PluginPlaylist(QObject *parent) :
-    Playlist(parent),
+    CTPlaylist(parent),
     m_request(new ResourcesRequest(this))
 {
     connect(m_request, SIGNAL(finished()), this, SLOT(onRequestFinished()));
 }
 
 PluginPlaylist::PluginPlaylist(const QString &service, const QString &id, QObject *parent) :
-    Playlist(parent),
+    CTPlaylist(parent),
     m_request(new ResourcesRequest(this))
 {
     loadPlaylist(service, id);
@@ -33,7 +33,7 @@ PluginPlaylist::PluginPlaylist(const QString &service, const QString &id, QObjec
 }
 
 PluginPlaylist::PluginPlaylist(const QString &service, const QVariantMap &playlist, QObject *parent) :
-    Playlist(parent),
+    CTPlaylist(parent),
     m_request(new ResourcesRequest(this))
 {
     loadPlaylist(service, playlist);
@@ -41,7 +41,7 @@ PluginPlaylist::PluginPlaylist(const QString &service, const QVariantMap &playli
 }
 
 PluginPlaylist::PluginPlaylist(const PluginPlaylist *playlist, QObject *parent) :
-    Playlist(playlist, parent),
+    CTPlaylist(playlist, parent),
     m_request(new ResourcesRequest(this))
 {
 }
@@ -79,7 +79,7 @@ void PluginPlaylist::loadPlaylist(const QString &service, const QVariantMap &pla
 }
 
 void PluginPlaylist::loadPlaylist(PluginPlaylist *playlist) {
-    Playlist::loadPlaylist(playlist);
+    CTPlaylist::loadPlaylist(playlist);
 }
 
 void PluginPlaylist::onRequestFinished() {

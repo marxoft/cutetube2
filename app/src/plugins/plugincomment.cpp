@@ -18,14 +18,14 @@
 #include "resources.h"
 
 PluginComment::PluginComment(QObject *parent) :
-    Comment(parent),
+    CTComment(parent),
     m_request(new ResourcesRequest(this))
 {
     connect(m_request, SIGNAL(finished()), this, SLOT(onRequestFinished()));
 }
 
 PluginComment::PluginComment(const QString &service, const QString &id, QObject *parent) :
-    Comment(parent),
+    CTComment(parent),
     m_request(new ResourcesRequest(this))
 {
     loadComment(service, id);
@@ -33,7 +33,7 @@ PluginComment::PluginComment(const QString &service, const QString &id, QObject 
 }
 
 PluginComment::PluginComment(const QString &service, const QVariantMap &comment, QObject *parent) :
-    Comment(parent),
+    CTComment(parent),
     m_request(new ResourcesRequest(this))
 {
     loadComment(service, comment);
@@ -41,7 +41,7 @@ PluginComment::PluginComment(const QString &service, const QVariantMap &comment,
 }
 
 PluginComment::PluginComment(const PluginComment *comment, QObject *parent) :
-    Comment(comment, parent),
+    CTComment(comment, parent),
     m_request(new ResourcesRequest(this))
 {
 }
@@ -77,7 +77,7 @@ void PluginComment::loadComment(const QString &service, const QVariantMap &comme
 }
 
 void PluginComment::loadComment(PluginComment *comment) {
-    Comment::loadComment(comment);
+    CTComment::loadComment(comment);
 }
 
 void PluginComment::onRequestFinished() {

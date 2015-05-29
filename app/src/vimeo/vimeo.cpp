@@ -100,7 +100,7 @@ void Vimeo::setUserId(const QString &id) {
         QSettings().setValue("Vimeo/userId", id);
         subscriptionCache.ids.clear();
         subscriptionCache.filters.clear();
-        subscriptionCache.hasMore = false;
+        subscriptionCache.hasMore = true;
         emit userIdChanged();
     }
 }

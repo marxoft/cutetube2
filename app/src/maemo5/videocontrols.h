@@ -45,8 +45,8 @@ public:
     explicit VideoControls(QMediaPlayer *player, QWidget *parent = 0);
     ~VideoControls();
     
-    void addVideo(Video *video);
-    void addVideos(const QList<Video*> &videos);
+    void addVideo(CTVideo *video);
+    void addVideos(const QList<CTVideo*> &videos);
 
     void keyPressEvent(QKeyEvent *e);
 
@@ -55,7 +55,7 @@ protected:
     void hideEvent(QHideEvent *);
     
 private:
-    void play(const Video *video);
+    void play(const CTVideo *video);
     void play(const QUrl &url);
     
     void hideLoadingMessage();

@@ -29,7 +29,7 @@ ShareUi::ShareUi(QObject *parent) :
 {
 }
 
-bool ShareUi::shareVideo(Video *video) {
+bool ShareUi::shareVideo(CTVideo *video) {
     if (Utils::isLocalFile(video->url())) {
         return share(Utils::unescape(video->url().toString()));
     }

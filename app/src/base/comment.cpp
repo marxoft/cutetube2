@@ -16,12 +16,12 @@
 
 #include "comment.h"
 
-Comment::Comment(QObject *parent) :
+CTComment::CTComment(QObject *parent) :
     QObject(parent)
 {
 }
 
-Comment::Comment(const Comment *comment, QObject *parent) :
+CTComment::CTComment(const CTComment *comment, QObject *parent) :
     QObject(parent),
     m_body(comment->body()),
     m_date(comment->date()),
@@ -34,95 +34,95 @@ Comment::Comment(const Comment *comment, QObject *parent) :
 {
 }
 
-QString Comment::body() const {
+QString CTComment::body() const {
     return m_body;
 }
 
-void Comment::setBody(const QString &d) {
+void CTComment::setBody(const QString &d) {
     if (d != body()) {
         m_body = d;
         emit bodyChanged();
     }
 }
 
-QString Comment::date() const {
+QString CTComment::date() const {
     return m_date;
 }
 
-void Comment::setDate(const QString &d) {
+void CTComment::setDate(const QString &d) {
     if (d != date()) {
         m_date = d;
         emit dateChanged();
     }
 }
 
-QString Comment::id() const {
+QString CTComment::id() const {
     return m_id;
 }
 
-void Comment::setId(const QString &i) {
+void CTComment::setId(const QString &i) {
     if (i != id()) {
         m_id = i;
         emit idChanged();
     }
 }
 
-QString Comment::service() const {
+QString CTComment::service() const {
     return m_service;
 }
 
-void Comment::setService(const QString &s) {
+void CTComment::setService(const QString &s) {
     if (s != service()) {
         m_service = s;
         emit serviceChanged();
     }
 }
 
-QUrl Comment::thumbnailUrl() const {
+QUrl CTComment::thumbnailUrl() const {
     return m_thumbnailUrl;
 }
 
-void Comment::setThumbnailUrl(const QUrl &u) {
+void CTComment::setThumbnailUrl(const QUrl &u) {
     if (u != thumbnailUrl()) {
         m_thumbnailUrl = u;
         emit thumbnailUrlChanged();
     }
 }
 
-QString Comment::userId() const {
+QString CTComment::userId() const {
     return m_userId;
 }
 
-void Comment::setUserId(const QString &i) {
+void CTComment::setUserId(const QString &i) {
     if (i != userId()) {
         m_userId = i;
         emit userIdChanged();
     }
 }
 
-QString Comment::username() const {
+QString CTComment::username() const {
     return m_username;
 }
 
-void Comment::setUsername(const QString &u) {
+void CTComment::setUsername(const QString &u) {
     if (u != username()) {
         m_username = u;
         emit usernameChanged();
     }
 }
 
-QString Comment::videoId() const {
+QString CTComment::videoId() const {
     return m_videoId;
 }
 
-void Comment::setVideoId(const QString &i) {
+void CTComment::setVideoId(const QString &i) {
     if (i != videoId()) {
         m_videoId = i;
         emit videoIdChanged();
     }
 }
 
-void Comment::loadComment(Comment *comment) {
+void CTComment::loadComment(CTComment *comment) {
     setBody(comment->body());
     setDate(comment->date());
     setId(comment->id());

@@ -22,7 +22,7 @@
 #endif
 
 YouTubeUser::YouTubeUser(QObject *parent) :
-    User(parent),
+    CTUser(parent),
     m_request(0),
     m_subscribed(false),
     m_subscriberCount(0),
@@ -36,7 +36,7 @@ YouTubeUser::YouTubeUser(QObject *parent) :
 }
 
 YouTubeUser::YouTubeUser(const QString &id, QObject *parent) :
-    User(parent),
+    CTUser(parent),
     m_request(0),
     m_subscribed(false),
     m_subscriberCount(0),
@@ -51,7 +51,7 @@ YouTubeUser::YouTubeUser(const QString &id, QObject *parent) :
 }
 
 YouTubeUser::YouTubeUser(const QVariantMap &user, QObject *parent) :
-    User(parent),
+    CTUser(parent),
     m_request(0),
     m_subscribed(false),
     m_subscriberCount(0),
@@ -66,7 +66,7 @@ YouTubeUser::YouTubeUser(const QVariantMap &user, QObject *parent) :
 }
 
 YouTubeUser::YouTubeUser(const YouTubeUser *user, QObject *parent) :
-    User(user, parent),
+    CTUser(user, parent),
     m_request(0),
     m_bannerUrl(user->bannerUrl()),
     m_largeBannerUrl(user->largeBannerUrl()),
@@ -208,7 +208,7 @@ void YouTubeUser::loadUser(const QVariantMap &user) {
 }
 
 void YouTubeUser::loadUser(YouTubeUser *user) {
-    User::loadUser(user);
+    CTUser::loadUser(user);
     setBannerUrl(user->bannerUrl());
     setLargeBannerUrl(user->largeBannerUrl());
     setRelatedPlaylists(user->relatedPlaylists());
@@ -230,7 +230,7 @@ void YouTubeUser::checkIfSubscribed() {
         return;
     }
     
-    if ((!YouTube::subscriptionCache.ids.isEmpty()) && (YouTube::subscriptionCache.nextPageToken.isEmpty())) {
+    if ((YouTube::subscriptionCache.loaded) && (YouTube::subscriptionCache.nextPageToken.isEmpty())) {
 #ifdef CUTETUBE_DEBUG
         qDebug() << "YouTubeUser::checkIfSubscribed" << id() << "not found";
 #endif
@@ -319,6 +319,7 @@ void YouTubeUser::onSubscribeCheckRequestFinished() {
         QVariantMap result = m_request->result().toMap();
         QVariantList items = result.value("items").toList();
         YouTube::subscriptionCache.nextPageToken = result.value("nextPageToken").toString();
+        YouTube::subscriptionCache.loaded = true;
         
         foreach(QVariant item, items) {
             QVariantMap map = item.toMap();

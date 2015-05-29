@@ -197,6 +197,7 @@ void YouTube::setUserId(const QString &id) {
         QSettings().setValue("YouTube/userId", id);
         subscriptionCache.ids.clear();
         subscriptionCache.nextPageToken = QString();
+        subscriptionCache.loaded = false;
         emit userIdChanged();
     }
 }

@@ -45,6 +45,9 @@
 #ifdef MEEGO_EDITION_HARMATTAN
 TransferUI::Client* Transfer::tuiClient = 0;
 #endif
+#ifdef SYMBIAN_OS
+static const qint64 BUFFER_SIZE = 1024 * 512;
+#endif
 
 Transfer::Transfer(QObject *parent) :
     QObject(parent),
@@ -533,6 +536,7 @@ void Transfer::pause() {
     case Paused:
     case Canceled:
     case Completed:
+    case Connecting:
     case Converting:
         return;
     default:
@@ -837,8 +841,16 @@ void Transfer::onReplyMetaDataChanged() {
 
 void Transfer::onReplyReadyRead() {
     m_bytesTransferred += m_reply->bytesAvailable();
+#ifdef SYMBIAN_OS
+    m_buffer += m_reply->readAll();
+
+    if (m_buffer.size() >= BUFFER_SIZE) {
+        m_file.write(m_buffer);
+        m_buffer.clear();
+    }
+#else
     m_file.write(m_reply->readAll());
-    
+#endif
     if (m_size > 0) {
         setProgress(m_bytesTransferred * 100 / m_size);
     }
@@ -852,7 +864,12 @@ void Transfer::onReplyFinished() {
     if (redirect.isNull()) {
         redirect = m_reply->header(QNetworkRequest::LocationHeader);        
     }
-    
+#ifdef SYMBIAN_OS
+    if (!m_buffer.isEmpty()) {
+        m_file.write(m_buffer);
+        m_buffer.clear();
+    }
+#endif
     m_file.close();
     m_reply->deleteLater();
     m_reply = 0;

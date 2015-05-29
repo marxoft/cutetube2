@@ -80,35 +80,38 @@ bool ResourcesPlugins::resourceTypeIsSupported(const QString &name, const QStrin
 
 void ResourcesPlugins::load() {
     m_plugins.clear();
-    
-    QDir dir(PLUGIN_PATH);
-    
-    foreach (QString fileName, dir.entryList(QStringList() << "*.plugin", QDir::Files, QDir::Name | QDir::IgnoreCase)) {
-        QSettings loader(dir.absoluteFilePath(fileName), QSettings::IniFormat);
-        QString name = loader.value("Name").toString();
-        QString command = loader.value("Exec").toString();
-        QStringList supportedListResources = loader.value("SupportedListResources").toStringList();
-        QStringList supportedSearchResources = loader.value("SupportedSearchResources").toStringList();
-        
-        if ((!name.isEmpty()) && (!command.isEmpty())
-            && ((!supportedListResources.isEmpty()) || (!supportedSearchResources.isEmpty()))) {
-            
-            ResourcesPlugin plugin;
-            plugin.name = name;
-            plugin.command = command;
-            plugin.supportedListResources = supportedListResources;
-            plugin.supportedSearchResources = supportedSearchResources;
-            
-            if (loader.contains("UrlRegExp")) {
-                plugin.urlRegExp = loader.value("UrlRegExp").toRegExp();
+    QDir dir;
+
+    foreach (QString path, PLUGIN_PATHS) {
+        dir.setPath(path);
+
+        foreach (QString fileName, dir.entryList(QStringList() << "*.plugin", QDir::Files)) {
+            QSettings loader(dir.absoluteFilePath(fileName), QSettings::IniFormat);
+            QString name = loader.value("Name").toString();
+            QString command = loader.value("Exec").toString();
+            QStringList supportedListResources = loader.value("SupportedListResources").toStringList();
+            QStringList supportedSearchResources = loader.value("SupportedSearchResources").toStringList();
+
+            if ((!name.isEmpty()) && (!command.isEmpty())
+                && ((!supportedListResources.isEmpty()) || (!supportedSearchResources.isEmpty()))) {
+
+                ResourcesPlugin plugin;
+                plugin.name = name;
+                plugin.command = command;
+                plugin.supportedListResources = supportedListResources;
+                plugin.supportedSearchResources = supportedSearchResources;
+
+                if (loader.contains("UrlRegExp")) {
+                    plugin.urlRegExp = loader.value("UrlRegExp").toRegExp();
+                }
+
+                if (loader.contains("Settings")) {
+                     QString settings = loader.value("Settings").toString();
+                     plugin.settings = settings.startsWith('/') ? settings : path + settings;
+                }
+
+                m_plugins[name] = plugin;
             }
-                        
-            if (loader.contains("Settings")) {
-                 QString settings = loader.value("Settings").toString();
-                 plugin.settings = settings.startsWith('/') ? settings : PLUGIN_PATH + settings;
-            }
-            
-            m_plugins[name] = plugin;
         }
     }
 }

@@ -70,7 +70,6 @@ PluginPlaylistWindow::PluginPlaylistWindow(const QString &service, const QString
     m_downloadAction(new QAction(tr("Download"), this)),
     m_shareAction(new QAction(tr("Copy URL"), this))
 {
-    setWindowTitle(tr("Playlist"));
     loadBaseUi();
     connect(m_playlist, SIGNAL(statusChanged(ResourcesRequest::Status)),
             this, SLOT(onPlaylistStatusChanged(ResourcesRequest::Status)));
@@ -105,7 +104,6 @@ PluginPlaylistWindow::PluginPlaylistWindow(const PluginPlaylist *playlist, Stack
     m_downloadAction(new QAction(tr("Download"), this)),
     m_shareAction(new QAction(tr("Copy URL"), this))
 {
-    setWindowTitle(tr("Playlist"));
     loadBaseUi();
     loadPlaylistUi();
     getVideos();
@@ -124,6 +122,7 @@ PluginPlaylistWindow::~PluginPlaylistWindow() {
 }
 
 void PluginPlaylistWindow::loadBaseUi() {
+    setWindowTitle(tr("Playlist"));
     setCentralWidget(new QWidget);
     
     m_view->setModel(m_model);
@@ -236,10 +235,10 @@ void PluginPlaylistWindow::playPlaylist() {
         return;
     }
     
-    QList<Video*> list;
+    QList<CTVideo*> list;
     
     for (int i = 0; i < m_model->rowCount(); i++) {
-        if (Video *video = m_model->get(i)) {
+        if (CTVideo *video = m_model->get(i)) {
             list << video;
         }
     }
@@ -277,7 +276,7 @@ void PluginPlaylistWindow::playVideo(const QModelIndex &index) {
         QString url = index.data(PluginVideoModel::StreamUrlRole).toString();
         
         if (!url.isEmpty()) {
-            VideoPlayer::playVideo(url);
+            VideoLauncher::playVideo(url);
         }
         else {
             QString id = index.data(PluginVideoModel::IdRole).toString();

@@ -28,8 +28,12 @@ public:
     explicit VideoPlayerModel(QObject *parent = 0) :
         SelectionModel(parent)
     {
+#ifdef SYMBIAN_OS
         append("cuteTube", "cutetube");
-        
+        append(tr("Media player"), "mediaplayer");
+#else
+        append("cuteTube", "cutetube");
+
         if ((QFile::exists("/usr/bin/kmplayer")) || (QFile::exists("/opt/kmplayer/bin/kmplayer"))) {
             append("KMPlayer", "kmplayer");
         }
@@ -39,8 +43,9 @@ public:
         if (QFile::exists("/usr/bin/mplayer")) {
             append("MPlayer", "mplayer");
         }
-        
+
         append(tr("Other"), "other");
+#endif
     }
 };
 

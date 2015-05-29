@@ -423,7 +423,11 @@ void Settings::setValue(const QString &key, const QVariant &value) {
 }
 
 QString Settings::videoPlayer() const {
+#ifdef SYMBIAN_OS
+    return value("Content/videoPlayer", "mediaplayer").toString().toLower();
+#else
     return value("Content/videoPlayer", "cutetube").toString().toLower();
+#endif
 }
 
 void Settings::setVideoPlayer(const QString &player) {
@@ -433,6 +437,7 @@ void Settings::setVideoPlayer(const QString &player) {
     }
 }
 
+#ifndef SYMBIAN_OS
 QString Settings::videoPlayerCommand() const {
     return value("Content/videoPlayerCommand").toString();
 }
@@ -442,3 +447,4 @@ void Settings::setVideoPlayerCommand(const QString &command) {
         setValue("Content/videoPlayerCommand", command);
     }
 }
+#endif

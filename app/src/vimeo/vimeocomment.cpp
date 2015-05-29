@@ -23,14 +23,14 @@
 #endif
 
 VimeoComment::VimeoComment(QObject *parent) :
-    Comment(parent),
+    CTComment(parent),
     m_request(0)
 {
     setService(Resources::VIMEO);
 }
 
 VimeoComment::VimeoComment(const QString &id, QObject *parent) :
-    Comment(parent),
+    CTComment(parent),
     m_request(0)
 {
     setService(Resources::VIMEO);
@@ -38,7 +38,7 @@ VimeoComment::VimeoComment(const QString &id, QObject *parent) :
 }
 
 VimeoComment::VimeoComment(const QVariantMap &comment, QObject *parent) :
-    Comment(parent),
+    CTComment(parent),
     m_request(0)
 {
     setService(Resources::VIMEO);
@@ -46,7 +46,7 @@ VimeoComment::VimeoComment(const QVariantMap &comment, QObject *parent) :
 }
 
 VimeoComment::VimeoComment(const VimeoComment *comment, QObject *parent) :
-    Comment(comment, parent),
+    CTComment(comment, parent),
     m_request(0)
 {
 }

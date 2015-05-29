@@ -52,8 +52,8 @@ QString Utils::formatBytes(qint64 bytes) {
 }
 
 QString Utils::formatLargeNumber(qint64 num) {
-    if (num <= 0) {
-        return QString("0");
+    if (num < 1000) {
+        return QString::number(num);
     }
     
     double k = 1000;

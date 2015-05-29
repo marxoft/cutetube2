@@ -39,7 +39,7 @@ MySheet {
             id: flicker
 
             anchors.fill: parent
-            contentHeight: column.height + UI.PADDING_DOUBLE * 2
+            contentHeight: column.height + UI.PADDING_DOUBLE
 
             Column {
                 id: column
@@ -48,7 +48,6 @@ MySheet {
                     left: parent.left
                     right: parent.right
                     top: parent.top
-                    topMargin: UI.PADDING_DOUBLE
                 }
 
                 ValueSelector {

@@ -20,7 +20,7 @@
 #include "user.h"
 #include "resourcesrequest.h"
 
-class PluginUser : public User
+class PluginUser : public CTUser
 {
     Q_OBJECT
     

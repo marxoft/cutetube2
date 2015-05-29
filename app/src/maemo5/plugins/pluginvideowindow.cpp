@@ -282,7 +282,7 @@ void PluginVideoWindow::playVideo() {
         window->addVideo(m_video);
     }
     else if (!m_video->streamUrl().isEmpty()) {
-        VideoPlayer::playVideo(m_video->streamUrl().toString());
+        VideoLauncher::playVideo(m_video->streamUrl().toString());
     }
     else {
         PluginPlaybackDialog *dialog = new PluginPlaybackDialog(m_video->service(), m_video->id(), m_video->title(), this);
@@ -321,7 +321,7 @@ void PluginVideoWindow::playRelatedVideo(const QModelIndex &index) {
         QString url = index.data(PluginVideoModel::StreamUrlRole).toString();
         
         if (!url.isEmpty()) {
-            VideoPlayer::playVideo(url);
+            VideoLauncher::playVideo(url);
         }
         else {
             QString id = index.data(PluginVideoModel::IdRole).toString();

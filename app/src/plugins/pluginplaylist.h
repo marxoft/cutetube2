@@ -20,7 +20,7 @@
 #include "playlist.h"
 #include "resourcesrequest.h"
 
-class PluginPlaylist : public Playlist
+class PluginPlaylist : public CTPlaylist
 {
     Q_OBJECT
     

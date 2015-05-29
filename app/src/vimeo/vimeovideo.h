@@ -20,7 +20,7 @@
 #include "video.h"
 #include <qvimeo/resourcesrequest.h>
 
-class VimeoVideo : public Video
+class VimeoVideo : public CTVideo
 {
     Q_OBJECT
     

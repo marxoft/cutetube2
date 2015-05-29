@@ -20,7 +20,7 @@
 #include "comment.h"
 #include <qvimeo/resourcesrequest.h>
 
-class VimeoComment : public Comment
+class VimeoComment : public CTComment
 {
     Q_OBJECT
     

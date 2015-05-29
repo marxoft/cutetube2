@@ -79,10 +79,10 @@ MyPage {
                 spacing: UI.PADDING_DOUBLE
 
                 Avatar {
-                    id: banner
+                    id: avatar
 
-                    width: parent.width
-                    height: Math.floor(width / 4)
+                    width: height
+                    height: Math.floor(parent.width / 4)
                     source: user.thumbnailUrl
                     enabled: false
                 }

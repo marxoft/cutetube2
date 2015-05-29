@@ -18,14 +18,14 @@
 #include "resources.h"
 
 PluginUser::PluginUser(QObject *parent) :
-    User(parent),
+    CTUser(parent),
     m_request(new ResourcesRequest(this))
 {
     connect(m_request, SIGNAL(finished()), this, SLOT(onRequestFinished()));
 }
 
 PluginUser::PluginUser(const QString &service, const QString &id, QObject *parent) :
-    User(parent),
+    CTUser(parent),
     m_request(new ResourcesRequest(this))
 {
     loadUser(service, id);
@@ -33,7 +33,7 @@ PluginUser::PluginUser(const QString &service, const QString &id, QObject *paren
 }
 
 PluginUser::PluginUser(const QString &service, const QVariantMap &user, QObject *parent) :
-    User(parent),
+    CTUser(parent),
     m_request(new ResourcesRequest(this))
 {
     loadUser(service, user);
@@ -41,7 +41,7 @@ PluginUser::PluginUser(const QString &service, const QVariantMap &user, QObject 
 }
 
 PluginUser::PluginUser(const PluginUser *user, QObject *parent) :
-    User(user, parent),
+    CTUser(user, parent),
     m_request(new ResourcesRequest(this))
 {
 }
@@ -75,7 +75,7 @@ void PluginUser::loadUser(const QString &service, const QVariantMap &user) {
 }
 
 void PluginUser::loadUser(PluginUser *user) {
-    User::loadUser(user);
+    CTUser::loadUser(user);
 }
 
 void PluginUser::onRequestFinished() {

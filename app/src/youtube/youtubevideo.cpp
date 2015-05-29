@@ -23,7 +23,7 @@
 #endif
 
 YouTubeVideo::YouTubeVideo(QObject *parent) :
-    Video(parent),
+    CTVideo(parent),
     m_request(0),
     m_disliked(false),
     m_dislikeCount(0),
@@ -44,7 +44,7 @@ YouTubeVideo::YouTubeVideo(QObject *parent) :
 }
 
 YouTubeVideo::YouTubeVideo(const QString &id, QObject *parent) :
-    Video(parent),
+    CTVideo(parent),
     m_request(0),
     m_disliked(false),
     m_dislikeCount(0),
@@ -66,7 +66,7 @@ YouTubeVideo::YouTubeVideo(const QString &id, QObject *parent) :
 }
 
 YouTubeVideo::YouTubeVideo(const QVariantMap &video, QObject *parent) :
-    Video(parent),
+    CTVideo(parent),
     m_request(0),
     m_disliked(false),
     m_dislikeCount(0),
@@ -88,7 +88,7 @@ YouTubeVideo::YouTubeVideo(const QVariantMap &video, QObject *parent) :
 }
 
 YouTubeVideo::YouTubeVideo(const YouTubeVideo *video, QObject *parent) :
-    Video(video, parent),
+    CTVideo(video, parent),
     m_request(0),
     m_disliked(video->isDisliked()),
     m_dislikeCount(video->dislikeCount()),
@@ -265,7 +265,7 @@ void YouTubeVideo::loadVideo(const QVariantMap &video) {
 }
 
 void YouTubeVideo::loadVideo(YouTubeVideo *video) {
-    Video::loadVideo(video);
+    CTVideo::loadVideo(video);
     setDisliked(video->isDisliked());
     setDislikeCount(video->dislikeCount());
     setFavourite(video->isFavourite());

@@ -52,11 +52,11 @@ VideoPlaybackWindow::~VideoPlaybackWindow() {
     preventScreenBlanking(winId(), false);
 }
 
-void VideoPlaybackWindow::addVideo(Video *video) {
+void VideoPlaybackWindow::addVideo(CTVideo *video) {
     m_controls->addVideo(video);
 }
 
-void VideoPlaybackWindow::addVideos(const QList<Video*> &videos) {
+void VideoPlaybackWindow::addVideos(const QList<CTVideo*> &videos) {
     m_controls->addVideos(videos);
 }
 

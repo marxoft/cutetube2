@@ -61,7 +61,7 @@ MyPage {
                     var streamUrl = videoModel.data(index, "streamUrl").toString();
 
                     if (streamUrl) {
-                        VideoPlayer.playVideo(streamUrl);
+                        VideoLauncher.playVideo(streamUrl);
                     }
                     else {
                         dialogLoader.sourceComponent = playbackDialog;
@@ -128,7 +128,7 @@ MyPage {
         id: playbackDialog
 
         PluginPlaybackDialog {
-            onAccepted: VideoPlayer.playVideo(value.url)
+            onAccepted: VideoLauncher.playVideo(value.url)
         }
     }
 

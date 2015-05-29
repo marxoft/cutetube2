@@ -21,7 +21,7 @@
 #include <qvimeo/resourcesrequest.h>
 #include <QStringList>
 
-class VimeoUser : public User
+class VimeoUser : public CTUser
 {
     Q_OBJECT
     
