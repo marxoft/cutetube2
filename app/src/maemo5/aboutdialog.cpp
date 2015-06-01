@@ -54,8 +54,7 @@ AboutDialog::AboutDialog(QWidget *parent) :
 }
 
 void AboutDialog::donate() {
-    QDesktopServices::openUrl(QUrl("https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=showarth@marxoft.co.uk\
-    &lc=GB&item_name=cuteTube2&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted"));
+    QDesktopServices::openUrl(QUrl("https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=stuhowarth77@gmail.com&lc=GB&item_name=cuteTube2&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted"));
     accept();
 }
 
