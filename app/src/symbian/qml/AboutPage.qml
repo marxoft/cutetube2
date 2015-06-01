@@ -76,7 +76,7 @@ MyPage {
                 horizontalAlignment: Text.AlignHCenter
                 text: "<font color ='" + platformStyle.colorNormalLight + "'>" + qsTr("Contact")
                       + ": </font><u>showarth@marxoft.co.uk</u>"
-                link: "mailto:showarth@marxoft.co.uk?subject=cuteTube2 " + VERSION_NUMBER + " for N9"
+                link: "mailto:showarth@marxoft.co.uk?subject=cuteTube2 " + VERSION_NUMBER + " for Symbian"
             }
         }
     }
