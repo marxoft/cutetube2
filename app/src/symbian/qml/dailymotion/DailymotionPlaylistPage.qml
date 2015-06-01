@@ -186,6 +186,7 @@ MyPage {
 
                     Label {
                         width: parent.width
+                        wrapMode: Text.Wrap
                         text: playlist.description ? Utils.toRichText(playlist.description) : qsTr("No description")
                         onLinkActivated: {
                             var resource = Resources.getResourceFromUrl(link);
