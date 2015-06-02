@@ -190,7 +190,7 @@ MyPage {
                         break;
                     case 8:
                         appWindow.pageStack.push(Qt.resolvedUrl("youtube/YouTubeUsersPage.qml"), {title: qsTr("Subscriptions")})
-                        .model.list("/subscriptions", ["snippet"], {mine: true}, {maxResults: MAX_RESULTS});
+                        .model.list("/subscriptions", ["snippet"], {mine: true}, {sort: "unread", maxResults: MAX_RESULTS});
                         break;
                     }
                 }

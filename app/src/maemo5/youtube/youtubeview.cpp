@@ -194,6 +194,7 @@ void YouTubeView::showSubscriptions() {
     filters["mine"] = true;
     
     QVariantMap params;
+    params["sort"] = "unread";
     params["maxResults"] = MAX_RESULTS;
     
     YouTubeUsersWindow *window = new YouTubeUsersWindow(StackedWindow::currentWindow());

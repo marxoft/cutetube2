@@ -267,7 +267,7 @@ MyPage {
             tab: Component {
                 YouTubeUsersTab {
                     Component.onCompleted: model.list("/subscriptions", ["snippet"], {channelId: user.id},
-                                                      {maxResults: MAX_RESULTS})
+                                                      {sort: "unread", maxResults: MAX_RESULTS})
                 }
             }
         }

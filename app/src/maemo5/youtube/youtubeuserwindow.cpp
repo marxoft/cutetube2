@@ -173,6 +173,7 @@ void YouTubeUserWindow::showSubscriptions() {
     filters["channelId"] = m_user->id();
     
     QVariantMap params;
+    params["sort"] = "unread";
     params["maxResults"] = MAX_RESULTS;
     
     YouTubeUsersWindow *window = new YouTubeUsersWindow(this);
