@@ -55,4 +55,6 @@ ValueDialog {
     }
     onStatusChanged: if ((status == DialogStatus.Closing)
                          && (streamModel.status == QVimeo.StreamsRequest.Loading)) streamModel.cancel();
+    
+    onAccepted: Settings.setDefaultPlaybackFormat(Resources.VIMEO, streamModel.data(selectedIndex, "name"))
 }

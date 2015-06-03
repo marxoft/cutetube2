@@ -55,4 +55,6 @@ ValueDialog {
     }
     onStatusChanged: if ((status == DialogStatus.Closing)
                          && (streamModel.status == QYouTube.StreamsRequest.Loading)) streamModel.cancel();
+    
+    onAccepted: Settings.setDefaultPlaybackFormat(Resources.YOUTUBE, streamModel.data(selectedIndex, "name"))
 }

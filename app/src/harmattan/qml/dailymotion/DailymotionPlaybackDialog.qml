@@ -55,4 +55,6 @@ ValueDialog {
     }
     onStatusChanged: if ((status == DialogStatus.Closing)
                          && (streamModel.status == QDailymotion.StreamsRequest.Loading)) streamModel.cancel();
+    
+    onAccepted: Settings.setDefaultPlaybackFormat(Resources.DAILYMOTION, streamModel.data(selectedIndex, "name"))
 }

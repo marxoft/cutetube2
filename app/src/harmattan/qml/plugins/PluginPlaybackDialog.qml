@@ -55,4 +55,6 @@ ValueDialog {
     }
     onStatusChanged: if ((status == DialogStatus.Closing)
                          && (streamModel.status == ResourcesRequest.Loading)) streamModel.cancel();
+    
+    onAccepted: Settings.setDefaultPlaybackFormat(streamModel.service, streamModel.data(selectedIndex, "name"))
 }
