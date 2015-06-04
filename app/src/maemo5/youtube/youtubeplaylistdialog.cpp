@@ -19,7 +19,6 @@
 #include "imagecache.h"
 #include "listview.h"
 #include "playlistdelegate.h"
-#include "youtube.h"
 #include "youtubevideo.h"
 #include <QTabBar>
 #include <QStackedWidget>
@@ -97,7 +96,7 @@ void YouTubePlaylistDialog::showEvent(QShowEvent *e) {
 
 void YouTubePlaylistDialog::getPlaylists() {
     QVariantMap filters;
-    filters["channelId"] = YouTube::instance()->userId();
+    filters["mine"] = true;
     
     QVariantMap params;
     params["maxResults"] = MAX_RESULTS;

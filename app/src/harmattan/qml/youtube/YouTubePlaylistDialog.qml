@@ -207,7 +207,7 @@ MySheet {
 
     onStatusChanged: {
         if (status == DialogStatus.Opening) {
-            playlistModel.list("/playlists", ["snippet", "contentDetails"], {channelId: YouTube.userId},
+            playlistModel.list("/playlists", ["snippet", "contentDetails"], {mine: true},
                                {maxResults: MAX_RESULTS});
         }
         else if (status == DialogStatus.Closed) {
