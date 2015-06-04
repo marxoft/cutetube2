@@ -37,6 +37,7 @@ const QString Resources::GROUP("group");
 const QString Resources::CATEGORY("category");
 const QString Resources::COMMENT("comment");
 const QString Resources::STREAM("stream");
+const QString Resources::SUBTITLE("subtitle");
 
 Resources::Resources(QObject *parent) :
     QObject(parent)
@@ -97,6 +98,10 @@ QString Resources::commentConstant() {
 
 QString Resources::streamConstant() {
     return STREAM;
+}
+
+QString Resources::subtitleConstant() {
+    return SUBTITLE;
 }
 
 QVariantMap Resources::getResourceFromUrl(QString url) {

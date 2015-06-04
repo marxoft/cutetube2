@@ -40,6 +40,7 @@ class Resources : public QObject
     Q_PROPERTY(QString CATEGORY READ categoryConstant CONSTANT)
     Q_PROPERTY(QString COMMENT READ commentConstant CONSTANT)
     Q_PROPERTY(QString STREAM READ streamConstant CONSTANT)
+    Q_PROPERTY(QString SUBTITLE READ subtitleConstant CONSTANT)
         
 public:
     explicit Resources(QObject *parent = 0);
@@ -60,6 +61,7 @@ public:
     static const QString CATEGORY;
     static const QString COMMENT;
     static const QString STREAM;
+    static const QString SUBTITLE;
         
     static QString youtubeConstant();
     static QString dailymotionConstant();
@@ -77,6 +79,7 @@ public:
     static QString categoryConstant();
     static QString commentConstant();
     static QString streamConstant();
+    static QString subtitleConstant();
     
     Q_INVOKABLE static QVariantMap getResourceFromUrl(QString url);    
 };
