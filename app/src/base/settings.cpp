@@ -401,7 +401,7 @@ void Settings::setSubtitlesEnabled(bool enabled) {
 }
 
 QString Settings::subtitlesLanguage() const {
-    return value("Content/subtitlesLanguage", "en").toString();
+    return value("Content/subtitlesLanguage").toString();
 }
 
 void Settings::setSubtitlesLanguage(const QString &language) {
