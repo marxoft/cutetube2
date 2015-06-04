@@ -72,7 +72,7 @@ void PluginTransfer::onSubtitlesRequestFinished() {
         foreach (QVariant v, list) {
             QVariantMap sub = v.toMap();
         
-            if (sub.value("name") == subtitlesLanguage()) {
+            if (sub.value("title") == subtitlesLanguage()) {
                 startSubtitlesDownload(sub.value("url").toString());
                 return;
             }
