@@ -25,21 +25,12 @@ DailymotionNavModel::DailymotionNavModel(QObject *parent) :
 }
 
 void DailymotionNavModel::reload() {
-#ifdef NAV_SEARCH
     if (Dailymotion::instance()->userId().isEmpty()) {
-        setStringList(QStringList() << tr("Accounts") << tr("Search"));
+        setStringList(QStringList() << tr("Accounts") << tr("Search") << tr("Categories"));
     }
     else {
-        setStringList(QStringList() << tr("Accounts") << tr("Search") << tr("My videos") << tr("Latest videos")
-                                    << tr("Favourites") << tr("Playlists") << tr("Subscriptions"));
+        setStringList(QStringList() << tr("Accounts") << tr("Search") << tr("Categories") << tr("My videos")
+                                    << tr("Latest videos") << tr("Favourites") << tr("Playlists")
+                                    << tr("Subscriptions"));
     }
-#else
-    if (Dailymotion::instance()->userId().isEmpty()) {
-        setStringList(QStringList() << tr("Accounts"));
-    }
-    else {
-        setStringList(QStringList() << tr("Accounts") << tr("My videos") << tr("Latest videos") << tr("Favourites")
-                                    << tr("Playlists") << tr("Subscriptions"));
-    }
-#endif
 }

@@ -51,14 +51,14 @@ public Q_SLOTS:
     inline void reload() {
         clear();
         ResourcesPlugin plugin = ResourcesPlugins::instance()->getPluginFromName(service());
-#ifdef NAV_SEARCH
+        
         if (!plugin.supportedSearchResources.isEmpty()) {
             append(tr("Search"), "");
         }
-#endif
-        //if (plugin.supportedListResources.contains(Resources::CATEGORY)) {
-        //    append(tr("Categories"), Resources::CATEGORY);
-        //}
+        
+        if (plugin.supportedListResources.contains(Resources::CATEGORY)) {
+            append(tr("Categories"), Resources::CATEGORY);
+        }
         
         if (plugin.supportedListResources.contains(Resources::PLAYLIST)) {
             append(tr("Playlists"), Resources::PLAYLIST);

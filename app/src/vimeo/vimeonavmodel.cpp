@@ -25,21 +25,12 @@ VimeoNavModel::VimeoNavModel(QObject *parent) :
 }
 
 void VimeoNavModel::reload() {
-#ifdef NAV_SEARCH
     if (Vimeo::instance()->userId().isEmpty()) {
-        setStringList(QStringList() << tr("Accounts") << tr("Search"));
+        setStringList(QStringList() << tr("Accounts") << tr("Search") << tr("Categories"));
     }
     else {
-        setStringList(QStringList() << tr("Accounts") << tr("Search") << tr("My videos") << tr("Latest videos")
-                                    << tr("Likes") << tr("Watch later") << tr("Albums") << tr("Subscriptions"));
+        setStringList(QStringList() << tr("Accounts") << tr("Search") << tr("Categories") << tr("My videos")
+                                    << tr("Latest videos") << tr("Likes") << tr("Watch later") << tr("Albums")
+                                    << tr("Subscriptions"));
     }
-#else
-    if (Vimeo::instance()->userId().isEmpty()) {
-        setStringList(QStringList() << tr("Accounts"));
-    }
-    else {
-        setStringList(QStringList() << tr("Accounts") << tr("My videos") << tr("Latest videos") << tr("Likes")
-                                    << tr("Watch later") << tr("Albums") << tr("Subscriptions"));
-    }
-#endif
 }

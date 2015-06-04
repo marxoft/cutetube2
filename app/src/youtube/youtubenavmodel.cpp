@@ -25,23 +25,12 @@ YouTubeNavModel::YouTubeNavModel(QObject *parent) :
 }
 
 void YouTubeNavModel::reload() {
-#ifdef NAV_SEARCH
     if (YouTube::instance()->userId().isEmpty()) {
-        setStringList(QStringList() << tr("Accounts") << tr("Search"));
+        setStringList(QStringList() << tr("Accounts") << tr("Search") << tr("Categories"));
     }
     else {
-        setStringList(QStringList() << tr("Accounts") << tr("Search") << tr("My videos") << tr("Favourites")
-                                    << tr("Likes") << tr("Watch later") << tr("Watch history") << tr("Playlists")
-                                    << tr("Subscriptions"));
+        setStringList(QStringList() << tr("Accounts") << tr("Search") << tr("Categories") << tr("My videos")
+                                    << tr("Favourites") << tr("Likes") << tr("Watch later") << tr("Watch history")
+                                    << tr("Playlists") << tr("Subscriptions"));
     }
-#else
-    if (YouTube::instance()->userId().isEmpty()) {
-        setStringList(QStringList() << tr("Accounts"));
-    }
-    else {
-        setStringList(QStringList() << tr("Accounts") << tr("My videos") << tr("Favourites") << tr("Likes")
-                                    << tr("Watch later") << tr("Watch history") << tr("Playlists")
-                                    << tr("Subscriptions"));
-    }
-#endif
 }
