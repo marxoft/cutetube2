@@ -64,7 +64,7 @@ void VimeoCategoryModel::reload() {
 
 void VimeoCategoryModel::onRequestFinished() {
     if (m_request->status() == QVimeo::ResourcesRequest::Ready) {
-        foreach (QVariant v, m_request->result().toMap().value("list").toList()) {
+        foreach (QVariant v, m_request->result().toMap().value("data").toList()) {
             QVariantMap category = v.toMap();
             append(category.value("name").toString(), category.value("uri").toString().section('/', -1));
         }
