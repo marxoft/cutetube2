@@ -30,23 +30,7 @@ namespace TransferUI {
 }
 #endif
 
-namespace QDailymotion {
-    class ResourcesRequest;
-    class StreamsRequest;
-}
-
-namespace QVimeo {
-    class ResourcesRequest;
-    class StreamsRequest;
-}
-
-namespace QYouTube {
-    class StreamsRequest;
-    class SubtitlesRequest;
-}
-
 class AudioConverter;
-class ResourcesRequest;
 class QNetworkAccessManager;
 class QNetworkReply;
 
@@ -69,7 +53,7 @@ class Transfer : public QObject
     Q_PROPERTY(QString priorityString READ priorityString NOTIFY priorityChanged)
     Q_PROPERTY(int progress READ progress NOTIFY progressChanged)
     Q_PROPERTY(QString resourceId READ resourceId WRITE setResourceId NOTIFY resourceIdChanged)
-    Q_PROPERTY(QString service READ service WRITE setService NOTIFY serviceChanged)
+    Q_PROPERTY(QString service READ service NOTIFY serviceChanged)
     Q_PROPERTY(qint64 size READ size WRITE setSize NOTIFY sizeChanged)
     Q_PROPERTY(Status status READ status NOTIFY statusChanged)
     Q_PROPERTY(QString statusString READ statusString NOTIFY statusChanged)
@@ -145,7 +129,6 @@ public:
     void setResourceId(const QString &ri);
     
     QString service() const;
-    void setService(const QString &s);
     
     qint64 size() const;
     void setSize(qint64 s);
@@ -170,34 +153,31 @@ public Q_SLOTS:
     void pause();
     void cancel();
     
-private:
+protected:
+    virtual void listStreams() = 0;
+    virtual void listSubtitles() = 0;
+    
     void setErrorString(const QString &es);
     
     void setProgress(int p);
+    
+    void setService(const QString &s);
         
     void setStatus(Status s);
-    
-    void listStreams();
-    QUrl getStreamUrl(const QVariantList &list) const;
-    
+        
     void startDownload(const QUrl &u);
     void followRedirect(const QUrl &u);
-    
-    void listSubtitles();
-    QUrl getSubtitlesUrl(const QVariantList &list) const;
-    
+        
     void startSubtitlesDownload(const QUrl &u);
     
     void startAudioConversion();
     
-    void moveDownloadedFiles();
+    void moveDownloadedFiles();    
     
 private Q_SLOTS:
     void onReplyMetaDataChanged();
     void onReplyReadyRead();
     void onReplyFinished();
-    void onStreamsRequestFinished();
-    void onSubtitlesRequestFinished();
     void onSubtitlesReplyFinished();
     void onAudioConversionFinished();
     void onAudioConversionError();
@@ -226,16 +206,6 @@ private:
     static TransferUI::Client *tuiClient;
     TransferUI::Transfer *m_tuiTransfer;
 #endif
-
-    QDailymotion::StreamsRequest *m_dailymotionStreamsRequest;
-    QVimeo::StreamsRequest *m_vimeoStreamsRequest;
-    QYouTube::StreamsRequest *m_youtubeStreamsRequest;
-    
-    QDailymotion::ResourcesRequest *m_dailymotionSubtitlesRequest;
-    QVimeo::ResourcesRequest *m_vimeoSubtitlesRequest;
-    QYouTube::SubtitlesRequest *m_youtubeSubtitlesRequest;
-    
-    ResourcesRequest *m_streamsRequest;
     
     AudioConverter *m_audioConverter;
     

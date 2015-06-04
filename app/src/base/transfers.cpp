@@ -15,14 +15,34 @@
  */
 
 #include "transfers.h"
+#include "dailymotiontransfer.h"
 #include "definitions.h"
+#include "plugintransfer.h"
+#include "resources.h"
 #include "settings.h"
+#include "vimeotransfer.h"
+#include "youtubetransfer.h"
 #include <QCoreApplication>
 #include <QNetworkAccessManager>
 #include <QSettings>
 #include <QDateTime>
 
 Transfers* Transfers::self = 0;
+
+inline static Transfer* createTransfer(const QString &service, QObject *parent = 0) {
+    if (service == Resources::YOUTUBE) {
+        return new YouTubeTransfer(parent);
+    }
+    else if (service == Resources::DAILYMOTION) {
+        return new DailymotionTransfer(parent);
+    }
+    else if (service == Resources::VIMEO) {
+        return new VimeoTransfer(parent);
+    }
+    else {
+        return new PluginTransfer(service, parent);
+    }
+}
 
 Transfers::Transfers(QObject *parent) :
     QObject(parent),
@@ -62,14 +82,13 @@ int Transfers::count() const {
 void Transfers::addDownloadTransfer(const QString &service, const QString &resourceId, const QString &streamId,
                                     const QString &title, const QString &category, const QString &subtitlesLanguage,
                                     bool convertToAudio) {
-    Transfer *transfer = new Transfer(this);
+    Transfer *transfer = createTransfer(service, this);
     transfer->setNetworkAccessManager(m_nam);
     transfer->setId(QByteArray(QByteArray::number(QDateTime::currentMSecsSinceEpoch()) + "#"
                     + resourceId.toUtf8()).toBase64());
     transfer->setDownloadPath(Settings::instance()->downloadPath() + ".incomplete/" + transfer->id());
     transfer->setFileName(title + ".mp4");
     transfer->setCategory(category);
-    transfer->setService(service);
     transfer->setResourceId(resourceId);
     transfer->setStreamId(streamId);
     transfer->setTitle(title);
@@ -179,14 +198,13 @@ void Transfers::restoreTransfers() {
 
     foreach (QString group, settings.childGroups()) {
         settings.beginGroup(group);
-        Transfer *transfer = new Transfer(this);
+        Transfer *transfer = createTransfer(settings.value("service").toString(), this);
         transfer->setId(group);
         transfer->setDownloadPath(settings.value("downloadPath").toString());
         transfer->setFileName(settings.value("fileName").toString());
         transfer->setCategory(settings.value("category").toString());
         transfer->setPriority(Transfer::Priority(settings.value("priority").toInt()));
         transfer->setSize(settings.value("size").toLongLong());
-        transfer->setService(settings.value("service").toString());
         transfer->setResourceId(settings.value("resourceId").toString());
         transfer->setStreamId(settings.value("streamId").toString());
         transfer->setTitle(settings.value("title").toString());

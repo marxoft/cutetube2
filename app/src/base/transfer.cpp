@@ -17,16 +17,7 @@
 #include "transfer.h"
 #include "audioconverter.h"
 #include "definitions.h"
-#include "resources.h"
-#include "resourcesrequest.h"
 #include "settings.h"
-#include "vimeo.h"
-#include <qdailymotion/resourcesrequest.h>
-#include <qdailymotion/streamsrequest.h>
-#include <qvimeo/resourcesrequest.h>
-#include <qvimeo/streamsrequest.h>
-#include <qyoutube/streamsrequest.h>
-#include <qyoutube/subtitlesrequest.h>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QFile>
@@ -34,9 +25,6 @@
 #ifdef MEEGO_EDITION_HARMATTAN
 #include <TransferUI/Client>
 #include <TransferUI/Transfer>
-#endif
-#if QT_VERSION >= 0x050000
-#include <QUrlQuery>
 #endif
 #ifdef CUTETUBE_DEBUG
 #include <QDebug>
@@ -51,13 +39,6 @@ static const qint64 BUFFER_SIZE = 1024 * 512;
 
 Transfer::Transfer(QObject *parent) :
     QObject(parent),
-    m_dailymotionStreamsRequest(0),
-    m_vimeoStreamsRequest(0),
-    m_youtubeStreamsRequest(0),
-    m_dailymotionSubtitlesRequest(0),
-    m_vimeoSubtitlesRequest(0),
-    m_youtubeSubtitlesRequest(0),
-    m_streamsRequest(0),
     m_audioConverter(0),
     m_nam(0),
     m_reply(0),
@@ -528,6 +509,7 @@ void Transfer::start() {
         break;
     }
     
+    setStatus(Connecting);
     listStreams();
 }
 
@@ -571,58 +553,6 @@ void Transfer::cancel() {
         QDir().rmdir(downloadPath());
         setStatus(Canceled);
     }
-}
-
-void Transfer::listStreams() {
-    if (service() == Resources::YOUTUBE) {
-        if (!m_youtubeStreamsRequest) {
-            m_youtubeStreamsRequest = new QYouTube::StreamsRequest(this);
-            connect(m_youtubeStreamsRequest, SIGNAL(finished()), this, SLOT(onStreamsRequestFinished()));
-        }
-        
-        setStatus(Connecting);
-        m_youtubeStreamsRequest->list(resourceId());
-    }
-    else if (service() == Resources::DAILYMOTION) {
-        if (!m_dailymotionStreamsRequest) {
-            m_dailymotionStreamsRequest = new QDailymotion::StreamsRequest(this);
-            connect(m_dailymotionStreamsRequest, SIGNAL(finished()), this, SLOT(onStreamsRequestFinished()));
-        }
-        
-        setStatus(Connecting);
-        m_dailymotionStreamsRequest->list(resourceId());
-    }
-    else if (service() == Resources::VIMEO) {
-        if (!m_vimeoStreamsRequest) {
-            m_vimeoStreamsRequest = new QVimeo::StreamsRequest(this);
-            connect(m_vimeoStreamsRequest, SIGNAL(finished()), this, SLOT(onStreamsRequestFinished()));
-        }
-        
-        setStatus(Connecting);
-        m_vimeoStreamsRequest->list(resourceId());
-    }
-    else {
-        if (!m_streamsRequest) {
-            m_streamsRequest = new ResourcesRequest(this);
-            m_streamsRequest->setService(service());
-            connect(m_streamsRequest, SIGNAL(finished()), this, SLOT(onStreamsRequestFinished()));
-        }
-        
-        setStatus(Connecting);
-        m_streamsRequest->list(Resources::STREAM, resourceId());
-    }
-}
-
-QUrl Transfer::getStreamUrl(const QVariantList &list) const {
-    foreach (QVariant v, list) {
-        QVariantMap stream = v.toMap();
-        
-        if (stream.value("id") == streamId()) {
-            return stream.value("url").toUrl();
-        }
-    }
-    
-    return QUrl();
 }
 
 void Transfer::startDownload(const QUrl &u) {
@@ -690,66 +620,6 @@ void Transfer::followRedirect(const QUrl &u) {
     connect(m_reply, SIGNAL(metaDataChanged()), this, SLOT(onReplyMetaDataChanged()));
     connect(m_reply, SIGNAL(readyRead()), this, SLOT(onReplyReadyRead()));
     connect(m_reply, SIGNAL(finished()), this, SLOT(onReplyFinished()));
-}
-
-void Transfer::listSubtitles() {
-    if (service() == Resources::YOUTUBE) {
-        if (!m_youtubeSubtitlesRequest) {
-            m_youtubeSubtitlesRequest = new QYouTube::SubtitlesRequest(this);
-            connect(m_youtubeSubtitlesRequest, SIGNAL(finished()), this, SLOT(onSubtitlesRequestFinished()));
-        }
-        
-        m_youtubeSubtitlesRequest->list(resourceId());
-    }
-    else if (service() == Resources::DAILYMOTION) {
-        if (!m_dailymotionSubtitlesRequest) {
-            m_dailymotionSubtitlesRequest = new QDailymotion::ResourcesRequest(this);
-            connect(m_dailymotionSubtitlesRequest, SIGNAL(finished()), this, SLOT(onSubtitlesRequestFinished()));
-        }
-        
-        m_dailymotionSubtitlesRequest->list("/video/" + resourceId() + "/subtitles");
-    }
-    else if (service() == Resources::VIMEO) {
-        if (!m_vimeoSubtitlesRequest) {
-            m_vimeoSubtitlesRequest = new QVimeo::ResourcesRequest(this);
-            m_vimeoSubtitlesRequest->setClientId(Vimeo::instance()->clientId());
-            m_vimeoSubtitlesRequest->setClientSecret(Vimeo::instance()->clientSecret());
-            m_vimeoSubtitlesRequest->setAccessToken(Vimeo::instance()->accessToken());
-            connect(m_vimeoSubtitlesRequest, SIGNAL(finished()), this, SLOT(onSubtitlesRequestFinished()));
-        }
-        
-        m_vimeoSubtitlesRequest->list("/videos/" + resourceId() + "/texttracks");
-    }
-    else {
-        setErrorString(tr("Service type unknown"));
-        setStatus(Failed);
-    }
-}
-
-QUrl Transfer::getSubtitlesUrl(const QVariantList &list) const {
-    QString val = service() == Resources::YOUTUBE ? QString("translatedLanguage") : QString("name");
-    
-    foreach (QVariant v, list) {
-        QVariantMap sub = v.toMap();
-        
-        if (sub.value(val) == subtitlesLanguage()) {
-            QUrl u = sub.value("url").toUrl();
-            
-            if (service() == Resources::YOUTUBE) {
-#if QT_VERSION >= 0x050000
-                QUrlQuery query(u);
-                query.addQueryItem("fmt", "srt");
-                u.setQuery(query);
-#else
-                u.addQueryItem("fmt", "srt");
-#endif
-            }
-            
-            return u;
-        }
-    }
-    
-    return QUrl();
 }
 
 void Transfer::startSubtitlesDownload(const QUrl &u) {    
@@ -876,7 +746,7 @@ void Transfer::onReplyFinished() {
     
     if (!redirect.isNull()) {
         if (m_redirects < MAX_REDIRECTS) {
-            followRedirect(redirect.toUrl());
+            followRedirect(redirect.toString());
         }
         else {
             setErrorString(tr("Maximum redirects reached"));
@@ -912,92 +782,6 @@ void Transfer::onReplyFinished() {
         listSubtitles();
     }
     else if (convertToAudio()) {
-        startAudioConversion();
-    }
-    else {
-        moveDownloadedFiles();
-    }
-}
-
-void Transfer::onStreamsRequestFinished() {
-    if (service() == Resources::YOUTUBE) {
-        if (m_youtubeStreamsRequest) {
-            QUrl u = getStreamUrl(m_youtubeStreamsRequest->result().toList());
-            
-            if (!u.isEmpty()) {
-                startDownload(u);
-                return;
-            }
-        }
-    }
-    else if (service() == Resources::DAILYMOTION) {
-        if (m_dailymotionStreamsRequest) {
-            QUrl u = getStreamUrl(m_dailymotionStreamsRequest->result().toList());
-            
-            if (!u.isEmpty()) {
-                startDownload(u);
-                return;
-            }
-        }
-    }
-    else if (service() == Resources::VIMEO) {
-        if (m_vimeoStreamsRequest) {
-            QUrl u = getStreamUrl(m_vimeoStreamsRequest->result().toList());
-            
-            if (!u.isEmpty()) {
-                startDownload(u);
-                return;
-            }
-        }
-    }
-    else if (m_streamsRequest) {
-        QUrl u = getStreamUrl(m_streamsRequest->result().toMap().value("items").toList());
-        
-        if (!u.isEmpty()) {
-            startDownload(u);
-            return;
-        }
-    }
-    
-    setErrorString(tr("No stream URL found"));
-    setStatus(Failed);
-}
-
-void Transfer::onSubtitlesRequestFinished() {
-    if (service() == Resources::YOUTUBE) {
-        if (m_youtubeSubtitlesRequest) {
-            QUrl u = getSubtitlesUrl(m_youtubeSubtitlesRequest->result().toList());
-            
-            if (!u.isEmpty()) {
-                startSubtitlesDownload(u);
-                return;
-            }
-        }
-    }
-    else if (service() == Resources::DAILYMOTION) {
-        if (m_dailymotionSubtitlesRequest) {
-            QUrl u = getSubtitlesUrl(m_dailymotionSubtitlesRequest->result().toMap().value("list").toList());
-            
-            if (!u.isEmpty()) {
-                startSubtitlesDownload(u);
-                return;
-            }
-        }
-    }
-    else if (service() == Resources::VIMEO) {
-        if (m_vimeoSubtitlesRequest) {
-            QUrl u = getSubtitlesUrl(m_vimeoSubtitlesRequest->result().toMap().value("items").toList());
-            
-            if (!u.isEmpty()) {
-                startSubtitlesDownload(u);
-                return;
-            }
-        }
-    }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "Transfer::onSubtitlesRequestFinished: No subtitles found";
-#endif
-    if (convertToAudio()) {
         startAudioConversion();
     }
     else {
