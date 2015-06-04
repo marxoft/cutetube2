@@ -37,6 +37,8 @@ static const QStringList SCOPES = QStringList() << QDailymotion::USER_INFO_SCOPE
                                                 << QDailymotion::MANAGE_FAVORITES_SCOPE
                                                 << QDailymotion::MANAGE_GROUPS_SCOPE;
 
+const QStringList Dailymotion::CATEGORY_FIELDS = QStringList() << "id" << "name";
+
 const QStringList Dailymotion::COMMENT_FIELDS = QStringList() << "id" << "created_time" << "message" << "owner.id"
                                                               << "owner.screenname" << "owner.avatar_60_url"
                                                               << "video.id";
