@@ -54,6 +54,7 @@ public:
     explicit Dailymotion(QObject *parent = 0);
     ~Dailymotion();
     
+    static const QStringList CATEGORY_FIELDS;
     static const QStringList COMMENT_FIELDS;
     static const QStringList PLAYLIST_FIELDS;
     static const QStringList USER_FIELDS;
