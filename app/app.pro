@@ -1,9 +1,9 @@
 TEMPLATE = app
 TARGET = cutetube2
 
-#DEFINES += CUTETUBE_DEBUG
+DEFINES += CUTETUBE_DEBUG
 
-QT += network sql
+QT += network sql xml
 
 INCLUDEPATH += \
     src/base \
@@ -39,6 +39,7 @@ HEADERS += \
     src/base/videoplayermodel.h \
     src/dailymotion/dailymotion.h \
     src/dailymotion/dailymotionaccountmodel.h \
+    src/dailymotion/dailymotioncategorymodel.h \
     src/dailymotion/dailymotioncomment.h \
     src/dailymotion/dailymotioncommentmodel.h \
     src/dailymotion/dailymotionnavmodel.h \
@@ -48,10 +49,12 @@ HEADERS += \
     src/dailymotion/dailymotionsearchtypemodel.h \
     src/dailymotion/dailymotionstreammodel.h \
     src/dailymotion/dailymotionsubtitlemodel.h \
+    src/dailymotion/dailymotiontransfer.h \
     src/dailymotion/dailymotionuser.h \
     src/dailymotion/dailymotionusermodel.h \
     src/dailymotion/dailymotionvideo.h \
     src/dailymotion/dailymotionvideomodel.h \
+    src/plugins/plugincategorymodel.h \
     src/plugins/plugincomment.h \
     src/plugins/plugincommentmodel.h \
     src/plugins/pluginnavmodel.h \
@@ -63,12 +66,15 @@ HEADERS += \
     src/plugins/pluginsearchordermodel.h \
     src/plugins/pluginsearchtypemodel.h \
     src/plugins/pluginstreammodel.h \
+    src/plugins/pluginsubtitlemodel.h \
+    src/plugins/plugintransfer.h \
     src/plugins/pluginuser.h \
     src/plugins/pluginusermodel.h \
     src/plugins/pluginvideo.h \
     src/plugins/pluginvideomodel.h \
     src/vimeo/vimeo.h \
     src/vimeo/vimeoaccountmodel.h \
+    src/vimeo/vimeocategorymodel.h \
     src/vimeo/vimeocomment.h \
     src/vimeo/vimeocommentmodel.h \
     src/vimeo/vimeonavmodel.h \
@@ -78,12 +84,14 @@ HEADERS += \
     src/vimeo/vimeosearchtypemodel.h \
     src/vimeo/vimeostreammodel.h \
     src/vimeo/vimeosubtitlemodel.h \
+    src/vimeo/vimeotransfer.h \
     src/vimeo/vimeouser.h \
     src/vimeo/vimeousermodel.h \
     src/vimeo/vimeovideo.h \
     src/vimeo/vimeovideomodel.h \
     src/youtube/youtube.h \
     src/youtube/youtubeaccountmodel.h \
+    src/youtube/youtubecategorymodel.h \
     src/youtube/youtubecomment.h \
     src/youtube/youtubecommentmodel.h \
     src/youtube/youtubenavmodel.h \
@@ -93,6 +101,7 @@ HEADERS += \
     src/youtube/youtubesearchtypemodel.h \
     src/youtube/youtubestreammodel.h \
     src/youtube/youtubesubtitlemodel.h \
+    src/youtube/youtubetransfer.h \
     src/youtube/youtubeuser.h \
     src/youtube/youtubeusermodel.h \
     src/youtube/youtubevideo.h \
@@ -118,6 +127,7 @@ SOURCES += \
     src/base/videolauncher.cpp \
     src/dailymotion/dailymotion.cpp \
     src/dailymotion/dailymotionaccountmodel.cpp \
+    src/dailymotion/dailymotioncategorymodel.cpp \
     src/dailymotion/dailymotioncomment.cpp \
     src/dailymotion/dailymotioncommentmodel.cpp \
     src/dailymotion/dailymotionnavmodel.cpp \
@@ -127,8 +137,10 @@ SOURCES += \
     src/dailymotion/dailymotionsubtitlemodel.cpp \
     src/dailymotion/dailymotionuser.cpp \
     src/dailymotion/dailymotionusermodel.cpp \
+    src/dailymotion/dailymotiontransfer.cpp \
     src/dailymotion/dailymotionvideo.cpp \
     src/dailymotion/dailymotionvideomodel.cpp \
+    src/plugins/plugincategorymodel.cpp \
     src/plugins/plugincomment.cpp \
     src/plugins/plugincommentmodel.cpp \
     src/plugins/pluginplaylist.cpp \
@@ -136,12 +148,15 @@ SOURCES += \
     src/plugins/resourcesplugins.cpp \
     src/plugins/resourcesrequest.cpp \
     src/plugins/pluginstreammodel.cpp \
+    src/plugins/pluginsubtitlemodel.cpp \
+    src/plugins/plugintransfer.cpp \
     src/plugins/pluginusermodel.cpp \
     src/plugins/pluginuser.cpp \
     src/plugins/pluginvideomodel.cpp \
     src/plugins/pluginvideo.cpp \
     src/vimeo/vimeo.cpp \
     src/vimeo/vimeoaccountmodel.cpp \
+    src/vimeo/vimeocategorymodel.cpp \
     src/vimeo/vimeocomment.cpp \
     src/vimeo/vimeocommentmodel.cpp \
     src/vimeo/vimeonavmodel.cpp \
@@ -149,12 +164,14 @@ SOURCES += \
     src/vimeo/vimeoplaylistmodel.cpp \
     src/vimeo/vimeostreammodel.cpp \
     src/vimeo/vimeosubtitlemodel.cpp \
+    src/vimeo/vimeotransfer.cpp \
     src/vimeo/vimeouser.cpp \
     src/vimeo/vimeousermodel.cpp \
     src/vimeo/vimeovideo.cpp \
     src/vimeo/vimeovideomodel.cpp \
     src/youtube/youtube.cpp \
     src/youtube/youtubeaccountmodel.cpp \
+    src/youtube/youtubecategorymodel.cpp \
     src/youtube/youtubecomment.cpp \
     src/youtube/youtubecommentmodel.cpp \
     src/youtube/youtubenavmodel.cpp \
@@ -162,14 +179,13 @@ SOURCES += \
     src/youtube/youtubeplaylistmodel.cpp \
     src/youtube/youtubestreammodel.cpp \
     src/youtube/youtubesubtitlemodel.cpp \
+    src/youtube/youtubetransfer.cpp \
     src/youtube/youtubeuser.cpp \
     src/youtube/youtubeusermodel.cpp \
     src/youtube/youtubevideo.cpp \
     src/youtube/youtubevideomodel.cpp
 
-maemo5 {
-    DEFINES += NAV_SEARCH
-    
+maemo5 {    
     LIBS += -L/usr/lib -lqdailymotion -lqvimeo -lqyoutube
     CONFIG += link_prl
     PKGCONFIG += libqdailymotion libqvimeo libqyoutube
@@ -386,8 +402,6 @@ maemo5 {
     INSTALLS += desktop icon
     
 } else:contains(MEEGO_EDITION,harmattan) {
-    DEFINES += NAV_SEARCH
-
     LIBS += -L../../qdailymotion/lib -lqdailymotion
     LIBS += -L../../qvimeo/lib -lqvimeo
     LIBS += -L../../qyoutube/lib -lqyoutube
@@ -440,7 +454,7 @@ maemo5 {
     youtube_qml.files = $$files(src/harmattan/qml/youtube/*.qml)
     youtube_qml.path = /opt/cutetube2/qml/youtube
 
-    images.files = src/harmattan/qml/images/*.png
+    images.files = $$files(src/harmattan/qml/images/*.*)
     images.path = /opt/cutetube2/qml/images
 
     desktop.files = desktop/harmattan/cutetube2.desktop
@@ -468,7 +482,7 @@ maemo5 {
         splash
 
 } else:symbian {
-    DEFINES += SYMBIAN_OS NAV_SEARCH
+    DEFINES += SYMBIAN_OS
 
     TARGET.UID3 = 0xE72CBA6D
     TARGET.CAPABILITY += NetworkServices ReadUserData WriteUserData
@@ -488,8 +502,7 @@ maemo5 {
 
     QT += \
         declarative \
-        script \
-        xml
+        script
     
     CONFIG += \
         link_pkgconfig \
@@ -557,6 +570,52 @@ maemo5 {
         images \
         scripts
 
+} else:unix {    
+    QT += qml quick widgets
+    
+    LIBS += -L/usr/lib -lqdailymotion -lqvimeo -lqyoutube
+    CONFIG += link_prl
+    PKGCONFIG += libqdailymotion libqvimeo libqyoutube
+    
+    INCLUDEPATH += src/desktop-qml
+    
+    HEADERS += \
+        src/base/transfermodel.h \
+        src/base/transferprioritymodel.h \
+        src/desktop-qml/cookiejar.h \
+        src/desktop-qml/networkaccessmanagerfactory.h
+    
+    SOURCES += \
+        src/base/transfermodel.cpp \
+        src/desktop-qml/cookiejar.cpp \
+        src/desktop-qml/main.cpp \
+        src/desktop-qml/networkaccessmanagerfactory.cpp
+    
+    base_qml.files = $$files(src/desktop-qml/qml/*.qml)
+    base_qml.path = /opt/cutetube2/qml
+    
+    dailymotion_qml.files = $$files(src/desktop-qml/qml/dailymotion/*.qml)
+    dailymotion_qml.path = /opt/cutetube2/qml/dailymotion
+    
+    plugins_qml.files = $$files(src/desktop-qml/qml/plugins/*.qml)
+    plugins_qml.path = /opt/cutetube2/qml/plugins
+    
+    vimeo_qml.files = $$files(src/desktop-qml/qml/vimeo/*.qml)
+    vimeo_qml.path = /opt/cutetube2/qml/vimeo
+    
+    youtube_qml.files = $$files(src/desktop-qml/qml/youtube/*.qml)
+    youtube_qml.path = /opt/cutetube2/qml/youtube
+    
+    images.files = $$files(src/desktop-qml/qml/images/*.*)
+    images.path = /opt/cutetube2/qml/images
+    
+    INSTALLS += \
+        base_qml \
+        dailymotion_qml \
+        plugins_qml \
+        vimeo_qml \
+        youtube_qml \
+        images
 }
 
 unix:!symbian {
