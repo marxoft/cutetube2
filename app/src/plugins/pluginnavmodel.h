@@ -18,7 +18,6 @@
 #define PLUGINNAVMODEL_H
 
 #include "selectionmodel.h"
-#include "resources.h"
 #include "resourcesplugins.h"
 
 class PluginNavModel : public SelectionModel
@@ -36,7 +35,6 @@ public:
     
     inline QString service() { 
         return m_service;
-    
     }
     
     inline void setService(const QString &s) {
@@ -51,25 +49,15 @@ public Q_SLOTS:
     inline void reload() {
         clear();
         ResourcesPlugin plugin = ResourcesPlugins::instance()->getPluginFromName(service());
+        QMapIterator<QString, QString> iterator(plugin.listResources);
         
-        if (!plugin.supportedSearchResources.isEmpty()) {
+        if (!plugin.searchResources.isEmpty()) {
             append(tr("Search"), "");
         }
         
-        if (plugin.supportedListResources.contains(Resources::CATEGORY)) {
-            append(tr("Categories"), Resources::CATEGORY);
-        }
-        
-        if (plugin.supportedListResources.contains(Resources::PLAYLIST)) {
-            append(tr("Playlists"), Resources::PLAYLIST);
-        }
-        
-        if (plugin.supportedListResources.contains(Resources::USER)) {
-            append(tr("Users"), Resources::USER);
-        }
-        
-        if (plugin.supportedListResources.contains(Resources::VIDEO)) {
-            append(tr("Videos"), Resources::VIDEO);
+        while (iterator.hasNext()) {
+            iterator.next();
+            append(iterator.value(), iterator.key());
         }
     }
     

@@ -20,6 +20,9 @@
 #include "utils.h"
 #include "vimeo.h"
 #include "youtube.h"
+#ifdef CUTETUBE_DEBUG
+#include <QDebug>
+#endif
 
 const QString Resources::YOUTUBE("youtube");
 const QString Resources::DAILYMOTION("dailymotion");
@@ -105,6 +108,9 @@ QString Resources::subtitleConstant() {
 }
 
 QVariantMap Resources::getResourceFromUrl(QString url) {
+#ifdef CUTETUBE_DEBUG
+    qDebug() << "Resources::getResourceFromUrl" << url;
+#endif
     url = Utils::unescape(url);
     QVariantMap result;
 
@@ -153,14 +159,30 @@ QVariantMap Resources::getResourceFromUrl(QString url) {
         }
     }
     else {
-        ResourcesPlugin plugin = ResourcesPlugins::instance()->getPluginFromUrl(url);
+        QList<ResourcesPlugin> plugins = ResourcesPlugins::instance()->plugins();
         
-        if (!plugin.name.isEmpty()) {
-            result.insert("service", plugin.name);
-            result.insert("id", url);
-            result.insert("type", VIDEO);
+        for (int i = 0; i < plugins.size(); i++) {
+            if (!plugins.at(i).regExps.isEmpty()) {
+                QMapIterator<QString, QRegExp> iterator(plugins.at(i).regExps);
+                
+                while (iterator.hasNext()) {
+                    iterator.next();
+                    
+                    if (iterator.value().indexIn(url) == 0) {
+                        result.insert("service", plugins.at(i).name);
+                        result.insert("type", iterator.key());
+                        result.insert("id", url);
+#ifdef CUTETUBE_DEBUG
+                        qDebug() << result;
+#endif
+                        return result;
+                    }
+                }
+            }
         }
     }
-    
+#ifdef CUTETUBE_DEBUG
+    qDebug() << result;
+#endif
     return result;
 }

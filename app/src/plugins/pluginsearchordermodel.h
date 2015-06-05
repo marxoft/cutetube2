@@ -18,21 +18,69 @@
 #define PLUGINSEARCHORDERMODEL_H
 
 #include "selectionmodel.h"
-#include "resources.h"
+#include "resourcesplugins.h"
 
 class PluginSearchOrderModel : public SelectionModel
 {
     Q_OBJECT
+    
+    Q_PROPERTY(QString resourceType READ resourceType WRITE setResourceType NOTIFY resourceTypeChanged)
+    Q_PROPERTY(QString service READ service WRITE setService NOTIFY serviceChanged)
 
 public:
     explicit PluginSearchOrderModel(QObject *parent = 0) :
         SelectionModel(parent)
     {
-        append(tr("Relevance"), Resources::RELEVANCE);
-        append(tr("Date"), Resources::DATE);
-        append(tr("Popular"), Resources::POPULAR);
-        append(tr("Alphabetical"), Resources::ALPHABET);
     }
+    
+    inline QString resourceType() const {
+        return m_resource;
+    }
+    
+    inline void setResourceType(const QString &r) {
+        if (r != resourceType()) {
+            m_resource = r;
+            emit resourceTypeChanged();
+            
+            if (!service().isEmpty()) {
+                reload();
+            }
+        }
+    }
+    
+    inline QString service() const { 
+        return m_service;
+    }
+    
+    inline void setService(const QString &s) {
+        if (s != service()) {
+            m_service = s;
+            emit serviceChanged();
+            
+            if (!resourceType().isEmpty()) {
+                reload();
+            }
+        }
+    }
+    
+public Q_SLOTS:
+    inline void reload() {
+        clear();
+        ResourcesPlugin plugin = ResourcesPlugins::instance()->getPluginFromName(service());
+        QList< QPair<QString, QString> > sortOrders = plugin.sortOrders.value(resourceType());
+        
+        for (int i = 0; i < sortOrders.size(); i++) {
+            append(sortOrders.at(i).first, sortOrders.at(i).second);
+        }
+    }
+    
+Q_SIGNALS:
+    void resourceTypeChanged();
+    void serviceChanged();
+    
+private:
+    QString m_resource;
+    QString m_service;
 };
 
-#endif // SEARCHORDERMODEL_H
+#endif // PLUGINSEARCHORDERMODEL_H

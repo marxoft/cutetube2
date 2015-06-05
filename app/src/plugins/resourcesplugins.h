@@ -26,9 +26,10 @@ struct ResourcesPlugin {
     QString name;
     QString command;
     QString settings;
-    QStringList supportedListResources;
-    QStringList supportedSearchResources;
-    QRegExp urlRegExp;
+    QMap<QString, QString> listResources;
+    QMap<QString, QString> searchResources;
+    QMap<QString, QList< QPair<QString, QString> > > sortOrders;
+    QMap<QString, QRegExp> regExps;
 };
 
 class ResourcesPlugins : public QObject
@@ -42,7 +43,6 @@ public:
     static ResourcesPlugins* instance();
     
     ResourcesPlugin getPluginFromName(const QString &name) const;
-    ResourcesPlugin getPluginFromUrl(const QString &url) const;
     
     QList<ResourcesPlugin> plugins() const;
     

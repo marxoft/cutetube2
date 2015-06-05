@@ -18,7 +18,6 @@
 #define PLUGINSEARCHTYPEMODEL_H
 
 #include "selectionmodel.h"
-#include "resources.h"
 #include "resourcesplugins.h"
 
 class PluginSearchTypeModel : public SelectionModel
@@ -49,22 +48,12 @@ public:
 public Q_SLOTS:
     inline void reload() {
         clear();
-        ResourcesPlugin plugin = ResourcesPlugins::instance()->getPluginFromName(service());        
+        ResourcesPlugin plugin = ResourcesPlugins::instance()->getPluginFromName(service());
+        QMapIterator<QString, QString> iterator(plugin.searchResources);
         
-        if (plugin.supportedSearchResources.contains(Resources::VIDEO)) {
-            append(tr("Videos"), Resources::VIDEO);
-        }
-        
-        if (plugin.supportedSearchResources.contains(Resources::PLAYLIST)) {
-            append(tr("Playlists"), Resources::PLAYLIST);
-        }
-        
-        if (plugin.supportedSearchResources.contains(Resources::USER)) {
-            append(tr("Users"), Resources::USER);
-        }
-        
-        if (plugin.supportedSearchResources.contains(Resources::CATEGORY)) {
-            append(tr("Categories"), Resources::CATEGORY);
+        while (iterator.hasNext()) {
+            iterator.next();
+            append(iterator.value(), iterator.key());
         }
     }
     
@@ -75,4 +64,4 @@ private:
     QString m_service;
 };
 
-#endif // SEARCHTYPEMODEL_H
+#endif // PLUGINSEARCHTYPEMODEL_H

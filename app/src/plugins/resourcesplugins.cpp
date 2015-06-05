@@ -16,8 +16,13 @@
 
 #include "resourcesplugins.h"
 #include "definitions.h"
+#include <QDomDocument>
+#include <QDomElement>
+#include <QFile>
 #include <QDir>
-#include <QSettings>
+#ifdef CUTETUBE_DEBUG
+#include <QDebug>
+#endif
 
 ResourcesPlugins* ResourcesPlugins::self = 0;
 
@@ -43,24 +48,6 @@ ResourcesPlugin ResourcesPlugins::getPluginFromName(const QString &name) const {
     return m_plugins.value(name);
 }
 
-ResourcesPlugin ResourcesPlugins::getPluginFromUrl(const QString &url) const {
-    QMapIterator<QString, ResourcesPlugin> iterator(m_plugins);
-    
-    ResourcesPlugin plugin;
-    
-    while (iterator.hasNext()) {
-        iterator.next();
-        QRegExp re = iterator.value().urlRegExp;
-        
-        if ((!re.isEmpty()) && (re.indexIn(url) == 0)) {
-            plugin = iterator.value();
-            break;
-        }
-    }
-    
-    return plugin;
-}
-
 QList<ResourcesPlugin> ResourcesPlugins::plugins() const {
     return m_plugins.values();
 }
@@ -72,10 +59,14 @@ QStringList ResourcesPlugins::pluginNames() const {
 bool ResourcesPlugins::resourceTypeIsSupported(const QString &name, const QString &resource,
                                                const QString &method) const {
     if (method == "search") {
-        return getPluginFromName(name).supportedSearchResources.contains(resource);
+        return getPluginFromName(name).searchResources.contains(resource);
     }
     
-    return getPluginFromName(name).supportedListResources.contains(resource);
+    if (method == "get") {
+        return getPluginFromName(name).regExps.contains(resource);
+    }
+    
+    return getPluginFromName(name).listResources.contains(resource);
 }
 
 void ResourcesPlugins::load() {
@@ -86,30 +77,71 @@ void ResourcesPlugins::load() {
         dir.setPath(path);
 
         foreach (QString fileName, dir.entryList(QStringList() << "*.plugin", QDir::Files)) {
-            QSettings loader(dir.absoluteFilePath(fileName), QSettings::IniFormat);
-            QString name = loader.value("Name").toString();
-            QString command = loader.value("Exec").toString();
-            QStringList supportedListResources = loader.value("SupportedListResources").toStringList();
-            QStringList supportedSearchResources = loader.value("SupportedSearchResources").toStringList();
-
-            if ((!name.isEmpty()) && (!command.isEmpty())
-                && ((!supportedListResources.isEmpty()) || (!supportedSearchResources.isEmpty()))) {
-
+#ifdef CUTETUBE_DEBUG
+            qDebug() << "ResourcesPlugins::load: Plugin found:" << fileName;
+#endif
+            QDomDocument doc;
+            QFile file(dir.absoluteFilePath(fileName));
+            
+            if (!file.open(QIODevice::ReadOnly)) {
+#ifdef CUTETUBE_DEBUG
+                qDebug() << "ResourcesPlugins::load: File error:" << file.errorString();
+#endif
+                continue;
+            }
+            
+            if (!doc.setContent(&file)) {
+                file.close();
+#ifdef CUTETUBE_DEBUG
+                qDebug() << "ResourcesPlugins::load: XML error";
+#endif
+                continue;
+            }
+        
+            
+            QDomElement docElem = doc.documentElement();
+            QString name = docElem.attribute("name");
+            QString command = docElem.attribute("exec");
+            QDomNodeList resources = docElem.elementsByTagName("resource");
+            
+            if ((!name.isEmpty()) && (!command.isEmpty()) && (!resources.isEmpty())) {
                 ResourcesPlugin plugin;
                 plugin.name = name;
                 plugin.command = command;
-                plugin.supportedListResources = supportedListResources;
-                plugin.supportedSearchResources = supportedSearchResources;
-
-                if (loader.contains("UrlRegExp")) {
-                    plugin.urlRegExp = loader.value("UrlRegExp").toRegExp();
+                
+                if (docElem.hasAttribute("settings")) {
+                    QString settings = docElem.attribute("settings");
+                    plugin.settings = settings.startsWith('/') ? settings : path + settings;
                 }
-
-                if (loader.contains("Settings")) {
-                     QString settings = loader.value("Settings").toString();
-                     plugin.settings = settings.startsWith('/') ? settings : path + settings;
+                
+                for (int i = 0; i < resources.size(); i++) {
+                    QDomElement resourceElem = resources.at(i).toElement();
+                    QString method = resourceElem.attribute("method");
+                    
+                    if (method == "list") {
+                        plugin.listResources[resourceElem.attribute("type")] = resourceElem.attribute("name");
+                    }
+                    if (method == "search") {
+                        plugin.searchResources[resourceElem.attribute("type")] = resourceElem.attribute("name");
+                    }
+                    else if (method == "get") {
+                        plugin.regExps[resourceElem.attribute("type")] = QRegExp(resourceElem.attribute("regexp"));
+                    }
                 }
-
+                
+                QDomNodeList sorts = docElem.elementsByTagName("sort");
+                
+                for (int i = 0; i < sorts.size(); i++) {
+                    QDomElement sortElem = sorts.at(i).toElement();
+                    plugin.sortOrders[sortElem.attribute("type")] << QPair<QString, QString>(sortElem.attribute("name"),
+                                                                                             sortElem.attribute("value"));
+                }
+#ifdef CUTETUBE_DEBUG
+                qDebug() << "ResourcesPlugins::load: Plugin loaded:" << plugin.name << plugin.settings << plugin.command
+                                                                     << plugin.listResources << plugin.searchResources
+                                                                     << plugin.regExps << plugin.sortOrders;
+#endif
+                
                 m_plugins[name] = plugin;
             }
         }
