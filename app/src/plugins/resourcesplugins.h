@@ -22,13 +22,25 @@
 #include <QStringList>
 #include <QRegExp>
 
+struct ListResource {
+    QString name;
+    QString type;
+    QString id;
+};
+
+struct SortOrder {
+    QString name;
+    QString type;
+    QString value;
+};
+
 struct ResourcesPlugin {
     QString name;
     QString command;
     QString settings;
-    QMap<QString, QString> listResources;
+    QMultiMap<QString, ListResource> listResources;
     QMap<QString, QString> searchResources;
-    QMap<QString, QList< QPair<QString, QString> > > sortOrders;
+    QMap<QString, QList<SortOrder> > sortOrders;
     QMap<QString, QRegExp> regExps;
 };
 
@@ -48,7 +60,7 @@ public:
     
     QStringList pluginNames() const;
     
-    Q_INVOKABLE bool resourceTypeIsSupported(const QString &name, const QString &resourceType,
+    Q_INVOKABLE bool resourceTypeIsSupported(const QString &pluginName, const QString &resourceType,
                                              const QString &method = QString("list")) const;
     
 public Q_SLOTS:

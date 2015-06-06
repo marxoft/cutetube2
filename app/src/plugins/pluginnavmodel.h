@@ -17,54 +17,55 @@
 #ifndef PLUGINNAVMODEL_H
 #define PLUGINNAVMODEL_H
 
-#include "selectionmodel.h"
 #include "resourcesplugins.h"
+#include <QAbstractListModel>
 
-class PluginNavModel : public SelectionModel
+class PluginNavModel : public QAbstractListModel
 {
     Q_OBJECT
     
+    Q_PROPERTY(int count READ rowCount NOTIFY countChanged)
     Q_PROPERTY(QString service READ service WRITE setService NOTIFY serviceChanged)
-
+    
 public:
-    explicit PluginNavModel(QObject *parent = 0) :
-        SelectionModel(parent)
-    {
-        setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-    }
+    enum Roles {
+        NameRole = Qt::DisplayRole,
+        TypeRole = Qt::UserRole,
+        IdRole = Qt::UserRole + 1
+    };
     
-    inline QString service() { 
-        return m_service;
-    }
+    explicit PluginNavModel(QObject *parent = 0);
     
-    inline void setService(const QString &s) {
-        if (s != service()) {
-            m_service = s;
-            reload();
-            emit serviceChanged();
-        }
-    }
+    QString service() const;
+    void setService(const QString &s);
+        
+#if QT_VERSION >= 0x050000
+    QHash<int, QByteArray> roleNames() const;
+#endif
     
+    int rowCount(const QModelIndex &parent = QModelIndex()) const;
+    
+    QVariant data(const QModelIndex &index, int role = NameRole) const;
+    QMap<int, QVariant> itemData(const QModelIndex &index) const;
+    
+    Q_INVOKABLE QVariant data(int row, const QByteArray &role) const;
+    Q_INVOKABLE QVariantMap itemData(int row) const;
+    
+    Q_INVOKABLE int match(const QByteArray &role, const QVariant &value) const;
+
 public Q_SLOTS:
-    inline void reload() {
-        clear();
-        ResourcesPlugin plugin = ResourcesPlugins::instance()->getPluginFromName(service());
-        QMapIterator<QString, QString> iterator(plugin.listResources);
-        
-        if (!plugin.searchResources.isEmpty()) {
-            append(tr("Search"), "");
-        }
-        
-        while (iterator.hasNext()) {
-            iterator.next();
-            append(iterator.value(), iterator.key());
-        }
-    }
+    void clear();
+    void reload();
     
 Q_SIGNALS:
+    void countChanged(int c);
     void serviceChanged();
     
-private:
+protected:
+    QList<ListResource> m_items;
+    
+    QHash<int, QByteArray> m_roles;
+    
     QString m_service;
 };
 

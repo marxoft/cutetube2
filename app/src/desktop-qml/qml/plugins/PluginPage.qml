@@ -167,23 +167,24 @@ Page {
             }
             
             var name = navModel.data(currentIndex, "name");
-            var type = navModel.data(currentIndex, "value");
+            var type = navModel.data(currentIndex, "type");
+            var id = navModel.data(currentIndex, "id");
             
             if (type == Resources.CATEGORY) {
                 pageStack.push({item: Qt.resolvedUrl("PluginCategoriesPage.qml"), properties: {title: name},
-                               immediate: true}).model.list();
+                               immediate: true}).model.list(id);
             }
             else if (type == Resources.PLAYLIST) {
                 pageStack.push({item: Qt.resolvedUrl("PluginPlaylistsPage.qml"), properties: {title: name},
-                               immediate: true}).model.list();
+                               immediate: true}).model.list(id);
             }
             else if (type == Resources.USER) {
                 pageStack.push({item: Qt.resolvedUrl("PluginUsersPage.qml"), properties: {title: name},
-                               immediate: true}).model.list();
+                               immediate: true}).model.list(id);
             }
             else {
                 pageStack.push({item: Qt.resolvedUrl("PluginVideosPage.qml"), properties: {title: name},
-                               immediate: true}).model.list();
+                               immediate: true}).model.list(id);
             }
         }
     }

@@ -56,17 +56,21 @@ QStringList ResourcesPlugins::pluginNames() const {
     return m_plugins.keys();
 }
 
-bool ResourcesPlugins::resourceTypeIsSupported(const QString &name, const QString &resource,
+bool ResourcesPlugins::resourceTypeIsSupported(const QString &pluginName, const QString &resource,
                                                const QString &method) const {
+    if (method == "list") {
+        return getPluginFromName(pluginName).listResources.contains(resource);
+    }
+
     if (method == "search") {
-        return getPluginFromName(name).searchResources.contains(resource);
+        return getPluginFromName(pluginName).searchResources.contains(resource);
     }
     
     if (method == "get") {
-        return getPluginFromName(name).regExps.contains(resource);
+        return getPluginFromName(pluginName).regExps.contains(resource);
     }
     
-    return getPluginFromName(name).listResources.contains(resource);
+    return false;
 }
 
 void ResourcesPlugins::load() {
@@ -97,7 +101,6 @@ void ResourcesPlugins::load() {
 #endif
                 continue;
             }
-        
             
             QDomElement docElem = doc.documentElement();
             QString name = docElem.attribute("name");
@@ -119,13 +122,17 @@ void ResourcesPlugins::load() {
                     QString method = resourceElem.attribute("method");
                     
                     if (method == "list") {
-                        plugin.listResources[resourceElem.attribute("type")] = resourceElem.attribute("name");
+                        ListResource resource;
+                        resource.name = resourceElem.attribute("name");
+                        resource.type = resourceElem.attribute("type");
+                        resource.id = resourceElem.attribute("id");
+                        plugin.listResources.insert(resource.type, resource);
                     }
-                    if (method == "search") {
-                        plugin.searchResources[resourceElem.attribute("type")] = resourceElem.attribute("name");
+                    else if (method == "search") {
+                        plugin.searchResources.insert(resourceElem.attribute("type"), resourceElem.attribute("name"));
                     }
                     else if (method == "get") {
-                        plugin.regExps[resourceElem.attribute("type")] = QRegExp(resourceElem.attribute("regexp"));
+                        plugin.regExps.insert(resourceElem.attribute("type"), QRegExp(resourceElem.attribute("regexp")));
                     }
                 }
                 
@@ -133,16 +140,14 @@ void ResourcesPlugins::load() {
                 
                 for (int i = 0; i < sorts.size(); i++) {
                     QDomElement sortElem = sorts.at(i).toElement();
-                    plugin.sortOrders[sortElem.attribute("type")] << QPair<QString, QString>(sortElem.attribute("name"),
-                                                                                             sortElem.attribute("value"));
+                    SortOrder order;
+                    order.name = sortElem.attribute("name");
+                    order.type = sortElem.attribute("type");
+                    order.value = sortElem.attribute("value");
+                    plugin.sortOrders[order.type] << order;
                 }
-#ifdef CUTETUBE_DEBUG
-                qDebug() << "ResourcesPlugins::load: Plugin loaded:" << plugin.name << plugin.settings << plugin.command
-                                                                     << plugin.listResources << plugin.searchResources
-                                                                     << plugin.regExps << plugin.sortOrders;
-#endif
                 
-                m_plugins[name] = plugin;
+                m_plugins.insert(name, plugin);
             }
         }
     }

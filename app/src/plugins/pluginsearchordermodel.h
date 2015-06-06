@@ -67,10 +67,10 @@ public Q_SLOTS:
     inline void reload() {
         clear();
         ResourcesPlugin plugin = ResourcesPlugins::instance()->getPluginFromName(service());
-        QList< QPair<QString, QString> > sortOrders = plugin.sortOrders.value(resourceType());
+        QList<SortOrder> sortOrders = plugin.sortOrders.value(resourceType());
         
         for (int i = 0; i < sortOrders.size(); i++) {
-            append(sortOrders.at(i).first, sortOrders.at(i).second);
+            append(sortOrders.at(i).name, sortOrders.at(i).value);
         }
     }
     

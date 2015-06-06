@@ -1,7 +1,7 @@
 TEMPLATE = app
 TARGET = cutetube2
 
-DEFINES += CUTETUBE_DEBUG
+#DEFINES += CUTETUBE_DEBUG
 
 QT += network sql xml
 
@@ -143,6 +143,7 @@ SOURCES += \
     src/plugins/plugincategorymodel.cpp \
     src/plugins/plugincomment.cpp \
     src/plugins/plugincommentmodel.cpp \
+    src/plugins/pluginnavmodel.cpp \
     src/plugins/pluginplaylist.cpp \
     src/plugins/pluginplaylistmodel.cpp \
     src/plugins/resourcesplugins.cpp \
