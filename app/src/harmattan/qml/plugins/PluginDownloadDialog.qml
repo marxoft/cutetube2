@@ -90,6 +90,13 @@ MySheet {
                     }
                     onValueChanged: Settings.setDefaultDownloadFormat(streamModel.service, subTitle)
                 }
+                
+                MySwitch {
+                    id: audioSwitch
+
+                    text: qsTr("Convert to audio file")
+                    enabled: AUDIO_CONVERTOR_ENABLED
+                }
 
                 ValueSelector {
                     id: categorySelector
@@ -101,6 +108,66 @@ MySheet {
                     }
                     value: Settings.defaultCategory
                     onValueChanged: Settings.defaultCategory = value
+                }
+                
+                MySwitch {
+                    id: subtitleSwitch
+            
+                    text: qsTr("Download subtitles")
+                    enabled: Plugins.resourceTypeIsSupported(subtitleModel.service, Resources.SUBTITLE);
+                    onCheckedChanged: {
+                        if (checked) {
+                            if (subtitleModel.status != ResourcesRequest.Loading) {
+                                subtitleModel.list(internal.resourceId);
+                            }
+                        }
+                        else {
+                            subtitleModel.cancel();
+                        }
+                    }
+                }
+                
+                ValueSelector {
+                    id: subtitleSelector
+
+                    width: parent.width
+                    title: qsTr("Video format")
+                    enabled: subtitleSwitch.checked
+                    model: PluginSubtitleModel {
+                        id: subtitleModel
+
+                        service: Settings.currentService
+                        onStatusChanged: {
+                            switch (status) {
+                            case ResourcesRequest.Loading: {
+                                root.showProgressIndicator = true;
+                                subtitleSelector.showProgressIndicator = true;
+                                return;
+                            }
+                            case ResourcesRequest.Ready:
+                                if (count > 0) {
+                                    subtitleSelector.selectedIndex = Math.max(0, match("name",
+                                                                                       Settings.subtitlesLanguage));
+                                }
+                                else {
+                                    infoBanner.showMessage(qsTr("No subtitles found"));
+                                }
+
+                                break;
+                            case ResourcesRequest.Failed: {
+                                infoBanner.showMessage(errorString);
+                                break;
+                            }
+                            default:
+                                break;
+                            }
+
+                            root.showProgressIndicator = false;
+                            streamSelector.showProgressIndicator = false;
+                        }
+                    }
+                    onAccepted: Settings.setDefaultDownloadFormat(streamModel.service,
+                                                                  streamModel.data(selectedIndex, "name"))
                 }
             }
         }
@@ -118,7 +185,10 @@ MySheet {
     }
 
     onAccepted: Transfers.addDownloadTransfer(streamModel.service, internal.resourceId, streamSelector.value.id,
-                                              internal.title, Settings.defaultCategory)
+                                              internal.title, Settings.defaultCategory,
+                                              subtitleSwitch.checked ?
+                                              subtitleModel.data(subtitleSelector.selectedIndex, "name") : "",
+                                              audioSwitch.checked)
 
     onStatusChanged: if ((status == DialogStatus.Closing)
                          && (streamModel.status == ResourcesRequest.Loading)) streamModel.cancel();

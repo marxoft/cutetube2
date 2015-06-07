@@ -89,6 +89,13 @@ MySheet {
                     }
                     onValueChanged: Settings.setDefaultDownloadFormat(Resources.DAILYMOTION, subTitle)
                 }
+                
+                MySwitch {
+                    id: audioSwitch
+
+                    text: qsTr("Convert to audio file")
+                    enabled: AUDIO_CONVERTOR_ENABLED
+                }
 
                 ValueSelector {
                     id: categorySelector
@@ -176,7 +183,8 @@ MySheet {
 
     onAccepted: Transfers.addDownloadTransfer(Resources.DAILYMOTION, internal.resourceId, streamSelector.value.id,
                                               internal.title, Settings.defaultCategory,
-                                              subtitleSwitch.checked ? Settings.subtitlesLanguage : "")
+                                              subtitleSwitch.checked ? Settings.subtitlesLanguage : "",
+                                              audioSwitch.checked)
 
     onStatusChanged: {
         if (status == DialogStatus.Closing) {

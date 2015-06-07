@@ -30,7 +30,7 @@ MyPage {
             videosTab.model.list(playlist.id);
 
             if (playlist.userId) {
-                user.loadUser(playlist.userId);
+                user.loadUser(playlist.service, playlist.userId);
             }
         }
         else {
@@ -191,7 +191,7 @@ MyPage {
                             elide: Text.ElideRight
                             font.pixelSize: UI.FONT_SMALL
                             font.family: UI.FONT_FAMILY_LIGHT
-                            text: qsTr("Published on") + " " + playlist.date
+                            text: qsTr("Published on") + " " + (playlist.date ? playlist.date : qsTr("date unknown"))
                         }
                     }
 

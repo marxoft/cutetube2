@@ -38,7 +38,9 @@ ListItem {
         enabled: false
     }
 
-    Label {
+    Column {
+        id: column
+
         anchors {
             left: avatar.right
             leftMargin: UI.PADDING_DOUBLE
@@ -46,9 +48,25 @@ ListItem {
             rightMargin: UI.PADDING_DOUBLE
             verticalCenter: parent.verticalCenter
         }
-        font.bold: true
-        verticalAlignment: Text.AlignVCenter
-        elide: Text.ElideRight
-        text: username
+
+        Label {
+            width: parent.width
+            font.bold: true
+            verticalAlignment: Text.AlignVCenter
+            elide: Text.ElideRight
+            text: username
+        }
+
+        Label {
+            width: parent.width
+            font.pixelSize: UI.FONT_SMALL
+            font.family: UI.FONT_FAMILY_LIGHT
+            verticalAlignment: Text.AlignVCenter
+            elide: Text.ElideRight
+            text: root.ListView.view.model.data(index, "subscriberCount") == undefined ? ""
+                  : subscriberCount ? Utils.formatLargeNumber(subscriberCount) + " " + qsTr("subscribers")
+                  : qsTr("No subscribers")
+            visible: text != ""
+        }
     }
 }

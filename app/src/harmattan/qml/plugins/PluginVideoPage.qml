@@ -224,7 +224,7 @@ MyPage {
                             elide: Text.ElideRight
                             font.pixelSize: UI.FONT_SMALL
                             font.family: UI.FONT_FAMILY_LIGHT
-                            text: qsTr("Published on") + " " + video.date
+                            text: qsTr("Published on") + " " + (video.date ? video.date : qsTr("date unknown"))
                         }
                     }
 

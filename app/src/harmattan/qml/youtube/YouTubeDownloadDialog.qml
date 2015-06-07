@@ -87,7 +87,15 @@ MySheet {
                             streamSelector.showProgressIndicator = false;
                         }
                     }
-                    onValueChanged: Settings.setDefaultDownloadFormat(Resources.YOUTUBE, subTitle)
+                    onAccepted: Settings.setDefaultDownloadFormat(Resources.YOUTUBE,
+                                                                  streamModel.data(selectedIndex, "name"))
+                }
+                
+                MySwitch {
+                    id: audioSwitch
+
+                    text: qsTr("Convert to audio file")
+                    enabled: AUDIO_CONVERTOR_ENABLED
                 }
 
                 ValueSelector {
@@ -157,7 +165,7 @@ MySheet {
                         }
                     }
                     enabled: subtitleSwitch.checked
-                    onSelectedIndexChanged: Settings.subtitlesLanguage = subtitleModel.data(selectedIndex, "name")
+                    onAccepted: Settings.subtitlesLanguage = subtitleModel.data(selectedIndex, "name")
                 }
             }
         }
@@ -176,7 +184,8 @@ MySheet {
 
     onAccepted: Transfers.addDownloadTransfer(Resources.YOUTUBE, internal.resourceId, streamSelector.value.id,
                                               internal.title, Settings.defaultCategory,
-                                              subtitleSwitch.checked ? Settings.subtitlesLanguage : "")
+                                              subtitleSwitch.checked ? Settings.subtitlesLanguage : "",
+                                              audioSwitch.checked)
 
     onStatusChanged: {
         if (status == DialogStatus.Closing) {

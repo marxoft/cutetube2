@@ -38,6 +38,7 @@ MySheet {
                 top: parent.top
                 topMargin: UI.PADDING_DOUBLE
             }
+            spacing: UI.PADDING_DOUBLE
 
             MyTextField {
                 id: searchField
@@ -50,29 +51,14 @@ MySheet {
                 onAccepted: platformCloseSoftwareInputPanel()
             }
 
-            Item {
-                width: parent.width
-                height: UI.PADDING_DOUBLE
-            }
-
             ValueSelector {
                 id: typeSelector
 
                 width: parent.width
                 title: qsTr("Search for")
                 model: DailymotionSearchTypeModel {}
-                value: Settings.defaultSearchType(Resources.DAILYMOTION)
-                onValueChanged: Settings.setDefaultSearchType(Resources.DAILYMOTION, value)
-            }
-
-            ValueSelector {
-                id: orderSelector
-
-                width: parent.width
-                title: qsTr("Order by")
-                model: DailymotionSearchOrderModel {}
-                value: Settings.defaultSearchOrder(Resources.DAILYMOTION)
-                onValueChanged: Settings.setDefaultSearchOrder(Resources.DAILYMOTION, value)
+                selectedIndex: model.match("name", Settings.defaultSearchType(Resources.DAILYMOTION))
+                onAccepted: Settings.setDefaultSearchType(Resources.DAILYMOTION, model.data(selectedIndex, "name"))
             }
         }
 
@@ -148,7 +134,7 @@ MySheet {
     onAccepted: {
         if (!mainPage.showResourceFromUrl(searchField.text)) {
             Settings.addSearch(searchField.text);
-            mainPage.search(Resources.DAILYMOTION, searchField.text, typeSelector.value, orderSelector.value);
+            mainPage.search(Resources.DAILYMOTION, searchField.text, typeSelector.value.type, typeSelector.value.order);
         }
     }
     onStatusChanged: if (status == DialogStatus.Opening) searchField.text = "";

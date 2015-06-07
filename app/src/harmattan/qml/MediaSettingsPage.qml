@@ -58,6 +58,14 @@ MyPage {
                 text: qsTr("Categories")
                 onClicked: appWindow.pageStack.push(Qt.resolvedUrl("CategoriesPage.qml"))
             }
+            
+            ValueSelector {
+                width: parent.width
+                title: qsTr("Language filter")
+                model: LocaleModel {}
+                value: Settings.locale
+                onValueChanged: Settings.locale = value
+            }
 
             ValueSelector {
                 width: parent.width
@@ -88,7 +96,7 @@ MyPage {
                 width: parent.width - UI.PADDING_DOUBLE * 2
                 text: Settings.videoPlayerCommand
                 enabled: Settings.videoPlayer == "other"
-            }
+            }            
 
             MySwitch {
                 width: parent.width

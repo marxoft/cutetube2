@@ -113,6 +113,8 @@ MyPage {
                 params["order"] = order;
                 params["maxResults"] = MAX_RESULTS;
                 params["safeSearch"] = Settings.safeSearchEnabled ? "strict" : "none";
+                params["regionCode"] = Settings.locale.split("_")[1];
+                params["relevanceLanguage"] = Settings.locale.split("_")[0];
 
                 if (type == Resources.PLAYLIST) {
                     url = Qt.resolvedUrl("youtube/YouTubePlaylistsPage.qml");
@@ -161,34 +163,39 @@ MyPage {
                         break;
                     }
                     case 2:
+                        appWindow.pageStack.push(Qt.resolvedUrl("youtube/YouTubeCategoriesPage.qml"))
+                        .model.list("/videoCategories", ["snippet"], {regionCode: Settings.locale.split("_")[1]},
+                                    {h1: Settings.locale});
+                        break;
+                    case 3:
                         appWindow.pageStack.push(Qt.resolvedUrl("youtube/YouTubeVideosPage.qml"), {title: qsTr("My videos")})
                         .model.list("/playlistItems", ["snippet"], {playlistId: YouTube.relatedPlaylist("uploads")},
                                     {maxResults: MAX_RESULTS});
                         break;
-                    case 3:
+                    case 4:
                         appWindow.pageStack.push(Qt.resolvedUrl("youtube/YouTubeVideosPage.qml"), {title: qsTr("Favourites")})
                         .model.list("/playlistItems", ["snippet"], {playlistId: YouTube.relatedPlaylist("favorites")},
                                     {maxResults: MAX_RESULTS});
                         break;
-                    case 4:
+                    case 5:
                         appWindow.pageStack.push(Qt.resolvedUrl("youtube/YouTubeVideosPage.qml"), {title: qsTr("Likes")})
                         .model.list("/playlistItems", ["snippet"], {playlistId: YouTube.relatedPlaylist("likes")},
                                     {maxResults: MAX_RESULTS});
                         break;
-                    case 5:
+                    case 6:
                         appWindow.pageStack.push(Qt.resolvedUrl("youtube/YouTubePlaylistPage.qml"))
                         .load(YouTube.relatedPlaylist("watchLater"));
                         break;
-                    case 6:
+                    case 7:
                         appWindow.pageStack.push(Qt.resolvedUrl("youtube/YouTubeVideosPage.qml"), {title: qsTr("Watch history")})
                         .model.list("/playlistItems", ["snippet"], {playlistId: YouTube.relatedPlaylist("watchHistory")},
                                     {maxResults: MAX_RESULTS});
                         break;
-                    case 7:
+                    case 8:
                         appWindow.pageStack.push(Qt.resolvedUrl("youtube/YouTubePlaylistsPage.qml"))
                         .model.list("/playlists", ["snippet", "contentDetails"], {mine: true}, {maxResults: MAX_RESULTS});
                         break;
-                    case 8:
+                    case 9:
                         appWindow.pageStack.push(Qt.resolvedUrl("youtube/YouTubeUsersPage.qml"), {title: qsTr("Subscriptions")})
                         .model.list("/subscriptions", ["snippet"], {mine: true}, {sort: "unread", maxResults: MAX_RESULTS});
                         break;
@@ -222,6 +229,7 @@ MyPage {
                 filters["sort"] = order;
                 filters["limit"] = MAX_RESULTS;
                 filters["family_filter"] = Settings.safeSearchEnabled;
+                filters["localization"] = Settings.locale;
 
                 if (type == Resources.PLAYLIST) {
                     appWindow.pageStack.push(Qt.resolvedUrl("dailymotion/DailymotionPlaylistsPage.qml"),
@@ -267,22 +275,27 @@ MyPage {
                         break;
                     }
                     case 2:
+                        appWindow.pageStack.push(Qt.resolvedUrl("dailymotion/DailymotionCategoriesPage.qml"))
+                        .model.list("/channels", {family_filter: Settings.safeSearchEnabled,
+                                                  localization: Settings.locale, limit: 50});
+                        break;
+                    case 3:
                         appWindow.pageStack.push(Qt.resolvedUrl("dailymotion/DailymotionVideosPage.qml"), {title: qsTr("My videos")})
                         .model.list("/me/videos", {family_filter: Settings.safeSearchEnabled, limit: MAX_RESULTS});
                         break;
-                    case 3:
+                    case 4:
                         appWindow.pageStack.push(Qt.resolvedUrl("dailymotion/DailymotionVideosPage.qml"), {title: qsTr("Latest videos")})
                         .model.list("/me/subscriptions", {family_filter: Settings.safeSearchEnabled, limit: MAX_RESULTS});
                         break;
-                    case 4:
+                    case 5:
                         appWindow.pageStack.push(Qt.resolvedUrl("dailymotion/DailymotionVideosPage.qml"), {title: qsTr("Favourites")})
                         .model.list("/me/favorites", {family_filter: Settings.safeSearchEnabled, limit: MAX_RESULTS});
                         break;
-                    case 5:
+                    case 6:
                         appWindow.pageStack.push(Qt.resolvedUrl("dailymotion/DailymotionPlaylistsPage.qml"), {title: qsTr("Playlists")})
                         .model.list("/me/playlists", {family_filter: Settings.safeSearchEnabled, limit: MAX_RESULTS});
                         break;
-                    case 6:
+                    case 7:
                         appWindow.pageStack.push(Qt.resolvedUrl("dailymotion/DailymotionUsersPage.qml"), {title: qsTr("Subscriptions")})
                         .model.list("/me/following", {family_filter: Settings.safeSearchEnabled, limit: MAX_RESULTS});
                         break;
@@ -352,6 +365,10 @@ MyPage {
                         dialogLoader.item.open();
                         break;
                     }
+                    case 2:
+                        appWindow.pageStack.push(Qt.resolvedUrl("vimeo/VimeoCategoriesPage.qml"))
+                        .model.list("/categories", {per_page: 50});
+                        break;
                     case 2:
                         appWindow.pageStack.push(Qt.resolvedUrl("vimeo/VimeoVideosPage.qml"), {title: qsTr("My videos")})
                         .model.list("/me/videos", {per_page: MAX_RESULTS});
@@ -424,14 +441,21 @@ MyPage {
                         dialogLoader.sourceComponent = pluginSearchDialog;
                         dialogLoader.item.open();
                     }
-                    else if (value == Resources.PLAYLIST) {
-                        appWindow.pageStack.push(Qt.resolvedUrl("plugins/PluginPlaylistsPage.qml")).model.list();
+                    else if (value.type == Resources.CATEGORY) {
+                        appWindow.pageStack.push(Qt.resolvedUrl("plugins/PluginCategoriesPage.qml"),
+                                                 {title: value.name}).model.list(value.id);
                     }
-                    else if (value == Resources.USER) {
-                        appWindow.pageStack.push(Qt.resolvedUrl("plugins/PluginUsersPage.qml")).model.list();
+                    else if (value.type == Resources.PLAYLIST) {
+                        appWindow.pageStack.push(Qt.resolvedUrl("plugins/PluginPlaylistsPage.qml"),
+                                                 {title: value.name}).model.list(value.id);
+                    }
+                    else if (value.type == Resources.USER) {
+                        appWindow.pageStack.push(Qt.resolvedUrl("plugins/PluginUsersPage.qml"),
+                                                 {title: value.name}).model.list(value.id);
                     }
                     else {
-                        appWindow.pageStack.push(Qt.resolvedUrl("plugins/PluginVideosPage.qml")).model.list();
+                        appWindow.pageStack.push(Qt.resolvedUrl("plugins/PluginVideosPage.qml"),
+                                                 {title: value.name}).model.list(value.id);
                     }
                 }
             }
