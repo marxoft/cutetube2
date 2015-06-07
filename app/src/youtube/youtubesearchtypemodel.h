@@ -28,9 +28,23 @@ public:
     explicit YouTubeSearchTypeModel(QObject *parent = 0) :
         SelectionModel(parent)
     {
-        append(tr("Videos"), Resources::VIDEO);
-        append(tr("Playlists"), Resources::PLAYLIST);
-        append(tr("Channels"), Resources::USER);
+        append(tr("Videos (date)"), SearchResource(tr("Videos (date)"), Resources::VIDEO, "date"));
+        append(tr("Videos (relevance)"), SearchResource(tr("Videos (relevance)"), Resources::VIDEO, "relevance"));
+        append(tr("Videos (popular)"), SearchResource(tr("Videos (popular)"), Resources::VIDEO, "viewCount"));
+        append(tr("Videos (rating)"), SearchResource(tr("Videos (rating)"), Resources::VIDEO, "rating"));
+        append(tr("Videos (title)"), SearchResource(tr("Videos (title)"), Resources::VIDEO, "title"));
+        append(tr("Playlists (date)"), SearchResource(tr("Playlists (date)"), Resources::PLAYLIST, "date"));
+        append(tr("Playlists (relevance)"), SearchResource(tr("Playlists (relevance)"), Resources::PLAYLIST, "relevance"));
+        append(tr("Playlists (popular)"), SearchResource(tr("Playlists (popular)"), Resources::PLAYLIST, "viewCount"));
+        append(tr("Playlists (rating)"), SearchResource(tr("Playlists (rating)"), Resources::PLAYLIST, "rating"));
+        append(tr("Playlists (title)"), SearchResource(tr("Playlists (title)"), Resources::PLAYLIST, "title"));
+        append(tr("Channels (date)"), SearchResource(tr("Channels (date)"), Resources::USER, "date"));
+        append(tr("Channels (relevance)"), SearchResource(tr("Channels (relevance)"), Resources::USER, "relevance"));
+        append(tr("Channels (popular)"), SearchResource(tr("Channels (popular)"), Resources::USER, "viewCount"));
+        append(tr("Channels (rating)"), SearchResource(tr("Channels (rating)"), Resources::USER, "rating"));
+        append(tr("Channels (title)"), SearchResource(tr("Channels (title)"), Resources::USER, "title"));
+        append(tr("Channels (video count)"), SearchResource(tr("Channels (video count)"), Resources::USER, "videoCount"));
+        
     }
 };
 

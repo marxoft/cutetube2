@@ -28,9 +28,16 @@ public:
     explicit DailymotionSearchTypeModel(QObject *parent = 0) :
         SelectionModel(parent)
     {
-        append(tr("Videos"), Resources::VIDEO);
-        append(tr("Playlists"), Resources::PLAYLIST);
-        append(tr("Users"), Resources::USER);
+        append(tr("Videos (date)"), SearchResource(tr("Videos (date)"), Resources::VIDEO, "recent"));
+        append(tr("Videos (relevance)"), SearchResource(tr("Videos (relevance)"), Resources::VIDEO, "relevance"));
+        append(tr("Videos (views)"), SearchResource(tr("Videos (views)"), Resources::VIDEO, "visited"));
+        append(tr("Playlists (date)"), SearchResource(tr("Playlists (date)"), Resources::PLAYLIST, "recent"));
+        append(tr("Playlists (relevance)"), SearchResource(tr("Playlists (relevance)"), Resources::PLAYLIST, "relevance"));
+        append(tr("Playlists (title)"), SearchResource(tr("Playlists (title)"), Resources::PLAYLIST, "alpha"));
+        append(tr("Users (date)"), SearchResource(tr("Users (date)"), Resources::USER, "recent"));
+        append(tr("Users (relevance)"), SearchResource(tr("Users (relevance)"), Resources::USER, "relevance"));
+        append(tr("Users (name)"), SearchResource(tr("Users (name)"), Resources::USER, "alpha"));
+        append(tr("Users (popular)"), SearchResource(tr("Users (popular)"), Resources::USER, "popular"));
     }
 };
 

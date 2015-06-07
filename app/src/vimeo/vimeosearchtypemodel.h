@@ -28,8 +28,15 @@ public:
     explicit VimeoSearchTypeModel(QObject *parent = 0) :
         SelectionModel(parent)
     {
-        append(tr("Videos"), Resources::VIDEO);
-        append(tr("Users"), Resources::USER);
+        append(tr("Videos (date)"), SearchResource(tr("Videos (date)"), Resources::VIDEO, "date"));
+        append(tr("Videos (relevance)"), SearchResource(tr("Videos (relevance)"), Resources::VIDEO, "relevant"));
+        append(tr("Videos (duration)"), SearchResource(tr("Videos (duration)"), Resources::VIDEO, "duration"));
+        append(tr("Videos (likes)"), SearchResource(tr("Videos (likes)"), Resources::VIDEO, "likes"));
+        append(tr("Videos (title)"), SearchResource(tr("Videos (title)"), Resources::VIDEO, "alphabetical"));
+        append(tr("Videos (views)"), SearchResource(tr("Videos (views)"), Resources::VIDEO, "plays"));
+        append(tr("Users (date)"), SearchResource(tr("Users (date)"), Resources::USER, "date"));
+        append(tr("Users (relevance)"), SearchResource(tr("Users (relevance)"), Resources::USER, "relevant"));
+        append(tr("Users (name)"), SearchResource(tr("Users (name)"), Resources::USER, "alphabetical"));
     }
 };
 

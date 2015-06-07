@@ -49,11 +49,9 @@ public Q_SLOTS:
     inline void reload() {
         clear();
         ResourcesPlugin plugin = ResourcesPlugins::instance()->getPluginFromName(service());
-        QMapIterator<QString, QString> iterator(plugin.searchResources);
         
-        while (iterator.hasNext()) {
-            iterator.next();
-            append(iterator.value(), iterator.key());
+        foreach (SearchResource resource, plugin.searchResources.values()) {
+            append(resource.value("name").toString(), resource);
         }
     }
     
