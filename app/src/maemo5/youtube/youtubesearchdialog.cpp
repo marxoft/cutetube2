@@ -15,13 +15,12 @@
  */
 
 #include "youtubesearchdialog.h"
-#include "youtubesearchordermodel.h"
-#include "youtubesearchtypemodel.h"
 #include "mainwindow.h"
 #include "resources.h"
 #include "searchhistorydialog.h"
 #include "settings.h"
 #include "valueselector.h"
+#include "youtubesearchtypemodel.h"
 #include <QLineEdit>
 #include <QDialogButtonBox>
 #include <QPushButton>
@@ -30,9 +29,7 @@
 YouTubeSearchDialog::YouTubeSearchDialog(QWidget *parent) :
     Dialog(parent),
     m_typeModel(new YouTubeSearchTypeModel(this)),
-    m_orderModel(new YouTubeSearchOrderModel(this)),
     m_typeSelector(new ValueSelector(tr("Search for"), this)),
-    m_orderSelector(new ValueSelector(tr("Order by"), this)),
     m_searchEdit(new QLineEdit(this)),
     m_buttonBox(new QDialogButtonBox(QDialogButtonBox::Cancel, Qt::Vertical, this)),
     m_historyButton(new QPushButton(tr("History"), this)),
@@ -42,11 +39,8 @@ YouTubeSearchDialog::YouTubeSearchDialog(QWidget *parent) :
     setWindowTitle(tr("Search"));
         
     m_typeSelector->setModel(m_typeModel);
-    m_typeSelector->setCurrentIndex(qMax(0, m_typeModel->match("value",
+    m_typeSelector->setCurrentIndex(qMax(0, m_typeModel->match("name",
                                     Settings::instance()->defaultSearchType(Resources::YOUTUBE))));
-    m_orderSelector->setModel(m_orderModel);
-    m_orderSelector->setCurrentIndex(qMax(0, m_orderModel->match("value",
-                                     Settings::instance()->defaultSearchOrder(Resources::YOUTUBE))));
     
     m_searchEdit->setPlaceholderText(tr("Search"));
     
@@ -58,11 +52,9 @@ YouTubeSearchDialog::YouTubeSearchDialog(QWidget *parent) :
     
     m_layout->addWidget(m_searchEdit, 0, 0);
     m_layout->addWidget(m_typeSelector, 1, 0);
-    m_layout->addWidget(m_orderSelector, 2, 0);
-    m_layout->addWidget(m_buttonBox, 0, 1, 3, 1, Qt::AlignBottom);
+    m_layout->addWidget(m_buttonBox, 0, 1, 2, 1, Qt::AlignBottom);
     
-    connect(m_orderSelector, SIGNAL(valueChanged(QVariant)), this, SLOT(onSearchOrderChanged(QVariant)));
-    connect(m_typeSelector, SIGNAL(valueChanged(QVariant)), this, SLOT(onSearchTypeChanged(QVariant)));
+    connect(m_typeSelector, SIGNAL(valueChanged(QVariant)), this, SLOT(onSearchTypeChanged()));
     connect(m_searchEdit, SIGNAL(textChanged(QString)), this, SLOT(onSearchTextChanged(QString)));
     connect(m_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
     connect(m_historyButton, SIGNAL(clicked()), this, SLOT(showHistoryDialog()));
@@ -71,10 +63,11 @@ YouTubeSearchDialog::YouTubeSearchDialog(QWidget *parent) :
 
 void YouTubeSearchDialog::search() {
     if (!MainWindow::instance()->showResource(m_searchEdit->text())) {
+        QVariantMap type = m_typeSelector->currentValue().toMap();
         Settings::instance()->addSearch(m_searchEdit->text());
         MainWindow::instance()->search(Resources::YOUTUBE, m_searchEdit->text(),
-                                       m_typeSelector->currentValue().toString(),
-                                       m_orderSelector->currentValue().toString());
+                                       type.value("type").toString(),
+                                       type.value("order").toString());
     }
     
     accept();
@@ -86,14 +79,10 @@ void YouTubeSearchDialog::showHistoryDialog() {
     connect(dialog, SIGNAL(searchChosen(QString)), m_searchEdit, SLOT(setText(QString)));
 }
 
-void YouTubeSearchDialog::onSearchOrderChanged(const QVariant &order) {
-    Settings::instance()->setDefaultSearchOrder(Resources::YOUTUBE, order.toString());
-}
-
 void YouTubeSearchDialog::onSearchTextChanged(const QString &text) {
     m_searchButton->setEnabled(!text.isEmpty());
 }
 
-void YouTubeSearchDialog::onSearchTypeChanged(const QVariant &type) {
-    Settings::instance()->setDefaultSearchType(Resources::YOUTUBE, type.toString());
+void YouTubeSearchDialog::onSearchTypeChanged() {
+    Settings::instance()->setDefaultSearchType(Resources::YOUTUBE, m_typeSelector->valueText());
 }

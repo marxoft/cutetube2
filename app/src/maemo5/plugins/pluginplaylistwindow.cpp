@@ -32,8 +32,8 @@
 #include "textbrowser.h"
 #include "utils.h"
 #include "videodelegate.h"
+#include "videolauncher.h"
 #include "videoplaybackwindow.h"
-#include "videoplayer.h"
 #include <QScrollArea>
 #include <QLabel>
 #include <QActionGroup>

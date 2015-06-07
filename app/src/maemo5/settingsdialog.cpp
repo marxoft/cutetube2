@@ -18,6 +18,7 @@
 #include "categoriesdialog.h"
 #include "concurrenttransfersmodel.h"
 #include "listview.h"
+#include "localemodel.h"
 #include "networkproxydialog.h"
 #include "pluginsettingsdialog.h"
 #include "pluginsettingsmodel.h"
@@ -36,8 +37,10 @@
 SettingsDialog::SettingsDialog(QWidget *parent) :
     Dialog(parent),
     m_transfersModel(new ConcurrentTransfersModel(this)),
+    m_localeModel(new LocaleModel(this)),
     m_playerModel(new VideoPlayerModel(this)),
     m_pluginModel(new PluginSettingsModel(this)),
+    m_localeSelector(new ValueSelector(tr("Language filter"), this)),
     m_playerSelector(new ValueSelector(tr("Video player"), this)),
     m_transfersSelector(new ValueSelector(tr("Maximum concurrent transfers"), this)),
     m_pluginView(new ListView(this)),
@@ -55,6 +58,8 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     setWindowTitle(tr("Settings"));
     
     m_downloadPathSelector->setValueText(Settings::instance()->downloadPath());
+    m_localeSelector->setModel(m_localeModel);
+    m_localeSelector->setValue(Settings::instance()->locale());
     m_playerSelector->setModel(m_playerModel);
     m_playerSelector->setValue(Settings::instance()->videoPlayer());
     m_transfersSelector->setModel(m_transfersModel);
@@ -73,6 +78,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     QVBoxLayout *vbox = new QVBoxLayout(scrollWidget);
     vbox->addWidget(new QLabel(tr("Media/content"), this));
     vbox->addWidget(m_downloadPathSelector);
+    vbox->addWidget(m_localeSelector);
     vbox->addWidget(m_playerSelector);
     vbox->addWidget(m_commandEdit);
     vbox->addWidget(m_safeSearchCheckBox);
@@ -92,6 +98,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     m_layout->addWidget(m_buttonBox);
     
     connect(m_downloadPathSelector, SIGNAL(clicked()), this, SLOT(showFileDialog()));
+    connect(m_localeSelector, SIGNAL(valueChanged(QVariant)), this, SLOT(onLocaleChanged(QVariant)));
     connect(m_playerSelector, SIGNAL(valueChanged(QVariant)), this, SLOT(onVideoPlayerChanged(QVariant)));
     connect(m_commandEdit, SIGNAL(textEdited(QString)), Settings::instance(), SLOT(setVideoPlayerCommand(QString)));
     connect(m_clipboardCheckBox, SIGNAL(toggled(bool)), Settings::instance(), SLOT(setClipboardMonitorEnabled(bool)));
@@ -129,6 +136,10 @@ void SettingsDialog::showPluginDialog(const QModelIndex &index) {
                                                             index.data(PluginSettingsModel::ValueRole).toString(),
                                                             this);
     dialog->open();
+}
+
+void SettingsDialog::onLocaleChanged(const QVariant &locale) {
+    Settings::instance()->setLocale(locale.toString());
 }
 
 void SettingsDialog::onVideoPlayerChanged(const QVariant &player) {

@@ -15,7 +15,6 @@
  */
 
 #include "vimeosearchdialog.h"
-#include "vimeosearchordermodel.h"
 #include "vimeosearchtypemodel.h"
 #include "mainwindow.h"
 #include "resources.h"
@@ -30,9 +29,7 @@
 VimeoSearchDialog::VimeoSearchDialog(QWidget *parent) :
     Dialog(parent),
     m_typeModel(new VimeoSearchTypeModel(this)),
-    m_orderModel(new VimeoSearchOrderModel(this)),
     m_typeSelector(new ValueSelector(tr("Search for"), this)),
-    m_orderSelector(new ValueSelector(tr("Order by"), this)),
     m_searchEdit(new QLineEdit(this)),
     m_buttonBox(new QDialogButtonBox(QDialogButtonBox::Cancel, Qt::Vertical, this)),
     m_historyButton(new QPushButton(tr("History"), this)),
@@ -42,11 +39,8 @@ VimeoSearchDialog::VimeoSearchDialog(QWidget *parent) :
     setWindowTitle(tr("Search"));
         
     m_typeSelector->setModel(m_typeModel);
-    m_typeSelector->setCurrentIndex(qMax(0, m_typeModel->match("value",
+    m_typeSelector->setCurrentIndex(qMax(0, m_typeModel->match("name",
                                     Settings::instance()->defaultSearchType(Resources::VIMEO))));
-    m_orderSelector->setModel(m_orderModel);
-    m_orderSelector->setCurrentIndex(qMax(0, m_orderModel->match("value",
-                                     Settings::instance()->defaultSearchOrder(Resources::VIMEO))));
     
     m_searchEdit->setPlaceholderText(tr("Search"));
     
@@ -58,11 +52,9 @@ VimeoSearchDialog::VimeoSearchDialog(QWidget *parent) :
     
     m_layout->addWidget(m_searchEdit, 0, 0);
     m_layout->addWidget(m_typeSelector, 1, 0);
-    m_layout->addWidget(m_orderSelector, 2, 0);
-    m_layout->addWidget(m_buttonBox, 0, 1, 3, 1, Qt::AlignBottom);
+    m_layout->addWidget(m_buttonBox, 0, 1, 2, 1, Qt::AlignBottom);
     
-    connect(m_orderSelector, SIGNAL(valueChanged(QVariant)), this, SLOT(onSearchOrderChanged(QVariant)));
-    connect(m_typeSelector, SIGNAL(valueChanged(QVariant)), this, SLOT(onSearchTypeChanged(QVariant)));
+    connect(m_typeSelector, SIGNAL(valueChanged(QVariant)), this, SLOT(onSearchTypeChanged()));
     connect(m_searchEdit, SIGNAL(textChanged(QString)), this, SLOT(onSearchTextChanged(QString)));
     connect(m_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
     connect(m_historyButton, SIGNAL(clicked()), this, SLOT(showHistoryDialog()));
@@ -71,10 +63,10 @@ VimeoSearchDialog::VimeoSearchDialog(QWidget *parent) :
 
 void VimeoSearchDialog::search() {
     if (!MainWindow::instance()->showResource(m_searchEdit->text())) {
+        QVariantMap type = m_typeSelector->currentValue().toMap();
         Settings::instance()->addSearch(m_searchEdit->text());
-        MainWindow::instance()->search(Resources::VIMEO, m_searchEdit->text(),
-                                       m_typeSelector->currentValue().toString(),
-                                       m_orderSelector->currentValue().toString());
+        MainWindow::instance()->search(Resources::VIMEO, m_searchEdit->text(), type.value("type").toString(),
+                                       type.value("order").toString());
     }
     
     accept();
@@ -86,14 +78,10 @@ void VimeoSearchDialog::showHistoryDialog() {
     connect(dialog, SIGNAL(searchChosen(QString)), m_searchEdit, SLOT(setText(QString)));
 }
 
-void VimeoSearchDialog::onSearchOrderChanged(const QVariant &order) {
-    Settings::instance()->setDefaultSearchOrder(Resources::VIMEO, order.toString());
-}
-
 void VimeoSearchDialog::onSearchTextChanged(const QString &text) {
     m_searchButton->setEnabled(!text.isEmpty());
 }
 
-void VimeoSearchDialog::onSearchTypeChanged(const QVariant &type) {
-    Settings::instance()->setDefaultSearchType(Resources::VIMEO, type.toString());
+void VimeoSearchDialog::onSearchTypeChanged() {
+    Settings::instance()->setDefaultSearchType(Resources::VIMEO, m_typeSelector->valueText());
 }

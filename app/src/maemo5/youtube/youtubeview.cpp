@@ -23,6 +23,7 @@
 #include "stackedwindow.h"
 #include "youtube.h"
 #include "youtubeaccountswindow.h"
+#include "youtubecategorieswindow.h"
 #include "youtubenavmodel.h"
 #include "youtubeplaylist.h"
 #include "youtubeplaylistswindow.h"
@@ -75,6 +76,10 @@ void YouTubeView::search(const QString &query, const QString &type, const QStrin
     params["maxResults"] = MAX_RESULTS;
     params["safeSearch"] = Settings::instance()->safeSearchEnabled() ? "strict" : "none";
     
+    QString locale = Settings::instance()->locale();
+    params["regionCode"] = locale.mid(locale.indexOf('_') + 1);
+    params["relevanceLanguage"] = locale.left(locale.indexOf('_'));
+    
     if (type == Resources::PLAYLIST) {
         params["type"] = "playlist";
         YouTubePlaylistsWindow *window = new YouTubePlaylistsWindow(StackedWindow::currentWindow());
@@ -115,6 +120,20 @@ void YouTubeView::showResource(const QString &type, const QString &id) {
 
 void YouTubeView::showAccounts() {
     YouTubeAccountsWindow *window = new YouTubeAccountsWindow(StackedWindow::currentWindow());
+    window->show();
+}
+
+void YouTubeView::showCategories() {
+    QVariantMap filters;
+    QString locale = Settings::instance()->locale();
+    filters["regionCode"] = locale.mid(locale.indexOf('_') + 1);
+    
+    QVariantMap params;
+    params["h1"] = locale.left(locale.indexOf('_'));
+    
+    YouTubeCategoriesWindow *window = new YouTubeCategoriesWindow(StackedWindow::currentWindow());
+    window->setWindowTitle(tr("Categories"));
+    window->list("/videoCategories", QStringList() << "snippet", filters, params);
     window->show();
 }
 
@@ -264,24 +283,27 @@ void YouTubeView::onItemActivated(const QModelIndex &index) {
         showSearchDialog();
         break;
     case 2:
-        showUploads();
+        showCategories();
         break;
     case 3:
-        showFavourites();
+        showUploads();
         break;
     case 4:
-        showLikes();
+        showFavourites();
         break;
     case 5:
-        showWatchLater();
+        showLikes();
         break;
     case 6:
-        showWatchHistory();
+        showWatchLater();
         break;
     case 7:
-        showPlaylists();
+        showWatchHistory();
         break;
     case 8:
+        showPlaylists();
+        break;
+    case 9:
         showSubscriptions();
         break;
     default:

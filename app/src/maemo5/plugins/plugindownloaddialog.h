@@ -19,6 +19,7 @@
 
 #include "dialog.h"
 #include "pluginstreammodel.h"
+#include "pluginsubtitlemodel.h"
 
 class CategoryNameModel;
 class ValueSelector;
@@ -41,7 +42,10 @@ protected:
 private Q_SLOTS:
     void onCategoryChanged();
     void onStreamChanged();
+    void onSubtitlesChanged();
+    void onSubtitleCheckBoxToggled(bool enabled);
     void onStreamModelStatusChanged(ResourcesRequest::Status status);
+    void onSubtitleModelStatusChanged(ResourcesRequest::Status status);
     
     void addDownload();
     
@@ -49,11 +53,14 @@ private:
     QString m_id;
     QString m_title;
     PluginStreamModel *m_streamModel;
+    PluginSubtitleModel *m_subtitleModel;
     CategoryNameModel *m_categoryModel;
     
     QScrollArea *m_scrollArea;
+    QCheckBox *m_subtitleCheckBox;
     QCheckBox *m_audioCheckBox;
     ValueSelector *m_streamSelector;
+    ValueSelector *m_subtitleSelector;
     ValueSelector *m_categorySelector;
     QDialogButtonBox *m_buttonBox;
     QHBoxLayout *m_layout;

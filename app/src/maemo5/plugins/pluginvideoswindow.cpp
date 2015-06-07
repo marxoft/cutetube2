@@ -23,8 +23,8 @@
 #include "pluginvideowindow.h"
 #include "settings.h"
 #include "videodelegate.h"
+#include "videolauncher.h"
 #include "videoplaybackwindow.h"
-#include "videoplayer.h"
 #include <QLabel>
 #include <QActionGroup>
 #include <QMessageBox>

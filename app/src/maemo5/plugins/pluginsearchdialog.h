@@ -20,7 +20,6 @@
 #include "dialog.h"
 
 class PluginSearchTypeModel;
-class PluginSearchOrderModel;
 class ValueSelector;
 class QLineEdit;
 class QDialogButtonBox;
@@ -39,16 +38,13 @@ private Q_SLOTS:
 
     void showHistoryDialog();
 
-    void onSearchOrderChanged(const QVariant &order);
     void onSearchTextChanged(const QString &text);
-    void onSearchTypeChanged(const QVariant &type);
+    void onSearchTypeChanged();
     
 private:
     PluginSearchTypeModel *m_typeModel;
-    PluginSearchOrderModel *m_orderModel;
     
     ValueSelector *m_typeSelector;
-    ValueSelector *m_orderSelector;
     QLineEdit *m_searchEdit;
     QDialogButtonBox *m_buttonBox;
     QPushButton *m_historyButton;

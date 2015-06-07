@@ -40,6 +40,7 @@ public Q_SLOTS:
     
 private:
     void showAccounts();
+    void showCategories();
     void showFavourites();
     void showLatestVideos();
     void showPlaylists();

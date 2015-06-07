@@ -48,6 +48,8 @@ VimeoDownloadDialog::VimeoDownloadDialog(const QString &resourceId, const QStrin
     m_streamSelector->setModel(m_streamModel);
     m_subtitleSelector->setModel(m_subtitleModel);
     m_subtitleSelector->setEnabled(false);
+    m_subtitleSelector->setCurrentIndex(qMax(0, m_subtitleModel->match("name",
+                                             Settings::instance()->subtitlesLanguage())));
     m_categorySelector->setModel(m_categoryModel);
     m_categorySelector->setValue(Settings::instance()->defaultCategory());
     m_categorySelector->setEnabled(m_categoryModel->rowCount() > 0);

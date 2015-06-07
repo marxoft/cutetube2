@@ -16,6 +16,7 @@
 
 #include "plugindownloaddialog.h"
 #include "categorynamemodel.h"
+#include "resourcesplugins.h"
 #include "settings.h"
 #include "transfers.h"
 #include "valueselector.h"
@@ -32,10 +33,13 @@ PluginDownloadDialog::PluginDownloadDialog(const QString &service, const QString
     m_id(resourceId),
     m_title(title),
     m_streamModel(new PluginStreamModel(this)),
+    m_subtitleModel(0),
     m_categoryModel(new CategoryNameModel(this)),
     m_scrollArea(new QScrollArea(this)),
+    m_subtitleCheckBox(0),
     m_audioCheckBox(new QCheckBox(tr("Convert to audio file"), this)),
     m_streamSelector(new ValueSelector(tr("Video format"), this)),
+    m_subtitleSelector(0),
     m_categorySelector(new ValueSelector(tr("Category"), this)),
     m_buttonBox(new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Vertical, this)),
     m_layout(new QHBoxLayout(this))
@@ -56,7 +60,30 @@ PluginDownloadDialog::PluginDownloadDialog(const QString &service, const QString
     QVBoxLayout *vbox = new QVBoxLayout(scrollWidget);
     vbox->addWidget(m_streamSelector, 0, 0);
     vbox->addWidget(m_audioCheckBox, 1, 0);
-    vbox->addWidget(m_categorySelector, 2, 0);
+    
+    if (ResourcesPlugins::instance()->resourceTypeIsSupported(service, Resources::SUBTITLE)) {
+        m_subtitleModel = new PluginSubtitleModel(this);
+        m_subtitleModel->setService(service);
+        m_subtitleCheckBox = new QCheckBox(tr("Download subtitles"), this);
+        m_subtitleSelector = new ValueSelector(tr("Subtitles language"), this);
+        m_subtitleSelector->setModel(m_subtitleModel);
+        m_subtitleSelector->setEnabled(false);
+        m_subtitleSelector->setCurrentIndex(qMax(0, m_subtitleModel->match("name",
+                                            Settings::instance()->subtitlesLanguage())));
+        
+        vbox->addWidget(m_subtitleCheckBox, 2, 0);
+        vbox->addWidget(m_subtitleSelector, 3, 0);
+        vbox->addWidget(m_categorySelector, 4, 0);
+        
+        connect(m_subtitleModel, SIGNAL(statusChanged(ResourcesRequest::Status)), this,
+                SLOT(onSubtitleModelStatusChanged(ResourcesRequest::Status)));
+        connect(m_subtitleCheckBox, SIGNAL(toggled(bool)), this, SLOT(onSubtitleCheckBoxToggled(bool)));
+        connect(m_subtitleSelector, SIGNAL(valueChanged(QVariant)), this, SLOT(onSubtitlesChanged()));
+    }
+    else {
+        vbox->addWidget(m_categorySelector, 2, 0);
+    }
+    
     vbox->setContentsMargins(0, 0, 0, 0);
     m_scrollArea->setWidget(scrollWidget);
     m_scrollArea->setWidgetResizable(true);
@@ -86,6 +113,23 @@ void PluginDownloadDialog::onStreamChanged() {
     Settings::instance()->setDefaultDownloadFormat(m_streamModel->service(), m_streamSelector->valueText());
 }
 
+void PluginDownloadDialog::onSubtitlesChanged() {
+    Settings::instance()->setSubtitlesLanguage(m_subtitleSelector->valueText());
+}
+
+void PluginDownloadDialog::onSubtitleCheckBoxToggled(bool enabled) {
+    Settings::instance()->setSubtitlesEnabled(enabled);
+    
+    if (enabled) {
+        if (m_subtitleModel->status() == ResourcesRequest::Null) {
+            m_subtitleModel->list(m_id);
+        }
+    }
+    else {
+        m_subtitleModel->cancel();
+    }
+}
+
 void PluginDownloadDialog::onStreamModelStatusChanged(ResourcesRequest::Status status) {
     switch (status) {
     case ResourcesRequest::Loading:
@@ -112,10 +156,35 @@ void PluginDownloadDialog::onStreamModelStatusChanged(ResourcesRequest::Status s
     hideProgressIndicator();
 }
 
+void PluginDownloadDialog::onSubtitleModelStatusChanged(ResourcesRequest::Status status) {
+    switch (status) {
+    case ResourcesRequest::Loading:
+        showProgressIndicator();
+        return;
+    case ResourcesRequest::Ready:
+        if (m_subtitleModel->rowCount() > 0) {
+            m_subtitleSelector->setCurrentIndex(0);
+        }
+        
+        break;
+    case ResourcesRequest::Failed:
+        QMessageBox::information(this, tr("Error"), tr("No subtitles available for '%1'").arg(m_title));
+        break;
+    default:
+        break;
+    }
+    
+    m_subtitleCheckBox->setChecked(m_subtitleModel->rowCount() > 0);
+    m_subtitleCheckBox->setEnabled(m_subtitleModel->rowCount() > 0);
+    hideProgressIndicator();
+}
+
 void PluginDownloadDialog::addDownload() {
     QString streamId = m_streamSelector->currentValue().toMap().value("id").toString();
+    QString subtitles = (m_subtitleCheckBox) && (m_subtitleCheckBox->isChecked()) ? m_subtitleSelector->valueText()
+                                                                                  : QString();
     QString category = m_categorySelector->valueText();
-    Transfers::instance()->addDownloadTransfer(m_streamModel->service(), m_id, streamId, m_title, category, QString(),
+    Transfers::instance()->addDownloadTransfer(m_streamModel->service(), m_id, streamId, m_title, category, subtitles,
                                                m_audioCheckBox->isChecked());
     
     accept();

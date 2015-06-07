@@ -75,8 +75,11 @@ bool CommentDelegate::editorEvent(QEvent *event, QAbstractItemModel *, const QSt
 
 void CommentDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
                                   const QModelIndex &index) const {
-    qDrawBorderPixmap(painter, option.rect, QMargins(30, 60, 30, 30),
-                      QPixmap("/etc/hildon/theme/images/ContactsAppletBubble.png"));
+    QPixmap background("/etc/hildon/theme/images/ContactsAppletBubble.png");
+    
+    if (!background.isNull()) {
+        qDrawBorderPixmap(painter, option.rect, QMargins(30, 60, 30, 30), background);
+    }
     
     QUrl imageUrl = index.data(m_thumbnailRole).toUrl();
     QImage image = m_cache->image(imageUrl, QSize(40, 40));
@@ -111,7 +114,7 @@ void CommentDelegate::paint(QPainter *painter, const QStyleOptionViewItem &optio
     textRect.setTop(imageRect.bottom() + 8);
     textRect.setBottom(textRect.bottom() - 16);
     
-    painter->setPen(QApplication::palette().color(QPalette::Dark));
+    painter->setPen(QApplication::palette().color(background.isNull() ? QPalette::Text : QPalette::Dark));
     painter->drawText(textRect, Qt::TextWordWrap, index.data(m_bodyRole).toString());
     painter->restore();
 }

@@ -18,7 +18,7 @@
 #include "resources.h"
 #include "settings.h"
 #include "valueselector.h"
-#include "videoplayer.h"
+#include "videolauncher.h"
 #include <QDialogButtonBox>
 #include <QPushButton>
 #include <QHBoxLayout>

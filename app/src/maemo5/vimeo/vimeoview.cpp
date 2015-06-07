@@ -23,6 +23,7 @@
 #include "stackedwindow.h"
 #include "vimeo.h"
 #include "vimeoaccountswindow.h"
+#include "vimeocategorieswindow.h"
 #include "vimeonavmodel.h"
 #include "vimeoplaylist.h"
 #include "vimeoplaylistswindow.h"
@@ -104,6 +105,16 @@ void VimeoView::showAccounts() {
     window->show();
 }
 
+void VimeoView::showCategories() {
+    QVariantMap filters;
+    filters["per_page"] = 50;
+    
+    VimeoCategoriesWindow *window = new VimeoCategoriesWindow(StackedWindow::currentWindow());
+    window->setWindowTitle(tr("Categories"));
+    window->list("/categories", filters);
+    window->show();
+}
+
 void VimeoView::showFavourites() {
     QVariantMap filters;
     filters["per_page"] = MAX_RESULTS;
@@ -178,21 +189,24 @@ void VimeoView::onItemActivated(const QModelIndex &index) {
         showSearchDialog();
         break;
     case 2:
-        showUploads();
+        showCategories();
         break;
     case 3:
-        showLatestVideos();
+        showUploads();
         break;
     case 4:
-        showFavourites();
+        showLatestVideos();
         break;
     case 5:
-        showWatchLater();
+        showFavourites();
         break;
     case 6:
-        showPlaylists();
+        showWatchLater();
         break;
     case 7:
+        showPlaylists();
+        break;
+    case 8:
         showSubscriptions();
         break;
     default:

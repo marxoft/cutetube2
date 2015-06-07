@@ -14,45 +14,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PLUGINVIEW_H
-#define PLUGINVIEW_H
+#ifndef DAILYMOTIONCATEGORIESWINDOW_H
+#define DAILYMOTIONCATEGORIESWINDOW_H
 
-#include <QWidget>
+#include "stackedwindow.h"
+#include "dailymotioncategorymodel.h"
 
-class PluginUser;
-class PluginVideo;
-class PluginPlaylist;
-class PluginNavModel;
 class ListView;
-class QModelIndex;
+class QLabel;
 class QVBoxLayout;
 
-class PluginView : public QWidget
+class DailymotionCategoriesWindow : public StackedWindow
 {
     Q_OBJECT
     
 public:
-    explicit PluginView(const QString &service, QWidget *parent = 0);
+    explicit DailymotionCategoriesWindow(StackedWindow *parent = 0);
     
 public Q_SLOTS:
-    void search(const QString &query, const QString &type, const QString &order);
-    void showResource(const QString &type, const QString &id);
+    void list(const QString &resourcePath, const QVariantMap &filters = QVariantMap());
+    
+private Q_SLOTS:    
+    void showCategory(const QModelIndex &index);
+        
+    void onModelStatusChanged(QDailymotion::ResourcesRequest::Status status);
     
 private:
-    void showCategories(const QString &id);
-    void showPlaylists(const QString &id);
-    void showSearchDialog();
-    void showUsers(const QString &id);
-    void showVideos(const QString &id);
-    
-private Q_SLOTS:
-    void onItemActivated(const QModelIndex &index);
-    
-private:
-    PluginNavModel *m_model;
+    DailymotionCategoryModel *m_model;
     
     ListView *m_view;
+    QAction *m_reloadAction;
+    QLabel *m_label;
     QVBoxLayout *m_layout;
 };
-
-#endif // PLUGINVIEW_H
+    
+#endif // DAILYMOTIONCATEGORIESWINDOW_H

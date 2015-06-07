@@ -14,42 +14,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DAILYMOTIONSEARCHDIALOG_H
-#define DAILYMOTIONSEARCHDIALOG_H
+#ifndef VIMEOCATEGORIESWINDOW_H
+#define VIMEOCATEGORIESWINDOW_H
 
-#include "dialog.h"
+#include "stackedwindow.h"
+#include "vimeocategorymodel.h"
 
-class DailymotionSearchTypeModel;
-class ValueSelector;
-class QLineEdit;
-class QDialogButtonBox;
-class QPushButton;
-class QGridLayout;
+class ListView;
+class QLabel;
+class QVBoxLayout;
 
-class DailymotionSearchDialog : public Dialog
+class VimeoCategoriesWindow : public StackedWindow
 {
     Q_OBJECT
     
 public:
-    explicit DailymotionSearchDialog(QWidget *parent = 0);
+    explicit VimeoCategoriesWindow(StackedWindow *parent = 0);
     
-private Q_SLOTS:
-    void search();
+public Q_SLOTS:
+    void list(const QString &resourcePath, const QVariantMap &filters = QVariantMap());
     
-    void showHistoryDialog();
-
-    void onSearchTextChanged(const QString &text);
-    void onSearchTypeChanged();
+private Q_SLOTS:    
+    void showCategory(const QModelIndex &index);
+        
+    void onModelStatusChanged(QVimeo::ResourcesRequest::Status status);
     
 private:
-    DailymotionSearchTypeModel *m_typeModel;
+    VimeoCategoryModel *m_model;
     
-    ValueSelector *m_typeSelector;
-    QLineEdit *m_searchEdit;
-    QDialogButtonBox *m_buttonBox;
-    QPushButton *m_historyButton;
-    QPushButton *m_searchButton;
-    QGridLayout *m_layout;
+    ListView *m_view;
+    QAction *m_reloadAction;
+    QLabel *m_label;
+    QVBoxLayout *m_layout;
 };
     
-#endif // SEARCHDIALOG_H
+#endif // VIMEOCATEGORIESWINDOW_H

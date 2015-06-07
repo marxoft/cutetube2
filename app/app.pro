@@ -238,6 +238,7 @@ maemo5 {
         src/maemo5/webview.h \
         src/maemo5/dailymotion/dailymotionaccountswindow.h \
         src/maemo5/dailymotion/dailymotionauthdialog.h \
+        src/maemo5/dailymotion/dailymotioncategorieswindow.h \
         src/maemo5/dailymotion/dailymotioncommentdialog.h \
         src/maemo5/dailymotion/dailymotiondownloaddialog.h \
         src/maemo5/dailymotion/dailymotionplaybackdialog.h \
@@ -250,6 +251,7 @@ maemo5 {
         src/maemo5/dailymotion/dailymotionvideoswindow.h \
         src/maemo5/dailymotion/dailymotionvideowindow.h \
         src/maemo5/dailymotion/dailymotionview.h \
+        src/maemo5/plugins/plugincategorieswindow.h \
         src/maemo5/plugins/plugindownloaddialog.h \
         src/maemo5/plugins/pluginplaybackdialog.h \
         src/maemo5/plugins/pluginplaylistswindow.h \
@@ -268,6 +270,7 @@ maemo5 {
         src/maemo5/plugins/pluginview.h \
         src/maemo5/vimeo/vimeoaccountswindow.h \
         src/maemo5/vimeo/vimeoauthdialog.h \
+        src/maemo5/vimeo/vimeocategorieswindow.h \
         src/maemo5/vimeo/vimeocommentdialog.h \
         src/maemo5/vimeo/vimeodownloaddialog.h \
         src/maemo5/vimeo/vimeoplaybackdialog.h \
@@ -282,6 +285,7 @@ maemo5 {
         src/maemo5/vimeo/vimeoview.h \
         src/maemo5/youtube/youtubeaccountswindow.h \
         src/maemo5/youtube/youtubeauthdialog.h \
+        src/maemo5/youtube/youtubecategorieswindow.h \
         src/maemo5/youtube/youtubecommentdialog.h \
         src/maemo5/youtube/youtubedownloaddialog.h \
         src/maemo5/youtube/youtubeplaybackdialog.h \
@@ -333,6 +337,7 @@ maemo5 {
         src/maemo5/webview.cpp \
         src/maemo5/dailymotion/dailymotionaccountswindow.cpp \
         src/maemo5/dailymotion/dailymotionauthdialog.cpp \
+        src/maemo5/dailymotion/dailymotioncategorieswindow.cpp \
         src/maemo5/dailymotion/dailymotioncommentdialog.cpp \
         src/maemo5/dailymotion/dailymotiondownloaddialog.cpp \
         src/maemo5/dailymotion/dailymotionplaybackdialog.cpp \
@@ -345,6 +350,7 @@ maemo5 {
         src/maemo5/dailymotion/dailymotionvideoswindow.cpp \
         src/maemo5/dailymotion/dailymotionvideowindow.cpp \
         src/maemo5/dailymotion/dailymotionview.cpp \
+        src/maemo5/plugins/plugincategorieswindow.cpp \
         src/maemo5/plugins/plugindownloaddialog.cpp \
         src/maemo5/plugins/pluginplaybackdialog.cpp \
         src/maemo5/plugins/pluginplaylistswindow.cpp \
@@ -363,6 +369,7 @@ maemo5 {
         src/maemo5/plugins/pluginview.cpp \
         src/maemo5/vimeo/vimeoaccountswindow.cpp \
         src/maemo5/vimeo/vimeoauthdialog.cpp \
+        src/maemo5/vimeo/vimeocategorieswindow.cpp \
         src/maemo5/vimeo/vimeocommentdialog.cpp \
         src/maemo5/vimeo/vimeodownloaddialog.cpp \
         src/maemo5/vimeo/vimeoplaybackdialog.cpp \
@@ -377,6 +384,7 @@ maemo5 {
         src/maemo5/vimeo/vimeoview.cpp \
         src/maemo5/youtube/youtubeaccountswindow.cpp \
         src/maemo5/youtube/youtubeauthdialog.cpp \
+        src/maemo5/youtube/youtubecategorieswindow.cpp \
         src/maemo5/youtube/youtubecommentdialog.cpp \
         src/maemo5/youtube/youtubedownloaddialog.cpp \
         src/maemo5/youtube/youtubeplaybackdialog.cpp \

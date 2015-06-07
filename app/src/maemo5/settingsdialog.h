@@ -20,6 +20,7 @@
 #include "dialog.h"
 
 class ConcurrentTransfersModel;
+class LocaleModel;
 class VideoPlayerModel;
 class PluginSettingsModel;
 class ListView;
@@ -46,13 +47,16 @@ private Q_SLOTS:
     void showNetworkProxyDialog();
     void showPluginDialog(const QModelIndex &index);
     
+    void onLocaleChanged(const QVariant &locale);
     void onVideoPlayerChanged(const QVariant &player);
     
 private:
     ConcurrentTransfersModel *m_transfersModel;
+    LocaleModel *m_localeModel;
     VideoPlayerModel *m_playerModel;
     PluginSettingsModel *m_pluginModel;
     
+    ValueSelector *m_localeSelector;
     ValueSelector *m_playerSelector;
     ValueSelector *m_transfersSelector;
     ListView *m_pluginView;

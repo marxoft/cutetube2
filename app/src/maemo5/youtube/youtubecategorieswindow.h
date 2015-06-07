@@ -14,45 +14,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PLUGINVIEW_H
-#define PLUGINVIEW_H
+#ifndef YOUTUBECATEGORIESWINDOW_H
+#define YOUTUBECATEGORIESWINDOW_H
 
-#include <QWidget>
+#include "stackedwindow.h"
+#include "youtubecategorymodel.h"
 
-class PluginUser;
-class PluginVideo;
-class PluginPlaylist;
-class PluginNavModel;
 class ListView;
-class QModelIndex;
+class QLabel;
 class QVBoxLayout;
 
-class PluginView : public QWidget
+class YouTubeCategoriesWindow : public StackedWindow
 {
     Q_OBJECT
     
 public:
-    explicit PluginView(const QString &service, QWidget *parent = 0);
+    explicit YouTubeCategoriesWindow(StackedWindow *parent = 0);
     
 public Q_SLOTS:
-    void search(const QString &query, const QString &type, const QString &order);
-    void showResource(const QString &type, const QString &id);
+    void list(const QString &resourcePath, const QStringList &part, const QVariantMap &filters = QVariantMap(),
+              const QVariantMap &params = QVariantMap());
+    
+private Q_SLOTS:    
+    void showCategory(const QModelIndex &index);
+        
+    void onModelStatusChanged(QYouTube::ResourcesRequest::Status status);
     
 private:
-    void showCategories(const QString &id);
-    void showPlaylists(const QString &id);
-    void showSearchDialog();
-    void showUsers(const QString &id);
-    void showVideos(const QString &id);
-    
-private Q_SLOTS:
-    void onItemActivated(const QModelIndex &index);
-    
-private:
-    PluginNavModel *m_model;
+    YouTubeCategoryModel *m_model;
     
     ListView *m_view;
+    QAction *m_reloadAction;
+    QLabel *m_label;
     QVBoxLayout *m_layout;
 };
-
-#endif // PLUGINVIEW_H
+    
+#endif // YOUTUBECATEGORIESWINDOW_H

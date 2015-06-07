@@ -15,7 +15,6 @@
  */
 
 #include "dailymotionsearchdialog.h"
-#include "dailymotionsearchordermodel.h"
 #include "dailymotionsearchtypemodel.h"
 #include "mainwindow.h"
 #include "resources.h"
@@ -30,9 +29,7 @@
 DailymotionSearchDialog::DailymotionSearchDialog(QWidget *parent) :
     Dialog(parent),
     m_typeModel(new DailymotionSearchTypeModel(this)),
-    m_orderModel(new DailymotionSearchOrderModel(this)),
     m_typeSelector(new ValueSelector(tr("Search for"), this)),
-    m_orderSelector(new ValueSelector(tr("Order by"), this)),
     m_searchEdit(new QLineEdit(this)),
     m_buttonBox(new QDialogButtonBox(QDialogButtonBox::Cancel, Qt::Vertical, this)),
     m_historyButton(new QPushButton(tr("History"), this)),
@@ -42,11 +39,8 @@ DailymotionSearchDialog::DailymotionSearchDialog(QWidget *parent) :
     setWindowTitle(tr("Search"));
         
     m_typeSelector->setModel(m_typeModel);
-    m_typeSelector->setCurrentIndex(qMax(0, m_typeModel->match("value",
+    m_typeSelector->setCurrentIndex(qMax(0, m_typeModel->match("name",
                                     Settings::instance()->defaultSearchType(Resources::DAILYMOTION))));
-    m_orderSelector->setModel(m_orderModel);
-    m_orderSelector->setCurrentIndex(qMax(0, m_orderModel->match("value",
-                                     Settings::instance()->defaultSearchOrder(Resources::DAILYMOTION))));
     
     m_searchEdit->setPlaceholderText(tr("Search"));
     
@@ -58,11 +52,9 @@ DailymotionSearchDialog::DailymotionSearchDialog(QWidget *parent) :
     
     m_layout->addWidget(m_searchEdit, 0, 0);
     m_layout->addWidget(m_typeSelector, 1, 0);
-    m_layout->addWidget(m_orderSelector, 2, 0);
-    m_layout->addWidget(m_buttonBox, 0, 1, 3, 1, Qt::AlignBottom);
+    m_layout->addWidget(m_buttonBox, 0, 1, 2, 1, Qt::AlignBottom);
     
-    connect(m_orderSelector, SIGNAL(valueChanged(QVariant)), this, SLOT(onSearchOrderChanged(QVariant)));
-    connect(m_typeSelector, SIGNAL(valueChanged(QVariant)), this, SLOT(onSearchTypeChanged(QVariant)));
+    connect(m_typeSelector, SIGNAL(valueChanged(QVariant)), this, SLOT(onSearchTypeChanged()));
     connect(m_searchEdit, SIGNAL(textChanged(QString)), this, SLOT(onSearchTextChanged(QString)));
     connect(m_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
     connect(m_historyButton, SIGNAL(clicked()), this, SLOT(showHistoryDialog()));
@@ -71,10 +63,10 @@ DailymotionSearchDialog::DailymotionSearchDialog(QWidget *parent) :
 
 void DailymotionSearchDialog::search() {
     if (!MainWindow::instance()->showResource(m_searchEdit->text())) {
+        QVariantMap type = m_typeSelector->currentValue().toMap();
         Settings::instance()->addSearch(m_searchEdit->text());
-        MainWindow::instance()->search(Resources::DAILYMOTION, m_searchEdit->text(),
-                                       m_typeSelector->currentValue().toString(),
-                                       m_orderSelector->currentValue().toString());
+        MainWindow::instance()->search(Resources::DAILYMOTION, m_searchEdit->text(), type.value("type").toString(),
+                                       type.value("order").toString());
     }
     
     accept();
@@ -86,14 +78,10 @@ void DailymotionSearchDialog::showHistoryDialog() {
     connect(dialog, SIGNAL(searchChosen(QString)), m_searchEdit, SLOT(setText(QString)));
 }
 
-void DailymotionSearchDialog::onSearchOrderChanged(const QVariant &order) {
-    Settings::instance()->setDefaultSearchOrder(Resources::DAILYMOTION, order.toString());
-}
-
 void DailymotionSearchDialog::onSearchTextChanged(const QString &text) {
     m_searchButton->setEnabled(!text.isEmpty());
 }
 
-void DailymotionSearchDialog::onSearchTypeChanged(const QVariant &type) {
-    Settings::instance()->setDefaultSearchType(Resources::DAILYMOTION, type.toString());
+void DailymotionSearchDialog::onSearchTypeChanged() {
+    Settings::instance()->setDefaultSearchType(Resources::DAILYMOTION, m_typeSelector->valueText());
 }

@@ -16,7 +16,6 @@
 
 #include "pluginsearchdialog.h"
 #include "mainwindow.h"
-#include "pluginsearchordermodel.h"
 #include "pluginsearchtypemodel.h"
 #include "searchhistorydialog.h"
 #include "settings.h"
@@ -29,9 +28,7 @@
 PluginSearchDialog::PluginSearchDialog(const QString &service, QWidget *parent) :
     Dialog(parent),
     m_typeModel(new PluginSearchTypeModel(this)),
-    m_orderModel(new PluginSearchOrderModel(this)),
     m_typeSelector(new ValueSelector(tr("Search for"), this)),
-    m_orderSelector(new ValueSelector(tr("Order by"), this)),
     m_searchEdit(new QLineEdit(this)),
     m_buttonBox(new QDialogButtonBox(QDialogButtonBox::Cancel, Qt::Vertical, this)),
     m_historyButton(new QPushButton(tr("History"), this)),
@@ -42,11 +39,8 @@ PluginSearchDialog::PluginSearchDialog(const QString &service, QWidget *parent) 
     
     m_typeModel->setService(service);    
     m_typeSelector->setModel(m_typeModel);
-    m_typeSelector->setCurrentIndex(qMax(0, m_typeModel->match("value",
+    m_typeSelector->setCurrentIndex(qMax(0, m_typeModel->match("name",
                                     Settings::instance()->defaultSearchType(service))));
-    m_orderSelector->setModel(m_orderModel);
-    m_orderSelector->setCurrentIndex(qMax(0, m_orderModel->match("value",
-                                     Settings::instance()->defaultSearchOrder(service))));
     
     m_searchEdit->setPlaceholderText(tr("Search"));
 
@@ -58,11 +52,9 @@ PluginSearchDialog::PluginSearchDialog(const QString &service, QWidget *parent) 
     
     m_layout->addWidget(m_searchEdit, 0, 0);
     m_layout->addWidget(m_typeSelector, 1, 0);
-    m_layout->addWidget(m_orderSelector, 2, 0);
-    m_layout->addWidget(m_buttonBox, 0, 1, 3, 1, Qt::AlignBottom);
+    m_layout->addWidget(m_buttonBox, 0, 1, 2, 1, Qt::AlignBottom);
     
-    connect(m_orderSelector, SIGNAL(valueChanged(QVariant)), this, SLOT(onSearchOrderChanged(QVariant)));
-    connect(m_typeSelector, SIGNAL(valueChanged(QVariant)), this, SLOT(onSearchTypeChanged(QVariant)));
+    connect(m_typeSelector, SIGNAL(valueChanged(QVariant)), this, SLOT(onSearchTypeChanged()));
     connect(m_searchEdit, SIGNAL(textChanged(QString)), this, SLOT(onSearchTextChanged(QString)));
     connect(m_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
     connect(m_historyButton, SIGNAL(clicked()), this, SLOT(showHistoryDialog()));
@@ -71,10 +63,10 @@ PluginSearchDialog::PluginSearchDialog(const QString &service, QWidget *parent) 
 
 void PluginSearchDialog::search() {
     if (!MainWindow::instance()->showResource(m_searchEdit->text())) {
+        QVariantMap type = m_typeSelector->currentValue().toMap();
         Settings::instance()->addSearch(m_searchEdit->text());
-        MainWindow::instance()->search(m_typeModel->service(), m_searchEdit->text(),
-                                       m_typeSelector->currentValue().toString(),
-                                       m_orderSelector->currentValue().toString());
+        MainWindow::instance()->search(m_typeModel->service(), m_searchEdit->text(), type.value("type").toString(),
+                                       type.value("order").toString());
     }
     
     accept();
@@ -86,14 +78,10 @@ void PluginSearchDialog::showHistoryDialog() {
     connect(dialog, SIGNAL(searchChosen(QString)), m_searchEdit, SLOT(setText(QString)));
 }
 
-void PluginSearchDialog::onSearchOrderChanged(const QVariant &order) {
-    Settings::instance()->setDefaultSearchOrder(m_typeModel->service(), order.toString());
-}
-
 void PluginSearchDialog::onSearchTextChanged(const QString &text) {
     m_searchButton->setEnabled(!text.isEmpty());
 }
 
-void PluginSearchDialog::onSearchTypeChanged(const QVariant &type) {
-    Settings::instance()->setDefaultSearchType(m_typeModel->service(), type.toString());
+void PluginSearchDialog::onSearchTypeChanged() {
+    Settings::instance()->setDefaultSearchType(m_typeModel->service(), m_typeSelector->valueText());
 }

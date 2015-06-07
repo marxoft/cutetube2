@@ -17,6 +17,7 @@
 #include "dailymotionview.h"
 #include "dailymotion.h"
 #include "dailymotionaccountswindow.h"
+#include "dailymotioncategorieswindow.h"
 #include "dailymotionnavmodel.h"
 #include "dailymotionplaylist.h"
 #include "dailymotionplaylistswindow.h"
@@ -68,6 +69,7 @@ void DailymotionView::search(const QString &query, const QString &type, const QS
     filters["sort"] = order;
     filters["limit"] = MAX_RESULTS;
     filters["family_filter"] = Settings::instance()->safeSearchEnabled();
+    filters["localization"] = Settings::instance()->locale();
     
     if (type == Resources::PLAYLIST) {
         DailymotionPlaylistsWindow *window = new DailymotionPlaylistsWindow(StackedWindow::currentWindow());
@@ -106,6 +108,18 @@ void DailymotionView::showResource(const QString &type, const QString &id) {
 
 void DailymotionView::showAccounts() {
     DailymotionAccountsWindow *window = new DailymotionAccountsWindow(StackedWindow::currentWindow());
+    window->show();
+}
+
+void DailymotionView::showCategories() {
+    QVariantMap filters;
+    filters["family_filter"] = Settings::instance()->safeSearchEnabled();
+    filters["localization"] = Settings::instance()->locale();
+    filters["limit"] = 50;
+    
+    DailymotionCategoriesWindow *window = new DailymotionCategoriesWindow(StackedWindow::currentWindow());
+    window->setWindowTitle(tr("Categories"));
+    window->list("/channels", filters);
     window->show();
 }
 
@@ -173,18 +187,21 @@ void DailymotionView::onItemActivated(const QModelIndex &index) {
         showSearchDialog();
         break;
     case 2:
-        showUploads();
+        showCategories();
         break;
     case 3:
-        showLatestVideos();
+        showUploads();
         break;
     case 4:
-        showFavourites();
+        showLatestVideos();
         break;
     case 5:
-        showPlaylists();
+        showFavourites();
         break;
     case 6:
+        showPlaylists();
+        break;
+    case 7:
         showSubscriptions();
         break;
     default:

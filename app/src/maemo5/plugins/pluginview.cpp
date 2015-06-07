@@ -17,6 +17,7 @@
 #include "pluginview.h"
 #include "listview.h"
 #include "navdelegate.h"
+#include "plugincategorieswindow.h"
 #include "pluginnavmodel.h"
 #include "pluginplaylist.h"
 #include "pluginplaylistswindow.h"
@@ -84,10 +85,16 @@ void PluginView::showResource(const QString &type, const QString &id) {
     }
 }
 
-void PluginView::showPlaylists() {
+void PluginView::showCategories(const QString &id) {
+    PluginCategoriesWindow *window = new PluginCategoriesWindow(StackedWindow::currentWindow());
+    window->setWindowTitle(tr("Categories"));
+    window->list(m_model->service(), id);
+}
+
+void PluginView::showPlaylists(const QString &id) {
     PluginPlaylistsWindow *window = new PluginPlaylistsWindow(StackedWindow::currentWindow());
     window->setWindowTitle(tr("Playlists"));
-    window->list(m_model->service());
+    window->list(m_model->service(), id);
     window->show();
 }
 
@@ -96,33 +103,36 @@ void PluginView::showSearchDialog() {
     dialog->open();
 }
 
-void PluginView::showUsers() {
+void PluginView::showUsers(const QString &id) {
     PluginUsersWindow *window = new PluginUsersWindow(StackedWindow::currentWindow());
     window->setWindowTitle(tr("Users"));
-    window->list(m_model->service());
+    window->list(m_model->service(), id);
     window->show();
 }
 
-void PluginView::showVideos() {
+void PluginView::showVideos(const QString &id) {
     PluginVideosWindow *window = new PluginVideosWindow(StackedWindow::currentWindow());
     window->setWindowTitle(tr("Videos"));
-    window->list(m_model->service());
+    window->list(m_model->service(), id);
     window->show();
 }
 
 void PluginView::onItemActivated(const QModelIndex &index) {
-    QVariant type = index.data(PluginNavModel::ValueRole);
+    QVariantMap type = index.data(PluginNavModel::ValueRole).toMap();
     
-    if (type == "") {
+    if (type.value("type") == "") {
         showSearchDialog();
     }
-    else if (type == Resources::PLAYLIST) {
-        showPlaylists();
+    else if (type.value("type") == Resources::CATEGORY) {
+        showCategories(type.value("id").toString());
     }
-    else if (type == Resources::USER) {
-        showUsers();
+    else if (type.value("type") == Resources::PLAYLIST) {
+        showPlaylists(type.value("id").toString());
+    }
+    else if (type.value("type") == Resources::USER) {
+        showUsers(type.value("id").toString());
     }
     else {
-        showVideos();
+        showVideos(type.value("id").toString());
     }
 }
