@@ -1,0 +1,6 @@
+cutetube2-localvideos (0.0.3) unstable; urgency=low
+
+  * Use C++/QtMobility instead of Python.
+  * Update to comply with new cuteTube2 plugin API.
+
+ -- Stuart Howarth <showarth@marxoft.co.uk>  Sun, 06 Jun 2015 19:54:12 +0100

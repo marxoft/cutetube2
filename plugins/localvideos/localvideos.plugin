@@ -1,5 +1,0 @@
-Name=Local videos
-SupportedListResources=video
-SupportedSearchResources=video
-Exec=/opt/cutetube2/plugins/localvideos/localvideos.py
-Settings=localvideos/localvideos.settings

@@ -1,0 +1,8 @@
+<plugin name="Local videos" settings="localvideos/localvideos.settings" exec="/opt/cutetube2/plugins/localvideos/cutetube2-localvideos">
+    <resources>
+        <resource method="list" name="Videos" type="video" />
+        <resource method="search" name="Videos (date ascending)" type="video" order="lastModified" />
+        <resource method="search" name="Videos (date descending)" type="video" order="-lastModified" />
+        <resource method="search" name="Videos (title)" type="video" order="title" />
+    </resources>
+</plugin>

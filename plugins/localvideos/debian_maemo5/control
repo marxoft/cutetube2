@@ -2,12 +2,12 @@ Source: cutetube2-localvideos
 Section: user/multimedia
 Priority: optional
 Maintainer: Stuart Howarth <showarth@marxoft.co.uk>
-Homepage: http://marxoft.co.uk/projects/cutetube2
-Build-Depends: debhelper (>= 5)
+Build-Depends: debhelper (>= 5), libqt4-dev, libqtm-12-dev
 Standards-Version: 3.7.3
+Homepage: http://marxoft.co.uk/projects/cutetube2
 
 Package: cutetube2-localvideos
-Architecture: armel
-Depends: ${shlibs:Depends}, ${misc:Depends}, cutetube2, python-dbus, python-simplejson
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, cutetube2 (>= 0.2.0)
 Description: A plugin for cuteTube2 providing access to local videos
-XB-Maemo-Display-Name: cuteTube2-LocalVideos
+XSBC-Maemo-Display-Name: cuteTube2-LocalVideos

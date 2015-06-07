@@ -1,9 +1,0 @@
-cutetube2-localvideos (0.0.2) unstable; urgency=low
-  * Add python-simplejson dependency.
-
- -- Stuart Howarth <showarth@marxoft.co.uk>  Fri, 15 May 2015 14:26:52 +0000
-
-cutetube2-localvideos (0.0.1) unstable; urgency=low
-  * Initial release.
-
- -- Stuart Howarth <showarth@marxoft.co.uk>  Thu, 14 May 2015 03:15:43 +0000

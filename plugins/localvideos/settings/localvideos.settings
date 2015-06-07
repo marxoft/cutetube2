@@ -1,0 +1,8 @@
+<settings title="Local videos">
+    <text key="paths" title="Directories (comma-separated)" />
+    <list key="order" default="title" title="Order by">
+        <element name="Title" value="title"></element>
+        <element name="Date (ascending)" value="lastModified"></element>
+        <element name="Date (descending)" value="-lastModified"></element>
+    </list>
+</settings>
