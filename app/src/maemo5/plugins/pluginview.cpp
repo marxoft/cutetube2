@@ -120,7 +120,7 @@ void PluginView::showVideos(const QString &id) {
 void PluginView::onItemActivated(const QModelIndex &index) {
     QVariantMap type = index.data(PluginNavModel::ValueRole).toMap();
     
-    if (type.value("type") == "") {
+    if (type.isEmpty()) {
         showSearchDialog();
     }
     else if (type.value("type") == Resources::CATEGORY) {
