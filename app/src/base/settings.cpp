@@ -181,17 +181,6 @@ void Settings::setDefaultPlaybackFormat(const QString &service, const QString &f
     }
 }
 
-QString Settings::defaultSearchOrder(const QString &service) const {
-    return value("Search/searchOrder/" + service).toString();
-}
-
-void Settings::setDefaultSearchOrder(const QString &service, const QString &order) {
-    if (order != defaultSearchOrder(service)) {
-        setValue("Search/searchOrder/" + service, order);
-        emit defaultSearchOrderChanged();
-    }
-}
-
 QString Settings::defaultSearchType(const QString &service) const {
     return value("Search/searchType/" + service).toString();
 }
@@ -232,6 +221,17 @@ void Settings::setDownloadPath(const QString &path) {
     if (path != downloadPath()) {
         setValue("Transfers/downloadPath", path);
         emit downloadPathChanged();
+    }
+}
+
+QString Settings::locale() const {
+    return value("Content/locale", QLocale().name()).toString();
+}
+
+void Settings::setLocale(const QString &name) {
+    if (name != locale()) {
+        setValue("Content/locale", name);
+        emit localeChanged();
     }
 }
 

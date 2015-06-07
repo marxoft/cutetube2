@@ -43,6 +43,7 @@ class Settings : public QObject
     Q_PROPERTY(QString currentService READ currentService WRITE setCurrentService NOTIFY currentServiceChanged)
     Q_PROPERTY(QString defaultViewMode READ defaultViewMode WRITE setDefaultViewMode NOTIFY defaultViewModeChanged)
     Q_PROPERTY(QString downloadPath READ downloadPath WRITE setDownloadPath NOTIFY downloadPathChanged)
+    Q_PROPERTY(QString locale READ locale WRITE setLocale NOTIFY localeChanged)
     Q_PROPERTY(int maximumConcurrentTransfers READ maximumConcurrentTransfers WRITE setMaximumConcurrentTransfers
                NOTIFY maximumConcurrentTransfersChanged)
     Q_PROPERTY(bool networkProxyEnabled READ networkProxyEnabled WRITE setNetworkProxyEnabled
@@ -92,13 +93,14 @@ public:
     Q_INVOKABLE QString defaultDownloadFormat(const QString &service) const;
     Q_INVOKABLE QString defaultPlaybackFormat(const QString &service) const;
     
-    Q_INVOKABLE QString defaultSearchOrder(const QString &service) const;
     Q_INVOKABLE QString defaultSearchType(const QString &service) const;
     
     QString defaultViewMode() const;
     
     QString downloadPath() const;
     Q_INVOKABLE QString downloadPath(const QString &category) const;
+    
+    QString locale() const;
         
     int maximumConcurrentTransfers() const;
     
@@ -144,12 +146,13 @@ public Q_SLOTS:
     void setDefaultDownloadFormat(const QString &service, const QString &format);
     void setDefaultPlaybackFormat(const QString &service, const QString &format);
     
-    void setDefaultSearchOrder(const QString &service, const QString &order);
     void setDefaultSearchType(const QString &service, const QString &type);
     
     void setDefaultViewMode(const QString &mode);
     
     void setDownloadPath(const QString &path);
+    
+    void setLocale(const QString &name);
     
     void setMaximumConcurrentTransfers(int maximum);
     
@@ -194,6 +197,7 @@ Q_SIGNALS:
     void defaultViewModeChanged();
     void downloadFormatsChanged();
     void downloadPathChanged();
+    void localeChanged();
     void maximumConcurrentTransfersChanged();
     void networkProxyChanged();
     void playbackFormatsChanged();
