@@ -231,7 +231,7 @@ MyPage {
                             font.pixelSize: platformStyle.fontSizeSmall
                             font.weight: Font.Light
                             color: platformStyle.colorNormalMid
-                            text: qsTr("Published on") + " " + video.date
+                            text: qsTr("Published on") + " " + (video.date ? video.date : qsTr("date unknown"))
                         }
                     }
 

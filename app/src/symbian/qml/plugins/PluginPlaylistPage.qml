@@ -192,7 +192,7 @@ MyPage {
                             font.pixelSize: platformStyle.fontSizeSmall
                             font.weight: Font.Light
                             color: platformStyle.colorNormalMid
-                            text: qsTr("Published on") + " " + playlist.date
+                            text: qsTr("Published on") + " " + (playlist.date ? playlist.date : qsTr("date unknown"))
                         }
                     }
 

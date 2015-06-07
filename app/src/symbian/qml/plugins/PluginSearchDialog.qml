@@ -39,6 +39,7 @@ MySheet {
                 top: parent.top
                 topMargin: platformStyle.paddingLarge
             }
+            spacing: platformStyle.paddingLarge
 
             MyTextField {
                 id: searchField
@@ -58,11 +59,6 @@ MySheet {
                 }
             }
 
-            Item {
-                width: parent.width
-                height: platformStyle.paddingLarge
-            }
-
             ValueSelector {
                 id: typeSelector
 
@@ -71,18 +67,8 @@ MySheet {
                 model: PluginSearchTypeModel {
                     service: Settings.currentService
                 }
-                value: Settings.defaultSearchType(root.service)
-                onValueChanged: Settings.setDefaultSearchType(root.service, value)
-            }
-
-            ValueSelector {
-                id: orderSelector
-
-                width: parent.width
-                title: qsTr("Order by")
-                model: PluginSearchOrderModel {}
-                value: Settings.defaultSearchOrder(root.service)
-                onValueChanged: Settings.setDefaultSearchOrder(root.service, value)
+                selectedIndex: Math.max(0, model.match("name",Settings.defaultSearchType(model.service)))
+                onAccepted: Settings.setDefaultSearchType(model.service, model.data(selectedIndex, "name"))
             }
         }
 
@@ -160,7 +146,7 @@ MySheet {
     onAccepted: {
         if (!mainPage.showResourceFromUrl(searchField.text)) {
             Settings.addSearch(searchField.text);
-            mainPage.search(Settings.currentService, searchField.text, typeSelector.value, orderSelector.value);
+            mainPage.search(Settings.currentService, searchField.text, typeSelector.value.type, typeSelector.value.order);
         }
     }
     onStatusChanged: if (status == DialogStatus.Open) searchField.text = "";

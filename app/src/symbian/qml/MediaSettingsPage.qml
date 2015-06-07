@@ -57,6 +57,14 @@ MyPage {
                 text: qsTr("Categories")
                 onClicked: appWindow.pageStack.push(Qt.resolvedUrl("CategoriesPage.qml"))
             }
+            
+            ValueSelector {
+                width: parent.width
+                title: qsTr("Language filter")
+                model: LocaleModel {}
+                value: Settings.locale
+                onValueChanged: Settings.locale = value
+            }
 
             ValueSelector {
                 width: parent.width

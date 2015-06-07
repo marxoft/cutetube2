@@ -87,7 +87,8 @@ MySheet {
                             streamSelector.showProgressIndicator = false;
                         }
                     }
-                    onValueChanged: Settings.setDefaultDownloadFormat(Resources.YOUTUBE, subTitle)
+                    onAccepted: Settings.setDefaultDownloadFormat(Resources.YOUTUBE,
+                                                                  streamModel.data(selectedIndex, "name"))
                 }
 
                 ValueSelector {
@@ -159,7 +160,7 @@ MySheet {
                         }
                     }
                     enabled: subtitleSwitch.checked
-                    onSelectedIndexChanged: Settings.subtitlesLanguage = subtitleModel.data(selectedIndex, "name")
+                    onAccepted: Settings.subtitlesLanguage = subtitleModel.data(selectedIndex, "name")
                 }
             }
         }

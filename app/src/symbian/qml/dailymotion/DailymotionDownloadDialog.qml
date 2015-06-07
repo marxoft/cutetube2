@@ -87,7 +87,8 @@ MySheet {
                             streamSelector.showProgressIndicator = false;
                         }
                     }
-                    onValueChanged: Settings.setDefaultDownloadFormat(Resources.DAILYMOTION, subTitle)
+                    onAccepted: Settings.setDefaultDownloadFormat(Resources.DAILYMOTION,
+                                                                  streamModel.data(selectedIndex, "name"))
                 }
 
                 ValueSelector {
@@ -159,7 +160,7 @@ MySheet {
                         }
                     }
                     enabled: subtitleSwitch.checked
-                    onSelectedIndexChanged: Settings.subtitlesLanguage = subtitleModel.data(selectedIndex, "name")
+                    onAccepted: Settings.subtitlesLanguage = subtitleModel.data(selectedIndex, "name")
                 }
             }
         }

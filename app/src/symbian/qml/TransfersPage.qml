@@ -92,11 +92,13 @@ MyPage {
 
             MenuItem {
                 text: qsTr("Start")
+                enabled: transferModel.data(view.currentIndex, "status") <= Transfer.Failed
                 onClicked: Transfers.get(view.currentIndex).queue()
             }
 
             MenuItem {
                 text: qsTr("Pause")
+                enabled: transferModel.data(view.currentIndex, "status") >= Transfer.Downloading
                 onClicked: Transfers.get(view.currentIndex).pause()
             }
 

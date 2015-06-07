@@ -27,6 +27,9 @@ ValueListItem {
     property int selectedIndex: -1
     property bool showProgressIndicator
     property Item focusItem: null
+    
+    signal accepted
+    signal rejected
 
     Loader {
         id: loader
@@ -44,6 +47,8 @@ ValueListItem {
             selectedIndex: root.selectedIndex
             onSelectedIndexChanged: root.selectedIndex = selectedIndex
             onValueChanged: root.value = value
+            onAccepted: root.accepted()
+            onRejected: root.rejected()
         }
     }
 

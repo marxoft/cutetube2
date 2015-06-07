@@ -38,6 +38,7 @@ MySheet {
                 top: parent.top
                 topMargin: platformStyle.paddingLarge
             }
+            spacing: platformStyle.paddingLarge
 
             MyTextField {
                 id: searchField
@@ -57,29 +58,14 @@ MySheet {
                 }
             }
 
-            Item {
-                width: parent.width
-                height: platformStyle.paddingLarge
-            }
-
             ValueSelector {
                 id: typeSelector
 
                 width: parent.width
                 title: qsTr("Search for")
                 model: VimeoSearchTypeModel {}
-                value: Settings.defaultSearchType(Resources.VIMEO)
-                onValueChanged: Settings.setDefaultSearchType(Resources.VIMEO, value)
-            }
-
-            ValueSelector {
-                id: orderSelector
-
-                width: parent.width
-                title: qsTr("Order by")
-                model: VimeoSearchOrderModel {}
-                value: Settings.defaultSearchOrder(Resources.VIMEO)
-                onValueChanged: Settings.setDefaultSearchOrder(Resources.VIMEO, value)
+                selectedIndex: Math.max(0, model.match("name",Settings.defaultSearchType(Resources.VIMEO)))
+                onAccepted: Settings.setDefaultSearchType(Resources.VIMEO, model.data(selectedIndex, "name"))
             }
         }
 
@@ -157,7 +143,7 @@ MySheet {
     onAccepted: {
         if (!mainPage.showResourceFromUrl(searchField.text)) {
             Settings.addSearch(searchField.text);
-            mainPage.search(Resources.VIMEO, searchField.text, typeSelector.value, orderSelector.value);
+            mainPage.search(Resources.VIMEO, searchField.text, typeSelector.value.type, typeSelector.value.order);
         }
     }
     onStatusChanged: if (status == DialogStatus.Open) searchField.text = "";

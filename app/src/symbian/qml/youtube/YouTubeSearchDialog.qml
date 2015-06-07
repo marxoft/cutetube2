@@ -38,6 +38,7 @@ MySheet {
                 top: parent.top
                 topMargin: platformStyle.paddingLarge
             }
+            spacing: platformStyle.paddingLarge
 
             MyTextField {
                 id: searchField
@@ -57,19 +58,14 @@ MySheet {
                 }
             }
 
-            Item {
-                width: parent.width
-                height: platformStyle.paddingLarge
-            }
-
             ValueSelector {
                 id: typeSelector
 
                 width: parent.width
                 title: qsTr("Search for")
                 model: YouTubeSearchTypeModel {}
-                value: Settings.defaultSearchType(Resources.YOUTUBE)
-                onValueChanged: Settings.setDefaultSearchType(Resources.YOUTUBE, value)
+                selectedIndex: Math.max(0, model.match("name",Settings.defaultSearchType(Resources.YOUTUBE)))
+                onAccepted: Settings.setDefaultSearchType(Resources.YOUTUBE, model.data(selectedIndex, "name"))
             }
 
             ValueSelector {
@@ -157,7 +153,7 @@ MySheet {
     onAccepted: {
         if (!mainPage.showResourceFromUrl(searchField.text)) {
             Settings.addSearch(searchField.text);
-            mainPage.search(Resources.YOUTUBE, searchField.text, typeSelector.value, orderSelector.value);
+            mainPage.search(Resources.YOUTUBE, searchField.text, typeSelector.value.type, typeSelector.value.order);
         }
     }
     onStatusChanged: if (status == DialogStatus.Open) searchField.text = "";
