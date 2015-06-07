@@ -122,32 +122,21 @@ void ResourcesPlugins::load() {
                     QString method = resourceElem.attribute("method");
                     
                     if (method == "list") {
-                        ListResource resource;
-                        resource.name = resourceElem.attribute("name");
-                        resource.type = resourceElem.attribute("type");
-                        resource.id = resourceElem.attribute("id");
-                        plugin.listResources.insert(resource.type, resource);
+                        ListResource listResource(resourceElem.attribute("name"), resourceElem.attribute("type"),
+                                                  resourceElem.attribute("id"));
+                        plugin.listResources.insert(resourceElem.attribute("type"), listResource);
                     }
                     else if (method == "search") {
-                        plugin.searchResources.insert(resourceElem.attribute("type"), resourceElem.attribute("name"));
+                        SearchResource searchResource(resourceElem.attribute("name"), resourceElem.attribute("type"),
+                                                      resourceElem.attribute("order"));
+                        plugin.searchResources.insert(resourceElem.attribute("type"), searchResource);
                     }
                     else if (method == "get") {
-                        plugin.regExps.insert(resourceElem.attribute("type"), QRegExp(resourceElem.attribute("regexp")));
+                        plugin.regExps[resourceElem.attribute("type")] = QRegExp(resourceElem.attribute("regexp"));
                     }
                 }
                 
-                QDomNodeList sorts = docElem.elementsByTagName("sort");
-                
-                for (int i = 0; i < sorts.size(); i++) {
-                    QDomElement sortElem = sorts.at(i).toElement();
-                    SortOrder order;
-                    order.name = sortElem.attribute("name");
-                    order.type = sortElem.attribute("type");
-                    order.value = sortElem.attribute("value");
-                    plugin.sortOrders[order.type] << order;
-                }
-                
-                m_plugins.insert(name, plugin);
+                m_plugins[name] = plugin;
             }
         }
     }

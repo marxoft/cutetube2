@@ -17,30 +17,18 @@
 #ifndef RESOURCESPLUGINS_H
 #define RESOURCESPLUGINS_H
 
+#include "resources.h"
 #include <QObject>
 #include <QMap>
 #include <QStringList>
 #include <QRegExp>
-
-struct ListResource {
-    QString name;
-    QString type;
-    QString id;
-};
-
-struct SortOrder {
-    QString name;
-    QString type;
-    QString value;
-};
 
 struct ResourcesPlugin {
     QString name;
     QString command;
     QString settings;
     QMultiMap<QString, ListResource> listResources;
-    QMap<QString, QString> searchResources;
-    QMap<QString, QList<SortOrder> > sortOrders;
+    QMultiMap<QString, SearchResource> searchResources;
     QMap<QString, QRegExp> regExps;
 };
 

@@ -17,55 +17,52 @@
 #ifndef PLUGINNAVMODEL_H
 #define PLUGINNAVMODEL_H
 
+#include "selectionmodel.h"
 #include "resourcesplugins.h"
-#include <QAbstractListModel>
 
-class PluginNavModel : public QAbstractListModel
+class PluginNavModel : public SelectionModel
 {
     Q_OBJECT
     
-    Q_PROPERTY(int count READ rowCount NOTIFY countChanged)
     Q_PROPERTY(QString service READ service WRITE setService NOTIFY serviceChanged)
-    
-public:
-    enum Roles {
-        NameRole = Qt::DisplayRole,
-        TypeRole = Qt::UserRole,
-        IdRole = Qt::UserRole + 1
-    };
-    
-    explicit PluginNavModel(QObject *parent = 0);
-    
-    QString service() const;
-    void setService(const QString &s);
-        
-#if QT_VERSION >= 0x050000
-    QHash<int, QByteArray> roleNames() const;
-#endif
-    
-    int rowCount(const QModelIndex &parent = QModelIndex()) const;
-    
-    QVariant data(const QModelIndex &index, int role = NameRole) const;
-    QMap<int, QVariant> itemData(const QModelIndex &index) const;
-    
-    Q_INVOKABLE QVariant data(int row, const QByteArray &role) const;
-    Q_INVOKABLE QVariantMap itemData(int row) const;
-    
-    Q_INVOKABLE int match(const QByteArray &role, const QVariant &value) const;
 
+public:
+    explicit PluginNavModel(QObject *parent = 0) :
+        SelectionModel(parent)
+    {
+        setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    }
+    
+    inline QString service() const { 
+        return m_service;
+    }
+    
+    inline void setService(const QString &s) {
+        if (s != service()) {
+            m_service = s;
+            reload();
+            emit serviceChanged();
+        }
+    }
+    
 public Q_SLOTS:
-    void clear();
-    void reload();
+    inline void reload() {
+        clear();
+        ResourcesPlugin plugin = ResourcesPlugins::instance()->getPluginFromName(service());
+        
+        if (!plugin.searchResources.isEmpty()) {
+            append(tr("Search"), "");
+        }
+        
+        foreach (ListResource resource, plugin.listResources.values()) {
+            append(resource.value("name").toString(), resource);
+        }
+    }
     
 Q_SIGNALS:
-    void countChanged(int c);
     void serviceChanged();
     
-protected:
-    QList<ListResource> m_items;
-    
-    QHash<int, QByteArray> m_roles;
-    
+private:
     QString m_service;
 };
 
