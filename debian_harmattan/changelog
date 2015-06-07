@@ -1,3 +1,11 @@
+cutetube2 (0.2.0) unstable; urgency=low
+  * Add categories.
+  * Add language filter setting.
+  * Expand plugin API.
+  * Minor bug fixes.
+
+ -- Stuart Howarth <showarth@marxoft.co.uk>  Sat, 06 Jun 2015 23:07:42 +0100
+
 cutetube2 (0.1.3) unstable; urgency=low
   * UI tweaks.
   * Minor bug fixes.
