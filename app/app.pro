@@ -22,6 +22,7 @@ HEADERS += \
     src/base/database.h \
     src/base/definitions.h \
     src/base/json.h \
+    src/base/localemodel.h \
     src/base/networkproxytypemodel.h \
     src/base/playlist.h \
     src/base/resources.h \
@@ -45,7 +46,6 @@ HEADERS += \
     src/dailymotion/dailymotionnavmodel.h \
     src/dailymotion/dailymotionplaylist.h \
     src/dailymotion/dailymotionplaylistmodel.h \
-    src/dailymotion/dailymotionsearchordermodel.h \
     src/dailymotion/dailymotionsearchtypemodel.h \
     src/dailymotion/dailymotionstreammodel.h \
     src/dailymotion/dailymotionsubtitlemodel.h \
@@ -63,7 +63,6 @@ HEADERS += \
     src/plugins/pluginsettingsmodel.h \
     src/plugins/resourcesplugins.h \
     src/plugins/resourcesrequest.h \
-    src/plugins/pluginsearchordermodel.h \
     src/plugins/pluginsearchtypemodel.h \
     src/plugins/pluginstreammodel.h \
     src/plugins/pluginsubtitlemodel.h \
@@ -80,7 +79,6 @@ HEADERS += \
     src/vimeo/vimeonavmodel.h \
     src/vimeo/vimeoplaylist.h \
     src/vimeo/vimeoplaylistmodel.h \
-    src/vimeo/vimeosearchordermodel.h \
     src/vimeo/vimeosearchtypemodel.h \
     src/vimeo/vimeostreammodel.h \
     src/vimeo/vimeosubtitlemodel.h \
@@ -97,7 +95,6 @@ HEADERS += \
     src/youtube/youtubenavmodel.h \
     src/youtube/youtubeplaylist.h \
     src/youtube/youtubeplaylistmodel.h \
-    src/youtube/youtubesearchordermodel.h \
     src/youtube/youtubesearchtypemodel.h \
     src/youtube/youtubestreammodel.h \
     src/youtube/youtubesubtitlemodel.h \
@@ -143,7 +140,6 @@ SOURCES += \
     src/plugins/plugincategorymodel.cpp \
     src/plugins/plugincomment.cpp \
     src/plugins/plugincommentmodel.cpp \
-    src/plugins/pluginnavmodel.cpp \
     src/plugins/pluginplaylist.cpp \
     src/plugins/pluginplaylistmodel.cpp \
     src/plugins/resourcesplugins.cpp \
