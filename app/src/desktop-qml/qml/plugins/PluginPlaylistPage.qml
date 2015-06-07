@@ -363,6 +363,7 @@ Page {
         
         PluginVideoPlayer {            
             anchors.fill: parent
+            onRightClicked: contextMenu.popup()
             
             Keys.forwardTo: videoView
         }

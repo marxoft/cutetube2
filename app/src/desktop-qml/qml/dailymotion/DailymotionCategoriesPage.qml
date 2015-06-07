@@ -72,7 +72,8 @@ Page {
             text: name
             onClicked: pageStack.push({item: Qt.resolvedUrl("DailymotionVideosPage.qml"), properties: {title: name}, immediate: true})
                                      .model.list("/channel/" + value + "/videos",
-                                                {family_filter: Settings.safeSearchEnabled, limit: MAX_RESULTS})
+                                                {family_filter: Settings.safeSearchEnabled,
+                                                 localization: Settings.locale, limit: MAX_RESULTS})
         }
     }
 }

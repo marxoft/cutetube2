@@ -322,6 +322,7 @@ Page {
             source: video.largeThumbnailUrl
             durationText: video.duration
             onClicked: playerLoader.sourceComponent = player
+            onRightClicked: contextMenu.popup()
         }
     }
     
@@ -330,6 +331,7 @@ Page {
         
         DailymotionVideoPlayer {            
             anchors.fill: parent
+            onRightClicked: contextMenu.popup()
             
             Keys.forwardTo: relatedTab.view
             Component.onCompleted: playVideo(video.id)

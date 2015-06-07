@@ -405,6 +405,7 @@ Page {
         
         VimeoVideoPlayer {            
             anchors.fill: parent
+            onRightClicked: contextMenu.popup()
             
             Keys.forwardTo: videoView
         }

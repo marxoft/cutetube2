@@ -25,7 +25,6 @@
 #include "dailymotioncommentmodel.h"
 #include "dailymotionnavmodel.h"
 #include "dailymotionplaylistmodel.h"
-#include "dailymotionsearchordermodel.h"
 #include "dailymotionsearchtypemodel.h"
 #include "dailymotionstreammodel.h"
 #include "dailymotionsubtitlemodel.h"
@@ -34,13 +33,13 @@
 #include "database.h"
 #include "dbusservice.h"
 #include "definitions.h"
+#include "localemodel.h"
 #include "networkaccessmanagerfactory.h"
 #include "networkproxytypemodel.h"
 #include "plugincategorymodel.h"
 #include "plugincommentmodel.h"
 #include "pluginnavmodel.h"
 #include "pluginplaylistmodel.h"
-#include "pluginsearchordermodel.h"
 #include "pluginsearchtypemodel.h"
 #include "pluginsettingsmodel.h"
 #include "pluginstreammodel.h"
@@ -65,7 +64,6 @@
 #include "vimeocommentmodel.h"
 #include "vimeonavmodel.h"
 #include "vimeoplaylistmodel.h"
-#include "vimeosearchordermodel.h"
 #include "vimeosearchtypemodel.h"
 #include "vimeostreammodel.h"
 #include "vimeosubtitlemodel.h"
@@ -77,7 +75,6 @@
 #include "youtubecommentmodel.h"
 #include "youtubenavmodel.h"
 #include "youtubeplaylistmodel.h"
-#include "youtubesearchordermodel.h"
 #include "youtubesearchtypemodel.h"
 #include "youtubestreammodel.h"
 #include "youtubesubtitlemodel.h"
@@ -100,7 +97,6 @@ inline void registerTypes() {
     qmlRegisterType<DailymotionNavModel>("cuteTube", 2, 0, "DailymotionNavModel");
     qmlRegisterType<DailymotionPlaylist>("cuteTube", 2, 0, "DailymotionPlaylist");
     qmlRegisterType<DailymotionPlaylistModel>("cuteTube", 2, 0, "DailymotionPlaylistModel");
-    qmlRegisterType<DailymotionSearchOrderModel>("cuteTube", 2, 0, "DailymotionSearchOrderModel");
     qmlRegisterType<DailymotionSearchTypeModel>("cuteTube", 2, 0, "DailymotionSearchTypeModel");
     qmlRegisterType<DailymotionStreamModel>("cuteTube", 2, 0, "DailymotionStreamModel");
     qmlRegisterType<DailymotionSubtitleModel>("cuteTube", 2, 0, "DailymotionSubtitleModel");
@@ -108,6 +104,7 @@ inline void registerTypes() {
     qmlRegisterType<DailymotionUserModel>("cuteTube", 2, 0, "DailymotionUserModel");
     qmlRegisterType<DailymotionVideo>("cuteTube", 2, 0, "DailymotionVideo");
     qmlRegisterType<DailymotionVideoModel>("cuteTube", 2, 0, "DailymotionVideoModel");
+    qmlRegisterType<LocaleModel>("cuteTube", 2, 0, "LocaleModel");
     qmlRegisterType<NetworkProxyTypeModel>("cuteTube", 2, 0, "NetworkProxyTypeModel");
     qmlRegisterType<PluginCategoryModel>("cuteTube", 2, 0, "PluginCategoryModel");
     qmlRegisterType<PluginComment>("cuteTube", 2, 0, "PluginComment");
@@ -115,7 +112,6 @@ inline void registerTypes() {
     qmlRegisterType<PluginNavModel>("cuteTube", 2, 0, "PluginNavModel");
     qmlRegisterType<PluginPlaylist>("cuteTube", 2, 0, "PluginPlaylist");
     qmlRegisterType<PluginPlaylistModel>("cuteTube", 2, 0, "PluginPlaylistModel");
-    qmlRegisterType<PluginSearchOrderModel>("cuteTube", 2, 0, "PluginSearchOrderModel");
     qmlRegisterType<PluginSearchTypeModel>("cuteTube", 2, 0, "PluginSearchTypeModel");
     qmlRegisterType<PluginSettingsModel>("cuteTube", 2, 0, "PluginSettingsModel");
     qmlRegisterType<PluginStreamModel>("cuteTube", 2, 0, "PluginStreamModel");
@@ -138,7 +134,6 @@ inline void registerTypes() {
     qmlRegisterType<VimeoNavModel>("cuteTube", 2, 0, "VimeoNavModel");
     qmlRegisterType<VimeoPlaylist>("cuteTube", 2, 0, "VimeoPlaylist");
     qmlRegisterType<VimeoPlaylistModel>("cuteTube", 2, 0, "VimeoPlaylistModel");
-    qmlRegisterType<VimeoSearchOrderModel>("cuteTube", 2, 0, "VimeoSearchOrderModel");
     qmlRegisterType<VimeoSearchTypeModel>("cuteTube", 2, 0, "VimeoSearchTypeModel");
     qmlRegisterType<VimeoStreamModel>("cuteTube", 2, 0, "VimeoStreamModel");
     qmlRegisterType<VimeoSubtitleModel>("cuteTube", 2, 0, "VimeoSubtitleModel");
@@ -153,7 +148,6 @@ inline void registerTypes() {
     qmlRegisterType<YouTubeNavModel>("cuteTube", 2, 0, "YouTubeNavModel");
     qmlRegisterType<YouTubePlaylist>("cuteTube", 2, 0, "YouTubePlaylist");
     qmlRegisterType<YouTubePlaylistModel>("cuteTube", 2, 0, "YouTubePlaylistModel");
-    qmlRegisterType<YouTubeSearchOrderModel>("cuteTube", 2, 0, "YouTubeSearchOrderModel");
     qmlRegisterType<YouTubeSearchTypeModel>("cuteTube", 2, 0, "YouTubeSearchTypeModel");
     qmlRegisterType<YouTubeStreamModel>("cuteTube", 2, 0, "YouTubeStreamModel");
     qmlRegisterType<YouTubeSubtitleModel>("cuteTube", 2, 0, "YouTubeSubtitleModel");

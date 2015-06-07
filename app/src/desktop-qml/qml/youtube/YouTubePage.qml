@@ -31,6 +31,8 @@ Page {
         params["order"] = order;
         params["maxResults"] = MAX_RESULTS;
         params["safeSearch"] = Settings.safeSearchEnabled ? "strict" : "none";
+        params["regionCode"] = Settings.locale.split("_")[1];
+        params["relevanceLanguage"] = Settings.locale.split("_")[0];
 
         if (type == Resources.PLAYLIST) {
             url = Qt.resolvedUrl("YouTubePlaylistsPage.qml");
@@ -101,27 +103,13 @@ Page {
         ComboBox {
             id: searchTypeSelector
             
+            Layout.minimumWidth: 200
             model: YouTubeSearchTypeModel {
                 id: searchTypeModel
             }
             textRole: "name"
-            currentIndex: searchTypeModel.match("value", Settings.defaultSearchType(Resources.YOUTUBE))
-            onActivated: Settings.setDefaultSearchType(Resources.YOUTUBE, searchTypeModel.data(index, "value"))
-        }
-        
-        Label {
-            text: qsTr("Order by")
-        }
-        
-        ComboBox {
-            id: searchOrderSelector
-            
-            model: YouTubeSearchOrderModel {
-                id: searchOrderModel
-            }
-            textRole: "name"
-            currentIndex: searchOrderModel.match("value", Settings.defaultSearchOrder(Resources.YOUTUBE))
-            onActivated: Settings.setDefaultSearchOrder(Resources.YOUTUBE, searchOrderModel.data(index, "value"))
+            currentIndex: searchTypeModel.match("name", Settings.defaultSearchType(Resources.YOUTUBE))
+            onActivated: Settings.setDefaultSearchType(Resources.YOUTUBE, searchTypeModel.data(index, "name"))
         }
         
         TextField {
@@ -133,8 +121,8 @@ Page {
                 regExp: /^.+/
             }
             onAccepted: {
-                root.search(text, searchTypeModel.data(searchTypeSelector.currentIndex, "value"),
-                            searchOrderModel.data(searchOrderSelector.currentIndex, "value"));
+                root.search(text, searchTypeModel.data(searchTypeSelector.currentIndex, "value").type,
+                            searchTypeModel.data(searchTypeSelector.currentIndex, "value").order);
                 text = "";
             }
         }        
@@ -157,9 +145,7 @@ Page {
         }
         currentIndex: 1
         onCurrentIndexChanged: {
-            if (pageStack.depth > 0) {
-                pageStack.clear();
-            }
+            pageStack.clear();
             
             switch (currentIndex) {
             case 0:
@@ -169,8 +155,8 @@ Page {
                 break;
             case 2:
                 pageStack.push({item: Qt.resolvedUrl("YouTubeCategoriesPage.qml"), immediate: true})
-                              .model.list("/videoCategories", ["snippet"], {regionCode: Qt.locale().name.split("_")[1]},
-                                          {h1: Qt.locale().name});
+                              .model.list("/videoCategories", ["snippet"], {regionCode: Settings.locale.split("_")[1]},
+                                          {h1: Settings.locale});
                 break;
             case 3:
                 pageStack.push({item: Qt.resolvedUrl("YouTubeVideosPage.qml"), properties: {title: qsTr("My videos")},

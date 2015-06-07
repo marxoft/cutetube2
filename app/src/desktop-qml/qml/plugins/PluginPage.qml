@@ -86,34 +86,20 @@ Page {
         ComboBox {
             id: searchTypeSelector
             
+            Layout.minimumWidth: 200
             model: PluginSearchTypeModel {
                 id: searchTypeModel
                 
                 service: Settings.currentService
             }
             textRole: "name"
-            currentIndex: searchTypeModel.match("value", Settings.defaultSearchType(service))
+            currentIndex: searchTypeModel.match("name", Settings.defaultSearchType(searchTypeModel.service))
             enabled: searchTypeModel.count > 0
-            onActivated: Settings.setDefaultSearchType(searchTypeModel.service, searchTypeModel.data(index, "value"))
+            onActivated: Settings.setDefaultSearchType(searchTypeModel.service, searchTypeModel.data(index, "name"))
         }
         
         Label {
             text: qsTr("Order by")
-        }
-        
-        ComboBox {
-            id: searchOrderSelector
-            
-            model: PluginSearchOrderModel {
-                id: searchOrderModel
-                
-                resourceType: searchTypeModel.data(searchTypeSelector.currentIndex, "value")
-                service: Settings.currentService
-            }
-            textRole: "name"
-            enabled: searchOrderModel.count > 0
-            currentIndex: searchOrderModel.match("value", Settings.defaultSearchOrder(service))
-            onActivated: Settings.setDefaultSearchOrder(searchOrderModel.service, searchOrderModel.data(index, "value"))
         }
         
         TextField {
@@ -126,8 +112,8 @@ Page {
             }
             enabled: searchTypeModel.count > 0
             onAccepted: {
-                root.search(text, searchTypeModel.data(searchTypeSelector.currentIndex, "value"),
-                            searchOrderModel.data(searchOrderSelector.currentIndex, "value"));
+                root.search(text, searchTypeModel.data(searchTypeSelector.currentIndex, "value").type,
+                            searchTypeModel.data(searchTypeSelector.currentIndex, "value").order);
                 text = "";
             }
         }        
@@ -151,9 +137,7 @@ Page {
             text: name
         }
         onCurrentIndexChanged: {
-            if (pageStack.depth > 0) {
-                pageStack.clear();
-            }
+            pageStack.clear();
             
             switch (currentIndex) {
             case 0:
@@ -166,25 +150,23 @@ Page {
                 break;
             }
             
-            var name = navModel.data(currentIndex, "name");
-            var type = navModel.data(currentIndex, "type");
-            var id = navModel.data(currentIndex, "id");
+            var value = navModel.data(currentIndex, "value");
             
-            if (type == Resources.CATEGORY) {
-                pageStack.push({item: Qt.resolvedUrl("PluginCategoriesPage.qml"), properties: {title: name},
-                               immediate: true}).model.list(id);
+            if (value.type == Resources.CATEGORY) {
+                pageStack.push({item: Qt.resolvedUrl("PluginCategoriesPage.qml"), properties: {title: value.name},
+                               immediate: true}).model.list(value.id);
             }
-            else if (type == Resources.PLAYLIST) {
-                pageStack.push({item: Qt.resolvedUrl("PluginPlaylistsPage.qml"), properties: {title: name},
-                               immediate: true}).model.list(id);
+            else if (value.type == Resources.PLAYLIST) {
+                pageStack.push({item: Qt.resolvedUrl("PluginPlaylistsPage.qml"), properties: {title: value.name},
+                               immediate: true}).model.list(value.id);
             }
-            else if (type == Resources.USER) {
-                pageStack.push({item: Qt.resolvedUrl("PluginUsersPage.qml"), properties: {title: name},
-                               immediate: true}).model.list(id);
+            else if (value.type == Resources.USER) {
+                pageStack.push({item: Qt.resolvedUrl("PluginUsersPage.qml"), properties: {title: value.name},
+                               immediate: true}).model.list(value.id);
             }
             else {
-                pageStack.push({item: Qt.resolvedUrl("PluginVideosPage.qml"), properties: {title: name},
-                               immediate: true}).model.list(id);
+                pageStack.push({item: Qt.resolvedUrl("PluginVideosPage.qml"), properties: {title: value.name},
+                               immediate: true}).model.list(value.id);
             }
         }
     }

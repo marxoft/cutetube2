@@ -21,6 +21,7 @@ ToolButton {
     id: viewButton
 
     text: qsTr("View")
+    tooltip: qsTr("Change view mode")
     iconName: "gtk-index"
     menu: Menu {
     

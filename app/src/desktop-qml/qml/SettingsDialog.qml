@@ -79,6 +79,26 @@ MyDialog {
                 }
                 
                 Label {
+                    text: qsTr("Language filter") + ":"
+                }
+                
+                ComboBox {
+                    id: localeSelector
+                    
+                    Layout.fillWidth: true
+                    model: LocaleModel {
+                        id: localeModel
+                    }
+                    textRole: "name"
+                    currentIndex: localeModel.match("value", Settings.locale)
+                    onActivated: Settings.locale = localeModel.data(index, "value")
+                }
+                
+                Item {
+                    Layout.minimumWidth: browseButton.width
+                }
+                
+                Label {
                     text: qsTr("Video player") + ":"
                 }
                 

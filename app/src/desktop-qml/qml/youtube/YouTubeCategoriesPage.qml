@@ -72,7 +72,7 @@ Page {
             text: name
             onClicked: pageStack.push({item: Qt.resolvedUrl("YouTubeVideosPage.qml"), properties: {title: name}, immediate: true})
                                      .model.list("/videos", ["snippet", "contentDetails", "statistics"], {chart: "mostPopular"},
-                                                 {videoCategoryId: value, regionCode: Qt.locale().name.split("_")[1],
+                                                 {videoCategoryId: value, regionCode: Settings.locale.split("_")[1],
                                                   maxResults: MAX_RESULTS})
         }
     }

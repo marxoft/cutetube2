@@ -30,6 +30,7 @@ Page {
         filters["sort"] = order;
         filters["limit"] = MAX_RESULTS;
         filters["family_filter"] = Settings.safeSearchEnabled;
+        filters["localization"] = Settings.locale;
         
         view.currentIndex = 1;
         
@@ -101,27 +102,13 @@ Page {
         ComboBox {
             id: searchTypeSelector
             
+            Layout.minimumWidth: 200
             model: DailymotionSearchTypeModel {
                 id: searchTypeModel
             }
             textRole: "name"
-            currentIndex: searchTypeModel.match("value", Settings.defaultSearchType(Resources.DAILYMOTION))
-            onActivated: Settings.setDefaultSearchType(Resources.DAILYMOTION, searchTypeModel.data(index, "value"))
-        }
-        
-        Label {
-            text: qsTr("Order by")
-        }
-        
-        ComboBox {
-            id: searchOrderSelector
-            
-            model: DailymotionSearchOrderModel {
-                id: searchOrderModel
-            }
-            textRole: "name"
-            currentIndex: searchOrderModel.match("value", Settings.defaultSearchOrder(Resources.DAILYMOTION))
-            onActivated: Settings.setDefaultSearchOrder(Resources.DAILYMOTION, searchOrderModel.data(index, "value"))
+            currentIndex: searchTypeModel.match("name", Settings.defaultSearchType(Resources.DAILYMOTION))
+            onActivated: Settings.setDefaultSearchType(Resources.DAILYMOTION, searchTypeModel.data(index, "name"))
         }
         
         TextField {
@@ -133,8 +120,8 @@ Page {
                 regExp: /^.+/
             }
             onAccepted: {
-                root.search(text, searchTypeModel.data(searchTypeSelector.currentIndex, "value"),
-                            searchOrderModel.data(searchOrderSelector.currentIndex, "value"));
+                root.search(text, searchTypeModel.data(searchTypeSelector.currentIndex, "value").type,
+                            searchTypeModel.data(searchTypeSelector.currentIndex, "value").order);
                 text = "";
             }
         }        
@@ -157,9 +144,7 @@ Page {
         }
         currentIndex: 1
         onCurrentIndexChanged: {
-            if (pageStack.depth > 0) {
-                pageStack.clear();
-            }
+            pageStack.clear();
             
             switch (currentIndex) {
             case 0:
@@ -169,7 +154,8 @@ Page {
                 break;
             case 2:
                 pageStack.push({item: Qt.resolvedUrl("DailymotionCategoriesPage.qml"), immediate: true})
-                              .model.list("/channels", {family_filter: Settings.safeSearchEnabled, limit: 50});
+                              .model.list("/channels", {family_filter: Settings.safeSearchEnabled,
+                                                        localization: Settings.locale, limit: 50});
                 break;
             case 3:
                 pageStack.push({item: Qt.resolvedUrl("DailymotionVideosPage.qml"), properties: {title: qsTr("My videos")},

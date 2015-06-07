@@ -253,7 +253,7 @@ ApplicationWindow {
     
     Connections {
         target: Transfers
-        onTransferAdded: statusBar.showMessage(qsTr("Download transfer added") + ": " + transfer.title)
+        onTransferAdded: statusBar.showMessage("'" + transfer.title + "' " + qsTr("added to transfers"))
     }
     
     Component.onCompleted: {

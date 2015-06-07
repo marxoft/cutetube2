@@ -345,6 +345,7 @@ Page {
             source: video.largeThumbnailUrl
             durationText: video.duration
             onClicked: playerLoader.sourceComponent = player
+            onRightClicked: contextMenu.popup()
         }
     }
     
@@ -353,6 +354,7 @@ Page {
         
         YouTubeVideoPlayer {            
             anchors.fill: parent
+            onRightClicked: contextMenu.popup()
             
             Keys.forwardTo: relatedTab.view
             Component.onCompleted: playVideo(video.id)

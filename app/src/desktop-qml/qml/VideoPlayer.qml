@@ -27,6 +27,8 @@ QtMultimedia.Video {
     property alias formatText: formatLabel.text
     
     signal formatRequest
+    signal clicked
+    signal rightClicked
         
     function playUrl(url) {
         source = decodeURIComponent(url);
@@ -60,7 +62,9 @@ QtMultimedia.Video {
         
         anchors.fill: parent
         hoverEnabled: true
-        onDoubleClicked: maximised = !maximised
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
+        onClicked: mouse.button == Qt.RightButton ? player.rightClicked() : player.clicked()
+        onDoubleClicked: player.maximised = !player.maximised
     }
     
     Item {
