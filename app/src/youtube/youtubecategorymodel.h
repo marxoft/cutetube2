@@ -19,6 +19,7 @@
 
 #include "selectionmodel.h"
 #include <qyoutube/resourcesrequest.h>
+#include <QStringList>
 
 class YouTubeCategoryModel : public SelectionModel
 {
