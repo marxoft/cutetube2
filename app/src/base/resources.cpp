@@ -42,6 +42,22 @@ const QString Resources::COMMENT("comment");
 const QString Resources::STREAM("stream");
 const QString Resources::SUBTITLE("subtitle");
 
+ListResource::ListResource(const QString &name, const QString &type, const QString &id) :
+    QVariantMap()
+{
+    insert("name", name);
+    insert("type", type);
+    insert("id", id);
+}
+
+SearchResource::SearchResource(const QString &name, const QString &type, const QString &order) :
+    QVariantMap()
+{
+    insert("name", name);
+    insert("type", type);
+    insert("order", order);
+}
+
 Resources::Resources(QObject *parent) :
     QObject(parent)
 {

@@ -20,6 +20,20 @@
 #include <QObject>
 #include <QVariantMap>
 
+class ListResource : public QVariantMap
+{
+
+public:
+    ListResource(const QString &name, const QString &type, const QString &id);
+};
+
+class SearchResource : public QVariantMap
+{
+
+public:
+    SearchResource(const QString &name, const QString &type, const QString &order);
+};
+
 class Resources : public QObject
 {
     Q_OBJECT
