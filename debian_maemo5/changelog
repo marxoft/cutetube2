@@ -1,3 +1,8 @@
+cutetube2 (0.2.1) unstable; urgency=low
+  * Fix plugin navigation/search.
+
+ -- Stuart Howarth <showarth@marxoft.co.uk>  Sun, 07 Jun 2015 22:57:35 +0100
+
 cutetube2 (0.2.0) unstable; urgency=low
   * Add categories.
   * Add language filter setting.
