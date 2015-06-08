@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    if (method == "list") {
+    if ((method == "list") || (method == "get")) {
         QString id;
 
         if ((i = args.indexOf("-i") + 1) > 0) {
@@ -56,8 +56,13 @@ int main(int argc, char *argv[]) {
                 id = args.at(i);
             }
         }
-
-        request.listVideos(id);
+        
+        if (method == "list") {
+            request.listVideos(id);
+        }
+        else {
+            request.getVideo(id);
+        }
     }
     else if (method == "search") {
         QString query;

@@ -4,5 +4,6 @@
         <resource method="search" name="Videos (date ascending)" type="video" order="lastModified" />
         <resource method="search" name="Videos (date descending)" type="video" order="-lastModified" />
         <resource method="search" name="Videos (title)" type="video" order="title" />
+        <resource method="get" regexp="(file://|)/.+\.\w+" type="video" />
     </resources>
 </plugin>

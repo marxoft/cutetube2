@@ -2,6 +2,8 @@ TEMPLATE = app
 TARGET = cutetube2-localvideos
 QT -= gui
 
+#DEFINES += CUTETUBE_DEBUG
+
 greaterThan(QT_MAJOR_VERSION,4) {
     QT += docgallery
 } else:maemo5 {

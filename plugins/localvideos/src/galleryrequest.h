@@ -40,17 +40,20 @@ class GalleryRequest : public QObject
 public:
     explicit GalleryRequest(QObject *parent = 0);
 
+    void getVideo(const QString &id);
     void listVideos(const QString &id);
     void searchVideos(const QString &query, const QString &order);
 
 private Q_SLOTS:
-    void onRequestFinished();
+    void onGetRequestFinished();
+    void onListRequestFinished();
 
 Q_SIGNALS:
     void finished();
     
 private:
     QGalleryQueryRequest *m_request;
+    QString m_filePath;
     QVariantMap m_filter;
 };
 

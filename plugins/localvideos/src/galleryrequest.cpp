@@ -25,6 +25,9 @@
 #include <QTimer>
 #include <qplatformdefs.h>
 #include <stdio.h>
+#ifdef CUTETUBE_DEBUG
+#include <QDebug>
+#endif
 
 static const int MAX_RESULTS = 20;
 
@@ -37,7 +40,7 @@ static const QByteArray THUMBNAIL_PATH("/home/user/.thumbnails/cropped/");
 #elif defined MEEGO_EDITION_HARMATTAN
 static const QByteArray THUMBNAIL_PATH("file:///home/user/.thumbnails/video-grid/");
 #else
-static const QByteArray THUMBNAIL_PATH();
+static const QByteArray THUMBNAIL_PATH("~/.thumbnails/normal/");
 #endif
 
 inline static QString formatDuration(qint64 s) {
@@ -50,6 +53,23 @@ inline static QByteArray formatThumbnail(const QByteArray &uri) {
     return THUMBNAIL_PATH + hash.result().toHex() + ".jpeg";
 }
 
+inline static QVariantMap createItem(QGalleryQueryRequest *request) {
+    QString filePath = request->metaData(QDocumentGallery::filePath).toString();
+    QByteArray thumbnailUrl = formatThumbnail("file://" + filePath.toUtf8().replace(" ", "%20"));
+    QString title = request->metaData(QDocumentGallery::title).toString();
+    QVariantMap item;
+    item["date"] = request->metaData(QDocumentGallery::lastModified).toDateTime().toString("dd MMM yyyy");
+    item["duration"] = formatDuration(request->metaData(QDocumentGallery::duration).toLongLong());
+    item["largeThumbnailUrl"] = thumbnailUrl;
+    item["streamUrl"] = "file://" + filePath;
+    item["thumbnailUrl"] = thumbnailUrl;
+    item["title"] = title.isEmpty() ? request->metaData(QDocumentGallery::fileName).toString().section('.', 0, -2)
+                                    : title;
+    item["url"] = filePath;
+    item["viewCount"] = request->metaData(QDocumentGallery::playCount).toLongLong();
+    return item;
+}
+
 GalleryRequest::GalleryRequest(QObject *parent) :
     QObject(parent),
     m_request(new QGalleryQueryRequest(this))
@@ -57,12 +77,24 @@ GalleryRequest::GalleryRequest(QObject *parent) :
     m_request->setGallery(new QDocumentGallery(m_request));
     m_request->setRootType(QDocumentGallery::Video);
     m_request->setPropertyNames(PROPERTY_NAMES);
-    m_request->setLimit(MAX_RESULTS);
+}
 
-    connect(m_request, SIGNAL(finished()), this, SLOT(onRequestFinished()));
+void GalleryRequest::getVideo(const QString &id) {
+#ifdef CUTETUBE_DEBUG
+    qDebug() << "GalleryRequest::getVideo" << id;
+#endif
+    // Filter by QDocumentGallery::filePath not working, so use QDocumentGallery::path, then filter the results.
+    m_filePath = id.startsWith("file://") ? id.mid(7) : id;
+    m_request->setFilter(QGalleryMetaDataFilter(QDocumentGallery::path, m_filePath.left(m_filePath.lastIndexOf('/'))));
+    m_request->setLimit(0);
+    connect(m_request, SIGNAL(finished()), this, SLOT(onGetRequestFinished()));
+    QTimer::singleShot(500, m_request, SLOT(execute()));
 }
 
 void GalleryRequest::listVideos(const QString &id) {
+#ifdef CUTETUBE_DEBUG
+    qDebug() << "GalleryRequest::listVideos" << id;
+#endif
     m_filter = QtJson::Json::parse(id).toMap();
     QGalleryUnionFilter ufilter;
 
@@ -105,20 +137,49 @@ void GalleryRequest::listVideos(const QString &id) {
     }
 
     m_request->setFilter(ufilter);
+    m_request->setLimit(MAX_RESULTS);
+    connect(m_request, SIGNAL(finished()), this, SLOT(onListRequestFinished()));
     QTimer::singleShot(500, m_request, SLOT(execute()));
 }
 
 void GalleryRequest::searchVideos(const QString &query, const QString &order) {
+#ifdef CUTETUBE_DEBUG
+    qDebug() << "GalleryRequest::searchVideos" << query << order;
+#endif
     m_filter = QVariantMap();
     m_filter["title"] = query;
     m_filter["order"] = order;
 
     m_request->setFilter(QGalleryMetaDataFilter(QDocumentGallery::title, query, QGalleryFilter::Contains));
     m_request->setSortPropertyNames(QStringList() << order);
+    m_request->setLimit(MAX_RESULTS);
+    connect(m_request, SIGNAL(finished()), this, SLOT(onListRequestFinished()));
     QTimer::singleShot(500, m_request, SLOT(execute()));
 }
 
-void GalleryRequest::onRequestFinished() {
+void GalleryRequest::onGetRequestFinished() {
+    QVariantMap result;
+    const int count = m_request->itemCount();
+#ifdef CUTETUBE_DEBUG
+    qDebug() << "GalleryRequest::onGetRequestFinished:" << count << "items found";
+#endif
+    for (int i = 0; i < count; i++) {
+        // Check if QDocumentGallery::filePath matches the filePath of the requested item.
+        if ((m_request->isValid()) && (m_request->metaData(QDocumentGallery::filePath) == m_filePath)) {
+            result = createItem(m_request);
+            result["id"] = m_filePath;
+            break;
+        }
+
+        m_request->next();
+    }
+    
+    printf(QtJson::Json::serialize(result).constData());
+    disconnect(m_request, SIGNAL(finished()), this, SLOT(onGetRequestFinished()));
+    emit finished();
+}
+
+void GalleryRequest::onListRequestFinished() {
     QVariantMap result;
     QVariantList items;
     QVariantMap f = m_filter;
@@ -126,24 +187,13 @@ void GalleryRequest::onRequestFinished() {
     QByteArray id = QtJson::Json::serialize(f);
 
     const int count = m_request->itemCount();
-
+#ifdef CUTETUBE_DEBUG
+    qDebug() << "GalleryRequest::onListRequestFinished:" << count << "items found";
+#endif
     for (int i = 0; i < count; i++) {
         if (m_request->isValid()) {
-            QVariantMap item;
-            QString filePath = m_request->metaData(QDocumentGallery::filePath).toString();
-            QByteArray thumbnailUrl = formatThumbnail("file://" + filePath.toUtf8().replace(" ", "%20"));
-            QString title = m_request->metaData(QDocumentGallery::title).toString();
-
-            item["date"] = m_request->metaData(QDocumentGallery::lastModified).toDateTime().toString("dd MMM yyyy");
-            item["duration"] = formatDuration(m_request->metaData(QDocumentGallery::duration).toLongLong());
+            QVariantMap item = createItem(m_request);
             item["id"] = id;
-            item["largeThumbnailUrl"] = thumbnailUrl;
-            item["streamUrl"] = "file://" + filePath;
-            item["thumbnailUrl"] = thumbnailUrl;
-            item["title"] = title.isEmpty() ? m_request->metaData(QDocumentGallery::fileName).toString().section('.', 0, -2)
-                                            : title;
-            item["url"] = filePath;
-            item["viewCount"] = m_request->metaData(QDocumentGallery::playCount).toLongLong();
             items << item;
         }
 
@@ -157,5 +207,6 @@ void GalleryRequest::onRequestFinished() {
 
     result["items"] = items;
     printf(QtJson::Json::serialize(result).constData());
+    disconnect(m_request, SIGNAL(finished()), this, SLOT(onListRequestFinished()));
     emit finished();
 }
