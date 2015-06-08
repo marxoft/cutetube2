@@ -30,7 +30,7 @@ MyPage {
             videosTab.model.list(playlist.id);
 
             if (playlist.userId) {
-                user.loadUser(playlist.userId);
+                user.loadUser(playlist.service, playlist.userId);
             }
         }
         else {
@@ -60,8 +60,8 @@ MyPage {
         onStatusChanged: {
             switch (status) {
             case ResourcesRequest.Ready:
-                if (!user.id) {
-                    user.loadUser(userId);
+                if ((userId) && (userId != user.id)) {
+                    user.loadUser(service, userId);
                 }
 
                 break;

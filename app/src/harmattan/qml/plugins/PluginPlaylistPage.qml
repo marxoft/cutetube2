@@ -60,8 +60,8 @@ MyPage {
         onStatusChanged: {
             switch (status) {
             case ResourcesRequest.Ready:
-                if (!user.id) {
-                    user.loadUser(userId);
+                if ((userId) && (userId != user.id)) {
+                    user.loadUser(service, userId);
                 }
 
                 break;

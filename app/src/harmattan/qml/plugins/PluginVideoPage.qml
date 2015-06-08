@@ -29,7 +29,7 @@ MyPage {
             video.loadVideo(videoOrId);
 
             if (video.userId) {
-                user.loadUser(video.userId);
+                user.loadUser(video.service, video.userId);
             }
         }
         else {
@@ -59,8 +59,8 @@ MyPage {
         onStatusChanged: {
             switch (status) {
             case ResourcesRequest.Ready:
-                if (!user.id) {
-                    user.loadUser(userId);
+                if ((userId) && (userId != !user.id)) {
+                    user.loadUser(service, userId);
                 }
 
                 break;
