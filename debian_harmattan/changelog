@@ -1,6 +1,7 @@
-cutetube2 (0.2.0) unstable; urgency=low
+cutetube2 (0.2.1) unstable; urgency=low
   * Add categories.
   * Add language filter setting.
+  * Add option to save files as audio (requires FFmpeg).
   * Expand plugin API.
   * Minor bug fixes.
 
