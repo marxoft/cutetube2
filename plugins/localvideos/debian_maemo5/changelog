@@ -1,3 +1,9 @@
+cutetube2-localvideos (0.1.0) unstable; urgency=low
+
+  * Add support for 'get' method to enable detection of URLs.
+
+ -- Stuart Howarth <showarth@marxoft.co.uk>  Mon, 07 Jun 2015 15:36:45 +0100
+
 cutetube2-localvideos (0.0.3) unstable; urgency=low
 
   * Use C++/QtMobility instead of Python.
