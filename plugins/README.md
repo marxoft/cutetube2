@@ -14,7 +14,7 @@ Creating a cuteTube2 plugin consists of three steps:
 ##Defining a plugin
 
 Plugins are defined using XML, in a file with \*.plugin extension. The plugin definition file can be place either in 
-**/opt/cutetube2/plugins** or **/.config/cuteTube2/plugins**.
+**/opt/cutetube2/plugins** or **~/.config/cuteTube2/plugins**.
 
 The following nodes must be provided in a plugin definition file:
 
@@ -225,7 +225,7 @@ Below is an example settings file for **My Plugin**.
 ##Providing an executable
 
 The only requirement of a plugin executable is that is accepts certain arguments and writes an appropriate response 
-to STDOUT in JSON format. It therefore possible to create an executable using any language you prefer.
+to STDOUT in JSON format. It is therefore possible to create an executable using any language you prefer.
 
 The following arguments are used when calling an executable:
 
@@ -681,7 +681,7 @@ The values to be included in the response depend on both the method called and t
 
 Method call:
 
-    /opt/cutetube/plugins/myplugin -m list -r category -i categories
+    /opt/cutetube2/plugins/myplugin -m list -r category -i categories
 
 Response:
 
@@ -702,7 +702,7 @@ Response:
 
 Method call:
 
-    /opt/cutetube/plugins/myplugin -m get -r playlist -i http://api.mywebsite.com/playlist/abc123
+    /opt/cutetube2/plugins/myplugin -m get -r playlist -i http://api.mywebsite.com/playlist/abc123
     
 Response:
 
@@ -720,7 +720,7 @@ Response:
 
 Method call:
 
-    /opt/cutetube/plugins/myplugin -m list -r playlist -i latest_playlists
+    /opt/cutetube2/plugins/myplugin -m list -r playlist -i latest_playlists
 
 Response:
 
@@ -734,7 +734,7 @@ Response:
 
 Method call:
 
-    /opt/cutetube/plugins/myplugin -m search -r playlists -q 'cool playlists' -o relevance
+    /opt/cutetube2/plugins/myplugin -m search -r playlists -q 'cool playlists' -o relevance
 
 Response:
 
@@ -748,7 +748,7 @@ Response:
 
 Method call:
 
-    /opt/cutetube/plugins/myplugin -m list -r stream -i http://api.mywebsite.com/video/abc123
+    /opt/cutetube2/plugins/myplugin -m list -r stream -i http://api.mywebsite.com/video/abc123
 
 Response:
 
@@ -774,7 +774,7 @@ Response:
 
 Method call:
 
-    /opt/cutetube/plugins/myplugin -m get -r user -i http://api.mywebsite.com/user/abc123
+    /opt/cutetube2/plugins/myplugin -m get -r user -i http://api.mywebsite.com/user/abc123
     
 Response:
 
@@ -789,7 +789,7 @@ Response:
 
 Method call:
 
-    /opt/cutetube/plugins/myplugin -m list -r user -i all_users
+    /opt/cutetube2/plugins/myplugin -m list -r user -i all_users
 
 Response:
 
@@ -803,7 +803,7 @@ Response:
 
 Method call:
 
-    /opt/cutetube/plugins/myplugin -m search -r user -q 'cool users' -o popular
+    /opt/cutetube2/plugins/myplugin -m search -r user -q 'cool users' -o popular
 
 Response:
 
@@ -817,7 +817,7 @@ Response:
 
 Method call:
 
-    /opt/cutetube/plugins/myplugin -m get -r video -i http://api.mywebsite.com/video/abc123
+    /opt/cutetube2/plugins/myplugin -m get -r video -i http://api.mywebsite.com/video/abc123
     
 Response:
 
@@ -837,7 +837,7 @@ Response:
 
 Method call:
 
-    /opt/cutetube/plugins/myplugin -m list -r video -i latest_videos
+    /opt/cutetube2/plugins/myplugin -m list -r video -i latest_videos
 
 Response:
 
@@ -851,7 +851,7 @@ Response:
 
 Method call:
 
-    /opt/cutetube/plugins/myplugin -m search -r video -q 'cool videos' -o relevance
+    /opt/cutetube2/plugins/myplugin -m search -r video -q 'cool videos' -o relevance
 
 Response:
 
