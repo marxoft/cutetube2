@@ -72,6 +72,7 @@ TextField {
 
         backgroundSelected: "image://theme/" + Settings.activeColorString + "-meegotouch-textedit-background-selected"
         backgroundDisabled: "image://theme/" + Settings.activeColorString + "-meegotouch-textedit-background-disabled"
+        paddingRight: loader.item ? loader.item.width : undefined
     }
 
     platformSipAttributes: SipAttributes {
