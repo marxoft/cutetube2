@@ -440,6 +440,22 @@ MyPage {
                                              {title: qsTr("Search") + " ('" + query + "')"}).model.search(query, order);
                 }
             }
+            
+            function showResource(resource) {
+                var url;
+
+                if (resource.type == Resources.PLAYLIST) {
+                    url = Qt.resolvedUrl("plugins/PluginPlaylistPage.qml");
+                }
+                else if (resource.type == Resources.USER) {
+                    url = Qt.resolvedUrl("plugins/PluginUserPage.qml");
+                }
+                else {
+                    url = Qt.resolvedUrl("plugins/PluginVideoPage.qml");
+                }
+
+                appWindow.pageStack.push(url).load(resource.id);
+            }
 
             anchors.fill: parent
             model: PluginNavModel {
