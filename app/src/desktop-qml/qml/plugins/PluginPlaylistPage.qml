@@ -210,9 +210,12 @@ Page {
         MenuItem {
             text: qsTr("Download")
             iconName: "folder-download"
+            enabled: video.downloadable
             onTriggered: {
                 loader.sourceComponent = downloadDialog;
-                loader.item.list(video.id, video.title);
+                loader.item.resourceId = video.id;
+                loader.item.resourceTitle = video.title;
+                loader.item.streamUrl = video.streamUrl;
                 loader.item.open();
             }
         }
@@ -301,10 +304,12 @@ Page {
             MenuItem {
                 text: qsTr("Download")
                 iconName: "folder-download"
+                enabled: (videoView.currentIndex >= 0) && (videoModel.data(videoView.currentIndex, "downloadable"))
                 onTriggered: {
                     loader.sourceComponent = downloadDialog;
-                    loader.item.list(videoModel.data(videoView.currentIndex, "id"),
-                                     videoModel.data(videoView.currentIndex, "title"));
+                    loader.item.resourceId = videoModel.data(videoView.currentIndex, "id");
+                    loader.item.resourceTitle = videoModel.data(videoView.currentIndex, "title");
+                    loader.item.streamUrl = videoModel.data(videoView.currentIndex, "streamUrl");
                     loader.item.open();
                 }
             }

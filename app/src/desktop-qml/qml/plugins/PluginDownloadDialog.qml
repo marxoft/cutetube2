@@ -22,12 +22,10 @@ import ".."
 
 MyDialog {
     id: root
-        
-    function list(resourceId, title) {
-        internal.resourceId = resourceId;
-        internal.title = title;
-        streamModel.list(resourceId);
-    }
+    
+    property string resourceId
+    property string resourceTitle
+    property string streamUrl
         
     minimumWidth: grid.width + 20
     minimumHeight: grid.height + 60
@@ -89,11 +87,10 @@ MyDialog {
             
             Layout.columnSpan: 2
             text: qsTr("Download subtitles")
-            enabled: Plugins.resourceTypeIsSupported(subtitleModel.service, Resources.SUBTITLE);
             onCheckedChanged: {
                 if (checked) {
                     if (subtitleModel.status != ResourcesRequest.Loading) {
-                        subtitleModel.list(internal.resourceId);
+                        subtitleModel.list(root.resourceId);
                     }
                 }
                 else {
@@ -168,25 +165,32 @@ MyDialog {
             text: qsTr("&Ok")
             iconName: "dialog-ok"
             isDefault: true
-            enabled: (streamModel.status == ResourcesRequest.Ready) && (streamModel.count > 0)
+            enabled: streamModel.count > 0
             onClicked: root.accept()
         }
     ]
     
-    QtObject {
-        id: internal
+    onOpened: {
+        subtitleModel.clear();
+        subtitleCheckBox.checked = false;
+        subtitleCheckBox.enabled = Plugins.resourceTypeIsSupported(subtitleModel.service, Resources.SUBTITLE);
         
-        property string resourceId
-        property string title
+        if (streamUrl) {
+            streamModel.clear();
+            streamModel.append(qsTr("Default format"), streamUrl);
+        }
+        else {
+            streamModel.list(resourceId);
+        }
     }
-    
-    onRejected: {
+    onClosed: {
         streamModel.cancel();
         subtitleModel.cancel();
     }
-    onAccepted: Transfers.addDownloadTransfer(streamModel.service, internal.resourceId,
-                                              streamModel.data(streamSelector.currentIndex, "value").id,
-                                              internal.title, categoryModel.data(categorySelector.currentIndex, "value"),
+    onAccepted: Transfers.addDownloadTransfer(streamModel.service, resourceId,
+                                              streamUrl ? "" : streamModel.data(streamSelector.currentIndex, "value").id,
+                                              streamUrl,
+                                              resourceTitle, categoryModel.data(categorySelector.currentIndex, "value"),
                                               subtitleCheckBox.checked ? subtitleModel.data(subtitleSelector.currentIndex, "name") : "",
                                               audioCheckBox.checked)
 }

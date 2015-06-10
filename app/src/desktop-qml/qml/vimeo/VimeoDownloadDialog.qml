@@ -24,11 +24,8 @@ import ".."
 MyDialog {
     id: root
         
-    function list(resourceId, title) {
-        internal.resourceId = resourceId;
-        internal.title = title;
-        streamModel.list(resourceId);
-    }
+    property string resourceId
+    property string resourceTitle
         
     minimumWidth: grid.width + 20
     minimumHeight: grid.height + 60
@@ -92,7 +89,7 @@ MyDialog {
             onCheckedChanged: {
                 if (checked) {
                     if (subtitleModel.status != QVimeo.ResourcesRequest.Loading) {
-                        subtitleModel.list(internal.resourceId);
+                        subtitleModel.list(root.resourceId);
                     }
                 }
                 else {
@@ -171,20 +168,18 @@ MyDialog {
         }
     ]
     
-    QtObject {
-        id: internal
-        
-        property string resourceId
-        property string title
+    onOpened: {
+        subtitleCheckBox.checked = false;
+        subtitleModel.clear();
+        streamModel.list(resourceId);
     }
-    
-    onRejected: {
+    onClosed: {
         streamModel.cancel();
         subtitleModel.cancel();
     }
-    onAccepted: Transfers.addDownloadTransfer(Resources.VIMEO, internal.resourceId,
-                                              streamModel.data(streamSelector.currentIndex, "value").id,
-                                              internal.title, categoryModel.data(categorySelector.currentIndex, "value"),
+    onAccepted: Transfers.addDownloadTransfer(Resources.VIMEO, resourceId,
+                                              streamModel.data(streamSelector.currentIndex, "value").id, "",
+                                              resourceTitle, categoryModel.data(categorySelector.currentIndex, "value"),
                                               subtitleCheckBox.checked ? subtitleModel.data(subtitleSelector.currentIndex, "name") : "",
                                               audioCheckBox.checked)
 }

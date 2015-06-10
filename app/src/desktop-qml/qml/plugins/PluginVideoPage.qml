@@ -240,9 +240,12 @@ Page {
         MenuItem {
             text: qsTr("Download")
             iconName: "folder-download"
+            enabled: video.downloadable
             onTriggered: {
                 loader.sourceComponent = downloadDialog;
-                loader.item.list(video.id, video.title);
+                loader.item.resourceId = video.id;
+                loader.item.resourceTitle = video.title;
+                loader.item.streamUrl = video.streamUrl;
                 loader.item.open();
             }
         }

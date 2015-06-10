@@ -71,7 +71,8 @@ Tab {
                 iconName: "folder-download"
                 onTriggered: {
                     loader.sourceComponent = downloadDialog;
-                    loader.item.list(videoModel.data(view.currentIndex, "id"), videoModel.data(view.currentIndex, "title"));
+                    loader.item.resourceId = videoModel.data(view.currentIndex, "id");
+                    loader.item.resourceTitle = videoModel.data(view.currentIndex, "title");
                     loader.item.open();
                 }
             }

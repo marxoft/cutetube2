@@ -204,7 +204,8 @@ Page {
             iconName: "folder-download"
             onTriggered: {
                 loader.sourceComponent = downloadDialog;
-                loader.item.list(video.id, video.title);
+                loader.item.resourceId = video.id;
+                loader.item.resourceTitle = video.title;
                 loader.item.open();
             }
         }
@@ -325,8 +326,8 @@ Page {
                 iconName: "folder-download"
                 onTriggered: {
                     loader.sourceComponent = downloadDialog;
-                    loader.item.list(videoModel.data(videoView.currentIndex, "id"),
-                                     videoModel.data(videoView.currentIndex, "title"));
+                    loader.item.resourceId = videoModel.data(videoView.currentIndex, "id");
+                    loader.item.resourceTitle = videoModel.data(videoView.currentIndex, "title");
                     loader.item.open();
                 }
             }

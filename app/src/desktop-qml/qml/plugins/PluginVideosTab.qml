@@ -69,9 +69,12 @@ Tab {
             MenuItem {
                 text: qsTr("Download")
                 iconName: "folder-download"
+                enabled: (view.currentIndex >= 0) && (videoModel.data(view.currentIndex, "downloadable"))
                 onTriggered: {
                     loader.sourceComponent = downloadDialog;
-                    loader.item.list(videoModel.data(view.currentIndex, "id"), videoModel.data(view.currentIndex, "title"));
+                    loader.item.resourceId = videoModel.data(view.currentIndex, "id");
+                    loader.item.resourceTitle = videoModel.data(view.currentIndex, "title");
+                    loader.item.streamUrl = videoModel.data(view.currentIndex, "streamUrl");
                     loader.item.open();
                 }
             }

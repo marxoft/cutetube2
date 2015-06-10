@@ -231,7 +231,8 @@ Page {
             iconName: "folder-download"
             onTriggered: {
                 loader.sourceComponent = downloadDialog;
-                loader.item.list(video.id, video.title);
+                loader.item.resourceId = video.id;
+                loader.item.resourceTitle = video.title;
                 loader.item.open();
             }
         }
