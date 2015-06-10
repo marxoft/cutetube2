@@ -25,15 +25,12 @@ import "file:///usr/lib/qt4/imports/com/nokia/meego/UIConstants.js" as UI
 MySheet {
     id: root
 
-    function list(resourceId, title) {
-        internal.resourceId = resourceId;
-        internal.title = title;
-        streamModel.list(resourceId);
-    }
+    property string resourceId
+    property string resourceTitle
 
     showProgressIndicator: (streamModel.status == QVimeo.StreamsRequest.Loading)
                            || (subtitleModel.status == QVimeo.ResourcesRequest.Loading)
-    acceptButtonText: streamModel.status == QVimeo.StreamsRequest.Ready ? qsTr("Done") : ""
+    acceptButtonText: streamModel.count > 0 ? qsTr("Done") : ""
     rejectButtonText: qsTr("Cancel")
     content: Item {
         anchors.fill: parent
@@ -116,7 +113,7 @@ MySheet {
                     onCheckedChanged: {
                         if (checked) {
                             if (subtitleModel.status != QVimeo.ResourcesRequest.Loading) {
-                                subtitleModel.list(internal.resourceId);
+                                subtitleModel.list(root.resourceId);
                             }
                         }
                         else {
@@ -174,27 +171,26 @@ MySheet {
         }
     }
 
-    QtObject {
-        id: internal
-
-        property string resourceId
-        property string title
-    }
-
-    onAccepted: Transfers.addDownloadTransfer(Resources.VIMEO, internal.resourceId, streamSelector.value.id,
-                                              internal.title, Settings.defaultCategory,
+    onAccepted: Transfers.addDownloadTransfer(Resources.VIMEO, resourceId, streamSelector.value.id, "",
+                                              resourceTitle, Settings.defaultCategory,
                                               subtitleSwitch.checked ? Settings.subtitlesLanguage : "",
                                               audioSwitch.checked)
 
     onStatusChanged: {
-        if (status == DialogStatus.Closing) {
-            if (streamModel.status == QVimeo.StreamsRequest.Loading) {
-                streamModel.cancel();
-            }
-
-            if (subtitleModel.status == QVimeo.ResourcesRequest.Loading) {
-                subtitleModel.cancel();
-            }
+        switch (status) {
+        case DialogStatus.Opening: {
+            subtitleSwitch.checked = false;
+            subtitleModel.clear();
+            streamModel.list(resourceId);
+            break;
+        }
+        case DialogStatus.Closing: {
+            streamModel.cancel();
+            subtitleModel.cancel();
+            break;
+        }
+        default:
+            break;
         }
     }
 }
