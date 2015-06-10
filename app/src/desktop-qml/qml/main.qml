@@ -242,22 +242,29 @@ ApplicationWindow {
     }
     
     Connections {
+        id: clipboardConnections
+        
         target: Clipboard
         onTextChanged: showResourceFromUrl(text)
     }
     
     Connections {
+        id: dbusConnections
+        
         target: DBus
         onResourceRequested: showResource(resource)
     }
     
     Connections {
-        target: Transfers
+        id: transferConnections
+        
+        target: null
         onTransferAdded: statusBar.showMessage("'" + transfer.title + "' " + qsTr("added to transfers"))
     }
     
     Component.onCompleted: {
         Transfers.restoreTransfers();
+        transferConnections.target = Transfers;
         
         if (DBus.requestedResource.service) {
             showResource(DBus.requestedResource);

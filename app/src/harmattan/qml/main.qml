@@ -51,23 +51,30 @@ AppWindow {
     }
 
     Connections {
+        id: clipboardConnections
+        
         target: Clipboard
         onTextChanged: mainPage.showResourceFromUrl(text)
     }
 
     Connections {
+        id: dbusConnections
+        
         target: DBus
         onResourceRequested: mainPage.showResource(resource)
     }
 
     Connections {
-        target: Transfers
+        id: transferConnections
+        
+        target: null
         onTransferAdded: infoBanner.showMessage("'" + transfer.title + "' " + qsTr("added to transfers"))
     }
 
     Component.onCompleted: {
         theme.inverted = true;
         Transfers.restoreTransfers();
+        transferConnections.target = Transfers;
 
         if (DBus.requestedResource.service) {
             mainPage.showResource(DBus.requestedResource);

@@ -42,17 +42,22 @@ AppWindow {
     }
 
     Connections {
+        id: clipboardConnections
+        
         target: Clipboard
         onTextChanged: mainPage.showResourceFromUrl(text)
     }
 
     Connections {
-        target: Transfers
+        id: transferConnections
+        
+        target: null
         onTransferAdded: infoBanner.showMessage("'" + transfer.title + "' " + qsTr("added to transfers"))
     }
 
     Component.onCompleted: {
         Transfers.restoreTransfers();
+        transferConnections.target = Transfers;
 
         var service = Settings.currentService;
 
