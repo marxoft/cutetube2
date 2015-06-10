@@ -326,7 +326,7 @@ void YouTubeVideo::dislike() {
     params["rating"] = "dislike";
     
     m_request->insert(QVariantMap(), "/videos/rate", QStringList(), params);
-    connect(m_request, SIGNAL(finished()), this, SLOT(onLikeRequestFinished()));
+    connect(m_request, SIGNAL(finished()), this, SLOT(onDislikeRequestFinished()));
     emit statusChanged(status());
 #ifdef CUTETUBE_DEBUG
     qDebug() << "YouTubeVideo::dislike" << id();
