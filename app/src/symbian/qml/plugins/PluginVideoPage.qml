@@ -111,9 +111,12 @@ MyPage {
 
                     MenuItem {
                         text: qsTr("Download")
+                        enabled: video.downloadable
                         onClicked: {
                             dialogLoader.sourceComponent = downloadDialog;
-                            dialogLoader.item.list(video.id, video.title);
+                            dialogLoader.item.resourceId = video.id;
+                            dialogLoader.item.resourceTitle = video.title;
+                            dialogLoader.item.streamUrl = video.streamUrl;
                             dialogLoader.item.open();
                         }
                     }

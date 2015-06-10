@@ -23,13 +23,13 @@ import ".."
 MySheet {
     id: root
 
-    function list(resourceId, title) {
-        internal.resourceId = resourceId;
-        internal.title = title;
-        streamModel.list(resourceId);
-    }
+    property string resourceId
+    property string resourceTitle
+    property string streamUrl
 
-    acceptButtonText: streamModel.status == ResourcesRequest.Ready ? qsTr("Done") : ""
+    showProgressIndicator: (streamModel.status == ResourcesRequest.Loading)
+                           || (subtitleModel.status == ResourcesRequest.Loading)
+    acceptButtonText: streamModel.count > 0 ? qsTr("Done") : ""
     rejectButtonText: qsTr("Cancel")
     content: Item {
         anchors.fill: parent
@@ -62,7 +62,6 @@ MySheet {
                         onStatusChanged: {
                             switch (status) {
                             case ResourcesRequest.Loading: {
-                                root.showProgressIndicator = true;
                                 streamSelector.showProgressIndicator = true;
                                 return;
                             }
@@ -84,7 +83,6 @@ MySheet {
                                 break;
                             }
 
-                            root.showProgressIndicator = false;
                             streamSelector.showProgressIndicator = false;
                         }
                     }
@@ -109,11 +107,10 @@ MySheet {
                     id: subtitleSwitch
             
                     text: qsTr("Download subtitles")
-                    enabled: Plugins.resourceTypeIsSupported(subtitleModel.service, Resources.SUBTITLE);
                     onCheckedChanged: {
                         if (checked) {
                             if (subtitleModel.status != ResourcesRequest.Loading) {
-                                subtitleModel.list(internal.resourceId);
+                                subtitleModel.list(root.resourceId);
                             }
                         }
                         else {
@@ -136,7 +133,6 @@ MySheet {
                         onStatusChanged: {
                             switch (status) {
                             case ResourcesRequest.Loading: {
-                                root.showProgressIndicator = true;
                                 subtitleSelector.showProgressIndicator = true;
                                 return;
                             }
@@ -158,8 +154,7 @@ MySheet {
                                 break;
                             }
 
-                            root.showProgressIndicator = false;
-                            streamSelector.showProgressIndicator = false;
+                            subtitleSelector.showProgressIndicator = false;
                         }
                     }
                     onAccepted: Settings.setDefaultDownloadFormat(streamModel.service,
@@ -173,18 +168,36 @@ MySheet {
         }
     }
 
-    QtObject {
-        id: internal
-
-        property string resourceId
-        property string title
-    }
-
-    onAccepted: Transfers.addDownloadTransfer(streamModel.service, internal.resourceId, streamSelector.value.id,
-                                              internal.title, Settings.defaultCategory,
+    onAccepted: Transfers.addDownloadTransfer(streamModel.service, resourceId, streamUrl ? "" : streamSelector.value.id,
+                                              streamUrl, resourceTitle, Settings.defaultCategory,
                                               subtitleSwitch.checked ?
-                                              subtitleModel.data(subtitleSelector.selectedIndex, "name") : "")
+                                              subtitleModel.data(subtitleSelector.selectedIndex, "name") : "",
+                                              audioSwitch.checked)
 
-    onStatusChanged: if ((status == DialogStatus.Closing)
-                         && (streamModel.status == ResourcesRequest.Loading)) streamModel.cancel();
+    onStatusChanged: {
+        switch (status) {
+        case DialogStatus.Open: {
+            subtitleModel.clear();
+            subtitleSwitch.checked = false;
+            subtitleSwitch.enabled = Plugins.resourceTypeIsSupported(subtitleModel.service, Resources.SUBTITLE);
+            
+            if (streamUrl) {
+                streamModel.clear();
+                streamModel.append(qsTr("Default format"), streamUrl);
+            }
+            else {
+                streamModel.list(resourceId);
+            }
+            
+            break;
+        }
+        case DialogStatus.Closed: {
+            streamModel.cancel();
+            subtitleModel.cancel();
+            break;
+        }
+        default:
+            break;
+        }
+    }
 }

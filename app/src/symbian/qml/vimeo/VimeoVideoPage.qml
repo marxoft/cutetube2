@@ -108,7 +108,8 @@ MyPage {
                         text: qsTr("Download")
                         onClicked: {
                             dialogLoader.sourceComponent = downloadDialog;
-                            dialogLoader.item.list(video.id, video.title);
+                            dialogLoader.item.resourceId = video.id;
+                            dialogLoader.item.resourceTitle = video.title;
                             dialogLoader.item.open();
                         }
                     }

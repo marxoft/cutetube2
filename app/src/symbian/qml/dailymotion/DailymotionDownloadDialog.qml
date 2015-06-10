@@ -24,15 +24,12 @@ import ".."
 MySheet {
     id: root
 
-    function list(resourceId, title) {
-        internal.resourceId = resourceId;
-        internal.title = title;
-        streamModel.list(resourceId);
-    }
+    property string resourceId
+    property string resourceTitle
 
     showProgressIndicator: (streamModel.status == QDailymotion.StreamsRequest.Loading)
                            || (subtitleModel.status == QDailymotion.ResourcesRequest.Loading)
-    acceptButtonText: streamModel.status == QDailymotion.StreamsRequest.Ready ? qsTr("Done") : ""
+    acceptButtonText: streamModel.count > 0 ? qsTr("Done") : ""
     rejectButtonText: qsTr("Cancel")
     content: Item {
         anchors.fill: parent
@@ -111,7 +108,7 @@ MySheet {
                     onCheckedChanged: {
                         if (checked) {
                             if (subtitleModel.status != QDailymotion.ResourcesRequest.Loading) {
-                                subtitleModel.list(internal.resourceId);
+                                subtitleModel.list(root.resourceId);
                             }
                         }
                         else {
@@ -170,26 +167,26 @@ MySheet {
         }
     }
 
-    QtObject {
-        id: internal
-
-        property string resourceId
-        property string title
-    }
-
-    onAccepted: Transfers.addDownloadTransfer(Resources.DAILYMOTION, internal.resourceId, streamSelector.value.id,
-                                              internal.title, Settings.defaultCategory,
-                                              subtitleSwitch.checked ? Settings.subtitlesLanguage : "")
+    onAccepted: Transfers.addDownloadTransfer(Resources.DAILYMOTION, resourceId, streamSelector.value.id, "",
+                                              resourceTitle, Settings.defaultCategory,
+                                              subtitleSwitch.checked ? Settings.subtitlesLanguage : "",
+                                              audioSwitch.checked)
 
     onStatusChanged: {
-        if (status == DialogStatus.Closing) {
-            if (streamModel.status == QDailymotion.StreamsRequest.Loading) {
-                streamModel.cancel();
-            }
-
-            if (subtitleModel.status == QDailymotion.ResourcesRequest.Loading) {
-                subtitleModel.cancel();
-            }
+        switch (status) {
+        case DialogStatus.Open: {
+            subtitleSwitch.checked = false;
+            subtitleModel.clear();
+            streamModel.list(resourceId);
+            break;
+        }
+        case DialogStatus.Closed: {
+            streamModel.cancel();
+            subtitleModel.cancel();
+            break;
+        }
+        default:
+            break;
         }
     }
 }
