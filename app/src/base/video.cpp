@@ -17,7 +17,9 @@
 #include "video.h"
 
 CTVideo::CTVideo(QObject *parent) :
-    QObject(parent)
+    QObject(parent),
+    m_downloadable(true),
+    m_viewCount(0)
 {
 }
 
@@ -25,6 +27,7 @@ CTVideo::CTVideo(const CTVideo *video, QObject *parent) :
     QObject(parent),
     m_date(video->date()),
     m_description(video->description()),
+    m_downloadable(video->isDownloadable()),
     m_duration(video->duration()),
     m_id(video->id()),
     m_largeThumbnailUrl(video->largeThumbnailUrl()),
@@ -80,6 +83,17 @@ void CTVideo::setId(const QString &i) {
     if (i != id()) {
         m_id = i;
         emit idChanged();
+    }
+}
+
+bool CTVideo::isDownloadable() const {
+    return m_downloadable;
+}
+
+void CTVideo::setDownloadable(bool d) {
+    if (d != isDownloadable()) {
+        m_downloadable = d;
+        emit downloadableChanged();
     }
 }
 
@@ -189,6 +203,7 @@ void CTVideo::viewed() {
 void CTVideo::loadVideo(CTVideo *video) {
     setDate(video->date());
     setDescription(video->description());
+    setDownloadable(video->isDownloadable()),
     setDuration(video->duration());
     setId(video->id());
     setLargeThumbnailUrl(video->largeThumbnailUrl());

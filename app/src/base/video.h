@@ -26,6 +26,7 @@ class CTVideo : public QObject
     
     Q_PROPERTY(QString date READ date NOTIFY dateChanged)
     Q_PROPERTY(QString description READ description NOTIFY descriptionChanged)
+    Q_PROPERTY(bool downloadable READ isDownloadable NOTIFY downloadableChanged)
     Q_PROPERTY(QString duration READ duration NOTIFY durationChanged)
     Q_PROPERTY(QString id READ id NOTIFY idChanged)
     Q_PROPERTY(QUrl largeThumbnailUrl READ largeThumbnailUrl NOTIFY largeThumbnailUrlChanged)
@@ -45,10 +46,12 @@ public:
     QString date() const;
     
     QString description() const;
-    
+        
     QString duration() const;
         
     QString id() const;
+    
+    bool isDownloadable() const;
     
     QUrl largeThumbnailUrl() const;
             
@@ -78,6 +81,8 @@ protected:
     
     void setDescription(const QString &d);
     
+    void setDownloadable(bool d);
+    
     void setDuration(const QString &d);
     
     void setId(const QString &i);
@@ -104,6 +109,7 @@ protected:
 Q_SIGNALS:
     void dateChanged();
     void descriptionChanged();
+    void downloadableChanged();
     void durationChanged();
     void idChanged();
     void largeThumbnailUrlChanged();
@@ -119,6 +125,7 @@ Q_SIGNALS:
 protected:
     QString m_date;
     QString m_description;
+    bool m_downloadable;
     QString m_duration;
     QString m_id;
     QUrl m_largeThumbnailUrl;
