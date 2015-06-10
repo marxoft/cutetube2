@@ -35,6 +35,7 @@ public:
     enum Roles {
         DateRole = Qt::UserRole + 1,
         DescriptionRole,
+        DownloadableRole,
         DurationRole,
         IdRole,
         LargeThumbnailUrlRole,

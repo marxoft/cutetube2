@@ -23,6 +23,7 @@ PluginVideoModel::PluginVideoModel(QObject *parent) :
 {
     m_roles[DateRole] = "date";
     m_roles[DescriptionRole] = "description";
+    m_roles[DownloadableRole] = "downloadable";
     m_roles[DurationRole] = "duration";
     m_roles[IdRole] = "id";
     m_roles[LargeThumbnailUrlRole] = "largeThumbnailUrl";
