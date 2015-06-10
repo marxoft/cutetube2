@@ -1,4 +1,0 @@
-Name=RSS
-SupportedListResources=playlist,stream,user,video
-Exec=/opt/cutetube2/plugins/rss/rss.py
-Settings=rss/rss.settings
