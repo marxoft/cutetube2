@@ -58,6 +58,7 @@ class Transfer : public QObject
     Q_PROPERTY(Status status READ status NOTIFY statusChanged)
     Q_PROPERTY(QString statusString READ statusString NOTIFY statusChanged)
     Q_PROPERTY(QString streamId READ streamId WRITE setStreamId NOTIFY streamIdChanged)
+    Q_PROPERTY(QUrl streamUrl READ streamUrl WRITE setStreamUrl NOTIFY streamUrlChanged)
     Q_PROPERTY(QString title READ title WRITE setTitle NOTIFY titleChanged)
     Q_PROPERTY(TransferType transferType READ transferType WRITE setTransferType NOTIFY transferTypeChanged)
     Q_PROPERTY(QUrl url READ url NOTIFY statusChanged)
@@ -139,6 +140,9 @@ public:
     QString streamId() const;
     void setStreamId(const QString &si);
     
+    QUrl streamUrl() const;
+    void setStreamUrl(const QUrl &url);
+    
     QString title() const;
     void setTitle(const QString &title);
     
@@ -198,6 +202,7 @@ Q_SIGNALS:
     void sizeChanged();
     void statusChanged();
     void streamIdChanged();
+    void streamUrlChanged();
     void titleChanged();
     void transferTypeChanged();
 
@@ -250,6 +255,8 @@ private:
     Status m_status;
     
     QString m_streamId;
+    
+    QUrl m_streamUrl;
     
     QString m_title;
     

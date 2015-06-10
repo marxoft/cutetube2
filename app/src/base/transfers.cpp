@@ -80,8 +80,8 @@ int Transfers::count() const {
 }
 
 void Transfers::addDownloadTransfer(const QString &service, const QString &resourceId, const QString &streamId,
-                                    const QString &title, const QString &category, const QString &subtitlesLanguage,
-                                    bool convertToAudio) {
+                                    const QUrl &streamUrl, const QString &title, const QString &category,
+                                    const QString &subtitlesLanguage, bool convertToAudio) {
     Transfer *transfer = createTransfer(service, this);
     transfer->setNetworkAccessManager(m_nam);
     transfer->setId(QByteArray(QByteArray::number(QDateTime::currentMSecsSinceEpoch()) + "#"
@@ -91,6 +91,7 @@ void Transfers::addDownloadTransfer(const QString &service, const QString &resou
     transfer->setCategory(category);
     transfer->setResourceId(resourceId);
     transfer->setStreamId(streamId);
+    transfer->setStreamUrl(streamUrl);
     transfer->setTitle(title);
     transfer->setConvertToAudio(convertToAudio);
     
@@ -185,6 +186,7 @@ void Transfers::storeTransfers() {
         settings.setValue("service", transfer->service());
         settings.setValue("resourceId", transfer->resourceId());
         settings.setValue("streamId", transfer->streamId());
+        settings.setValue("streamUrl", transfer->streamUrl());
         settings.setValue("title", transfer->title());
         settings.setValue("convertToAudio", transfer->convertToAudio());
         settings.setValue("downloadSubtitles", transfer->downloadSubtitles());
@@ -207,6 +209,7 @@ void Transfers::restoreTransfers() {
         transfer->setSize(settings.value("size").toLongLong());
         transfer->setResourceId(settings.value("resourceId").toString());
         transfer->setStreamId(settings.value("streamId").toString());
+        transfer->setStreamUrl(settings.value("streamUrl").toString());
         transfer->setTitle(settings.value("title").toString());
         transfer->setConvertToAudio(settings.value("convertToAudio").toBool());
         transfer->setDownloadSubtitles(settings.value("downloadSubtitles").toBool());

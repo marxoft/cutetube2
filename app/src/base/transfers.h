@@ -39,7 +39,7 @@ public:
     int count() const;
     
     Q_INVOKABLE void addDownloadTransfer(const QString &service, const QString &resourceId, const QString &streamId,
-                                         const QString &title, const QString &category,
+                                         const QUrl &streamUrl, const QString &title, const QString &category,
                                          const QString &subtitlesLanguage = QString(), bool convertToAudio = false);
     
     Q_INVOKABLE Transfer* get(int i) const;

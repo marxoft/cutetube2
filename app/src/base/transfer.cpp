@@ -420,6 +420,20 @@ void Transfer::setStreamId(const QString &si) {
 #endif
 }
 
+QUrl Transfer::streamUrl() const {
+    return m_streamUrl;
+}
+
+void Transfer::setStreamUrl(const QUrl &url) {
+    if (url != streamUrl()) {
+        m_streamUrl = url;
+        emit streamUrlChanged();
+    }
+#ifdef CUTETUBE_DEBUG
+    qDebug() << "Transfer::setStreamUrl" << url;
+#endif
+}
+
 QString Transfer::title() const {
     return m_title;
 }
@@ -510,7 +524,13 @@ void Transfer::start() {
     }
     
     setStatus(Connecting);
-    listStreams();
+    
+    if (streamUrl().isEmpty()) {
+        listStreams();
+    }
+    else {
+        startDownload(streamUrl());
+    }
 }
 
 void Transfer::pause() {
