@@ -59,6 +59,7 @@ inline static QVariantMap createItem(QGalleryQueryRequest *request) {
     QString title = request->metaData(QDocumentGallery::title).toString();
     QVariantMap item;
     item["date"] = request->metaData(QDocumentGallery::lastModified).toDateTime().toString("dd MMM yyyy");
+    item["downloadable"] = false;
     item["duration"] = formatDuration(request->metaData(QDocumentGallery::duration).toLongLong());
     item["largeThumbnailUrl"] = thumbnailUrl;
     item["streamUrl"] = "file://" + filePath;
