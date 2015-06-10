@@ -35,6 +35,7 @@ void PluginTransfer::listStreams() {
         connect(m_streamsRequest, SIGNAL(finished()), this, SLOT(onStreamsRequestFinished()));
     }
     
+    m_streamsRequest->setService(service());
     m_streamsRequest->list(Resources::STREAM, resourceId());
 }
 
@@ -44,6 +45,7 @@ void PluginTransfer::listSubtitles() {
         connect(m_subtitlesRequest, SIGNAL(finished()), this, SLOT(onSubtitlesRequestFinished()));
     }
     
+    m_subtitlesRequest->setService(service());
     m_subtitlesRequest->list(Resources::SUBTITLE, resourceId());
 }
 
