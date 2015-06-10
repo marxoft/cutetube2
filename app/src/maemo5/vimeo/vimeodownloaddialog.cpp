@@ -168,7 +168,7 @@ void VimeoDownloadDialog::addDownload() {
     QString streamId = m_streamSelector->currentValue().toMap().value("id").toString();
     QString subtitles = m_subtitleCheckBox->isChecked() ? m_subtitleSelector->valueText() : QString();
     QString category = m_categorySelector->valueText();
-    Transfers::instance()->addDownloadTransfer(Resources::VIMEO, m_id, streamId, m_title, category, subtitles,
+    Transfers::instance()->addDownloadTransfer(Resources::VIMEO, m_id, streamId, QUrl(), m_title, category, subtitles,
                                                m_audioCheckBox->isChecked());
     
     accept();

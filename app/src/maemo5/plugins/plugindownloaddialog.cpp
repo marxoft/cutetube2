@@ -27,10 +27,11 @@
 #include <QHBoxLayout>
 #include <QMessageBox>
 
-PluginDownloadDialog::PluginDownloadDialog(const QString &service, const QString &resourceId, const QString &title,
-                                           QWidget *parent) :
+PluginDownloadDialog::PluginDownloadDialog(const QString &service, const QString &resourceId, const QUrl &streamUrl,
+                                           const QString &title, QWidget *parent) :
     Dialog(parent),
     m_id(resourceId),
+    m_url(streamUrl),
     m_title(title),
     m_streamModel(new PluginStreamModel(this)),
     m_subtitleModel(0),
@@ -53,9 +54,7 @@ PluginDownloadDialog::PluginDownloadDialog(const QString &service, const QString
     m_categorySelector->setValue(Settings::instance()->defaultCategory());
     m_categorySelector->setEnabled(m_categoryModel->rowCount() > 0);
     m_audioCheckBox->setEnabled(QFile::exists("/usr/bin/ffmpeg") || QFile::exists("/usr/bin/avconv"));
-    
-    m_buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
-    
+        
     QWidget *scrollWidget = new QWidget(m_scrollArea);
     QVBoxLayout *vbox = new QVBoxLayout(scrollWidget);
     vbox->addWidget(m_streamSelector, 0, 0);
@@ -102,7 +101,16 @@ PluginDownloadDialog::PluginDownloadDialog(const QString &service, const QString
 
 void PluginDownloadDialog::showEvent(QShowEvent *e) {
     Dialog::showEvent(e);
-    m_streamModel->list(m_id);
+    
+    if (m_url.isEmpty()) {
+        m_buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
+        m_streamModel->list(m_id);
+    }
+    else {
+        m_streamModel->clear();
+        m_streamModel->append(tr("Default format"), m_url);
+        m_buttonBox->button(QDialogButtonBox::Ok)->setEnabled(true);
+    }
 }
 
 void PluginDownloadDialog::onCategoryChanged() {
@@ -180,11 +188,11 @@ void PluginDownloadDialog::onSubtitleModelStatusChanged(ResourcesRequest::Status
 }
 
 void PluginDownloadDialog::addDownload() {
-    QString streamId = m_streamSelector->currentValue().toMap().value("id").toString();
+    QString streamId = m_url.isEmpty() ? m_streamSelector->currentValue().toMap().value("id").toString() : QString();
     QString subtitles = (m_subtitleCheckBox) && (m_subtitleCheckBox->isChecked()) ? m_subtitleSelector->valueText()
                                                                                   : QString();
     QString category = m_categorySelector->valueText();
-    Transfers::instance()->addDownloadTransfer(m_streamModel->service(), m_id, streamId, m_title, category, subtitles,
+    Transfers::instance()->addDownloadTransfer(m_streamModel->service(), m_id, streamId, m_url, m_title, category, subtitles,
                                                m_audioCheckBox->isChecked());
     
     accept();

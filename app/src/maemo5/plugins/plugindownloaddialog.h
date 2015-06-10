@@ -33,8 +33,8 @@ class PluginDownloadDialog : public Dialog
     Q_OBJECT
     
 public:
-    explicit PluginDownloadDialog(const QString &service, const QString &resourceId, const QString &title,
-                                  QWidget *parent = 0);
+    explicit PluginDownloadDialog(const QString &service, const QString &resourceId, const QUrl &streamUrl,
+                                  const QString &title, QWidget *parent = 0);
     
 protected:
     void showEvent(QShowEvent *e);
@@ -51,6 +51,7 @@ private Q_SLOTS:
     
 private:
     QString m_id;
+    QUrl m_url;
     QString m_title;
     PluginStreamModel *m_streamModel;
     PluginSubtitleModel *m_subtitleModel;

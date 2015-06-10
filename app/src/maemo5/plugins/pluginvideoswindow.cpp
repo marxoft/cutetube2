@@ -134,8 +134,9 @@ void PluginVideosWindow::downloadVideo() {
     if (m_view->currentIndex().isValid()) {
         QString id = m_view->currentIndex().data(PluginVideoModel::IdRole).toString();
         QString title = m_view->currentIndex().data(PluginVideoModel::TitleRole).toString();
+        QUrl streamUrl = m_view->currentIndex().data(PluginVideoModel::StreamUrlRole).toString();
         
-        PluginDownloadDialog *dialog = new PluginDownloadDialog(m_model->service(), id, title, this);
+        PluginDownloadDialog *dialog = new PluginDownloadDialog(m_model->service(), id, streamUrl, title, this);
         dialog->open();
     }
 }
@@ -188,6 +189,7 @@ void PluginVideosWindow::showVideo(const QModelIndex &index) {
 
 void PluginVideosWindow::showContextMenu(const QPoint &pos) {
     if ((!isBusy()) && (m_view->currentIndex().isValid())) {
+        m_downloadAction->setEnabled(m_model->data(m_view->currentIndex(), PluginVideoModel::DownloadableRole).toBool());
         m_contextMenu->popup(pos, m_downloadAction);
     }
 }

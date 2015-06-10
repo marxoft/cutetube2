@@ -75,7 +75,7 @@ PluginVideoWindow::PluginVideoWindow(const QString &service, const QString &id, 
     m_listAction(new QAction(tr("List"), this)),
     m_gridAction(new QAction(tr("Grid"), this)),
     m_reloadAction(new QAction(tr("Reload"), this)),
-    m_downloadAction(new QAction(tr("Download"), this)),
+    m_downloadAction(0),
     m_shareAction(new QAction(tr("Copy URL"), this)),
     m_contextMenu(new QMenu(this)),
     m_relatedDownloadAction(new QAction(tr("Download"), this)),
@@ -117,7 +117,7 @@ PluginVideoWindow::PluginVideoWindow(const PluginVideo *video, StackedWindow *pa
     m_listAction(new QAction(tr("List"), this)),
     m_gridAction(new QAction(tr("Grid"), this)),
     m_reloadAction(new QAction(tr("Reload"), this)),
-    m_downloadAction(new QAction(tr("Download"), this)),
+    m_downloadAction(0),
     m_shareAction(new QAction(tr("Copy URL"), this)),
     m_contextMenu(new QMenu(this)),
     m_relatedDownloadAction(new QAction(tr("Download"), this)),
@@ -200,7 +200,6 @@ void PluginVideoWindow::loadBaseUi() {
     menuBar()->addAction(m_listAction);
     menuBar()->addAction(m_gridAction);
     menuBar()->addAction(m_reloadAction);
-    menuBar()->addAction(m_downloadAction);
     menuBar()->addAction(m_shareAction);
     
     connect(m_relatedModel, SIGNAL(statusChanged(ResourcesRequest::Status)), this,
@@ -215,11 +214,16 @@ void PluginVideoWindow::loadBaseUi() {
     connect(m_reloadAction, SIGNAL(triggered()), this, SLOT(reload()));
     connect(m_thumbnail, SIGNAL(clicked()), this, SLOT(playVideo()));
     connect(m_descriptionLabel, SIGNAL(anchorClicked(QUrl)), this, SLOT(showResource(QUrl)));
-    connect(m_downloadAction, SIGNAL(triggered()), this, SLOT(downloadVideo()));
     connect(m_shareAction, SIGNAL(triggered()), this, SLOT(shareVideo()));
     connect(m_relatedDownloadAction, SIGNAL(triggered()), this, SLOT(downloadRelatedVideo()));
     connect(m_relatedShareAction, SIGNAL(triggered()), this, SLOT(shareRelatedVideo()));
     
+    if (m_video->isDownloadable()) {
+        m_downloadAction = new QAction(tr("Download"), this);
+        menuBar()->insertAction(m_shareAction, m_downloadAction);
+        connect(m_downloadAction, SIGNAL(triggered()), this, SLOT(downloadVideo()));
+    }
+        
     if (Settings::instance()->defaultViewMode() == "grid") {
         m_gridAction->trigger();
     }
@@ -267,7 +271,8 @@ void PluginVideoWindow::downloadVideo() {
         return;
     }
     
-    PluginDownloadDialog *dialog = new PluginDownloadDialog(m_video->service(), m_video->id(), m_video->title(), this);
+    PluginDownloadDialog *dialog = new PluginDownloadDialog(m_video->service(), m_video->id(), m_video->streamUrl(),
+                                                            m_video->title(), this);
     dialog->open();
 }
 
@@ -299,8 +304,9 @@ void PluginVideoWindow::downloadRelatedVideo() {
     if ((!isBusy()) && (m_relatedView->currentIndex().isValid())) {
         QString id = m_relatedView->currentIndex().data(PluginVideoModel::IdRole).toString();
         QString title = m_relatedView->currentIndex().data(PluginVideoModel::TitleRole).toString();
+        QUrl streamUrl = m_relatedView->currentIndex().data(PluginVideoModel::StreamUrlRole).toString();
         
-        PluginDownloadDialog *dialog = new PluginDownloadDialog(m_video->service(), id, title, this);
+        PluginDownloadDialog *dialog = new PluginDownloadDialog(m_video->service(), id, streamUrl, title, this);
         dialog->open();
     }
 }
@@ -364,6 +370,8 @@ void PluginVideoWindow::reload() {
 
 void PluginVideoWindow::showContextMenu(const QPoint &pos) {
     if ((!isBusy()) && (m_relatedView->currentIndex().isValid())) {
+        m_relatedDownloadAction->setEnabled(m_relatedModel->data(m_relatedView->currentIndex(),
+                                                                 PluginVideoModel::DownloadableRole).toBool());
         m_contextMenu->popup(pos, m_relatedDownloadAction);
     }
 }
