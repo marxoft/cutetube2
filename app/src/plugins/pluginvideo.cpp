@@ -69,6 +69,7 @@ void PluginVideo::loadVideo(const QString &service, const QVariantMap &video) {
     setService(service);
     setDate(video.value("date").toString());
     setDescription(video.value("description").toString());
+    setDownloadable(video.value("downloadable", true).toBool());
     setDuration(video.value("duration").toString());
     setId(video.value("id").toString());
     setLargeThumbnailUrl(video.value("largeThumbnailUrl").toString());
