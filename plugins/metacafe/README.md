@@ -7,7 +7,6 @@ cuteTube2-Metacafe is a plugin for cuteTube2 providing access to content from Me
 python-beautifulsoup  
 python-simplejson
 
-
 #Usage
 
 The following resources are supported:
