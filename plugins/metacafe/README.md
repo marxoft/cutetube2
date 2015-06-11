@@ -10,6 +10,5 @@ The following resources are supported:
 
 #Dependencies
 
-cutetube2 (>= 0.2.1)
-python-beautifulsoup
+python-beautifulsoup  
 python-simplejson
