@@ -1,0 +1,15 @@
+<plugin name="XVideos" exec="/opt/cutetube2/plugins/xvideos/xvideos.py">
+    <resources>
+        <resource method="list" type="stream" />
+        <resource method="list" type="category" name="Channels" id="http://www.xvideos.com/channels/all" />
+        <resource method="list" type="video" name="New videos" id="http://www.xvideos.com/" />
+        <resource method="list" type="video" name="Best videos" id="http://www.xvideos.com/best/" />
+        <resource method="list" type="user" name="Pornstars" id="http://www.xvideos.com/pornstars" />
+        <resource method="list" type="user" name="Profiles" id="http://www.xvideos.com/profileslist" />
+        <resource method="search" type="video" name="Videos (relevance)" order="relevance" />
+        <resource method="search" type="video" name="Videos (date)" order="uploaddate" />
+        <resource method="search" type="video" name="Videos (rating)" order="rating" />
+        <resource method="get" type="video" regexp="http://www.xvideos.com/video\d+/[\w-_]+" />
+        <resource method="get" type="user" regexp="http://www.xvideos.com/profiles/[\w-_]+" />
+    </resources>
+</plugin>
