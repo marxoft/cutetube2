@@ -55,7 +55,11 @@ public Q_SLOTS:
         }
         
         foreach (ListResource resource, plugin.listResources.values()) {
-            append(resource.value("name").toString(), resource);
+            QString name = resource.value("name").toString();
+            
+            if (!name.isEmpty()) {
+                append(name, resource);
+            }
         }
     }
     
