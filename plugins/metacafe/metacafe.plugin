@@ -1,0 +1,9 @@
+<plugin name="Metacafe" exec="/opt/cutetube2/plugins/metacafe/metacafe.py">
+    <resources>
+        <resource method="search" name="Videos (related)" type="video" order="" />
+        <resource method="search" name="Videos (newest)" type="video" order="newest" />
+        <resource method="search" name="Videos (popular)" type="video" order="most_popular" />
+        <resource method="get" regexp="http://www\.metacafe\.com/watch/\d+" type="video" />
+        <resource method="get" regexp="http://www\.metacafe\.com/(channels/\w+|[\w-]+(/|)$)" type="user" />
+    </resources>
+</plugin>
