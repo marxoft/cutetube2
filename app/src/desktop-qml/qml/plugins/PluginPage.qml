@@ -24,6 +24,12 @@ Page {
     id: root
     
     function search(query, type, order) {
+        view.currentIndex = 1;
+        
+        if (pageStack.depth > 0) {
+            pageStack.clear();
+        }
+        
         if (type == Resources.PLAYLIST) {
             pageStack.push({item: Qt.resolvedUrl("PluginPlaylistsPage.qml"),
                             properties: {title: qsTr("Search") + " ('" + query + "')"}, immediate: true})
