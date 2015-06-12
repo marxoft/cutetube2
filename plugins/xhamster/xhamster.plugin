@@ -1,0 +1,16 @@
+<plugin name="XHamster" exec="/opt/cutetube2/plugins/xhamster/xhamster.py">
+    <resources>
+        <resource method="list" type="stream" />
+        <resource method="list" type="comment" />
+        <resource method="list" type="category" name="Channels" />
+        <resource method="list" type="video" name="New videos" id="http://xhamster.com/new/1.html" />
+        <resource method="list" type="video" name="Top rated videos" id="http://xhamster.com/rankings/weekly-top-videos.html" />
+        <resource method="search" type="video" name="Videos (relevance)" order="rl" />
+        <resource method="search" type="video" name="Videos (date)" order="da" />
+        <resource method="search" type="video" name="Videos (views)" order="vc" />
+        <resource method="search" type="video" name="Videos (rating)" order="rt" />
+        <resource method="search" type="video" name="Videos (duration)" order="dr" />
+        <resource method="get" type="video" regexp="http://xhamster.com/movies/\d+/[\w-_]+\.html" />
+        <resource method="get" type="user" regexp="http://xhamster.com/user/[\w-_]+" />
+    </resources>
+</plugin>
