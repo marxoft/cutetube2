@@ -19,7 +19,6 @@
 
 #include <QRegExp>
 #include <QStringList>
-#include <qplatformdefs.h>
 #if QT_VERSION >= 0x050000
 #include <QStandardPaths>
 #else
@@ -33,44 +32,22 @@ static const int MAX_RESULTS = 20;
 
 static const QRegExp ILLEGAL_FILENAME_CHARS_RE("[\"@&~=\\/:?#!|<>*^]");
 
-static const QString VERSION_NUMBER("0.2.1");
+static const QString VERSION_NUMBER("0.2.3");
 
 #if QT_VERSION >= 0x050000
 static const QString DATABASE_PATH(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/cuteTube2/");
-#ifdef SYMBIAN_OS
-static const QString DOWNLOAD_PATH("E:/cuteTube2");
-#elif (defined Q_WS_MAEMO_5) || (defined MEEGO_EDITION_HARMATTAN)
 static const QString DOWNLOAD_PATH("/home/user/MyDocs/cuteTube2/");
-#else
-static const QString DOWNLOAD_PATH(QStandardPaths::writableLocation(QStandardPaths::DownloadLocation) + "/cuteTube2/");
-#endif
 static const QString STORAGE_PATH(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/cuteTube2/");
-#ifdef Q_OS_UNIX
 static const QStringList PLUGIN_PATHS = QStringList() << "/opt/cutetube2/plugins/"
                                                       << QStandardPaths::writableLocation(QStandardPaths::ConfigLocation)
                                                          + "/cuteTube2/plugins/";
 #else
-static const QStringList PLUGIN_PATHS = QStringList() << QStandardPaths::writableLocation(QStandardPaths::ConfigLocation)
-                                                         + "/cuteTube2/plugins/";
-#endif
-#else
 static const QString DATABASE_PATH(QDesktopServices::storageLocation(QDesktopServices::HomeLocation) + "/.config/cuteTube2/");
-#ifdef SYMBIAN_OS
-static const QString DOWNLOAD_PATH("E:/cuteTube2");
-#elif (defined Q_WS_MAEMO_5) || (defined MEEGO_EDITION_HARMATTAN)
 static const QString DOWNLOAD_PATH("/home/user/MyDocs/cuteTube2/");
-#else
-static const QString DOWNLOAD_PATH(QDesktopServices::storageLocation(QDesktopServices::HomeLocation) + "/cuteTube2/");
-#endif
 static const QString STORAGE_PATH(QDesktopServices::storageLocation(QDesktopServices::HomeLocation) + "/.config/cuteTube2/");
-#ifdef Q_OS_UNIX
 static const QStringList PLUGIN_PATHS = QStringList() << "/opt/cutetube2/plugins/"
                                                       << QDesktopServices::storageLocation(QDesktopServices::HomeLocation)
                                                          + "/.config/cuteTube2/plugins/";
-#else
-static const QStringList PLUGIN_PATHS = QStringList() << QDesktopServices::storageLocation(QDesktopServices::HomeLocation)
-                                                         + "/.config/cuteTube2/plugins/";
-#endif
 #endif
 
 #endif // DEFINITIONS_H

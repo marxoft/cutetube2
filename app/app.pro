@@ -20,7 +20,6 @@ HEADERS += \
     src/base/comment.h \
     src/base/concurrenttransfersmodel.h \
     src/base/database.h \
-    src/base/definitions.h \
     src/base/json.h \
     src/base/localemodel.h \
     src/base/networkproxytypemodel.h \
@@ -206,6 +205,7 @@ maemo5 {
         src/maemo5/banner.h \
         src/maemo5/categoriesdialog.h \
         src/maemo5/commentdelegate.h \
+        src/maemo5/definitions.h \
         src/maemo5/dialog.h \
         src/maemo5/drawing.h \
         src/maemo5/filterbox.h \
@@ -428,6 +428,7 @@ maemo5 {
     HEADERS += \
         src/harmattan/activecolormodel.h \
         src/harmattan/cookiejar.h \
+        src/harmattan/definitions.h \
         src/harmattan/maskeditem.h \
         src/harmattan/maskeffect.h \
         src/harmattan/networkaccessmanagerfactory.h \
@@ -521,6 +522,7 @@ maemo5 {
         src/base/transfermodel.h \
         src/base/transferprioritymodel.h \
         src/symbian/cookiejar.h \
+        src/symbian/definitions.h \
         src/symbian/maskeditem.h \
         src/symbian/maskeffect.h \
         src/symbian/mediakeycaptureitem.h \
@@ -588,6 +590,7 @@ maemo5 {
         src/base/transfermodel.h \
         src/base/transferprioritymodel.h \
         src/desktop-qml/cookiejar.h \
+        src/desktop-qml/definitions.h \
         src/desktop-qml/networkaccessmanagerfactory.h
     
     SOURCES += \
