@@ -22,12 +22,13 @@
 #include <QDomDocument>
 #include <QDomElement>
 #include <QDomNodeList>
+#include <QDateTime>
 #include <stdio.h>
 
 static const int MAX_REDIRECTS = 8;
 
 bool dateGreaterThan(QVariant &one, QVariant &two) {
-    return one.toMap().value("_dt") > two.toMap().value("_dt");
+    return one.toMap().value("_dt").toDateTime() > two.toMap().value("_dt").toDateTime();
 }
 
 Rss::Rss(QObject *parent) :
