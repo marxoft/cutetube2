@@ -380,27 +380,27 @@ MyPage {
                         appWindow.pageStack.push(Qt.resolvedUrl("vimeo/VimeoCategoriesPage.qml"))
                         .model.list("/categories", {per_page: 50});
                         break;
-                    case 2:
+                    case 3:
                         appWindow.pageStack.push(Qt.resolvedUrl("vimeo/VimeoVideosPage.qml"), {title: qsTr("My videos")})
                         .model.list("/me/videos", {per_page: MAX_RESULTS});
                         break;
-                    case 3:
+                    case 4:
                         appWindow.pageStack.push(Qt.resolvedUrl("vimeo/VimeoVideosPage.qml"), {title: qsTr("Latest videos")})
                         .model.list("/me/feed", {per_page: MAX_RESULTS});
                         break;
-                    case 4:
+                    case 5:
                         appWindow.pageStack.push(Qt.resolvedUrl("vimeo/VimeoVideosPage.qml"), {title: qsTr("Likes")})
                         .model.list("/me/likes", {per_page: MAX_RESULTS});
                         break;
-                    case 5:
+                    case 6:
                         appWindow.pageStack.push(Qt.resolvedUrl("vimeo/VimeoVideosPage.qml"), {title: qsTr("Watch later")})
                         .model.list("/me/watchlater", {per_page: MAX_RESULTS});
                         break;
-                    case 6:
+                    case 7:
                         appWindow.pageStack.push(Qt.resolvedUrl("vimeo/VimeoPlaylistsPage.qml"), {title: qsTr("Albums")})
                         .model.list("/me/albums", {per_page: MAX_RESULTS});
                         break;
-                    case 7:
+                    case 8:
                         appWindow.pageStack.push(Qt.resolvedUrl("vimeo/VimeoUsersPage.qml"), {title: qsTr("Subscriptions")})
                         .model.list("/me/following", {per_page: MAX_RESULTS});
                         break;
