@@ -1,3 +1,15 @@
+cutetube2 (0.2.3) unstable; urgency=low
+  * Fix retrieval of Vimeo video streams.
+
+ -- Stuart Howarth <showarth@marxoft.co.uk>  Fri, 12 Jun 2015 23:19:45 +0100
+
+cutetube2 (0.2.2) unstable; urgency=low
+  * Plugin API changes.
+  * UI tweaks.
+  * Minor bug fixes.
+
+ -- Stuart Howarth <showarth@marxoft.co.uk>  Fri, 12 Jun 2015 21:05:32 +0100
+
 cutetube2 (0.2.1) unstable; urgency=low
   * Add categories.
   * Add language filter setting.
