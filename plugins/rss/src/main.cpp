@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) {
         }
         
         if (id.isEmpty()) {
-            QStringList urls = QSettings("cuteTube2", "cuteTube2").value("RSS/feeds").toStringList();
+            QStringList urls = QSettings("cuteTube2", "cuteTube2").value("RSS/feeds").toString().remove(' ').split(',');
             
             if (urls.isEmpty()) {
                 printf(qPrintable(QString("{\"error\": \"%1\"}").arg(QObject::tr("No feed URLs specified"))));

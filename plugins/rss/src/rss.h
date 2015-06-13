@@ -35,13 +35,15 @@ public:
     void listVideos(const QStringList &urls);    
     void listVideos(const QString &url);
     
+private:
+    void followRedirect(const QUrl &url);
+    
 private Q_SLOTS:
-    void parseVideos();
+    void parseVideos(QNetworkReply *reply);
     void printResult();
     
 private:
     QNetworkAccessManager *m_nam;
-    QNetworkReply *m_reply;
     
     QStringList m_urls;
     QVariantList m_results;

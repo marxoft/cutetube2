@@ -34,9 +34,9 @@ bool dateGreaterThan(QVariant &one, QVariant &two) {
 Rss::Rss(QObject *parent) :
     QObject(parent),
     m_nam(new QNetworkAccessManager(this)),
-    m_reply(0),
     m_redirects(0)
 {
+    connect(m_nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(parseVideos(QNetworkReply*)));
 }
 
 void Rss::listVideos(const QStringList &urls) {
@@ -51,40 +51,37 @@ void Rss::listVideos(const QStringList &urls) {
     listVideos(m_urls.takeFirst());
 }
 
-void Rss::listVideos(const QString &url) {
-    if (m_reply) {
-        m_reply->deleteLater();
-        m_reply = 0;
-    }
-    
-    m_reply = m_nam->get(QNetworkRequest(url));
-    connect(m_reply, SIGNAL(finished()), this, SLOT(parseVideos()));
+void Rss::listVideos(const QString &url) {    
+    m_redirects = 0;
+    m_nam->get(QNetworkRequest(url));
 }
 
-void Rss::parseVideos() {
-    if (!m_reply) {
+void Rss::followRedirect(const QUrl &url) {
+    m_redirects++;
+    m_nam->get(QNetworkRequest(url));
+}
+
+void Rss::parseVideos(QNetworkReply *reply) {
+    if (!reply) {
         printf(qPrintable(QString("{\"error\": \"%1\"}").arg(tr("Network error"))));
         QCoreApplication::exit(1);
         return;
     }
     
-    if (m_reply->error() != QNetworkReply::NoError) {
-        m_reply->deleteLater();
-        m_reply = 0;
-        printf(qPrintable(QString("{\"error\": \"%1: %2\"}").arg(tr("Network error")).arg(m_reply->errorString())));
+    if (reply->error() != QNetworkReply::NoError) {
+        reply->deleteLater();
+        printf(qPrintable(QString("{\"error\": \"%1: %2\"}").arg(tr("Network error")).arg(reply->errorString())));
         QCoreApplication::exit(1);
         return;
     }
     
-    QVariant redirect = m_reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
+    QVariant redirect = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
     
     if (!redirect.isNull()) {
-        m_reply->deleteLater();
-        m_reply = 0;
+        reply->deleteLater();
         
         if (m_redirects < MAX_REDIRECTS) {
-            m_redirects++;
-            listVideos(redirect.toString());
+            followRedirect(redirect.toString());
         }
         else {
             printf(qPrintable(QString("{\"error\": \"%1: %2\"}").arg(tr("Network error"))
@@ -97,9 +94,8 @@ void Rss::parseVideos() {
     
     QDomDocument doc;    
     
-    if (!doc.setContent(m_reply->readAll(), true)) {
-        m_reply->deleteLater();
-        m_reply = 0;
+    if (!doc.setContent(reply->readAll(), true)) {
+        reply->deleteLater();
         printf(qPrintable(QString("{\"error\": \"%1\"}").arg(tr("Unable to parse XML"))));
         QCoreApplication::exit(1);
         return;
@@ -118,7 +114,7 @@ void Rss::parseVideos() {
         result["date"] = dt.toString("dd MMM yyyy");
         result["description"] = item.firstChildElement("description").text();
         result["duration"] = item.firstChildElement("duration").text();
-        result["id"] = m_reply->url();
+        result["id"] = reply->url();
         result["largeThumbnailUrl"] = thumbnailUrl;
         result["streamUrl"] = item.firstChildElement("enclosure").attribute("url");
         result["thumbnailUrl"] = thumbnailUrl;
@@ -128,8 +124,7 @@ void Rss::parseVideos() {
         m_results << result;
     }
     
-    m_reply->deleteLater();
-    m_reply = 0;
+    reply->deleteLater();
     
     if (m_urls.isEmpty()) {
         printResult();
