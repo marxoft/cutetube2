@@ -1,3 +1,9 @@
+cutetube2-localvideos (0.1.1) unstable; urgency=low
+
+  * Mark videos as non-downloadable.
+
+ -- Stuart Howarth <showarth@marxoft.co.uk>  Sat, 13 Jun 2015 16:10:26 +0100
+
 cutetube2-localvideos (0.1.0) unstable; urgency=low
 
   * Add support for 'get' method to enable detection of URLs.

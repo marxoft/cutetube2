@@ -8,6 +8,6 @@ Homepage: http://marxoft.co.uk/projects/cutetube2
 
 Package: cutetube2-localvideos
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, cutetube2 (>= 0.2.0)
+Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: A plugin for cuteTube2 providing access to local videos
 XSBC-Maemo-Display-Name: cuteTube2-LocalVideos
