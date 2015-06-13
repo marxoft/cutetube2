@@ -150,10 +150,12 @@ void PluginVideoWindow::loadBaseUi() {
     
     m_thumbnail->setFixedSize(320, 240);
     m_avatar->setFixedSize(60, 60);
+    m_avatar->hide();
     
     m_titleLabel->setWordWrap(true);
     m_dateLabel->setStyleSheet(QString("color: %1; font-size: 18px").arg(palette().color(QPalette::Mid).name()));
     m_userLabel->setStyleSheet("font-size: 18px");
+    m_userLabel->hide();
     
     m_listAction->setCheckable(true);
     m_listAction->setChecked(true);
@@ -232,6 +234,8 @@ void PluginVideoWindow::loadBaseUi() {
 void PluginVideoWindow::loadUserUi() {
     m_userLabel->setText(m_userLabel->fontMetrics().elidedText(m_user->username(), Qt::ElideRight, 250));
     m_avatar->setSource(m_user->thumbnailUrl());
+    m_userLabel->show();
+    m_avatar->show();
     connect(m_avatar, SIGNAL(clicked()), this, SLOT(showUser()));
 }
 

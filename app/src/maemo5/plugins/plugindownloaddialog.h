@@ -20,6 +20,7 @@
 #include "dialog.h"
 #include "pluginstreammodel.h"
 #include "pluginsubtitlemodel.h"
+#include <QUrl>
 
 class CategoryNameModel;
 class ValueSelector;

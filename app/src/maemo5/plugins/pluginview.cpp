@@ -85,15 +85,16 @@ void PluginView::showResource(const QString &type, const QString &id) {
     }
 }
 
-void PluginView::showCategories(const QString &id) {
+void PluginView::showCategories(const QString &name, const QString &id) {
     PluginCategoriesWindow *window = new PluginCategoriesWindow(StackedWindow::currentWindow());
-    window->setWindowTitle(tr("Categories"));
+    window->setWindowTitle(name);
     window->list(m_model->service(), id);
+    window->show();
 }
 
-void PluginView::showPlaylists(const QString &id) {
+void PluginView::showPlaylists(const QString &name, const QString &id) {
     PluginPlaylistsWindow *window = new PluginPlaylistsWindow(StackedWindow::currentWindow());
-    window->setWindowTitle(tr("Playlists"));
+    window->setWindowTitle(name);
     window->list(m_model->service(), id);
     window->show();
 }
@@ -103,16 +104,16 @@ void PluginView::showSearchDialog() {
     dialog->open();
 }
 
-void PluginView::showUsers(const QString &id) {
+void PluginView::showUsers(const QString &name, const QString &id) {
     PluginUsersWindow *window = new PluginUsersWindow(StackedWindow::currentWindow());
-    window->setWindowTitle(tr("Users"));
+    window->setWindowTitle(name);
     window->list(m_model->service(), id);
     window->show();
 }
 
-void PluginView::showVideos(const QString &id) {
+void PluginView::showVideos(const QString &name, const QString &id) {
     PluginVideosWindow *window = new PluginVideosWindow(StackedWindow::currentWindow());
-    window->setWindowTitle(tr("Videos"));
+    window->setWindowTitle(name);
     window->list(m_model->service(), id);
     window->show();
 }
@@ -124,15 +125,15 @@ void PluginView::onItemActivated(const QModelIndex &index) {
         showSearchDialog();
     }
     else if (type.value("type") == Resources::CATEGORY) {
-        showCategories(type.value("id").toString());
+        showCategories(index.data(PluginNavModel::NameRole).toString(), type.value("id").toString());
     }
     else if (type.value("type") == Resources::PLAYLIST) {
-        showPlaylists(type.value("id").toString());
+        showPlaylists(index.data(PluginNavModel::NameRole).toString(), type.value("id").toString());
     }
     else if (type.value("type") == Resources::USER) {
-        showUsers(type.value("id").toString());
+        showUsers(index.data(PluginNavModel::NameRole).toString(), type.value("id").toString());
     }
     else {
-        showVideos(type.value("id").toString());
+        showVideos(index.data(PluginNavModel::NameRole).toString(), type.value("id").toString());
     }
 }

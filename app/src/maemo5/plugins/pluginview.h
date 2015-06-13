@@ -39,11 +39,11 @@ public Q_SLOTS:
     void showResource(const QString &type, const QString &id);
     
 private:
-    void showCategories(const QString &id);
-    void showPlaylists(const QString &id);
+    void showCategories(const QString &name, const QString &id);
+    void showPlaylists(const QString &name, const QString &id);
     void showSearchDialog();
-    void showUsers(const QString &id);
-    void showVideos(const QString &id);
+    void showUsers(const QString &name, const QString &id);
+    void showVideos(const QString &name, const QString &id);
     
 private Q_SLOTS:
     void onItemActivated(const QModelIndex &index);
