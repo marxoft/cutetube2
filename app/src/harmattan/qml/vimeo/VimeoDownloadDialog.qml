@@ -60,7 +60,7 @@ MySheet {
 
                         onStatusChanged: {
                             switch (status) {
-                            case QVimeo.ResourcesRequest.Loading:
+                            case QVimeo.StreamsRequest.Loading:
                                 streamSelector.showProgressIndicator = true;
                                 return;
                             case QVimeo.ResourcesRequest.Ready:
@@ -73,7 +73,7 @@ MySheet {
                                 }
 
                                 break;
-                            case QVimeo.ResourcesRequest.Failed: {
+                            case QVimeo.StreamsRequest.Failed: {
                                 infoBanner.showMessage(errorString);
                                 break;
                             }

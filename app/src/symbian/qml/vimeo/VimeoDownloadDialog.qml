@@ -60,10 +60,10 @@ MySheet {
 
                         onStatusChanged: {
                             switch (status) {
-                            case QVimeo.ResourcesRequest.Loading:
+                            case QVimeo.StreamsRequest.Loading:
                                 streamSelector.showProgressIndicator = true;
                                 return;
-                            case QVimeo.ResourcesRequest.Ready:
+                            case QVimeo.StreamsRequest.Ready:
                                 if (count > 0) {
                                     streamSelector.selectedIndex = Math.max(0, match("name",
                                                                             Settings.defaultDownloadFormat(Resources.VIMEO)));
@@ -73,7 +73,7 @@ MySheet {
                                 }
 
                                 break;
-                            case QVimeo.ResourcesRequest.Failed: {
+                            case QVimeo.StreamsRequest.Failed: {
                                 infoBanner.showMessage(errorString);
                                 break;
                             }

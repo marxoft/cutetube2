@@ -60,10 +60,10 @@ MySheet {
 
                         onStatusChanged: {
                             switch (status) {
-                            case QDailymotion.ResourcesRequest.Loading:
+                            case QDailymotion.StreamsRequest.Loading:
                                 streamSelector.showProgressIndicator = true;
                                 return;
-                            case QDailymotion.ResourcesRequest.Ready:
+                            case QDailymotion.StreamsRequest.Ready:
                                 if (count > 0) {
                                     streamSelector.selectedIndex = Math.max(0, match("name",
                                                                             Settings.defaultDownloadFormat(Resources.DAILYMOTION)));
@@ -73,7 +73,7 @@ MySheet {
                                 }
 
                                 break;
-                            case QDailymotion.ResourcesRequest.Failed: {
+                            case QDailymotion.StreamsRequest.Failed: {
                                 infoBanner.showMessage(errorString);
                                 break;
                             }

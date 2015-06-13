@@ -60,10 +60,10 @@ MySheet {
 
                         onStatusChanged: {
                             switch (status) {
-                            case QYouTube.ResourcesRequest.Loading:
+                            case QYouTube.StreamsRequest.Loading:
                                 streamSelector.showProgressIndicator = true;
                                 return;
-                            case QYouTube.ResourcesRequest.Ready:
+                            case QYouTube.StreamsRequest.Ready:
                                 if (count > 0) {
                                     streamSelector.selectedIndex = Math.max(0, match("name",
                                                                             Settings.defaultDownloadFormat(Resources.YOUTUBE)));
@@ -73,7 +73,7 @@ MySheet {
                                 }
 
                                 break;
-                            case QYouTube.ResourcesRequest.Failed: {
+                            case QYouTube.StreamsRequest.Failed: {
                                 infoBanner.showMessage(errorString);
                                 break;
                             }
