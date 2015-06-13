@@ -1,7 +1,7 @@
 cutetube2-rss (0.0.5) unstable; urgency=low
   * Use C++/Qt instead of Python.
 
- -- Stuart Howarth <showarth@marxoft.co.uk>  Wed, 10 Jun 2015 21:02:15 +0000
+ -- Stuart Howarth <showarth@marxoft.co.uk>  Sat, 13 Jun 2015 20:28:33 +0000
 
 cutetube2-rss (0.0.4) unstable; urgency=low
   * Add python-simplejson dependency
