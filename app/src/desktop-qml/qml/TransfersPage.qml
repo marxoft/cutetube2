@@ -133,7 +133,7 @@ Page {
         MenuItem {
             text: qsTr("Start")
             iconName: "media-playback-start"
-            enabled: transferModel.data(view.currentRow, "status") <= Transfer.Failed
+            enabled: transferModel.data(view.currentRow, "status") <= Transfer.Queued
             onTriggered: Transfers.get(view.currentRow).queue()
         }
         

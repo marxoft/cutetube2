@@ -92,7 +92,7 @@ MyPage {
 
             MenuItem {
                 text: qsTr("Start")
-                enabled: transferModel.data(view.currentIndex, "status") <= Transfer.Failed
+                enabled: transferModel.data(view.currentIndex, "status") <= Transfer.Queued
                 onClicked: Transfers.get(view.currentIndex).queue()
             }
 
