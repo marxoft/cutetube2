@@ -216,6 +216,6 @@ void DailymotionCommentModel::onCommentAdded(DailymotionComment *comment) {
         insert(0, new DailymotionComment(comment, this));
     }
 #ifdef CUTETUBE_DEBUG
-    qDebug() << "DailymotionPlaylistModel::onCommentAdded" << comment->videoId();
+    qDebug() << "DailymotionCommentModel::onCommentAdded" << comment->videoId();
 #endif
 }

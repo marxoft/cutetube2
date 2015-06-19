@@ -172,7 +172,6 @@ void DailymotionUser::loadUser(DailymotionUser *user) {
     setLargeBannerUrl(user->largeBannerUrl());
     setSubscribed(user->isSubscribed());
     setSubscriberCount(user->subscriberCount());
-    setUsername(user->username());
     setViewCount(user->viewCount());
 }
 

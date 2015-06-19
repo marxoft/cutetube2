@@ -70,8 +70,8 @@ public Q_SLOTS:
     void reload();
     
 private:
-    void append(DailymotionComment *user);
-    void insert(int row, DailymotionComment *user);
+    void append(DailymotionComment *comment);
+    void insert(int row, DailymotionComment *comment);
     void remove(int row);
     
 private Q_SLOTS:

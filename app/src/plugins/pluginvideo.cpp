@@ -79,7 +79,7 @@ void PluginVideo::loadVideo(const QString &service, const QVariantMap &video) {
     setUrl(video.value("url").toString());
     setUserId(video.value("userId").toString());
     setUsername(video.value("username").toString());
-    setViewCount(video.value("viewCount").toInt());    
+    setViewCount(video.value("viewCount").toLongLong());    
 }
 
 void PluginVideo::loadVideo(PluginVideo *video) {

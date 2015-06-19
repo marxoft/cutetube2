@@ -129,7 +129,6 @@ void VimeoUser::loadUser(VimeoUser *user) {
     CTUser::loadUser(user);
     setSubscribed(user->isSubscribed());
     setSubscriberCount(user->subscriberCount());
-    setUsername(user->username());
 }
 
 void VimeoUser::checkIfSubscribed() {

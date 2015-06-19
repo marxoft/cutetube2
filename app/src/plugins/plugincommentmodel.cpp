@@ -16,9 +16,6 @@
 
 #include "plugincommentmodel.h"
 #include "resources.h"
-#ifdef CUTETUBE_DEBUG
-#include <QDebug>
-#endif
 
 PluginCommentModel::PluginCommentModel(QObject *parent) :
     QAbstractListModel(parent),

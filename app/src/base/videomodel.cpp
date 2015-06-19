@@ -102,6 +102,7 @@ CTVideo* VideoModel::get(int row) const {
 void VideoModel::clear() {
     if (!m_items.isEmpty()) {
         beginResetModel();
+        qDeleteAll(m_items);
         m_items.clear();
         endResetModel();
         emit countChanged(rowCount());
@@ -112,6 +113,7 @@ void VideoModel::append(CTVideo *video) {
     beginInsertRows(QModelIndex(), m_items.size(), m_items.size());
     m_items << new CTVideo(video, this);
     endInsertRows();
+    emit countChanged(rowCount());
 }
 
 void VideoModel::insert(int row, CTVideo *video) {
@@ -119,6 +121,7 @@ void VideoModel::insert(int row, CTVideo *video) {
         beginInsertRows(QModelIndex(), row, row);
         m_items.insert(row, new CTVideo(video, this));
         endInsertRows();
+        emit countChanged(rowCount());
     }
     else {
         append(video);
@@ -130,5 +133,6 @@ void VideoModel::remove(int row) {
         beginRemoveRows(QModelIndex(), row, row);
         m_items.takeAt(row)->deleteLater();
         endRemoveRows();
+        emit countChanged(rowCount());
     }
 }

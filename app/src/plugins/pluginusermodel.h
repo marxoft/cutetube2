@@ -38,7 +38,6 @@ public:
         LargeThumbnailUrlRole,
         ServiceRole,
         ThumbnailUrlRole,
-        TitleRole,
         UsernameRole
     };
     

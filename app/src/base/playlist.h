@@ -86,7 +86,6 @@ protected:
 Q_SIGNALS:
     void dateChanged();
     void descriptionChanged();
-    void durationChanged();
     void idChanged();
     void largeThumbnailUrlChanged();
     void serviceChanged();

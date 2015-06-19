@@ -28,11 +28,6 @@ const QString Resources::YOUTUBE("youtube");
 const QString Resources::DAILYMOTION("dailymotion");
 const QString Resources::VIMEO("vimeo");
 
-const QString Resources::DATE("date");
-const QString Resources::RELEVANCE("relevance");
-const QString Resources::POPULAR("popular");
-const QString Resources::ALPHABET("alphabet");
-
 const QString Resources::VIDEO("video");
 const QString Resources::PLAYLIST("playlist");
 const QString Resources::USER("user");
@@ -73,22 +68,6 @@ QString Resources::dailymotionConstant() {
 
 QString Resources::vimeoConstant() {
     return VIMEO;
-}
-
-QString Resources::dateConstant() {
-    return DATE;
-}
-
-QString Resources::relevanceConstant() {
-    return RELEVANCE;
-}
-
-QString Resources::popularConstant() {
-    return POPULAR;
-}
-
-QString Resources::alphabetConstant() {
-    return ALPHABET;
 }
 
 QString Resources::videoConstant() {

@@ -16,9 +16,6 @@
 
 #include "pluginplaylistmodel.h"
 #include "resources.h"
-#ifdef CUTETUBE_DEBUG
-#include <QDebug>
-#endif
 
 PluginPlaylistModel::PluginPlaylistModel(QObject *parent) :
     QAbstractListModel(parent),

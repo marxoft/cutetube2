@@ -42,11 +42,6 @@ class Resources : public QObject
     Q_PROPERTY(QString DAILYMOTION READ dailymotionConstant CONSTANT)
     Q_PROPERTY(QString VIMEO READ vimeoConstant CONSTANT)
     
-    Q_PROPERTY(QString DATE READ dateConstant CONSTANT)
-    Q_PROPERTY(QString RELEVANCE READ relevanceConstant CONSTANT)
-    Q_PROPERTY(QString POPULAR READ popularConstant CONSTANT)
-    Q_PROPERTY(QString ALPHABET READ alphabetConstant CONSTANT)
-    
     Q_PROPERTY(QString VIDEO READ videoConstant CONSTANT)
     Q_PROPERTY(QString PLAYLIST READ playlistConstant CONSTANT)
     Q_PROPERTY(QString USER READ userConstant CONSTANT)
@@ -63,11 +58,6 @@ public:
     static const QString DAILYMOTION;
     static const QString VIMEO;
 
-    static const QString DATE;
-    static const QString RELEVANCE;
-    static const QString POPULAR;
-    static const QString ALPHABET;
-
     static const QString VIDEO;
     static const QString PLAYLIST;
     static const QString USER;
@@ -80,11 +70,6 @@ public:
     static QString youtubeConstant();
     static QString dailymotionConstant();
     static QString vimeoConstant();
-    
-    static QString dateConstant();
-    static QString relevanceConstant();
-    static QString popularConstant();
-    static QString alphabetConstant();
     
     static QString videoConstant();
     static QString playlistConstant();

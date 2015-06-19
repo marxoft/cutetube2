@@ -213,6 +213,6 @@ void VimeoCommentModel::onCommentAdded(VimeoComment *comment) {
         insert(0, new VimeoComment(comment, this));
     }
 #ifdef CUTETUBE_DEBUG
-    qDebug() << "VimeoPlaylistModel::onCommentAdded" << comment->videoId();
+    qDebug() << "VimeoCommentModel::onCommentAdded" << comment->videoId();
 #endif
 }

@@ -26,7 +26,6 @@ PluginUserModel::PluginUserModel(QObject *parent) :
     m_roles[LargeThumbnailUrlRole] = "largeThumbnailUrl";
     m_roles[ServiceRole] = "service";
     m_roles[ThumbnailUrlRole] = "thumbnailUrl";
-    m_roles[TitleRole] = "title";
     m_roles[UsernameRole] = "username";
 #if QT_VERSION < 0x050000
     setRoleNames(m_roles);
