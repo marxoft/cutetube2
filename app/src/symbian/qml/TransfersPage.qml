@@ -102,14 +102,14 @@ MyPage {
                 onClicked: Transfers.get(view.currentIndex).pause()
             }
 
-//            ValueMenuItem {
-//                title: qsTr("Priority")
-//                subTitle: view.currentIndex >= 0 ? transferModel.data(view.currentIndex, "priorityString") : "-"
-//                onClicked: {
-//                    dialogLoader.sourceComponent = priorityDialog;
-//                    dialogLoader.item.open();
-//                }
-//            }
+            ValueMenuItem {
+                title: qsTr("Priority")
+                subTitle: view.currentIndex >= 0 ? transferModel.data(view.currentIndex, "priorityString") : "-"
+                onClicked: {
+                    dialogLoader.sourceComponent = priorityDialog;
+                    dialogLoader.item.open();
+                }
+            }
 
             ValueMenuItem {
                 title: qsTr("Category")
@@ -131,16 +131,16 @@ MyPage {
         id: dialogLoader
     }
 
-//    Component {
-//        id: priorityDialog
+    Component {
+        id: priorityDialog
 
-//        ValueDialog {
-//            titleText: qsTr("Priority")
-//            focusItem: view
-//            model: TransferPriorityModel {}
-//            onValueChanged: transferModel.setData(view.currentIndex, value, "priority")
-//        }
-//    }
+        ValueDialog {
+            titleText: qsTr("Priority")
+            focusItem: view
+            model: TransferPriorityModel {}
+            onAccepted: transferModel.setData(view.currentIndex, value, "priority")
+        }
+    }
 
     Component {
         id: categoryDialog
@@ -149,7 +149,7 @@ MyPage {
             titleText: qsTr("Category")
             focusItem: view
             model: CategoryNameModel {}
-            onValueChanged: transferModel.setData(view.currentIndex, value, "category")
+            onAccepted: transferModel.setData(view.currentIndex, value, "category")
         }
     }
 }
