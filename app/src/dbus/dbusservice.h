@@ -26,14 +26,16 @@ class DBusService : public QObject
     
     Q_PROPERTY(QVariantMap requestedResource READ requestedResource NOTIFY resourceRequested)
     
+    Q_CLASSINFO("D-Bus Interface", "org.marxoft.cutetube2")
+    
 public:
     explicit DBusService(QObject *parent = 0);
     
     QVariantMap requestedResource() const;
     
 public Q_SLOTS:
-    bool showResource(const QString &url);
-    bool showResource(const QStringList &url);
+    Q_SCRIPTABLE bool showResource(const QString &url);
+    Q_SCRIPTABLE bool showResource(const QStringList &url);
     
 Q_SIGNALS:
     void resourceRequested(const QVariantMap &resource);
