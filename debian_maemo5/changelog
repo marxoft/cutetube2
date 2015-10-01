@@ -1,3 +1,10 @@
+cutetube2 (0.2.5) unstable; urgency=low
+  * UI tweaks.
+  * Register DBus interface (org.marxoft.cutetube2).
+  * Fix crashing when clearing stacked windows.
+
+ -- Stuart Howarth <showarth@marxoft.co.uk>  Thu, 01 Oct 2015 14:37:46 +0100
+
 cutetube2 (0.2.4) unstable; urgency=low
   * UI fix - Call show() on plugin categories window.
 
