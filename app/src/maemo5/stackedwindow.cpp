@@ -42,8 +42,10 @@ void StackedWindow::popWindow() {
 }
 
 void StackedWindow::clearWindows() {
-    while (stack.size() > 1) {
-        popWindow();
+    for (int i = stack.size() - 1; i > 0; i--) {
+        if (StackedWindow * w = stack.at(i)) {
+            w->close();
+        }
     }
 }
 
