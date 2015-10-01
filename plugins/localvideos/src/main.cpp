@@ -17,7 +17,7 @@
 #include "galleryrequest.h"
 #include <QCoreApplication>
 #include <QStringList>
-#include <stdio.h>
+#include <iostream>
 
 int main(int argc, char *argv[]) {
     QCoreApplication app(argc, argv);
@@ -43,8 +43,8 @@ int main(int argc, char *argv[]) {
     }
 
     if (resource != "video") {
-        printf(qPrintable(QString("{\"error\": \"%1\"}").arg(QObject::tr("Resource '%1' is not supported")
-                                                              .arg(resource))));
+        std::cout << qPrintable(QString("{\"error\": \"%1\"}").arg(QObject::tr("Resource '%1' is not supported")
+                                                              .arg(resource)));
         return 1;
     }
 
@@ -83,8 +83,8 @@ int main(int argc, char *argv[]) {
         request.searchVideos(query, order);
     }
     else {
-        printf(qPrintable(QString("{\"error\": \"%1\"}").arg(QObject::tr("Method '%1' is not supported")
-                                                              .arg(method))));
+        std::cout << qPrintable(QString("{\"error\": \"%1\"}").arg(QObject::tr("Method '%1' is not supported")
+                                                              .arg(method)));
         return 1;
     }
 
