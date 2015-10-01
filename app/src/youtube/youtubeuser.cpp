@@ -215,7 +215,6 @@ void YouTubeUser::loadUser(YouTubeUser *user) {
     setSubscribed(user->isSubscribed());
     setSubscriptionId(user->subscriptionId());
     setSubscriberCount(user->subscriberCount());
-    setUsername(user->username());
     setViewCount(user->viewCount());
 }
 
