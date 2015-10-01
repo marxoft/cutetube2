@@ -48,6 +48,7 @@ MyPage {
         model: PluginCategoryModel {
             id: categoryModel
 
+            service: Settings.currentService
             onStatusChanged: if (status == ResourcesRequest.Failed) infoBanner.showMessage(errorString);
         }
         delegate: LabelDelegate {
