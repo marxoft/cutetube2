@@ -241,6 +241,6 @@ void YouTubeCommentModel::onCommentAdded(YouTubeComment *comment) {
         }
     }
 #ifdef CUTETUBE_DEBUG
-    qDebug() << "YouTubePlaylistModel::onCommentAdded" << comment->videoId() << comment->parentId();
+    qDebug() << "YouTubeCommentModel::onCommentAdded" << comment->videoId() << comment->parentId();
 #endif
 }
