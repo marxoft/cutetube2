@@ -83,5 +83,8 @@ void ListView::mousePressEvent(QMouseEvent *e) {
 
 void ListView::mouseReleaseEvent(QMouseEvent *e) {
     QListView::mouseReleaseEvent(e);
-    setCurrentIndex(QModelIndex());
+    
+    if (clearCurrentIndexOnMouseRelease()) {
+        setCurrentIndex(QModelIndex());
+    }
 }

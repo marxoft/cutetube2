@@ -21,7 +21,6 @@
 #include "userdelegate.h"
 #include "youtubeuserwindow.h"
 #include <QLabel>
-#include <QActionGroup>
 #include <QMessageBox>
 #include <QVBoxLayout>
 #include <QMenuBar>
@@ -33,9 +32,6 @@ YouTubeUsersWindow::YouTubeUsersWindow(StackedWindow *parent) :
     m_view(new ListView(this)),
     m_delegate(new UserDelegate(m_cache, YouTubeUserModel::SubscriberCountRole, YouTubeUserModel::ThumbnailUrlRole,
                                 YouTubeUserModel::UsernameRole, m_view)),
-    m_viewGroup(new QActionGroup(this)),
-    m_listAction(new QAction(tr("List"), this)),
-    m_gridAction(new QAction(tr("Grid"), this)),
     m_reloadAction(new QAction(tr("Reload"), this)),
     m_label(new QLabel(QString("<p align='center'; style='font-size: 40px; color: %1'>%2</p>")
                               .arg(palette().color(QPalette::Mid).name()).arg(tr("No users found")), this))
@@ -45,12 +41,7 @@ YouTubeUsersWindow::YouTubeUsersWindow(StackedWindow *parent) :
     
     m_view->setModel(m_model);
     m_view->setItemDelegate(m_delegate);
-    m_listAction->setCheckable(true);
-    m_listAction->setChecked(true);
-    m_gridAction->setCheckable(true);
-    m_viewGroup->setExclusive(true);
-    m_viewGroup->addAction(m_listAction);
-    m_viewGroup->addAction(m_gridAction);
+
     m_reloadAction->setEnabled(false);
     
     m_label->hide();
@@ -60,21 +51,13 @@ YouTubeUsersWindow::YouTubeUsersWindow(StackedWindow *parent) :
     m_layout->addWidget(m_label);
     m_layout->setContentsMargins(0, 0, 0, 0);
     
-    menuBar()->addAction(m_listAction);
-    menuBar()->addAction(m_gridAction);
     menuBar()->addAction(m_reloadAction);
     
     connect(m_model, SIGNAL(statusChanged(QYouTube::ResourcesRequest::Status)), this,
             SLOT(onModelStatusChanged(QYouTube::ResourcesRequest::Status)));
     connect(m_cache, SIGNAL(imageReady()), this, SLOT(onImageReady()));
     connect(m_view, SIGNAL(activated(QModelIndex)), this, SLOT(showUser(QModelIndex)));
-    connect(m_listAction, SIGNAL(triggered()), this, SLOT(enableListMode()));
-    connect(m_gridAction, SIGNAL(triggered()), this, SLOT(enableGridMode()));
     connect(m_reloadAction, SIGNAL(triggered()), m_model, SLOT(reload()));
-    
-    if (Settings::instance()->defaultViewMode() == "grid") {
-        m_gridAction->trigger();
-    }
 }
 
 YouTubeUsersWindow::~YouTubeUsersWindow() {
@@ -85,20 +68,6 @@ YouTubeUsersWindow::~YouTubeUsersWindow() {
 void YouTubeUsersWindow::list(const QString &resourcePath, const QStringList &part, const QVariantMap &filters,
                               const QVariantMap &params) {
     m_model->list(resourcePath, part, filters, params);
-}
-
-void YouTubeUsersWindow::enableGridMode() {
-    m_delegate->setGridMode(true);
-    m_view->setFlow(QListView::LeftToRight);
-    m_view->setWrapping(true);
-    Settings::instance()->setDefaultViewMode("grid");
-}
-
-void YouTubeUsersWindow::enableListMode() {
-    m_delegate->setGridMode(false);
-    m_view->setFlow(QListView::TopToBottom);
-    m_view->setWrapping(false);
-    Settings::instance()->setDefaultViewMode("list");
 }
 
 void YouTubeUsersWindow::showUser(const QModelIndex &index) {

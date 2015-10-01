@@ -18,8 +18,8 @@
 #include "drawing.h"
 #include "imagecache.h"
 #include "utils.h"
-#include <QPainter>
 #include <QApplication>
+#include <QPainter>
 
 UserDelegate::UserDelegate(ImageCache *cache, int subscriberCountRole, int thumbnailRole, int usernameRole,
                            QObject *parent) :
@@ -27,8 +27,7 @@ UserDelegate::UserDelegate(ImageCache *cache, int subscriberCountRole, int thumb
     m_cache(cache),
     m_subscriberCountRole(subscriberCountRole),
     m_thumbnailRole(thumbnailRole),
-    m_usernameRole(usernameRole),
-    m_gridMode(false)
+    m_usernameRole(usernameRole)
 {
 }
 
@@ -38,15 +37,14 @@ void UserDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, 
     if ((option.state) & (QStyle::State_Selected)) {
         painter->drawImage(option.rect, QImage("/etc/hildon/theme/images/TouchListBackgroundPressed.png"));
     }
-    else if (!gridMode()) {
+    else {
         painter->drawImage(option.rect, QImage("/etc/hildon/theme/images/TouchListBackgroundNormal.png"));
     }
     
-    QUrl imageUrl = index.data(m_thumbnailRole).toUrl();
-    QImage image = m_cache->image(imageUrl, QSize(75, 75));
+    QImage image = m_cache->image(index.data(m_thumbnailRole).toString(), QSize(75, 75));
     
     QRect imageRect = option.rect;
-    imageRect.setLeft(imageRect.left() + (gridMode() ? 9 : 8));
+    imageRect.setLeft(imageRect.left() + 8);
     imageRect.setTop(imageRect.top() + 8);
     imageRect.setWidth(75);
     imageRect.setHeight(75);
@@ -54,45 +52,28 @@ void UserDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, 
     drawCenteredImage(painter, imageRect, image);
         
     QRect textRect = option.rect;
-    textRect.setLeft(textRect.left() + (gridMode() ? 8 : 91));
-    textRect.setTop(gridMode() ? imageRect.bottom() + 8 : textRect.top() + 8);
+    textRect.setLeft(imageRect.right() + 8);
     textRect.setRight(textRect.right() - 8);
+    textRect.setTop(textRect.top() + 8);
     textRect.setBottom(textRect.bottom() - 8);
     
-    QString text = index.data(m_usernameRole).toString();
+    painter->drawText(textRect, Qt::AlignLeft | Qt::AlignTop,
+                          painter->fontMetrics().elidedText(index.data(m_usernameRole).toString(),
+                          Qt::ElideRight, textRect.width()));
+    painter->save();
     
-    if (gridMode()) {
-        QFont font;
-        font.setPixelSize(16);
-        painter->setFont(font);
-        painter->drawText(textRect, Qt::AlignVCenter | Qt::TextWordWrap, text);
-    }
-    else {
-        if (textRect.width() < 600) {
-            QFont font;
-            font.setPixelSize(18);
-            painter->setFont(font);
-        }
-        
-        text = painter->fontMetrics().elidedText(text, Qt::ElideRight, textRect.width());
-        
-        const qint64 count = index.data(m_subscriberCountRole).toLongLong();
-        text.append("\n" + (count > 0 ? tr("%1 subscribers").arg(Utils::formatLargeNumber(count)) : tr("No subscribers")));
-                
-        painter->drawText(textRect, Qt::AlignVCenter, text);
-    }
+    QFont font;
+    font.setPointSize(13);
     
+    const int count = index.data(m_subscriberCountRole).toInt();
+    
+    painter->setFont(font);
+    painter->setPen(QApplication::palette().color(QPalette::Mid));
+    painter->drawText(textRect, Qt::AlignLeft | Qt::AlignBottom,
+                      count > 0 ? tr("%1 subscribers").arg(Utils::formatLargeNumber(count)) : tr("No subscribers"));    
     painter->restore();
 }
 
 QSize UserDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &) const {
-    return gridMode() ? QSize(93, 116) : QSize(option.rect.width(), 91);
-}
-
-bool UserDelegate::gridMode() const {
-    return m_gridMode;
-}
-
-void UserDelegate::setGridMode(bool enabled) {
-    m_gridMode = enabled;
+    return QSize(option.rect.width(), 91);
 }

@@ -30,7 +30,6 @@ class ListView;
 class TextBrowser;
 class VideoThumbnail;
 class QLabel;
-class QActionGroup;
 class QScrollArea;
 class QTabBar;
 class QStackedWidget;
@@ -52,9 +51,6 @@ private:
     void loadVideoUi();
     
 private Q_SLOTS:
-    void enableGridMode();
-    void enableListMode();
-    
     void getRelatedVideos();
     
     void addComment();
@@ -113,9 +109,6 @@ private:
     QLabel *m_userLabel;
     QLabel *m_noVideosLabel;
     QLabel *m_noCommentsLabel;
-    QActionGroup *m_viewGroup;
-    QAction *m_listAction;
-    QAction *m_gridAction;
     QAction *m_reloadAction;
     QAction *m_downloadAction;
     QAction *m_shareAction;

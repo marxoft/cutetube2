@@ -25,7 +25,6 @@ class ImageCache;
 class ListView;
 class QLabel;
 class QVBoxLayout;
-class QActionGroup;
 class QMenu;
 
 class PluginVideosWindow : public StackedWindow
@@ -41,9 +40,6 @@ public Q_SLOTS:
     void search(const QString &service, const QString &query, const QString &order);
     
 private Q_SLOTS:
-    void enableGridMode();
-    void enableListMode();
-    
     void downloadVideo();
     void playVideo(const QModelIndex &index);
     void shareVideo();
@@ -60,9 +56,6 @@ private:
     
     ListView *m_view;
     VideoDelegate *m_delegate;
-    QActionGroup *m_viewGroup;
-    QAction *m_listAction;
-    QAction *m_gridAction;
     QAction *m_reloadAction;
     QMenu *m_contextMenu;
     QAction *m_downloadAction;

@@ -43,6 +43,7 @@ DailymotionSearchDialog::DailymotionSearchDialog(QWidget *parent) :
                                     Settings::instance()->defaultSearchType(Resources::DAILYMOTION))));
     
     m_searchEdit->setPlaceholderText(tr("Search"));
+    m_searchEdit->setFocus(Qt::OtherFocusReason);
     
     m_searchButton->setDefault(true);
     m_searchButton->setEnabled(false);

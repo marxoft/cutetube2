@@ -19,9 +19,6 @@
 
 #include <QWidget>
 
-class PluginUser;
-class PluginVideo;
-class PluginPlaylist;
 class PluginNavModel;
 class ListView;
 class QModelIndex;

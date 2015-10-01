@@ -35,8 +35,7 @@ void VideoPlaybackDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
         painter->drawImage(option.rect, QImage("/etc/hildon/theme/images/TouchListBackgroundPressed.png"));
     }
     
-    QUrl imageUrl = index.data(VideoModel::ThumbnailUrlRole).toUrl();
-    QImage image = m_cache->image(imageUrl, QSize(80, 60));
+    QImage image = m_cache->image(index.data(VideoModel::ThumbnailUrlRole).toString(), QSize(80, 60));
     
     QRect imageRect = option.rect;
     imageRect.setLeft(imageRect.left() + 5);
@@ -73,7 +72,7 @@ void VideoPlaybackDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
     textRect.setLeft(textRect.left() + 90);
     textRect.setRight(textRect.right() - 5);
     
-    font.setPixelSize(18);
+    font.setPointSize(13);
     painter->setFont(font);
     painter->drawText(textRect, Qt::AlignVCenter | Qt::TextWordWrap, index.data(VideoModel::TitleRole).toString());
     painter->restore();

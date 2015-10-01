@@ -22,7 +22,7 @@ TextBrowser::TextBrowser(QWidget *parent) :
     setOpenLinks(false);
     setTextInteractionFlags(Qt::LinksAccessibleByMouse);
     setFrameStyle(QTextEdit::NoFrame);
-    setStyleSheet(QString("color: %1; font-size: 18px; background: transparent")
+    setStyleSheet(QString("color: %1; font-size: 13pt; background: transparent")
                          .arg(palette().color(QPalette::Text).name()));
     
     connect(this, SIGNAL(textChanged()), this, SLOT(onTextChanged()));

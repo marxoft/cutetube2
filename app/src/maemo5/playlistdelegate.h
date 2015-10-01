@@ -33,9 +33,6 @@ public:
     
     QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &) const;
     
-    bool gridMode() const;
-    void setGridMode(bool enabled);
-    
 private:
     ImageCache *m_cache;
     
@@ -44,8 +41,6 @@ private:
     int m_titleRole;
     int m_usernameRole;
     int m_videoCountRole;
-    
-    bool m_gridMode;
 };
 
 #endif // PLAYLISTDELEGATE_H

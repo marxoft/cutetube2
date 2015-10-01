@@ -86,7 +86,7 @@ VideoControls::VideoControls(QMediaPlayer *player, QWidget *parent) :
     m_durationLabel->setAlignment(Qt::AlignCenter);
 
     QFont font;
-    font.setPixelSize(18);
+    font.setPointSize(13);
 
     m_positionLabel->setFont(font);
     m_durationLabel->setFont(font);

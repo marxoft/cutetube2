@@ -28,7 +28,6 @@
 #include "vimeovideowindow.h"
 #include <qvimeo/urls.h>
 #include <QLabel>
-#include <QActionGroup>
 #include <QMessageBox>
 #include <QVBoxLayout>
 #include <QMenuBar>
@@ -43,9 +42,6 @@ VimeoVideosWindow::VimeoVideosWindow(StackedWindow *parent) :
     m_delegate(new VideoDelegate(m_cache, VimeoVideoModel::DateRole, VimeoVideoModel::DurationRole,
                                  VimeoVideoModel::ThumbnailUrlRole, VimeoVideoModel::TitleRole,
                                  VimeoVideoModel::UsernameRole, m_view)),
-    m_viewGroup(new QActionGroup(this)),
-    m_listAction(new QAction(tr("List"), this)),
-    m_gridAction(new QAction(tr("Grid"), this)),
     m_reloadAction(new QAction(tr("Reload"), this)),
     m_contextMenu(new QMenu(this)),
     m_downloadAction(new QAction(tr("Download"), this)),
@@ -62,13 +58,7 @@ VimeoVideosWindow::VimeoVideosWindow(StackedWindow *parent) :
     m_view->setModel(m_model);
     m_view->setItemDelegate(m_delegate);
     m_view->setContextMenuPolicy(Qt::CustomContextMenu);
-    
-    m_listAction->setCheckable(true);
-    m_listAction->setChecked(true);
-    m_gridAction->setCheckable(true);
-    m_viewGroup->setExclusive(true);
-    m_viewGroup->addAction(m_listAction);
-    m_viewGroup->addAction(m_gridAction);
+
     m_reloadAction->setEnabled(false);
     
     m_contextMenu->addAction(m_downloadAction);
@@ -81,8 +71,6 @@ VimeoVideosWindow::VimeoVideosWindow(StackedWindow *parent) :
     m_layout->addWidget(m_label);
     m_layout->setContentsMargins(0, 0, 0, 0);
     
-    menuBar()->addAction(m_listAction);
-    menuBar()->addAction(m_gridAction);
     menuBar()->addAction(m_reloadAction);
     
     connect(m_model, SIGNAL(statusChanged(QVimeo::ResourcesRequest::Status)), this,
@@ -91,8 +79,6 @@ VimeoVideosWindow::VimeoVideosWindow(StackedWindow *parent) :
     connect(m_view, SIGNAL(activated(QModelIndex)), this, SLOT(showVideo(QModelIndex)));
     connect(m_view, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenu(QPoint)));
     connect(m_delegate, SIGNAL(thumbnailClicked(QModelIndex)), this, SLOT(playVideo(QModelIndex)));
-    connect(m_listAction, SIGNAL(triggered()), this, SLOT(enableListMode()));
-    connect(m_gridAction, SIGNAL(triggered()), this, SLOT(enableGridMode()));
     connect(m_reloadAction, SIGNAL(triggered()), m_model, SLOT(reload()));
     connect(m_downloadAction, SIGNAL(triggered()), this, SLOT(downloadVideo()));
     connect(m_shareAction, SIGNAL(triggered()), this, SLOT(shareVideo()));
@@ -113,10 +99,6 @@ VimeoVideosWindow::VimeoVideosWindow(StackedWindow *parent) :
             connect(m_playlistAction, SIGNAL(triggered()), this, SLOT(addVideoToPlaylist()));
         }
     }
-    
-    if (Settings::instance()->defaultViewMode() == "grid") {
-        m_gridAction->trigger();
-    }
 }
 
 VimeoVideosWindow::~VimeoVideosWindow() {
@@ -126,20 +108,6 @@ VimeoVideosWindow::~VimeoVideosWindow() {
 
 void VimeoVideosWindow::list(const QString &resourcePath, const QVariantMap &filters) {
     m_model->list(resourcePath, filters);
-}
-
-void VimeoVideosWindow::enableGridMode() {
-    m_delegate->setGridMode(true);
-    m_view->setFlow(QListView::LeftToRight);
-    m_view->setWrapping(true);
-    Settings::instance()->setDefaultViewMode("grid");
-}
-
-void VimeoVideosWindow::enableListMode() {
-    m_delegate->setGridMode(false);
-    m_view->setFlow(QListView::TopToBottom);
-    m_view->setWrapping(false);
-    Settings::instance()->setDefaultViewMode("list");
 }
 
 void VimeoVideosWindow::addVideoToPlaylist() {

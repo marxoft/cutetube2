@@ -42,7 +42,6 @@
 #include <QTabBar>
 #include <QStackedWidget>
 #include <QLabel>
-#include <QActionGroup>
 #include <QGridLayout>
 #include <QMessageBox>
 #include <QMenuBar>
@@ -74,9 +73,6 @@ YouTubeVideoWindow::YouTubeVideoWindow(const QString &id, StackedWindow *parent)
     m_noVideosLabel(new QLabel(QString("<p align='center'; style='font-size: 40px; color: %1'>%2</p>")
                                       .arg(palette().color(QPalette::Mid).name()).arg(tr("No videos found")), this)),
     m_noCommentsLabel(0),
-    m_viewGroup(new QActionGroup(this)),
-    m_listAction(new QAction(tr("List"), this)),
-    m_gridAction(new QAction(tr("Grid"), this)),
     m_reloadAction(new QAction(tr("Reload"), this)),
     m_downloadAction(new QAction(tr("Download"), this)),
     m_shareAction(new QAction(tr("Copy URL"), this)),
@@ -125,9 +121,6 @@ YouTubeVideoWindow::YouTubeVideoWindow(const YouTubeVideo *video, StackedWindow 
     m_noVideosLabel(new QLabel(QString("<p align='center'; style='font-size: 40px; color: %1'>%2</p>")
                                       .arg(palette().color(QPalette::Mid).name()).arg(tr("No videos found")), this)),
     m_noCommentsLabel(0),
-    m_viewGroup(new QActionGroup(this)),
-    m_listAction(new QAction(tr("List"), this)),
-    m_gridAction(new QAction(tr("Grid"), this)),
     m_reloadAction(new QAction(tr("Reload"), this)),
     m_downloadAction(new QAction(tr("Download"), this)),
     m_shareAction(new QAction(tr("Copy URL"), this)),
@@ -170,15 +163,9 @@ void YouTubeVideoWindow::loadBaseUi() {
     m_avatar->setFixedSize(60, 60);
     
     m_titleLabel->setWordWrap(true);
-    m_dateLabel->setStyleSheet(QString("color: %1; font-size: 18px").arg(palette().color(QPalette::Mid).name()));
-    m_userLabel->setStyleSheet("font-size: 18px");
-    
-    m_listAction->setCheckable(true);
-    m_listAction->setChecked(true);
-    m_gridAction->setCheckable(true);
-    m_viewGroup->setExclusive(true);
-    m_viewGroup->addAction(m_listAction);
-    m_viewGroup->addAction(m_gridAction);
+    m_dateLabel->setStyleSheet(QString("color: %1; font-size: 13pt").arg(palette().color(QPalette::Mid).name()));
+    m_userLabel->setStyleSheet("font-size: 13pt");
+
     m_reloadAction->setEnabled(false);
     
     m_contextMenu->addAction(m_relatedDownloadAction);
@@ -216,8 +203,6 @@ void YouTubeVideoWindow::loadBaseUi() {
     m_layout->setColumnStretch(1, 1);
     m_layout->setContentsMargins(0, 0, 0, 0);
     
-    menuBar()->addAction(m_listAction);
-    menuBar()->addAction(m_gridAction);
     menuBar()->addAction(m_reloadAction);
     menuBar()->addAction(m_downloadAction);
     menuBar()->addAction(m_shareAction);
@@ -229,8 +214,6 @@ void YouTubeVideoWindow::loadBaseUi() {
     connect(m_relatedView, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenu(QPoint)));
     connect(m_relatedDelegate, SIGNAL(thumbnailClicked(QModelIndex)), this, SLOT(playRelatedVideo(QModelIndex)));
     connect(m_tabBar, SIGNAL(currentChanged(int)), this, SLOT(onTabIndexChanged(int)));
-    connect(m_listAction, SIGNAL(triggered()), this, SLOT(enableListMode()));
-    connect(m_gridAction, SIGNAL(triggered()), this, SLOT(enableGridMode()));
     connect(m_reloadAction, SIGNAL(triggered()), this, SLOT(reload()));
     connect(m_thumbnail, SIGNAL(clicked()), this, SLOT(playVideo()));
     connect(m_avatar, SIGNAL(clicked()), this, SLOT(showUser()));
@@ -276,10 +259,6 @@ void YouTubeVideoWindow::loadBaseUi() {
             }
         }
     }
-    
-    if (Settings::instance()->defaultViewMode() == "grid") {
-        m_gridAction->trigger();
-    }
 }
 
 void YouTubeVideoWindow::loadUserUi() {
@@ -305,20 +284,6 @@ void YouTubeVideoWindow::loadVideoUi() {
     if (m_favouriteAction) {
         m_favouriteAction->setText(m_video->isFavourite() ? tr("Unfavourite") : tr("Favourite"));
     }
-}
-
-void YouTubeVideoWindow::enableGridMode() {
-    m_relatedDelegate->setGridMode(true);
-    m_relatedView->setFlow(QListView::LeftToRight);
-    m_relatedView->setWrapping(true);
-    Settings::instance()->setDefaultViewMode("grid");
-}
-
-void YouTubeVideoWindow::enableListMode() {
-    m_relatedDelegate->setGridMode(false);
-    m_relatedView->setFlow(QListView::TopToBottom);
-    m_relatedView->setWrapping(false);
-    Settings::instance()->setDefaultViewMode("list");
 }
 
 void YouTubeVideoWindow::getRelatedVideos() {

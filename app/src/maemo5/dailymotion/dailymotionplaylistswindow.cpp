@@ -21,7 +21,6 @@
 #include "playlistdelegate.h"
 #include "settings.h"
 #include <QLabel>
-#include <QActionGroup>
 #include <QMessageBox>
 #include <QVBoxLayout>
 #include <QMenuBar>
@@ -35,9 +34,6 @@ DailymotionPlaylistsWindow::DailymotionPlaylistsWindow(StackedWindow *parent) :
                                     DailymotionPlaylistModel::ThumbnailUrlRole, DailymotionPlaylistModel::TitleRole,
                                     DailymotionPlaylistModel::UsernameRole, DailymotionPlaylistModel::VideoCountRole,
                                     m_view)),
-    m_viewGroup(new QActionGroup(this)),
-    m_listAction(new QAction(tr("List"), this)),
-    m_gridAction(new QAction(tr("Grid"), this)),
     m_reloadAction(new QAction(tr("Reload"), this)),
     m_label(new QLabel(QString("<p align='center'; style='font-size: 40px; color: %1'>%2</p>")
                               .arg(palette().color(QPalette::Mid).name()).arg(tr("No playlists found")), this))
@@ -48,12 +44,6 @@ DailymotionPlaylistsWindow::DailymotionPlaylistsWindow(StackedWindow *parent) :
     m_view->setModel(m_model);
     m_view->setItemDelegate(m_delegate);
     
-    m_listAction->setCheckable(true);
-    m_listAction->setChecked(true);
-    m_gridAction->setCheckable(true);
-    m_viewGroup->setExclusive(true);
-    m_viewGroup->addAction(m_listAction);
-    m_viewGroup->addAction(m_gridAction);
     m_reloadAction->setEnabled(false);
     
     m_label->hide();
@@ -63,21 +53,13 @@ DailymotionPlaylistsWindow::DailymotionPlaylistsWindow(StackedWindow *parent) :
     m_layout->addWidget(m_label);
     m_layout->setContentsMargins(0, 0, 0, 0);
     
-    menuBar()->addAction(m_listAction);
-    menuBar()->addAction(m_gridAction);
     menuBar()->addAction(m_reloadAction);
     
     connect(m_model, SIGNAL(statusChanged(QDailymotion::ResourcesRequest::Status)), this,
             SLOT(onModelStatusChanged(QDailymotion::ResourcesRequest::Status)));
     connect(m_cache, SIGNAL(imageReady()), this, SLOT(onImageReady()));
     connect(m_view, SIGNAL(activated(QModelIndex)), this, SLOT(showPlaylist(QModelIndex)));
-    connect(m_listAction, SIGNAL(triggered()), this, SLOT(enableListMode()));
-    connect(m_gridAction, SIGNAL(triggered()), this, SLOT(enableGridMode()));
     connect(m_reloadAction, SIGNAL(triggered()), m_model, SLOT(reload()));
-    
-    if (Settings::instance()->defaultViewMode() == "grid") {
-        m_gridAction->trigger();
-    }
 }
 
 DailymotionPlaylistsWindow::~DailymotionPlaylistsWindow() {
@@ -87,20 +69,6 @@ DailymotionPlaylistsWindow::~DailymotionPlaylistsWindow() {
 
 void DailymotionPlaylistsWindow::list(const QString &resourcePath, const QVariantMap &filters) {
     m_model->list(resourcePath, filters);
-}
-
-void DailymotionPlaylistsWindow::enableGridMode() {
-    m_delegate->setGridMode(true);
-    m_view->setFlow(QListView::LeftToRight);
-    m_view->setWrapping(true);
-    Settings::instance()->setDefaultViewMode("grid");
-}
-
-void DailymotionPlaylistsWindow::enableListMode() {
-    m_delegate->setGridMode(false);
-    m_view->setFlow(QListView::TopToBottom);
-    m_view->setWrapping(false);
-    Settings::instance()->setDefaultViewMode("list");
 }
 
 void DailymotionPlaylistsWindow::showPlaylist(const QModelIndex &index) {

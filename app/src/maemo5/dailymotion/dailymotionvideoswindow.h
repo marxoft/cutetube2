@@ -25,7 +25,6 @@ class ImageCache;
 class ListView;
 class QLabel;
 class QVBoxLayout;
-class QActionGroup;
 class QMenu;
 
 class DailymotionVideosWindow : public StackedWindow
@@ -40,9 +39,6 @@ public Q_SLOTS:
     void list(const QString &resourcePath, const QVariantMap &filters = QVariantMap());
     
 private Q_SLOTS:
-    void enableGridMode();
-    void enableListMode();
-    
     void addVideoToPlaylist();
     void downloadVideo();
     void playVideo(const QModelIndex &index);
@@ -62,9 +58,6 @@ private:
     
     ListView *m_view;
     VideoDelegate *m_delegate;
-    QActionGroup *m_viewGroup;
-    QAction *m_listAction;
-    QAction *m_gridAction;
     QAction *m_reloadAction;
     QMenu *m_contextMenu;
     QAction *m_downloadAction;

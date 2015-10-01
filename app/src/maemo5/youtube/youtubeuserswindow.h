@@ -25,7 +25,6 @@ class ImageCache;
 class ListView;
 class QLabel;
 class QVBoxLayout;
-class QActionGroup;
 
 class YouTubeUsersWindow : public StackedWindow
 {
@@ -40,9 +39,6 @@ public Q_SLOTS:
               const QVariantMap &params = QVariantMap());
     
 private Q_SLOTS:
-    void enableGridMode();
-    void enableListMode();
-    
     void showUser(const QModelIndex &index);
         
     void onImageReady();
@@ -54,9 +50,6 @@ private:
     
     ListView *m_view;
     UserDelegate *m_delegate;
-    QActionGroup *m_viewGroup;
-    QAction *m_listAction;
-    QAction *m_gridAction;
     QAction *m_reloadAction;
     QLabel *m_label;
     QVBoxLayout *m_layout;

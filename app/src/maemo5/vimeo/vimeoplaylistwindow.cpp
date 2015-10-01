@@ -38,7 +38,6 @@
 #include <qvimeo/urls.h>
 #include <QScrollArea>
 #include <QLabel>
-#include <QActionGroup>
 #include <QGridLayout>
 #include <QMessageBox>
 #include <QMenuBar>
@@ -64,9 +63,6 @@ VimeoPlaylistWindow::VimeoPlaylistWindow(const QString &id, StackedWindow *paren
     m_userLabel(new QLabel(this)),
     m_noVideosLabel(new QLabel(QString("<p align='center'; style='font-size: 40px; color: %1'>%2</p>")
                                       .arg(palette().color(QPalette::Mid).name()).arg(tr("No videos found")), this)),
-    m_viewGroup(new QActionGroup(this)),
-    m_listAction(new QAction(tr("List"), this)),
-    m_gridAction(new QAction(tr("Grid"), this)),
     m_reloadAction(new QAction(tr("Reload"), this)),
     m_contextMenu(new QMenu(this)),
     m_downloadAction(new QAction(tr("Download"), this)),
@@ -102,9 +98,6 @@ VimeoPlaylistWindow::VimeoPlaylistWindow(const VimeoPlaylist *playlist, StackedW
     m_userLabel(new QLabel(this)),
     m_noVideosLabel(new QLabel(QString("<p align='center'; style='font-size: 40px; color: %1'>%2</p>")
                                       .arg(palette().color(QPalette::Mid).name()).arg(tr("No videos found")), this)),
-    m_viewGroup(new QActionGroup(this)),
-    m_listAction(new QAction(tr("List"), this)),
-    m_gridAction(new QAction(tr("Grid"), this)),
     m_reloadAction(new QAction(tr("Reload"), this)),
     m_contextMenu(new QMenu(this)),
     m_downloadAction(new QAction(tr("Download"), this)),
@@ -142,16 +135,10 @@ void VimeoPlaylistWindow::loadBaseUi() {
     m_avatar->setFixedSize(60, 60);
     
     m_titleLabel->setWordWrap(true);
-    m_dateLabel->setStyleSheet(QString("color: %1; font-size: 18px").arg(palette().color(QPalette::Mid).name()));
-    m_userLabel->setStyleSheet("font-size: 18px");
+    m_dateLabel->setStyleSheet(QString("color: %1; font-size: 13pt").arg(palette().color(QPalette::Mid).name()));
+    m_userLabel->setStyleSheet("font-size: 13pt");
     m_noVideosLabel->hide();
-    
-    m_listAction->setCheckable(true);
-    m_listAction->setChecked(true);
-    m_gridAction->setCheckable(true);
-    m_viewGroup->setExclusive(true);
-    m_viewGroup->addAction(m_listAction);
-    m_viewGroup->addAction(m_gridAction);
+
     m_reloadAction->setEnabled(false);
     
     m_contextMenu->addAction(m_downloadAction);
@@ -180,8 +167,6 @@ void VimeoPlaylistWindow::loadBaseUi() {
     m_layout->setStretch(2, 1);
     m_layout->setContentsMargins(0, 0, 0, 0);
     
-    menuBar()->addAction(m_listAction);
-    menuBar()->addAction(m_gridAction);
     menuBar()->addAction(m_reloadAction);
     
     connect(m_model, SIGNAL(statusChanged(QVimeo::ResourcesRequest::Status)), this,
@@ -190,8 +175,6 @@ void VimeoPlaylistWindow::loadBaseUi() {
     connect(m_view, SIGNAL(activated(QModelIndex)), this, SLOT(showVideo(QModelIndex)));
     connect(m_view, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenu(QPoint)));
     connect(m_delegate, SIGNAL(thumbnailClicked(QModelIndex)), this, SLOT(playVideo(QModelIndex)));
-    connect(m_listAction, SIGNAL(triggered()), this, SLOT(enableListMode()));
-    connect(m_gridAction, SIGNAL(triggered()), this, SLOT(enableGridMode()));
     connect(m_reloadAction, SIGNAL(triggered()), m_model, SLOT(reload()));
     connect(m_avatar, SIGNAL(clicked()), this, SLOT(showUser()));
     connect(m_descriptionLabel, SIGNAL(anchorClicked(QUrl)), this, SLOT(showResource(QUrl)));
@@ -218,10 +201,6 @@ void VimeoPlaylistWindow::loadBaseUi() {
     if (Settings::instance()->videoPlayer() == "cutetube") {
         connect(m_thumbnail, SIGNAL(clicked()), this, SLOT(playPlaylist()));
     }
-    
-    if (Settings::instance()->defaultViewMode() == "grid") {
-        m_gridAction->trigger();
-    }
 }
 
 void VimeoPlaylistWindow::loadPlaylistUi() {
@@ -242,20 +221,6 @@ void VimeoPlaylistWindow::loadPlaylistUi() {
 void VimeoPlaylistWindow::loadUserUi() {
     m_userLabel->setText(m_userLabel->fontMetrics().elidedText(m_user->username(), Qt::ElideRight, 250));
     m_avatar->setSource(m_user->thumbnailUrl());
-}
-
-void VimeoPlaylistWindow::enableGridMode() {
-    m_delegate->setGridMode(true);
-    m_view->setFlow(QListView::LeftToRight);
-    m_view->setWrapping(true);
-    Settings::instance()->setDefaultViewMode("grid");
-}
-
-void VimeoPlaylistWindow::enableListMode() {
-    m_delegate->setGridMode(false);
-    m_view->setFlow(QListView::TopToBottom);
-    m_view->setWrapping(false);
-    Settings::instance()->setDefaultViewMode("list");
 }
 
 void VimeoPlaylistWindow::getVideos() {

@@ -33,17 +33,12 @@ public:
     
     QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &) const;
     
-    bool gridMode() const;
-    void setGridMode(bool enabled);
-    
 private:
     ImageCache *m_cache;
     
     int m_subscriberCountRole;
     int m_thumbnailRole;
-    int m_usernameRole;
-    
-    bool m_gridMode;
+    int m_usernameRole;    
 };
 
 #endif // USERDELEGATE_H

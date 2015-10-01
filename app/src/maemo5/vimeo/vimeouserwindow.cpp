@@ -91,7 +91,7 @@ void VimeoUserWindow::loadBaseUi() {
     
     m_avatar->setFixedSize(100, 100);
     
-    m_statsLabel->setStyleSheet("font-size: 18px");
+    m_statsLabel->setStyleSheet("font-size: 13pt");
     
     m_subscribeButton->setEnabled(false);
     

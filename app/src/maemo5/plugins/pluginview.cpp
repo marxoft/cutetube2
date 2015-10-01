@@ -19,18 +19,14 @@
 #include "navdelegate.h"
 #include "plugincategorieswindow.h"
 #include "pluginnavmodel.h"
-#include "pluginplaylist.h"
 #include "pluginplaylistswindow.h"
 #include "pluginplaylistwindow.h"
 #include "pluginsearchdialog.h"
-#include "pluginuser.h"
 #include "pluginuserswindow.h"
 #include "pluginuserwindow.h"
-#include "pluginvideo.h"
 #include "pluginvideoswindow.h"
 #include "pluginvideowindow.h"
 #include "resources.h"
-#include "settings.h"
 #include "stackedwindow.h"
 #include <QVBoxLayout>
 #include <QMaemo5InformationBox>
@@ -45,6 +41,7 @@ PluginView::PluginView(const QString &service, QWidget *parent) :
     m_view->setModel(m_model);
     m_view->setItemDelegate(new NavDelegate(m_view));
     m_layout->addWidget(m_view);
+    m_layout->setContentsMargins(0, 0, 0, 0);
     
     connect(m_view, SIGNAL(activated(QModelIndex)), this, SLOT(onItemActivated(QModelIndex)));
 }

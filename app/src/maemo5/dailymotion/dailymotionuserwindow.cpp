@@ -91,7 +91,7 @@ void DailymotionUserWindow::loadBaseUi() {
     
     m_banner->setFixedSize(400, 100);
     
-    m_statsLabel->setStyleSheet("font-size: 18px");
+    m_statsLabel->setStyleSheet("font-size: 13pt");
     
     m_subscribeButton->setEnabled(false);
     

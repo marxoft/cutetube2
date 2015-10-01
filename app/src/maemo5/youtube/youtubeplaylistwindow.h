@@ -29,7 +29,6 @@ class ListView;
 class TextBrowser;
 class PlaylistThumbnail;
 class QLabel;
-class QActionGroup;
 class QScrollArea;
 class QHBoxLayout;
 class QModelIndex;
@@ -49,9 +48,6 @@ private:
     void loadUserUi();
     
 private Q_SLOTS:
-    void enableGridMode();
-    void enableListMode();
-    
     void getVideos();
     
     void playPlaylist();
@@ -93,9 +89,6 @@ private:
     QLabel *m_dateLabel;
     QLabel *m_userLabel;
     QLabel *m_noVideosLabel;
-    QActionGroup *m_viewGroup;
-    QAction *m_listAction;
-    QAction *m_gridAction;
     QAction *m_reloadAction;
     QMenu *m_contextMenu;
     QAction *m_downloadAction;

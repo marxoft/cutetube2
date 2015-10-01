@@ -36,17 +36,12 @@ public:
     
     QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &) const;
     
-    bool gridMode() const;
-    void setGridMode(bool enabled);
-    
 Q_SIGNALS:
     void thumbnailClicked(const QModelIndex &index);
     
 private:
     ImageCache *m_cache;
-    
-    bool m_gridMode;
-    
+        
     int m_dateRole;
     int m_durationRole;
     int m_thumbnailRole;

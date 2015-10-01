@@ -43,6 +43,7 @@ PluginSearchDialog::PluginSearchDialog(const QString &service, QWidget *parent) 
                                     Settings::instance()->defaultSearchType(service))));
     
     m_searchEdit->setPlaceholderText(tr("Search"));
+    m_searchEdit->setFocus(Qt::OtherFocusReason);
 
     m_searchButton->setDefault(true);    
     m_searchButton->setEnabled(false);

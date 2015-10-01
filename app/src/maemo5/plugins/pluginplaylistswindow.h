@@ -25,7 +25,6 @@ class ImageCache;
 class ListView;
 class QLabel;
 class QVBoxLayout;
-class QActionGroup;
 
 class PluginPlaylistsWindow : public StackedWindow
 {
@@ -39,10 +38,7 @@ public Q_SLOTS:
     void list(const QString &service, const QString &id = QString());
     void search(const QString &service, const QString &query, const QString &order);
     
-private Q_SLOTS:
-    void enableGridMode();
-    void enableListMode();
-    
+private Q_SLOTS:    
     void showPlaylist(const QModelIndex &index);
     
     void onImageReady();
@@ -54,9 +50,6 @@ private:
     
     ListView *m_view;
     PlaylistDelegate *m_delegate;
-    QActionGroup *m_viewGroup;
-    QAction *m_listAction;
-    QAction *m_gridAction;
     QAction *m_reloadAction;
     QLabel *m_label;
     QVBoxLayout *m_layout;

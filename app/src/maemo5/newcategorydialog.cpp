@@ -40,8 +40,8 @@ NewCategoryDialog::NewCategoryDialog(QWidget *parent) :
     grid->addWidget(buttonBox, 1, 1);
 
     m_nameEdit->setPlaceholderText(tr("Name"));
+    m_nameEdit->setFocus(Qt::OtherFocusReason);
     m_pathSelector->setValueText(tr("None chosen"));
-    m_pathSelector->setFocus(Qt::OtherFocusReason);
     m_doneButton->setEnabled(false);
 
     connect(m_nameEdit, SIGNAL(textChanged(QString)), this, SLOT(onNameTextChanged(QString)));

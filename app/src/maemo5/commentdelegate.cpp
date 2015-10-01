@@ -40,8 +40,8 @@ bool CommentDelegate::editorEvent(QEvent *event, QAbstractItemModel *, const QSt
         QMouseEvent *mouse = static_cast<QMouseEvent*>(event);
 
         QRect imageRect = option.rect;
-        imageRect.setLeft(imageRect.left() + 8);
-        imageRect.setTop(imageRect.top() + 8);
+        imageRect.setLeft(imageRect.left() + 24);
+        imageRect.setTop(imageRect.top() + 16);
         imageRect.setWidth(40);
         imageRect.setHeight(40);
 
@@ -55,8 +55,8 @@ bool CommentDelegate::editorEvent(QEvent *event, QAbstractItemModel *, const QSt
             QMouseEvent *mouse = static_cast<QMouseEvent*>(event);
 
             QRect imageRect = option.rect;
-            imageRect.setLeft(imageRect.left() + 8);
-            imageRect.setTop(imageRect.top() + 8);
+            imageRect.setLeft(imageRect.left() + 24);
+            imageRect.setTop(imageRect.top() + 16);
             imageRect.setWidth(40);
             imageRect.setHeight(40);
 
@@ -99,7 +99,7 @@ void CommentDelegate::paint(QPainter *painter, const QStyleOptionViewItem &optio
     textRect.setHeight(40);
     
     QFont font;
-    font.setPixelSize(18);
+    font.setPointSize(13);
     
     painter->save();
     painter->setFont(font);

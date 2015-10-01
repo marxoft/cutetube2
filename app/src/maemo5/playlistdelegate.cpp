@@ -28,8 +28,7 @@ PlaylistDelegate::PlaylistDelegate(ImageCache *cache, int dateRole, int thumbnai
     m_thumbnailRole(thumbnailRole),
     m_titleRole(titleRole),
     m_usernameRole(usernameRole),
-    m_videoCountRole(videoCountRole),
-    m_gridMode(false)
+    m_videoCountRole(videoCountRole)
 {
 }
 
@@ -37,15 +36,14 @@ void PlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
     if ((option.state) & (QStyle::State_Selected)) {
         painter->drawImage(option.rect, QImage("/etc/hildon/theme/images/TouchListBackgroundPressed.png"));
     }
-    else if (!gridMode()) {
+    else {
         painter->drawImage(option.rect, QImage("/etc/hildon/theme/images/TouchListBackgroundNormal.png"));
     }
    
-    QUrl imageUrl = index.data(m_thumbnailRole).toUrl();
-    QImage image = m_cache->image(imageUrl, QSize(100, 75));
+    QImage image = m_cache->image(index.data(m_thumbnailRole).toString(), QSize(100, 75));
     
     QRect imageRect = option.rect;
-    imageRect.setLeft(imageRect.left() + (gridMode() ? 12 : 8));
+    imageRect.setLeft(imageRect.left() + 8);
     imageRect.setTop(imageRect.top() + 8);
     imageRect.setWidth(100);
     imageRect.setHeight(75);
@@ -76,64 +74,47 @@ void PlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
     painter->setPen(QApplication::palette().color(QPalette::Text));
     
     QRect textRect = option.rect;
-    textRect.setLeft(textRect.left() + (gridMode() ? 8 : 116));
-    textRect.setTop(gridMode() ? imageRect.bottom() + 8 : textRect.top() + 8);
+    textRect.setLeft(imageRect.right() + 8);
     textRect.setRight(textRect.right() - 8);
+    textRect.setTop(textRect.top() + 8);
     textRect.setBottom(textRect.bottom() - 8);
     
-    QString title = index.data(m_titleRole).toString();
+    QString subTitle;
+    const QString username = index.data(m_usernameRole).toString();
+    const QString date = index.data(m_dateRole).toString();
     
-    if (gridMode()) {
-        font.setPixelSize(16);
-        painter->setFont(font);
-        painter->drawText(textRect, Qt::AlignVCenter | Qt::TextWordWrap, title);
+    if (!username.isEmpty()) {
+        subTitle.append(QString("%1 %2").arg(tr("by")).arg(username));
     }
-    else {
-        if (textRect.width() < 600) {
-            font.setPixelSize(18);
-            painter->setFont(font);
-        }
-        
-        QFontMetrics fm = painter->fontMetrics();
-        
-        title = fm.elidedText(title, Qt::ElideRight, textRect.width());
-        QString subTitle;
-        QString username = index.data(m_usernameRole).toString();
-        QString date = index.data(m_dateRole).toString();
-        
+    
+    if (!date.isEmpty()) {
         if (!username.isEmpty()) {
-            subTitle.append(QString("%1 %2").arg(tr("by")).arg(username));
+            subTitle.append(QString(" %1 ").arg(tr("on")));
         }
         
-        if (!date.isEmpty()) {
-            if (!username.isEmpty()) {
-                subTitle.append(QString(" %1 ").arg(tr("on")));
-            }
-            
-            subTitle.append(date);
-        }
+        subTitle.append(date);
+    }
+    
+    if (!subTitle.isEmpty()) {
+        painter->drawText(textRect, Qt::AlignLeft | Qt::AlignTop,
+                          painter->fontMetrics().elidedText(index.data(m_titleRole).toString(),
+                          Qt::ElideRight, textRect.width()));
         
-        if (!subTitle.isEmpty()) {
-            title.append("\n");
-            subTitle = fm.elidedText(subTitle, Qt::ElideRight, textRect.width());
-            painter->drawText(textRect, Qt::AlignVCenter, title + subTitle);
-        }
-        else {                
-            painter->drawText(textRect, Qt::AlignVCenter | Qt::TextWordWrap, title);
-        }
+        QFont font;
+        font.setPointSize(13);
+        
+        painter->setFont(font);
+        painter->setPen(QApplication::palette().color(QPalette::Mid));
+        painter->drawText(textRect, Qt::AlignLeft | Qt::AlignBottom,
+                          QFontMetrics(font).elidedText(subTitle, Qt::ElideRight, textRect.width()));
+    }
+    else {                
+        painter->drawText(textRect, Qt::AlignVCenter | Qt::TextWordWrap, index.data(m_titleRole).toString());
     }
     
     painter->restore();
 }
 
 QSize PlaylistDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &) const {
-    return gridMode() ? QSize(124, 132) : QSize(option.rect.width(), 91);
-}
-
-bool PlaylistDelegate::gridMode() const {
-    return m_gridMode;
-}
-
-void PlaylistDelegate::setGridMode(bool enabled) {
-    m_gridMode = enabled;
+    return QSize(option.rect.width(), 91);
 }
