@@ -18,7 +18,7 @@
 #include <QCoreApplication>
 #include <QStringList>
 #include <QSettings>
-#include <stdio.h>
+#include <iostream>
 
 int main(int argc, char *argv[]) {
     QCoreApplication app(argc, argv);
@@ -43,8 +43,8 @@ int main(int argc, char *argv[]) {
     }
 
     if (resource != "video") {
-        printf(qPrintable(QString("{\"error\": \"%1\"}").arg(QObject::tr("Resource '%1' is not supported")
-                                                        .arg(resource))));
+        std::cout << qPrintable(QString("{\"error\": \"%1\"}").arg(QObject::tr("Resource '%1' is not supported")
+                                                              .arg(resource)));
         return 1;
     }
 
@@ -58,10 +58,10 @@ int main(int argc, char *argv[]) {
         }
         
         if (id.isEmpty()) {
-            QStringList urls = QSettings("cuteTube2", "cuteTube2").value("RSS/feeds").toString().remove(' ').split(',');
+            QStringList urls = QSettings("MusiKloud2", "MusiKloud2").value("Podcasts/feeds").toString().remove(' ').split(',');
             
             if (urls.isEmpty()) {
-                printf(qPrintable(QString("{\"error\": \"%1\"}").arg(QObject::tr("No feed URLs specified"))));
+                std::cout << qPrintable(QString("{\"error\": \"%1\"}").arg(QObject::tr("No feed URLs specified")));
                 return 1;
             }
             else {
@@ -73,8 +73,8 @@ int main(int argc, char *argv[]) {
         }
     }
     else {
-        printf(qPrintable(QString("{\"error\": \"%1\"}").arg(QObject::tr("Method '%1' is not supported")
-                                                        .arg(method))));
+        std::cout << qPrintable(QString("{\"error\": \"%1\"}").arg(QObject::tr("Method '%1' is not supported")
+                                                              .arg(method)));
         return 1;
     }
 

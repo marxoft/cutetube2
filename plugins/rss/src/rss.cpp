@@ -23,7 +23,7 @@
 #include <QDomElement>
 #include <QDomNodeList>
 #include <QDateTime>
-#include <stdio.h>
+#include <iostream>
 
 static const int MAX_REDIRECTS = 8;
 
@@ -43,7 +43,7 @@ void Rss::listVideos(const QStringList &urls) {
     m_urls = urls;
     
     if (m_urls.isEmpty()) {
-        printf(qPrintable(QString("{\"error\": \"%1\"}").arg(tr("No feed URLs specified"))));
+        std::cout << qPrintable(QString("{\"error\": \"%1\"}").arg(tr("No feed URLs specified")));
         QCoreApplication::exit(1);
         return;
     }
@@ -63,14 +63,14 @@ void Rss::followRedirect(const QUrl &url) {
 
 void Rss::parseVideos(QNetworkReply *reply) {
     if (!reply) {
-        printf(qPrintable(QString("{\"error\": \"%1\"}").arg(tr("Network error"))));
+        std::cout << qPrintable(QString("{\"error\": \"%1\"}").arg(tr("Network error")));
         QCoreApplication::exit(1);
         return;
     }
     
     if (reply->error() != QNetworkReply::NoError) {
         reply->deleteLater();
-        printf(qPrintable(QString("{\"error\": \"%1: %2\"}").arg(tr("Network error")).arg(reply->errorString())));
+        std::cout << qPrintable(QString("{\"error\": \"%1: %2\"}").arg(tr("Network error")).arg(reply->errorString()));
         QCoreApplication::exit(1);
         return;
     }
@@ -84,8 +84,8 @@ void Rss::parseVideos(QNetworkReply *reply) {
             followRedirect(redirect.toString());
         }
         else {
-            printf(qPrintable(QString("{\"error\": \"%1: %2\"}").arg(tr("Network error"))
-                                                                .arg(tr("Maximum redirects reached"))));
+            std::cout << qPrintable(QString("{\"error\": \"%1: %2\"}").arg(tr("Network error"))
+                                                                .arg(tr("Maximum redirects reached")));
             QCoreApplication::exit(1);
         }
         
@@ -96,31 +96,37 @@ void Rss::parseVideos(QNetworkReply *reply) {
     
     if (!doc.setContent(reply->readAll(), true)) {
         reply->deleteLater();
-        printf(qPrintable(QString("{\"error\": \"%1\"}").arg(tr("Unable to parse XML"))));
+        std::cout << qPrintable(QString("{\"error\": \"%1\"}").arg(tr("Unable to parse XML")));
         QCoreApplication::exit(1);
         return;
     }
     
     QDomElement docElem = doc.documentElement();
     QDomNodeList items = docElem.elementsByTagName("item");
-    QString thumbnailUrl =  docElem.firstChildElement("channel").firstChildElement("image").attribute("href");
+    QDomNode channelElem = docElem.firstChildElement("channel");
+    QString thumbnailUrl = channelElem.firstChildElement("image").attribute("href");
+    QString genre = channelElem.firstChildElement("category").attribute("text");
     
     for (int i = 0; i < items.size(); i++) {
         QDomElement item = items.at(i).toElement();
         QDateTime dt = QDateTime::fromString(item.firstChildElement("pubDate").text().section(' ', 0, -2),
                                                "ddd, dd MMM yyyy hh:mm:ss");
+        QString streamUrl = item.firstChildElement("enclosure").attribute("url");
+        
         QVariantMap result;
         result["_dt"] = dt;
+        result["artist"] = item.firstChildElement("author").text();
         result["date"] = dt.toString("dd MMM yyyy");
         result["description"] = item.firstChildElement("description").text();
         result["duration"] = item.firstChildElement("duration").text();
+        result["format"] = streamUrl.mid(streamUrl.lastIndexOf('.') + 1).toUpper();
+        result["genre"] = genre;
         result["id"] = reply->url();
         result["largeThumbnailUrl"] = thumbnailUrl;
-        result["streamUrl"] = item.firstChildElement("enclosure").attribute("url");
+        result["streamUrl"] = streamUrl;
         result["thumbnailUrl"] = thumbnailUrl;
         result["title"] = item.firstChildElement("title").text();
         result["url"] = item.firstChildElement("link").text();
-        result["username"] = item.firstChildElement("author").text();
         m_results << result;
     }
     
@@ -139,6 +145,6 @@ void Rss::printResult() {
         qSort(m_results.begin(), m_results.end(), dateGreaterThan);
     }
     
-    printf(QByteArray("{\"items\": " + QtJson::Json::serialize(m_results) + "}").constData());
+    std::cout << QByteArray("{\"items\": " + QtJson::Json::serialize(m_results) + "}").constData();
     QCoreApplication::quit();
 }
