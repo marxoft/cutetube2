@@ -84,6 +84,8 @@ bool Utils::isLocalFile(const QUrl &url) {
 }
 
 QString Utils::toRichText(QString s) {
+    s.replace("&", "&amp;").replace("<", "&lt;").replace(QRegExp("[\n\r]"), "<br>");
+    
     QRegExp re("((http(s|)://|[\\w-_\\.]+@)[^\\s<:\"']+)");
     int pos = 0;
 
@@ -93,7 +95,7 @@ QString Utils::toRichText(QString s) {
         pos += re.matchedLength() * 2 + 15;
     }
 
-    return s.replace(QRegExp("[\n\r]"), "<br>");
+    return s;
 }
 
 QString Utils::unescape(const QString &s) {
