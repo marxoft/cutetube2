@@ -27,7 +27,7 @@ DBusService::DBusService(QObject *parent) :
 {
     QDBusConnection connection = QDBusConnection::sessionBus();
     connection.registerService("org.marxoft.cutetube2");
-    connection.registerObject("/", this, QDBusConnection::ExportAllSlots);
+    connection.registerObject("/", this, QDBusConnection::ExportScriptableSlots);
 }
 
 QVariantMap DBusService::requestedResource() const {
