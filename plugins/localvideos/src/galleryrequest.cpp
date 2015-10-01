@@ -24,7 +24,7 @@
 #include <QSettings>
 #include <QTimer>
 #include <qplatformdefs.h>
-#include <stdio.h>
+#include <iostream>
 #ifdef CUTETUBE_DEBUG
 #include <QDebug>
 #endif
@@ -175,7 +175,7 @@ void GalleryRequest::onGetRequestFinished() {
         m_request->next();
     }
     
-    printf(QtJson::Json::serialize(result).constData());
+    std::cout << QtJson::Json::serialize(result).constData();
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onGetRequestFinished()));
     emit finished();
 }
@@ -207,7 +207,7 @@ void GalleryRequest::onListRequestFinished() {
     }
 
     result["items"] = items;
-    printf(QtJson::Json::serialize(result).constData());
+    std::cout << QtJson::Json::serialize(result).constData();
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onListRequestFinished()));
     emit finished();
 }
