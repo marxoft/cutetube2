@@ -67,16 +67,6 @@ MySheet {
                 selectedIndex: Math.max(0, model.match("name",Settings.defaultSearchType(Resources.YOUTUBE)))
                 onAccepted: Settings.setDefaultSearchType(Resources.YOUTUBE, model.data(selectedIndex, "name"))
             }
-
-            ValueSelector {
-                id: orderSelector
-
-                width: parent.width
-                title: qsTr("Order by")
-                model: YouTubeSearchOrderModel {}
-                value: Settings.defaultSearchOrder(Resources.YOUTUBE)
-                onValueChanged: Settings.setDefaultSearchOrder(Resources.YOUTUBE, value)
-            }
         }
 
         MyListView {
