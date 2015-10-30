@@ -171,8 +171,7 @@ MySheet {
     onAccepted: Transfers.addDownloadTransfer(streamModel.service, resourceId, streamUrl ? "" : streamSelector.value.id,
                                               streamUrl, resourceTitle, Settings.defaultCategory,
                                               subtitleSwitch.checked ?
-                                              subtitleModel.data(subtitleSelector.selectedIndex, "name") : "",
-                                              audioSwitch.checked)
+                                              subtitleModel.data(subtitleSelector.selectedIndex, "name") : "")
 
     onStatusChanged: {
         switch (status) {

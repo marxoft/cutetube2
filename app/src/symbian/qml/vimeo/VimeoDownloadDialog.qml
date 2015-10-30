@@ -168,8 +168,7 @@ MySheet {
 
     onAccepted: Transfers.addDownloadTransfer(Resources.VIMEO, resourceId, streamSelector.value.id, "",
                                               resourceTitle, Settings.defaultCategory,
-                                              subtitleSwitch.checked ? Settings.subtitlesLanguage : "",
-                                              audioSwitch.checked)
+                                              subtitleSwitch.checked ? Settings.subtitlesLanguage : "")
 
     onStatusChanged: {
         switch (status) {
