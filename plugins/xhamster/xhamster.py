@@ -18,9 +18,13 @@ from BeautifulSoup import BeautifulSoup
 from datetime import datetime
 import getopt
 import re
-import simplejson as json
 import sys
 import urllib2
+
+try:
+    import json
+except ImportError:
+    import simplejson as json
     
 class ResourceError(Exception):
     pass
@@ -39,7 +43,19 @@ def get_page(url, headers = None):
         return urllib2.urlopen(urllib2.Request(url, None, headers)).read()
     except:
         raise ResourceError('{"error": "Unable to retrieve page from %s"}' % url)
-    
+
+def get_redirect(url, headers = None):
+    try:
+        if headers is None:
+            request = urllib2.Request(url)
+        else:
+            request = urllib2.Request(url, None, headers)
+
+        request.get_method = lambda : 'HEAD'
+        return urllib2.urlopen(request).geturl()
+    except:
+        return url
+
 def list_videos(url):
     if not url:
         raise ResourceError('{"error": "No URL specified"}')
@@ -131,22 +147,21 @@ def get_video(url):
     try:
         page = BeautifulSoup(get_page(url))
         player = page.find('div', attrs={'id': 'playerBox'})
-        stream = player.find('video')
+        stream = player.find('div', attrs={'id': 'player'})
         info = page.find('div', attrs={'id': 'videoInfoBox'})
         user = info.find('a')
-    
+
         video = {}
         video['date'] = format_date(info.find('span', attrs={'class': 'hint'})['hint'].split(' ')[0], '%Y-%m-%d')
-    
+
         try:
             video['description'] = info.find('h2').string
         except:
             pass
-        
-        video['duration'] = re.search(r'\d+:\d+', str(info.findAll('div', attrs={'class': 'item'})[1])).group(0)
+    
+        video['duration'] = re.search(r'\d+:\d+', str(info.find('div', attrs={'class': 'item'}))).group(0)
         video['id'] = url
-        video['largeThumbnailUrl'] = stream['poster']
-        video['streamUrl'] = stream['file']
+        video['largeThumbnailUrl'] = stream.find('img')['src']
         video['thumbnailUrl'] = video['largeThumbnailUrl']
         video['title'] = player.find('h1').string
         video['url'] = url
@@ -164,15 +179,16 @@ def list_streams(url):
     streams = []
     
     try:
-        page = BeautifulSoup(get_page(url))
-        video = page.find('video')
-        stream = {}
-        stream['description'] = video['type']
-        stream['height'] = 400
-        stream['id'] = '0'
-        stream['url'] = video['file']
-        stream['width'] = 510
-        streams.append(stream)
+        sources = json.loads(get_page(url).split('sources:')[1].strip().split('},')[0] + '}')
+        
+        for source in sources:
+            stream = {}
+            stream['description'] = 'MP4 audio/video'
+            stream['height'] = int(source.split('p')[0])
+            stream['id'] = source
+            stream['url'] = get_redirect(sources[source])
+            stream['width'] = stream['height'] * 4 / 3
+            streams.append(stream)
     except:
         pass
     
@@ -181,24 +197,22 @@ def list_streams(url):
 
 def list_categories():
     page = BeautifulSoup(get_page("http://xhamster.com/channels.php"))
-    
-    channels_list = page.find('div', attrs={'id': 'channelsList'})
-    channel_group_titles = channels_list.findAll('div', attrs={'class': 'title'})
-    channel_groups = channels_list.findAll('div', attrs={'class': 'list'})
     result = {}
     categories = []
     
-    for i in range(len(channel_groups)):
-        group_title = channel_group_titles[i].string
+    try:
+        groups = page.findAll('div', attrs={'class': 'letter-categories'})
         
-        for channel in channel_groups[i].findAll('a'):
-            try:
+        for group in groups:
+            channels = group.findAll('a')
+    
+            for channel in channels:        
                 category = {}
                 category['id'] = channel['href']
-                category['title'] = group_title + ' - ' + re.search(r'[\w\s]+(?=</a>)', str(channel)).group(0).strip()
+                category['title'] = re.search(r'[^>]+(?=<)', str(channel)).group(0).strip()
                 categories.append(category)
-            except:
-                pass
+    except:
+        pass
     
     result['items'] = categories
     return result
