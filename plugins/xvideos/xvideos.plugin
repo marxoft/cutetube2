@@ -7,8 +7,6 @@
         <resource method="list" type="user" name="Pornstars" id="http://www.xvideos.com/pornstars" />
         <resource method="list" type="user" name="Profiles" id="http://www.xvideos.com/profileslist" />
         <resource method="search" type="video" name="Videos (relevance)" order="relevance" />
-        <resource method="search" type="video" name="Videos (date)" order="uploaddate" />
-        <resource method="search" type="video" name="Videos (rating)" order="rating" />
         <resource method="get" type="video" regexp="http://www.xvideos.com/video\d+/[\w-_]+" />
         <resource method="get" type="user" regexp="http://www.xvideos.com/profiles/[\w-_]+" />
     </resources>
