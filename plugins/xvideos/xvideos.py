@@ -17,9 +17,13 @@
 from BeautifulSoup import BeautifulSoup
 import getopt
 import re
-import simplejson as json
 import sys
 import urllib
+
+try:
+    import json
+except ImportError:
+    import simplejson as json
     
 class ResourceError(Exception):
     pass
@@ -34,12 +38,12 @@ def list_videos(url):
     if not url:
         raise ResourceError('{"error": "No URL specified"}')
     
-    if url.find('/profiles/') and url.find('/videos') is -1:
+    if url.find('/profiles/') != -1 and url.find('/videos') == -1:
         if url[-1] is not '/':
             url += '/'
         
         url += 'videos'
-        
+    
     page = BeautifulSoup(get_page(url))
     result = {}
     videos = []
@@ -52,14 +56,17 @@ def list_videos(url):
         
         for items in lists:
             for item in items:
-                video = {}
-                video['duration'] = re.search(r'\d+', item['d']).group(0) + ':00'
-                video['id'] = 'http://www.xvideos.com' + item['u']
-                video['largeThumbnailUrl'] = item['i']
-                video['thumbnailUrl'] = item['i']
-                video['title'] = item['t']
-                video['url'] = video['id']
-                videos.append(video)
+                try:
+                    video = {}
+                    video['duration'] = re.search(r'\d+', item['d']).group(0) + ':00'
+                    video['id'] = 'http://www.xvideos.com' + item['u']
+                    video['largeThumbnailUrl'] = item['i']
+                    video['thumbnailUrl'] = item['i']
+                    video['title'] = item['t']
+                    video['url'] = video['id']
+                    videos.append(video)
+                except:
+                    pass
     else:
         for item in page.findAll('div', attrs={'class': 'thumbInside'}):
             try:
@@ -173,12 +180,25 @@ def list_streams(id):
     streams = []
     
     try:
+        page = BeautifulSoup(get_page('http://www.xvideos.com/mobilevideo/' + re.search(r'(?<=video)\d+(?=/)', id).group(0)))
+        video = page.find('td', attrs={'align': 'center'})
+        stream = {}
+        stream['description'] = '3GP audio/video'
+        stream['height'] = 144
+        stream['id'] = 'mobile'
+        stream['url'] = video.find('a')['href']
+        stream['width'] = 176
+        streams.append(stream)
+    except:
+        pass
+    
+    try:
         page = BeautifulSoup(get_page(id))
         video = page.find('embed', attrs={'id': 'flash-player-embed'})
         stream = {}
-        stream['description'] = video['quality']
+        stream['description'] = 'FLV audio/video'
         stream['height'] = video['height']
-        stream['id'] = '0'
+        stream['id'] = 'desktop'
         stream['url'] = urllib.unquote(re.search(r'(?<=flv_url=)[^&]+', video['flashvars']).group(0))
         stream['width'] = video['width']
         streams.append(stream)
