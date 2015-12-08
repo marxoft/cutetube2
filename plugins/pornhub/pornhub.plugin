@@ -1,0 +1,32 @@
+<plugin name="Pornhub" exec="/opt/cutetube2/plugins/pornhub/pornhub.py">
+    <resources>
+        <resource method="list" type="stream" />
+        <resource method="list" type="category" name="Categories" />
+        <resource method="list" type="user" name="Most popular channels" id="http://www.pornhub.com/channels?o=rk" />
+        <resource method="list" type="user" name="Most recent channels" id="http://www.pornhub.com/channels?o=mr" />
+        <resource method="list" type="user" name="Trending channels" id="http://www.pornhub.com/channels?o=tr" />
+        <resource method="list" type="user" name="Most popular pornstars" id="http://www.pornhub.com/pornstars" />
+        <resource method="list" type="user" name="Most viewed pornstars" id="http://www.pornhub.com/pornstars?o=mv" />
+        <resource method="list" type="user" name="Top trending pornstars" id="http://www.pornhub.com/pornstars?o=t" />
+        <resource method="list" type="user" name="Most subscribed pornstars" id="http://www.pornhub.com/pornstars?o=ms" />
+        <resource method="list" type="user" name="Most videos pornstars" id="http://www.pornhub.com/pornstars?o=nv" />
+        <resource method="list" type="video" name="Most recent videos" id="http://www.pornhub.com/video" />
+        <resource method="list" type="video" name="Most viewed videos" id="http://www.pornhub.com/video?o=mv" />
+        <resource method="list" type="video" name="Top rated videos" id="http://www.pornhub.com/video?o=tr" />
+        <resource method="list" type="video" name="Hottest videos" id="http://www.pornhub.com/video?o=ht" />
+        <resource method="list" type="video" name="Longest videos" id="http://www.pornhub.com/video?o=lg" />
+        <resource method="list" type="video" name="Newest videos" id="http://www.pornhub.com/video?o=cm" />
+        <resource method="search" type="user" name="Members (popular)" order="user_popular" />
+        <resource method="search" type="user" name="Members (date)" order="user_newest" />
+        <resource method="search" type="user" name="Pornstars (popular)" order="pornstars_" />
+        <resource method="search" type="user" name="Pornstars (views)" order="pornstars_mv" />
+        <resource method="search" type="user" name="Pornstars (videos)" order="pornstars_nv" />
+        <resource method="search" type="video" name="Videos (relevance)" order="" />
+        <resource method="search" type="video" name="Videos (date)" order="mr" />
+        <resource method="search" type="video" name="Videos (views)" order="mv" />
+        <resource method="search" type="video" name="Videos (rating)" order="tr" />
+        <resource method="search" type="video" name="Videos (duration)" order="lg" />
+        <resource method="get" type="video" regexp="http://www\.pornhub\.com/view_video\.php?viewkey=\d+" />
+        <resource method="get" type="user" regexp="http://www\.pornhub\.com/(channels|pornstar|users)/[\w-_]+" />
+    </resources>
+</plugin>
