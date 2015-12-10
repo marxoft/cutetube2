@@ -26,7 +26,7 @@
         <resource method="search" type="video" name="Videos (views)" order="mv" />
         <resource method="search" type="video" name="Videos (rating)" order="tr" />
         <resource method="search" type="video" name="Videos (duration)" order="lg" />
-        <resource method="get" type="video" regexp="http://www\.pornhub\.com/view_video\.php?viewkey=\w+" />
+        <resource method="get" type="video" regexp="http://www\.pornhub\.com/view_video\.php\?viewkey=\w+" />
         <resource method="get" type="user" regexp="http://www\.pornhub\.com/(channels|pornstar|users)/[\w-_]+" />
     </resources>
 </plugin>
