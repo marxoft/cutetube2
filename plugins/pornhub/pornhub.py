@@ -94,7 +94,7 @@ def list_videos(url):
                 video['thumbnailUrl'] = thumb['data-smallthumb']
                 video['title'] = thumb['title']
                 video['url'] = video['id']
-                video['viewCount'] = item.find('p', attrs={'class': 'views'}).string.split(' ')[0].replace(',', '')
+                video['viewCount'] = int(item.find('p', attrs={'class': 'views'}).string.split(' ')[0].replace(',', ''))
                 videos.append(video)
             except:
                 pass
