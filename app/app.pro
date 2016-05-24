@@ -495,7 +495,7 @@ maemo5 {
     TARGET.EPOCHEAPSIZE = 0x20000 0x8000000
     TARGET.EPOCSTACKSIZE = 0x14000
 
-    VERSION = 0.1.3
+    VERSION = 0.2.8
     ICON = desktop/symbian/cutetube2.svg
 
     MMP_RULES += "DEBUGGABLE_UDEBONLY"

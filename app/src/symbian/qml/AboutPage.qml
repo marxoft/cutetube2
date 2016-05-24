@@ -67,7 +67,7 @@ MyPage {
                 wrapMode: Text.WordWrap
                 horizontalAlignment: Text.AlignHCenter
                 text: qsTr("A fully-featured client for YouTube, Dailymotion and Vimeo that can be extended via plugins.")
-                  + "<br><br>&copy; Stuart Howarth 2015"
+                  + "<br><br>&copy; Stuart Howarth 2015-2016"
             }
 
             LinkLabel {

@@ -119,7 +119,9 @@ MyPage {
 
                 Label {
                     id: nameLabel
-
+                    
+                    width: parent.width - statsLabel.width - platformStyle.paddingLarge
+                    elide: Text.ElideRight
                     font.bold: true
                     text: user.username
                 }
@@ -127,7 +129,6 @@ MyPage {
                 Label {
                     id: statsLabel
 
-                    width: parent.width - nameLabel.width - platformStyle.paddingLarge
                     horizontalAlignment: Text.AlignRight
                     font.pixelSize: platformStyle.fontSizeSmall
                     font.weight: Font.Light

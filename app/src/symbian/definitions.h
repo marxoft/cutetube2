@@ -32,7 +32,7 @@ static const int MAX_RESULTS = 20;
 
 static const QRegExp ILLEGAL_FILENAME_CHARS_RE("[\"@&~=\\/:?#!|<>*^]");
 
-static const QString VERSION_NUMBER("0.2.3");
+static const QString VERSION_NUMBER("0.2.8");
 
 #if QT_VERSION >= 0x050000
 static const QString DATABASE_PATH(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/cuteTube2/");

@@ -28,10 +28,6 @@ AppWindow {
         id: mainPage
     }
 
-    TitleHeader {
-        id: titleHeader
-    }
-
     InfoBanner {
         id: infoBanner
 
