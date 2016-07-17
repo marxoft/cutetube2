@@ -1,22 +1,21 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "dailymotionsearchdialog.h"
 #include "dailymotionsearchtypemodel.h"
-#include "mainwindow.h"
 #include "resources.h"
 #include "searchhistorydialog.h"
 #include "settings.h"
@@ -40,7 +39,7 @@ DailymotionSearchDialog::DailymotionSearchDialog(QWidget *parent) :
         
     m_typeSelector->setModel(m_typeModel);
     m_typeSelector->setCurrentIndex(qMax(0, m_typeModel->match("name",
-                                    Settings::instance()->defaultSearchType(Resources::DAILYMOTION))));
+                                    Settings::defaultSearchType(Resources::DAILYMOTION))));
     
     m_searchEdit->setPlaceholderText(tr("Search"));
     m_searchEdit->setFocus(Qt::OtherFocusReason);
@@ -55,34 +54,42 @@ DailymotionSearchDialog::DailymotionSearchDialog(QWidget *parent) :
     m_layout->addWidget(m_typeSelector, 1, 0);
     m_layout->addWidget(m_buttonBox, 0, 1, 2, 1, Qt::AlignBottom);
     
-    connect(m_typeSelector, SIGNAL(valueChanged(QVariant)), this, SLOT(onSearchTypeChanged()));
-    connect(m_searchEdit, SIGNAL(textChanged(QString)), this, SLOT(onSearchTextChanged(QString)));
+    connect(m_searchEdit, SIGNAL(textChanged(QString)), this, SLOT(onQueryChanged(QString)));
     connect(m_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
     connect(m_historyButton, SIGNAL(clicked()), this, SLOT(showHistoryDialog()));
-    connect(m_searchButton, SIGNAL(clicked()), this, SLOT(search()));
+    connect(m_searchButton, SIGNAL(clicked()), this, SLOT(accept()));
 }
 
-void DailymotionSearchDialog::search() {
-    if (!MainWindow::instance()->showResource(m_searchEdit->text())) {
-        QVariantMap type = m_typeSelector->currentValue().toMap();
-        Settings::instance()->addSearch(m_searchEdit->text());
-        MainWindow::instance()->search(Resources::DAILYMOTION, m_searchEdit->text(), type.value("type").toString(),
-                                       type.value("order").toString());
-    }
-    
-    accept();
+QString DailymotionSearchDialog::query() const {
+    return m_searchEdit->text();
+}
+
+void DailymotionSearchDialog::setQuery(const QString &query) {
+    m_searchEdit->setText(query);
+}
+
+QString DailymotionSearchDialog::order() const {
+    return m_typeSelector->currentValue().toMap().value("order").toString();
+}
+
+QString DailymotionSearchDialog::type() const {
+    return m_typeSelector->currentValue().toMap().value("type").toString();
+}
+
+void DailymotionSearchDialog::accept() {
+    Settings::addSearch(m_searchEdit->text());
+    Settings::setDefaultSearchType(Resources::DAILYMOTION, m_typeSelector->valueText());
+    Dialog::accept();
 }
 
 void DailymotionSearchDialog::showHistoryDialog() {
-    SearchHistoryDialog *dialog = new SearchHistoryDialog(this);
-    dialog->open();
-    connect(dialog, SIGNAL(searchChosen(QString)), m_searchEdit, SLOT(setText(QString)));
+    SearchHistoryDialog dialog(this);
+    
+    if (dialog.exec() == QDialog::Accepted) {
+        setQuery(dialog.query());
+    }
 }
 
-void DailymotionSearchDialog::onSearchTextChanged(const QString &text) {
-    m_searchButton->setEnabled(!text.isEmpty());
-}
-
-void DailymotionSearchDialog::onSearchTypeChanged() {
-    Settings::instance()->setDefaultSearchType(Resources::DAILYMOTION, m_typeSelector->valueText());
+void DailymotionSearchDialog::onQueryChanged(const QString &query) {
+    m_searchButton->setEnabled(!query.isEmpty());
 }

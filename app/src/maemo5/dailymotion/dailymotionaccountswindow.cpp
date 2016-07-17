@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -66,10 +66,10 @@ DailymotionAccountsWindow::DailymotionAccountsWindow(StackedWindow *parent) :
 void DailymotionAccountsWindow::initAuthRequest() {
     if (!m_authRequest) {
         m_authRequest = new QDailymotion::AuthenticationRequest(this);
-        m_authRequest->setClientId(Dailymotion::instance()->clientId());
-        m_authRequest->setClientSecret(Dailymotion::instance()->clientSecret());
-        m_authRequest->setRedirectUri(Dailymotion::instance()->redirectUri());
-        m_authRequest->setScopes(Dailymotion::instance()->scopes());
+        m_authRequest->setClientId(Dailymotion::clientId());
+        m_authRequest->setClientSecret(Dailymotion::clientSecret());
+        m_authRequest->setRedirectUri(Dailymotion::redirectUri());
+        m_authRequest->setScopes(Dailymotion::scopes());
         connect(m_authRequest, SIGNAL(finished()), this, SLOT(onAuthRequestFinished()));
     }
 }
@@ -77,11 +77,11 @@ void DailymotionAccountsWindow::initAuthRequest() {
 void DailymotionAccountsWindow::initUserRequest() {
     if (!m_userRequest) {
         m_userRequest = new QDailymotion::ResourcesRequest(this);
-        m_userRequest->setClientId(Dailymotion::instance()->clientId());
-        m_userRequest->setClientSecret(Dailymotion::instance()->clientSecret());
+        m_userRequest->setClientId(Dailymotion::clientId());
+        m_userRequest->setClientSecret(Dailymotion::clientSecret());
         
         if (m_authRequest) {
-            QVariantMap token = m_authRequest->result().toMap();
+            const QVariantMap token = m_authRequest->result().toMap();
             m_userRequest->setAccessToken(token.value("access_token").toString());
             m_userRequest->setRefreshToken(token.value("refresh_token").toString());
         }
@@ -102,15 +102,14 @@ void DailymotionAccountsWindow::selectAccount(const QModelIndex &index) {
 }
 
 void DailymotionAccountsWindow::showAuthDialog() {
-    DailymotionAuthDialog *dialog = new DailymotionAuthDialog(this);
-    dialog->open();
-    connect(dialog, SIGNAL(codeReady(QString)), this, SLOT(submitCode(QString)));
-}
+    DailymotionAuthDialog dialog(this);
+    dialog.login();
 
-void DailymotionAccountsWindow::submitCode(const QString &code) {
-    initAuthRequest();
-    showProgressIndicator();
-    m_authRequest->exchangeCodeForAccessToken(code);
+    if (dialog.exec() == QDialog::Accepted) {
+        initAuthRequest();
+        showProgressIndicator();
+        m_authRequest->exchangeCodeForAccessToken(dialog.code());
+    }
 }
 
 void DailymotionAccountsWindow::revokeAccessToken() {
@@ -122,7 +121,7 @@ void DailymotionAccountsWindow::revokeAccessToken() {
 }
 
 void DailymotionAccountsWindow::onAuthRequestFinished() {
-    QVariantMap result = m_authRequest->result().toMap();
+    const QVariantMap result = m_authRequest->result().toMap();
     
     if (m_authRequest->status() == QDailymotion::AuthenticationRequest::Ready) {        
         if (result.isEmpty()) {
@@ -130,7 +129,7 @@ void DailymotionAccountsWindow::onAuthRequestFinished() {
             m_addAction->setEnabled(true);
             hideProgressIndicator();
             
-            QString username = m_view->currentIndex().data(DailymotionAccountModel::UsernameRole).toString();
+            const QString username = m_view->currentIndex().data(DailymotionAccountModel::UsernameRole).toString();
             
             if (m_model->removeAccount(m_view->currentIndex().row())) {
                 QMaemo5InformationBox::information(this, tr("Account '%1' removed").arg(username));
@@ -158,7 +157,7 @@ void DailymotionAccountsWindow::onAuthRequestFinished() {
 
 void DailymotionAccountsWindow::onUserRequestFinished() {
     if (m_userRequest->status() == QDailymotion::ResourcesRequest::Ready) {
-        QVariantMap user = m_userRequest->result().toMap();
+        const QVariantMap user = m_userRequest->result().toMap();
         
         if (!user.isEmpty()) {
             m_view->setEnabled(true);
@@ -167,7 +166,7 @@ void DailymotionAccountsWindow::onUserRequestFinished() {
             
             if (m_model->addAccount(user.value("id").toString(), user.value("screenname").toString(),
                                     m_userRequest->accessToken(), m_userRequest->refreshToken(),
-                                    Dailymotion::instance()->scopes().join(" "))) {
+                                    Dailymotion::scopes().join(" "))) {
                 QMaemo5InformationBox::information(this, tr("You are signed in to account '%1'")
                                                            .arg(user.value("screenname").toString()));
             }

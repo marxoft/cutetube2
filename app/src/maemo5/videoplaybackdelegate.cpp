@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -19,7 +19,6 @@
 #include "imagecache.h"
 #include "videomodel.h"
 #include <QPainter>
-#include <QUrl>
 #include <QApplication>
 
 VideoPlaybackDelegate::VideoPlaybackDelegate(ImageCache *cache, QObject *parent) :
@@ -30,12 +29,11 @@ VideoPlaybackDelegate::VideoPlaybackDelegate(ImageCache *cache, QObject *parent)
 
 void VideoPlaybackDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
                                   const QModelIndex &index) const {
-    
     if ((option.state) & (QStyle::State_Selected)) {
         painter->drawImage(option.rect, QImage("/etc/hildon/theme/images/TouchListBackgroundPressed.png"));
     }
     
-    QImage image = m_cache->image(index.data(VideoModel::ThumbnailUrlRole).toString(), QSize(80, 60));
+    const QImage image = m_cache->image(index.data(VideoModel::ThumbnailUrlRole).toString(), QSize(80, 60));
     
     QRect imageRect = option.rect;
     imageRect.setLeft(imageRect.left() + 5);
@@ -46,7 +44,7 @@ void VideoPlaybackDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
     painter->fillRect(imageRect, Qt::black);
     drawCenteredImage(painter, imageRect, image);
     
-    QString duration = index.data(VideoModel::DurationRole).toString();
+    const QString duration = index.data(VideoModel::DurationRole).toString();
     QFont font;
     QRect durationRect = imageRect;
     const int durationHeight = durationRect.height() / 4;

@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -27,22 +27,23 @@ class QHBoxLayout;
 class DailymotionPlaybackDialog : public Dialog
 {
     Q_OBJECT
+
+    Q_PROPERTY(QString streamUrl READ streamUrl)
     
 public:
-    explicit DailymotionPlaybackDialog(const QString &resourceId, const QString &title, QWidget *parent = 0);
+    explicit DailymotionPlaybackDialog(QWidget *parent = 0);
+
+    QString streamUrl() const;
     
-protected:
-    void showEvent(QShowEvent *e);
+public Q_SLOTS:
+    virtual void accept();
+    
+    void list(const QString &videoId);
     
 private Q_SLOTS:
-    void onModelStatusChanged(QDailymotion::StreamsRequest::Status status);
-    void onStreamChanged();
-    
-    void playVideo();
+    void onModelStatusChanged(QDailymotion::StreamsRequest::Status status);;
     
 private:
-    QString m_id;
-    QString m_title;
     DailymotionStreamModel *m_model;
     
     ValueSelector *m_streamSelector;

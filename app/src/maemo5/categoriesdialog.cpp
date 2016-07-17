@@ -2,15 +2,15 @@
  * Copyright (C) 2014 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU Lesser General Public License,
+ * under the terms and conditions of the GNU General Public License,
  * version 3, as published by the Free Software Foundation.
  *
  * This program is distributed in the hope it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
  */
@@ -30,7 +30,7 @@ CategoriesDialog::CategoriesDialog(QWidget *parent) :
     m_view(new QTreeView(this))
 {
     setWindowTitle(tr("Categories"));
-    setMinimumHeight(340);
+    setMinimumHeight(360);
 
     QDialogButtonBox *buttonBox = new QDialogButtonBox(Qt::Vertical, this);
     QPushButton *addButton = buttonBox->addButton(tr("New"), QDialogButtonBox::ActionRole);
@@ -56,11 +56,14 @@ CategoriesDialog::CategoriesDialog(QWidget *parent) :
 }
 
 void CategoriesDialog::editCategory(const QModelIndex &index) {
-    NewCategoryDialog *dialog = new NewCategoryDialog(this);
-    dialog->setWindowTitle(tr("Edit category"));
-    dialog->setName(index.data(CategoryModel::NameRole).toString());
-    dialog->setPath(index.data(CategoryModel::PathRole).toString());
-    dialog->open();
+    NewCategoryDialog dialog(this);
+    dialog.setWindowTitle(tr("Edit category"));
+    dialog.setName(index.data(CategoryModel::NameRole).toString());
+    dialog.setPath(index.data(CategoryModel::PathRole).toString());
+
+    if (dialog.exec() == QDialog::Accepted) {
+        m_model->addCategory(dialog.name(), dialog.path());
+    }
 }
 
 void CategoriesDialog::removeCategory() {
@@ -70,6 +73,9 @@ void CategoriesDialog::removeCategory() {
 }
 
 void CategoriesDialog::showNewCategoryDialog() {
-    NewCategoryDialog *dialog = new NewCategoryDialog(this);
-    dialog->open();
+    NewCategoryDialog dialog(this);
+    
+    if (dialog.exec() == QDialog::Accepted) {
+        m_model->addCategory(dialog.name(), dialog.path());
+    }
 }

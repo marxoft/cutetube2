@@ -1,25 +1,26 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "pluginvideomodel.h"
+#include "pluginmanager.h"
 #include "resources.h"
 
 PluginVideoModel::PluginVideoModel(QObject *parent) :
     QAbstractListModel(parent),
-    m_request(new ResourcesRequest(this))
+    m_request(0)
 {
     m_roles[DateRole] = "date";
     m_roles[DescriptionRole] = "description";
@@ -38,24 +39,32 @@ PluginVideoModel::PluginVideoModel(QObject *parent) :
 #if QT_VERSION < 0x050000
     setRoleNames(m_roles);
 #endif
-    connect(m_request, SIGNAL(serviceChanged()), this, SIGNAL(serviceChanged()));
-    connect(m_request, SIGNAL(finished()), this, SLOT(onRequestFinished()));
-}
-
-QString PluginVideoModel::service() const {
-    return m_request->service();
-}
-
-void PluginVideoModel::setService(const QString &s) {
-    m_request->setService(s);
 }
 
 QString PluginVideoModel::errorString() const {
-    return m_request->errorString();
+    return m_request ? m_request->errorString() : QString();
+}
+
+QString PluginVideoModel::service() const {
+    return m_service;
+}
+
+void PluginVideoModel::setService(const QString &s) {
+    if (s != service()) {
+        m_service = s;
+        emit serviceChanged();
+
+        clear();
+
+        if (m_request) {
+            m_request->deleteLater();
+            m_request = 0;
+        }
+    }
 }
 
 ResourcesRequest::Status PluginVideoModel::status() const {
-    return m_request->status();
+    return m_request ? m_request->status() : ResourcesRequest::Null;
 }
 
 #if QT_VERSION >=0x050000
@@ -76,13 +85,15 @@ void PluginVideoModel::fetchMore(const QModelIndex &) {
     if (!canFetchMore()) {
         return;
     }
-    
-    m_request->list(Resources::VIDEO, m_next);
-    emit statusChanged(status());
+
+    if (ResourcesRequest *r = request()) {
+        r->list(Resources::VIDEO, m_next);
+        emit statusChanged(status());
+    }
 }
 
 QVariant PluginVideoModel::data(const QModelIndex &index, int role) const {
-    if (PluginVideo *video = get(index.row())) {
+    if (const PluginVideo *video = get(index.row())) {
         return video->property(m_roles[role]);
     }
     
@@ -92,7 +103,7 @@ QVariant PluginVideoModel::data(const QModelIndex &index, int role) const {
 QMap<int, QVariant> PluginVideoModel::itemData(const QModelIndex &index) const {
     QMap<int, QVariant> map;
     
-    if (PluginVideo *video = get(index.row())) {
+    if (const PluginVideo *video = get(index.row())) {
         QHashIterator<int, QByteArray> iterator(m_roles);
         
         while (iterator.hasNext()) {
@@ -105,7 +116,7 @@ QMap<int, QVariant> PluginVideoModel::itemData(const QModelIndex &index) const {
 }
 
 QVariant PluginVideoModel::data(int row, const QByteArray &role) const {
-    if (PluginVideo *video = get(row)) {
+    if (const PluginVideo *video = get(row)) {
         return video->property(role);
     }
     
@@ -115,8 +126,8 @@ QVariant PluginVideoModel::data(int row, const QByteArray &role) const {
 QVariantMap PluginVideoModel::itemData(int row) const {
     QVariantMap map;
     
-    if (PluginVideo *video = get(row)) {
-        foreach (QByteArray role, m_roles.values()) {
+    if (const PluginVideo *video = get(row)) {
+        foreach (const QByteArray &role, m_roles.values()) {
             map[role] = video->property(role);
         }
     }
@@ -132,16 +143,19 @@ PluginVideo* PluginVideoModel::get(int row) const {
     return 0;
 }
 
-void PluginVideoModel::list(const QString &id) {
+void PluginVideoModel::list(const QString &resourceId) {
     if (status() == ResourcesRequest::Loading) {
         return;
     }
     
     clear();
-    m_id = id;
+    m_resourceId = resourceId;
     m_query = QString();
-    m_request->list(Resources::VIDEO, id);
-    emit statusChanged(status());
+
+    if (ResourcesRequest *r = request()) {
+        r->list(Resources::VIDEO, resourceId);
+        emit statusChanged(status());
+    }
 }
 
 void PluginVideoModel::search(const QString &query, const QString &order) {
@@ -150,11 +164,14 @@ void PluginVideoModel::search(const QString &query, const QString &order) {
     }
     
     clear();
-    m_id = QString();
+    m_resourceId = QString();
     m_query = query;
     m_order = order;
-    m_request->search(Resources::VIDEO, query, order);
-    emit statusChanged(status());
+
+    if (ResourcesRequest *r = request()) {
+        r->search(Resources::VIDEO, query, order);
+        emit statusChanged(status());
+    }
 }
 
 void PluginVideoModel::clear() {
@@ -169,20 +186,24 @@ void PluginVideoModel::clear() {
 }
 
 void PluginVideoModel::cancel() {
-    m_request->cancel();
+    if (m_request) {
+        m_request->cancel();
+    }
 }
 
 void PluginVideoModel::reload() {
     clear();
-    
-    if (m_query.isEmpty()) {
-        m_request->list(Resources::VIDEO, m_id);
+
+    if (ResourcesRequest *r = request()) {
+        if (m_query.isEmpty()) {
+            r->list(Resources::VIDEO, m_resourceId);
+        }
+        else {
+            r->search(Resources::VIDEO, m_query, m_order);
+        }
+        
+        emit statusChanged(status());
     }
-    else {
-        m_request->search(Resources::VIDEO, m_query, m_order);
-    }
-    
-    emit statusChanged(status());
 }
 
 void PluginVideoModel::append(PluginVideo *video) {
@@ -210,17 +231,29 @@ void PluginVideoModel::remove(int row) {
     }
 }
 
+ResourcesRequest* PluginVideoModel::request() {
+    if (!m_request) {
+        m_request = PluginManager::instance()->createRequestForService(service(), this);
+
+        if (m_request) {
+            connect(m_request, SIGNAL(finished()), this, SLOT(onRequestFinished()));
+        }
+    }
+
+    return m_request;
+}
+
 void PluginVideoModel::onRequestFinished() {
     if (m_request->status() == ResourcesRequest::Ready) {
-        QVariantMap result = m_request->result().toMap();
+        const QVariantMap result = m_request->result().toMap();
         
         if (!result.isEmpty()) {
             m_next = result.value("next").toString();
-            QVariantList list = result.value("items").toList();
+            const QVariantList list = result.value("items").toList();
 
             beginInsertRows(QModelIndex(), m_items.size(), m_items.size() + list.size() - 1);
     
-            foreach (QVariant item, list) {
+            foreach (const QVariant &item, list) {
                 m_items << new PluginVideo(service(), item.toMap(), this);
             }
 

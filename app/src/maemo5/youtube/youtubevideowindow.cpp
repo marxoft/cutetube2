@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -24,8 +24,10 @@
 #include "resources.h"
 #include "settings.h"
 #include "textbrowser.h"
+#include "transfers.h"
 #include "utils.h"
 #include "videodelegate.h"
+#include "videolauncher.h"
 #include "videoplaybackwindow.h"
 #include "videothumbnail.h"
 #include "youtube.h"
@@ -223,9 +225,9 @@ void YouTubeVideoWindow::loadBaseUi() {
     connect(m_relatedDownloadAction, SIGNAL(triggered()), this, SLOT(downloadRelatedVideo()));
     connect(m_relatedShareAction, SIGNAL(triggered()), this, SLOT(shareRelatedVideo()));
     
-    if (!YouTube::instance()->userId().isEmpty()) {
-        if ((YouTube::instance()->hasScope(QYouTube::READ_WRITE_SCOPE))
-            || (YouTube::instance()->hasScope(QYouTube::FORCE_SSL_SCOPE))) {
+    if (!YouTube::userId().isEmpty()) {
+        if ((YouTube::hasScope(QYouTube::READ_WRITE_SCOPE))
+            || (YouTube::hasScope(QYouTube::FORCE_SSL_SCOPE))) {
                         
             m_likeAction = new QAction(tr("Like"), this);
             m_dislikeAction = new QAction(tr("Dislike"), this);
@@ -252,7 +254,7 @@ void YouTubeVideoWindow::loadBaseUi() {
             connect(m_relatedWatchLaterAction, SIGNAL(triggered()), this, SLOT(watchRelatedVideoLater()));
             connect(m_relatedPlaylistAction, SIGNAL(triggered()), this, SLOT(addRelatedVideoToPlaylist()));
             
-            if (YouTube::instance()->hasScope(QYouTube::FORCE_SSL_SCOPE)) {
+            if (YouTube::hasScope(QYouTube::FORCE_SSL_SCOPE)) {
                 m_commentAction = new QAction(tr("Add comment"), this);
                 menuBar()->addAction(m_commentAction);
                 connect(m_commentAction, SIGNAL(triggered()), this, SLOT(addComment()));
@@ -302,8 +304,7 @@ void YouTubeVideoWindow::addComment() {
         return;
     }
     
-    YouTubeCommentDialog *dialog = new YouTubeCommentDialog(m_video->id(), QString(), this);
-    dialog->open();
+    YouTubeCommentDialog(m_video->id(), QString(), this).exec();
 }
 
 void YouTubeVideoWindow::addVideoToPlaylist() {
@@ -311,8 +312,7 @@ void YouTubeVideoWindow::addVideoToPlaylist() {
         return;
     }
     
-    YouTubePlaylistDialog *dialog = new YouTubePlaylistDialog(m_video, this);
-    dialog->open();
+    YouTubePlaylistDialog(m_video, this).exec();
 }
 
 void YouTubeVideoWindow::dislikeVideo() {
@@ -330,8 +330,15 @@ void YouTubeVideoWindow::downloadVideo() {
         return;
     }
     
-    YouTubeDownloadDialog *dialog = new YouTubeDownloadDialog(m_video->id(), m_video->title(), this);
-    dialog->open();
+    YouTubeDownloadDialog dialog(this);
+    dialog.list(m_video->id());
+    
+    if (dialog.exec() == QDialog::Accepted) {
+        Transfers::instance()->addDownloadTransfer(Resources::YOUTUBE, m_video->id(), dialog.streamId(),
+                                                   QUrl(), m_video->title(), dialog.category(),
+                                                   dialog.subtitlesLanguage(), dialog.customCommand(),
+                                                   dialog.customCommandOverrideEnabled());
+    }
 }
 
 void YouTubeVideoWindow::likeVideo() {
@@ -349,19 +356,23 @@ void YouTubeVideoWindow::playVideo() {
         return;
     }
     
-    if (Settings::instance()->videoPlayer() == "cutetube") {
+    if (Settings::videoPlayer() == "cutetube") {
         VideoPlaybackWindow *window = new VideoPlaybackWindow(this);
         window->show();
         window->addVideo(m_video);
     }
-    else {
-        YouTubePlaybackDialog *dialog = new YouTubePlaybackDialog(m_video->id(), m_video->title(), this);
-        dialog->open();
+    else {    
+        YouTubePlaybackDialog dialog(this);
+        dialog.list(m_video->id());
+
+        if ((dialog.exec() == QDialog::Accepted) && (!VideoLauncher::playVideo(dialog.streamUrl()))) {
+            QMessageBox::critical(this, tr("Error"), tr("Unable to play video"));
+        }
     }
 }
 
 void YouTubeVideoWindow::shareVideo() {
-    Clipboard::instance()->setText(m_video->url().toString());
+    Clipboard::setText(m_video->url().toString());
     QMaemo5InformationBox::information(this, tr("URL copied to clipboard"));
 }
 
@@ -397,18 +408,30 @@ void YouTubeVideoWindow::addRelatedVideoToPlaylist() {
     }
     
     if (YouTubeVideo *video = m_relatedModel->get(m_relatedView->currentIndex().row())) {
-        YouTubePlaylistDialog *dialog = new YouTubePlaylistDialog(video, this);
-        dialog->open();
+        YouTubePlaylistDialog(video, this).exec();
     }
 }
 
 void YouTubeVideoWindow::downloadRelatedVideo() {
-    if ((!isBusy()) && (m_relatedView->currentIndex().isValid())) {
-        QString id = m_relatedView->currentIndex().data(YouTubeVideoModel::IdRole).toString();
-        QString title = m_relatedView->currentIndex().data(YouTubeVideoModel::TitleRole).toString();
+    if (isBusy()) {
+        return;
+    }
+    
+    const QModelIndex index = m_relatedView->currentIndex();
+    
+    if (index.isValid()) {
+        const QString id = index.data(YouTubeVideoModel::IdRole).toString();
+        const QString title = index.data(YouTubeVideoModel::TitleRole).toString();
         
-        YouTubeDownloadDialog *dialog = new YouTubeDownloadDialog(id, title, this);
-        dialog->open();
+        YouTubeDownloadDialog dialog(this);
+        dialog.list(id);
+
+        if (dialog.exec() == QDialog::Accepted) {
+            Transfers::instance()->addDownloadTransfer(Resources::YOUTUBE, id, dialog.streamId(),
+                                                       QUrl(), title, dialog.category(),
+                                                       dialog.subtitlesLanguage(), dialog.customCommand(),
+                                                       dialog.customCommandOverrideEnabled());
+        }
     }
 }
 
@@ -417,19 +440,20 @@ void YouTubeVideoWindow::playRelatedVideo(const QModelIndex &index) {
         return;
     }
     
-    if (Settings::instance()->videoPlayer() == "cutetube") {
+    if (Settings::videoPlayer() == "cutetube") {
         if (YouTubeVideo *video = m_relatedModel->get(index.row())) {
             VideoPlaybackWindow *window = new VideoPlaybackWindow(this);
             window->show();
             window->addVideo(video);
         }
     }
-    else {
-        QString id = index.data(YouTubeVideoModel::IdRole).toString();
-        QString title = index.data(YouTubeVideoModel::TitleRole).toString();
-    
-        YouTubePlaybackDialog *dialog = new YouTubePlaybackDialog(id, title, this);
-        dialog->open();
+    else {    
+        YouTubePlaybackDialog dialog(this);
+        dialog.list(index.data(YouTubeVideoModel::IdRole).toString());
+
+        if ((dialog.exec() == QDialog::Accepted) && (!VideoLauncher::playVideo(dialog.streamUrl()))) {
+            QMessageBox::critical(this, tr("Error"), tr("Unable to play video"));
+        }
     }
 }
 
@@ -453,7 +477,7 @@ void YouTubeVideoWindow::setRelatedVideoFavourite() {
 
 void YouTubeVideoWindow::shareRelatedVideo() {
     if (const YouTubeVideo *video = m_relatedModel->get(m_relatedView->currentIndex().row())) {
-        Clipboard::instance()->setText(video->url().toString());
+        Clipboard::setText(video->url().toString());
         QMaemo5InformationBox::information(this, tr("URL copied to clipboard"));
     }
 }
@@ -550,7 +574,7 @@ void YouTubeVideoWindow::showRelatedVideos() {
 }
 
 void YouTubeVideoWindow::showResource(const QUrl &url) {
-    QVariantMap resource = Resources::getResourceFromUrl(url.toString());
+    const QVariantMap resource = Resources::getResourceFromUrl(url.toString());
     
     if (resource.value("service") != Resources::YOUTUBE) {
         QDesktopServices::openUrl(url);

@@ -1,5 +1,0 @@
-<plugin name="RSS" settings="rss/rss.settings" exec="/opt/cutetube2/plugins/rss/cutetube2-rss">
-    <resources>
-        <resource method="list" name="Latest videos" type="video" />
-    </resources>
-</plugin>

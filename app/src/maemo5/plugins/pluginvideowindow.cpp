@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -22,14 +22,15 @@
 #include "listview.h"
 #include "plugincommentmodel.h"
 #include "plugindownloaddialog.h"
+#include "pluginmanager.h"
 #include "pluginplaybackdialog.h"
 #include "pluginplaylistwindow.h"
 #include "pluginuser.h"
 #include "pluginuserwindow.h"
 #include "resources.h"
-#include "resourcesplugins.h"
 #include "settings.h"
 #include "textbrowser.h"
+#include "transfers.h"
 #include "utils.h"
 #include "videodelegate.h"
 #include "videolauncher.h"
@@ -147,6 +148,7 @@ void PluginVideoWindow::loadBaseUi() {
     
     m_titleLabel->setWordWrap(true);
     m_dateLabel->setStyleSheet(QString("color: %1; font-size: 13pt").arg(palette().color(QPalette::Mid).name()));
+    m_dateLabel->hide();
     m_userLabel->setStyleSheet("font-size: 13pt");
     m_userLabel->hide();
 
@@ -220,12 +222,18 @@ void PluginVideoWindow::loadUserUi() {
 
 void PluginVideoWindow::loadVideoUi() {
     m_titleLabel->setText(m_video->title());
-    m_dateLabel->setText(tr("Published on %1").arg(m_video->date()));
     m_descriptionLabel->setHtml(Utils::toRichText(m_video->description()));
     m_thumbnail->setSource(m_video->largeThumbnailUrl());
     m_thumbnail->setDuration(m_video->duration());
     
-    if (ResourcesPlugins::instance()->resourceTypeIsSupported(m_video->service(), Resources::COMMENT)) {
+    const QString date = m_video->date();
+    
+    if (!date.isEmpty()) {
+        m_dateLabel->setText(tr("Published on %1").arg(date));
+        m_dateLabel->show();
+    }
+    
+    if (PluginManager::instance()->resourceTypeIsSupported(m_video->service(), Resources::COMMENT)) {
         m_tabBar->addTab(tr("Comments"));
     }
 }
@@ -240,9 +248,15 @@ void PluginVideoWindow::downloadVideo() {
         return;
     }
     
-    PluginDownloadDialog *dialog = new PluginDownloadDialog(m_video->service(), m_video->id(), m_video->streamUrl(),
-                                                            m_video->title(), this);
-    dialog->open();
+    PluginDownloadDialog dialog(m_video->service(), this);
+    dialog.list(m_video->id(), m_video->streamUrl().isEmpty());
+
+    if (dialog.exec() == QDialog::Accepted) {
+        Transfers::instance()->addDownloadTransfer(m_video->service(), m_video->id(), dialog.streamId(),
+                                                   m_video->streamUrl(), m_video->title(), dialog.category(),
+                                                   dialog.subtitlesLanguage(), dialog.customCommand(),
+                                                   dialog.customCommandOverrideEnabled());
+    }
 }
 
 void PluginVideoWindow::playVideo() {
@@ -250,7 +264,7 @@ void PluginVideoWindow::playVideo() {
         return;
     }
     
-    if (Settings::instance()->videoPlayer() == "cutetube") {
+    if (Settings::videoPlayer() == "cutetube") {
         VideoPlaybackWindow *window = new VideoPlaybackWindow(this);
         window->show();
         window->addVideo(m_video);
@@ -259,24 +273,41 @@ void PluginVideoWindow::playVideo() {
         VideoLauncher::playVideo(m_video->streamUrl().toString());
     }
     else {
-        PluginPlaybackDialog *dialog = new PluginPlaybackDialog(m_video->service(), m_video->id(), m_video->title(), this);
-        dialog->open();
+        PluginPlaybackDialog dialog(m_video->service(), this);
+        dialog.list(m_video->id());
+
+        if ((dialog.exec() == QDialog::Accepted) && (!VideoLauncher::playVideo(dialog.streamUrl()))) {
+            QMessageBox::critical(this, tr("Error"), tr("Unable to play video"));
+        }
     }
 }
 
 void PluginVideoWindow::shareVideo() {
-    Clipboard::instance()->setText(m_video->url().toString());
+    Clipboard::setText(m_video->url().toString());
     QMaemo5InformationBox::information(this, tr("URL copied to clipboard"));
 }
 
 void PluginVideoWindow::downloadRelatedVideo() {
-    if ((!isBusy()) && (m_relatedView->currentIndex().isValid())) {
-        QString id = m_relatedView->currentIndex().data(PluginVideoModel::IdRole).toString();
-        QString title = m_relatedView->currentIndex().data(PluginVideoModel::TitleRole).toString();
-        QUrl streamUrl = m_relatedView->currentIndex().data(PluginVideoModel::StreamUrlRole).toString();
+    if (isBusy()) {
+        return;
+    }
+    
+    const QModelIndex index = m_relatedView->currentIndex();
+    
+    if (index.isValid()) {
+        const QString id = index.data(PluginVideoModel::IdRole).toString();
+        const QString title = index.data(PluginVideoModel::TitleRole).toString();
+        const QUrl streamUrl = index.data(PluginVideoModel::StreamUrlRole).toString();
         
-        PluginDownloadDialog *dialog = new PluginDownloadDialog(m_video->service(), id, streamUrl, title, this);
-        dialog->open();
+        PluginDownloadDialog dialog(m_relatedModel->service(), this);
+        dialog.list(id, streamUrl.isEmpty());
+        
+        if (dialog.exec() == QDialog::Accepted) {
+            Transfers::instance()->addDownloadTransfer(m_relatedModel->service(), id, dialog.streamId(),
+                                                       streamUrl, title, dialog.category(),
+                                                       dialog.subtitlesLanguage(), dialog.customCommand(),
+                                                       dialog.customCommandOverrideEnabled());
+        }
     }
 }
 
@@ -285,7 +316,7 @@ void PluginVideoWindow::playRelatedVideo(const QModelIndex &index) {
         return;
     }
     
-    if (Settings::instance()->videoPlayer() == "cutetube") {
+    if (Settings::videoPlayer() == "cutetube") {
         if (PluginVideo *video = m_relatedModel->get(index.row())) {
             VideoPlaybackWindow *window = new VideoPlaybackWindow(this);
             window->show();
@@ -293,24 +324,25 @@ void PluginVideoWindow::playRelatedVideo(const QModelIndex &index) {
         }
     }
     else {
-        QString url = index.data(PluginVideoModel::StreamUrlRole).toString();
+        const QString url = index.data(PluginVideoModel::StreamUrlRole).toString();
         
         if (!url.isEmpty()) {
             VideoLauncher::playVideo(url);
         }
         else {
-            QString id = index.data(PluginVideoModel::IdRole).toString();
-            QString title = index.data(PluginVideoModel::TitleRole).toString();
-    
-            PluginPlaybackDialog *dialog = new PluginPlaybackDialog(m_video->service(), id, title, this);
-            dialog->open();
+            PluginPlaybackDialog dialog(m_relatedModel->service(), this);
+            dialog.list(index.data(PluginVideoModel::IdRole).toString());
+
+            if ((dialog.exec() == QDialog::Accepted) && (!VideoLauncher::playVideo(dialog.streamUrl()))) {
+                QMessageBox::critical(this, tr("Error"), tr("Unable to play video"));
+            }
         }
     }
 }
 
 void PluginVideoWindow::shareRelatedVideo() {
     if (const PluginVideo *video = m_relatedModel->get(m_relatedView->currentIndex().row())) {
-        Clipboard::instance()->setText(video->url().toString());
+        Clipboard::setText(video->url().toString());
         QMaemo5InformationBox::information(this, tr("URL copied to clipboard"));
     }
 }
@@ -386,7 +418,7 @@ void PluginVideoWindow::showRelatedVideos() {
 }
 
 void PluginVideoWindow::showResource(const QUrl &url) {
-    QVariantMap resource = Resources::getResourceFromUrl(url.toString());
+    const QVariantMap resource = Resources::getResourceFromUrl(url.toString());
     
     if (resource.value("service") != m_video->service()) {
         QDesktopServices::openUrl(url);

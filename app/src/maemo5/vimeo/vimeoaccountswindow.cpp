@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -64,10 +64,10 @@ VimeoAccountsWindow::VimeoAccountsWindow(StackedWindow *parent) :
 void VimeoAccountsWindow::initAuthRequest() {
     if (!m_authRequest) {
         m_authRequest = new QVimeo::AuthenticationRequest(this);
-        m_authRequest->setClientId(Vimeo::instance()->clientId());
-        m_authRequest->setClientSecret(Vimeo::instance()->clientSecret());
-        m_authRequest->setRedirectUri(Vimeo::instance()->redirectUri());
-        m_authRequest->setScopes(Vimeo::instance()->scopes());
+        m_authRequest->setClientId(Vimeo::clientId());
+        m_authRequest->setClientSecret(Vimeo::clientSecret());
+        m_authRequest->setRedirectUri(Vimeo::redirectUri());
+        m_authRequest->setScopes(Vimeo::scopes());
         connect(m_authRequest, SIGNAL(finished()), this, SLOT(onAuthRequestFinished()));
     }
 }
@@ -84,24 +84,23 @@ void VimeoAccountsWindow::selectAccount(const QModelIndex &index) {
 }
 
 void VimeoAccountsWindow::showAuthDialog() {
-    VimeoAuthDialog *dialog = new VimeoAuthDialog(this);
-    dialog->open();
-    connect(dialog, SIGNAL(codeReady(QString)), this, SLOT(submitCode(QString)));
-}
+    VimeoAuthDialog dialog(this);
+    dialog.login();
 
-void VimeoAccountsWindow::submitCode(const QString &code) {
-    initAuthRequest();
-    showProgressIndicator();
-    m_authRequest->exchangeCodeForAccessToken(code);
+    if (dialog.exec() == QDialog::Accepted) {
+        initAuthRequest();
+        showProgressIndicator();
+        m_authRequest->exchangeCodeForAccessToken(dialog.code());
+    }
 }
 
 void VimeoAccountsWindow::removeAccount() {
     if (m_view->currentIndex().isValid()) {
-        QString username = m_view->currentIndex().data(VimeoAccountModel::UsernameRole).toString();
+        const QString username = m_view->currentIndex().data(VimeoAccountModel::UsernameRole).toString();
         
         if (m_model->removeAccount(m_view->currentIndex().row())) {
-            QMaemo5InformationBox::information(this, tr("Account '%1' removed. Please visit the Vimeo website to \
-            revoke the access token").arg(username));
+            QMaemo5InformationBox::information(this,
+            tr("Account '%1' removed. Please visit the Vimeo website to revoke the access token").arg(username));
         }
         else {
             QMessageBox::critical(this, tr("Database error"), m_model->errorString());
@@ -110,10 +109,10 @@ void VimeoAccountsWindow::removeAccount() {
 }
 
 void VimeoAccountsWindow::onAuthRequestFinished() {
-    QVariantMap result = m_authRequest->result().toMap();
+    const QVariantMap result = m_authRequest->result().toMap();
     
     if (m_authRequest->status() == QVimeo::AuthenticationRequest::Ready) {
-        QVariantMap user = result.value("user").toMap();
+        const QVariantMap user = result.value("user").toMap();
         
         if (m_model->addAccount(user.value("uri").toString().section('/', -1), user.value("name").toString(),
                                 result.value("access_token").toString(), result.value("scope").toString())) {

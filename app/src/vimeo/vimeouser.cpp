@@ -1,25 +1,22 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "vimeouser.h"
 #include "resources.h"
 #include "vimeo.h"
-#ifdef CUTETUBE_DEBUG
-#include <QDebug>
-#endif
 
 VimeoUser::VimeoUser(QObject *parent) :
     CTUser(parent),
@@ -142,9 +139,6 @@ void VimeoUser::checkIfSubscribed() {
     }
     
     if (!Vimeo::subscriptionCache.hasMore) {
-#ifdef CUTETUBE_DEBUG
-        qDebug() << "VimeoUser::checkIfSubscribed" << id() << "not found";
-#endif
         setSubscribed(false);
         return;
     }
@@ -181,9 +175,9 @@ void VimeoUser::unsubscribe() {
 void VimeoUser::initRequest() {
     if (!m_request) {
         m_request = new QVimeo::ResourcesRequest(this);
-        m_request->setClientId(Vimeo::instance()->clientId());
-        m_request->setClientSecret(Vimeo::instance()->clientSecret());
-        m_request->setAccessToken(Vimeo::instance()->accessToken());
+        m_request->setClientId(Vimeo::clientId());
+        m_request->setClientSecret(Vimeo::clientSecret());
+        m_request->setAccessToken(Vimeo::accessToken());
     
         connect(m_request, SIGNAL(accessTokenChanged(QString)), Vimeo::instance(), SLOT(setAccessToken(QString)));
     }
@@ -200,20 +194,18 @@ void VimeoUser::onUserRequestFinished() {
 
 void VimeoUser::onSubscribeCheckRequestFinished() {
     if (m_request->status() == QVimeo::ResourcesRequest::Ready) {
-        QVariantMap result = m_request->result().toMap();
-        QVariantList list = result.value("data").toList();
+        const QVariantMap result = m_request->result().toMap();
+        const QVariantList list = result.value("data").toList();
         Vimeo::subscriptionCache.hasMore = !result.value("paging").toMap().value("next").isNull();
         
         const int page = Vimeo::subscriptionCache.filters.value("page").toInt();
         Vimeo::subscriptionCache.filters["page"] = (page > 0 ? page + 1 : 2);
         
-        foreach (QVariant item, list) {
-            QVariantMap map = item.toMap();
+        foreach (const QVariant &item, list) {
+            const QVariantMap map = item.toMap();
             Vimeo::subscriptionCache.ids.append(map.value("id").toString());
         }
-#ifdef CUTETUBE_DEBUG
-        qDebug() << "VimeoUser::onSubscribeCheckRequestFinished OK" << Vimeo::subscriptionCache.ids;
-#endif
+        
         disconnect(m_request, SIGNAL(finished()), this, SLOT(onUserRequestFinished()));
         emit statusChanged(status());
         checkIfSubscribed();
@@ -230,9 +222,6 @@ void VimeoUser::onSubscribeRequestFinished() {
         setSubscriberCount(subscriberCount() + 1);
         Vimeo::subscriptionCache.ids.append(id());
         emit Vimeo::instance()->userSubscribed(this);
-#ifdef CUTETUBE_DEBUG
-        qDebug() << "VimeoUser::onSubscribeRequestFinished OK" << id();
-#endif
     }
     
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onSubscribeRequestFinished()));
@@ -245,9 +234,6 @@ void VimeoUser::onUnsubscribeRequestFinished() {
         setSubscriberCount(subscriberCount() - 1);
         Vimeo::subscriptionCache.ids.removeOne(id());
         emit Vimeo::instance()->userUnsubscribed(this);
-#ifdef CUTETUBE_DEBUG
-        qDebug() << "VimeoUser::onUnsubscribeRequestFinished OK" << id();
-#endif
     }
     
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onUnsubscribeRequestFinished()));

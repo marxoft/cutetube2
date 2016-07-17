@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -18,7 +18,6 @@
 #include "drawing.h"
 #include "imagecache.h"
 #include <QPainter>
-#include <QUrl>
 #include <QApplication>
 #include <QMouseEvent>
 
@@ -32,6 +31,7 @@ CommentDelegate::CommentDelegate(ImageCache *cache, int bodyRole, int dateRole, 
     m_usernameRole(usernameRole),
     m_pressedRow(-1)
 {
+    m_smallFont.setPointSize(13);
 }
 
 bool CommentDelegate::editorEvent(QEvent *event, QAbstractItemModel *, const QStyleOptionViewItem &option,
@@ -75,21 +75,19 @@ bool CommentDelegate::editorEvent(QEvent *event, QAbstractItemModel *, const QSt
 
 void CommentDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
                                   const QModelIndex &index) const {
-    QPixmap background("/etc/hildon/theme/images/ContactsAppletBubble.png");
+    const QPixmap background("/etc/hildon/theme/images/ContactsAppletBubble.png");
     
     if (!background.isNull()) {
         qDrawBorderPixmap(painter, option.rect, QMargins(30, 60, 30, 30), background);
     }
-    
-    QUrl imageUrl = index.data(m_thumbnailRole).toUrl();
-    QImage image = m_cache->image(imageUrl, QSize(40, 40));
-    
+        
     QRect imageRect = option.rect;
     imageRect.setLeft(imageRect.left() + 24);
     imageRect.setTop(imageRect.top() + 16);
     imageRect.setWidth(40);
     imageRect.setHeight(40);
     
+    const QImage image = m_cache->image(index.data(m_thumbnailRole).toString(), QSize(40, 40));
     drawCenteredImage(painter, imageRect, image);
     
     QRect textRect = option.rect;
@@ -98,11 +96,8 @@ void CommentDelegate::paint(QPainter *painter, const QStyleOptionViewItem &optio
     textRect.setTop(textRect.top() + 16);
     textRect.setHeight(40);
     
-    QFont font;
-    font.setPointSize(13);
-    
     painter->save();
-    painter->setFont(font);
+    painter->setFont(m_smallFont);
     painter->setPen(QApplication::palette().color(QPalette::Mid));
     painter->drawText(textRect, Qt::AlignVCenter | Qt::TextWordWrap,
                       QString(tr("by %1 on %2").arg(index.data(m_usernameRole).toString())
@@ -120,9 +115,9 @@ void CommentDelegate::paint(QPainter *painter, const QStyleOptionViewItem &optio
 }
 
 QSize CommentDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const {
-    return QSize(option.rect.width(), option.fontMetrics.boundingRect(QRect(option.rect.left() + 72,
-                                                                            option.rect.top() + 64,
-                                                                            option.rect.width() - 40,
-                                                                            1000),
+    return QSize(option.rect.width(), QFontMetrics(m_smallFont).boundingRect(QRect(option.rect.left() + 72,
+                                                                             option.rect.top() + 64,
+                                                                             option.rect.width() - 40,
+                                                                             1000),
                  Qt::TextWordWrap, index.data(m_bodyRole).toString()).height() + 80);
 }

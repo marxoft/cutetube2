@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -49,7 +49,6 @@ class YouTube : public QObject
     Q_PROPERTY(QString UPLOAD_SCOPE READ uploadScope CONSTANT)
             
 public:
-    explicit YouTube(QObject *parent = 0);
     ~YouTube();
     
     static const QRegExp URL_REGEXP;
@@ -64,27 +63,27 @@ public:
     Q_INVOKABLE static QString getUserId(const QVariantMap &user);
     Q_INVOKABLE static QString getVideoId(const QVariantMap &video);
     
-    Q_INVOKABLE QString relatedPlaylist(const QString &name) const;
+    Q_INVOKABLE static QString relatedPlaylist(const QString &name);
     
-    Q_INVOKABLE QUrl authUrl() const;
+    Q_INVOKABLE static QUrl authUrl();
     
-    QString userId() const;
+    static QString userId();
         
-    QString accessToken() const;
+    static QString accessToken();
     
-    QString refreshToken() const;
+    static QString refreshToken();
         
-    QVariantMap relatedPlaylists() const;
+    static QVariantMap relatedPlaylists();
     
-    QString apiKey() const;
+    static QString apiKey();
     
-    QString clientId() const;
+    static QString clientId();
     
-    QString clientSecret() const;
+    static QString clientSecret();
     
-    QStringList scopes() const;
+    static QStringList scopes();
     
-    Q_INVOKABLE bool hasScope(const QString &scope) const;
+    Q_INVOKABLE static bool hasScope(const QString &scope);
     
     static QString auditScope();
     static QString forceSslScope();
@@ -94,31 +93,31 @@ public:
     static QString uploadScope();
     
 public Q_SLOTS:
-    void setUserId(const QString &id);
+    static void setUserId(const QString &id);
     
-    void setAccessToken(const QString &token);
+    static void setAccessToken(const QString &token);
     
-    void setRefreshToken(const QString &token);
+    static void setRefreshToken(const QString &token);
         
-    void setRelatedPlaylists(const QVariantMap &playlists);
+    static void setRelatedPlaylists(const QVariantMap &playlists);
                 
-    void setApiKey(const QString &key);
+    static void setApiKey(const QString &key);
     
-    void setClientId(const QString &id);
+    static void setClientId(const QString &id);
     
-    void setClientSecret(const QString &secret);
+    static void setClientSecret(const QString &secret);
     
-    void setScopes(const QStringList &s);
+    static void setScopes(const QStringList &s);
     
 Q_SIGNALS:
-    void userIdChanged();
-    void accessTokenChanged();
-    void refreshTokenChanged();
-    void relatedPlaylistsChanged();
-    void apiKeyChanged();
-    void clientIdChanged();
-    void clientSecretChanged();
-    void scopesChanged();
+    void userIdChanged(const QString &id);
+    void accessTokenChanged(const QString &token);
+    void refreshTokenChanged(const QString &token);
+    void relatedPlaylistsChanged(const QVariantMap &playlists);
+    void apiKeyChanged(const QString &key);
+    void clientIdChanged(const QString &key);
+    void clientSecretChanged(const QString &secret);
+    void scopesChanged(const QStringList &scopes);
     
     void commentAdded(YouTubeComment *comment);
     
@@ -137,6 +136,8 @@ Q_SIGNALS:
     void videoWatchLater(YouTubeVideo *video);
 
 private:
+    YouTube();
+    
     struct SubscriptionCache {
         QHash<QString, QString> ids;
         QString nextPageToken;

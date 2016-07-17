@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -18,7 +18,6 @@
 #include "drawing.h"
 #include "imagecache.h"
 #include <QPainter>
-#include <QUrl>
 #include <QApplication>
 #include <QMouseEvent>
 
@@ -83,7 +82,7 @@ void VideoDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
         painter->drawImage(option.rect, QImage("/etc/hildon/theme/images/TouchListBackgroundNormal.png"));
     }
     
-    QImage image = m_cache->image(index.data(m_thumbnailRole).toString(), QSize(100, 75));
+    const QImage image = m_cache->image(index.data(m_thumbnailRole).toString(), QSize(100, 75));
     
     QRect imageRect = option.rect;
     imageRect.setLeft(imageRect.left() + 8);
@@ -94,12 +93,12 @@ void VideoDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
     painter->fillRect(imageRect, Qt::black);
     drawCenteredImage(painter, imageRect, image);
     
-    QString duration = index.data(m_durationRole).toString();
+    const QString duration = index.data(m_durationRole).toString();
     QFont font;
     QRect durationRect = imageRect;
     const int durationHeight = durationRect.height() / 4;
-    font.setPixelSize(durationHeight);        
-    durationRect.setTop(durationRect.bottom() - (durationHeight));
+    font.setPixelSize(durationHeight);
+    durationRect.setTop(durationRect.bottom() - durationHeight);
     durationRect.setLeft(durationRect.right() - QFontMetrics(font).width(duration));
 
     painter->save();
@@ -139,13 +138,10 @@ void VideoDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
     }
     
     if (!subTitle.isEmpty()) {
+        font.setPointSize(13);
         painter->drawText(textRect, Qt::AlignLeft | Qt::AlignTop,
                           painter->fontMetrics().elidedText(index.data(m_titleRole).toString(),
                           Qt::ElideRight, textRect.width()));
-        
-        QFont font;
-        font.setPointSize(13);
-        
         painter->setFont(font);
         painter->setPen(QApplication::palette().color(QPalette::Mid));
         painter->drawText(textRect, Qt::AlignLeft | Qt::AlignBottom,

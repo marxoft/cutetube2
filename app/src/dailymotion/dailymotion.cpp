@@ -1,29 +1,27 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "dailymotion.h"
 #include "database.h"
+#include "logger.h"
 #include <qdailymotion/urls.h>
 #include <QSettings>
 #include <QSqlRecord>
 #if QT_VERSION >= 0x050000
 #include <QUrlQuery>
-#endif
-#ifdef CUTETUBE_DEBUG
-#include <QDebug>
 #endif
 
 static const QString CLIENT_ID("71e91852b1af82bfcb41");
@@ -63,26 +61,21 @@ Dailymotion::SubscriptionCache Dailymotion::subscriptionCache;
 
 Dailymotion* Dailymotion::self = 0;
 
-Dailymotion::Dailymotion(QObject *parent) :
-    QObject(parent)
+Dailymotion::Dailymotion() :
+    QObject()
 {
-    if (!self) {
-        self = this;
-    }
 }
 
 Dailymotion::~Dailymotion() {
-    if (self == this) {
-        self = 0;
-    }
+    self = 0;
 }
 
 Dailymotion* Dailymotion::instance() {
-    return self;
+    return self ? self : self = new Dailymotion;
 }
 
 QString Dailymotion::getErrorString(const QVariantMap &error) {
-    QVariantMap em = error.contains("error") ? error.value("error").toMap() : error;
+    const QVariantMap em = error.contains("error") ? error.value("error").toMap() : error;
 
     if (em.contains("message")) {
         return em.value("message").toString();
@@ -91,7 +84,7 @@ QString Dailymotion::getErrorString(const QVariantMap &error) {
     return tr("Unknown error");
 }
 
-QUrl Dailymotion::authUrl() const {
+QUrl Dailymotion::authUrl() {
     QUrl url(QDailymotion::AUTH_URL);
 #if QT_VERSION >= 0x050000
     QUrlQuery query(url);
@@ -122,7 +115,7 @@ QUrl Dailymotion::authUrl() const {
     return url;
 }
 
-QString Dailymotion::userId() const {
+QString Dailymotion::userId() {
     return QSettings().value("Dailymotion/userId").toString();
 }
 
@@ -132,11 +125,14 @@ void Dailymotion::setUserId(const QString &id) {
         subscriptionCache.ids.clear();
         subscriptionCache.filters.clear();
         subscriptionCache.hasMore = true;
-        emit userIdChanged();
+
+        if (self) {
+            emit self->userIdChanged(id);
+        }
     }
 }
 
-QString Dailymotion::accessToken() const {
+QString Dailymotion::accessToken() {
     if (userId().isEmpty()) {
         return QString();
     }
@@ -145,7 +141,7 @@ QString Dailymotion::accessToken() const {
                                                 .arg(userId()));
     
     if (query.lastError().isValid()) {
-        qDebug() << "Dailymotion::accessToken: database error:" << query.lastError().text();
+        Logger::log("Dailymotion::accessToken(): database error: " + query.lastError().text());
         return QString();
     }
     
@@ -161,17 +157,14 @@ void Dailymotion::setAccessToken(const QString &token) {
                                                 .arg(token).arg(userId()));
 
     if (query.lastError().isValid()) {
-        qDebug() << "Dailymotion::setAccessToken: database error:" << query.lastError().text();
+        Logger::log("Dailymotion::setAccessToken(): database error: " + query.lastError().text());
     }
-    else {
-        emit accessTokenChanged();
+    else if (self) {
+        emit self->accessTokenChanged(token);
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "Dailymotion::setAccessToken" << token;
-#endif
 }
 
-QString Dailymotion::refreshToken() const {
+QString Dailymotion::refreshToken() {
     if (userId().isEmpty()) {
         return QString();
     }
@@ -180,7 +173,7 @@ QString Dailymotion::refreshToken() const {
                                                 .arg(userId()));
     
     if (query.lastError().isValid()) {
-        qDebug() << "Dailymotion::refreshToken: database error:" << query.lastError().text();
+        Logger::log("Dailymotion::refreshToken(): database error: " + query.lastError().text());
         return QString();
     }
     
@@ -196,73 +189,70 @@ void Dailymotion::setRefreshToken(const QString &token) {
                                                 .arg(token).arg(userId()));
 
     if (query.lastError().isValid()) {
-        qDebug() << "Dailymotion::setRefreshToken: database error:" << query.lastError().text();
+        Logger::log("Dailymotion::setRefreshToken(): database error: " + query.lastError().text());
     }
-    else {
-        emit accessTokenChanged();
+    else if (self) {
+        emit self->accessTokenChanged(token);
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "Dailymotion::setRefreshToken" << token;
-#endif
 }
 
-QString Dailymotion::clientId() const {
+QString Dailymotion::clientId() {
     return QSettings().value("Dailymotion/clientId", CLIENT_ID).toString();
 }
 
 void Dailymotion::setClientId(const QString &id) {
     if (id != clientId()) {
         QSettings().setValue("Dailymotion/clientId", id);
-        emit clientIdChanged();
+
+        if (self) {
+            emit self->clientIdChanged(id);
+        }
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "Dailymotion::setClientId" << id;
-#endif
 }
 
-QString Dailymotion::clientSecret() const {
+QString Dailymotion::clientSecret() {
     return QSettings().value("Dailymotion/clientSecret", CLIENT_SECRET).toString();
 }
 
 void Dailymotion::setClientSecret(const QString &secret) {
     if (secret != clientSecret()) {
         QSettings().setValue("Dailymotion/clientSecret", secret);
-        emit clientSecretChanged();
+
+        if (self) {
+            emit self->clientSecretChanged(secret);
+        }
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "Dailymotion::setClientSecret" << secret;
-#endif
 }
 
-QString Dailymotion::redirectUri() const {
+QString Dailymotion::redirectUri() {
     return QSettings().value("Dailymotion/redirectUri", REDIRECT_URI).toString();
 }
 
 void Dailymotion::setRedirectUri(const QString &uri) {
     if (uri != redirectUri()) {
         QSettings().setValue("Dailymotion/redirectUri", uri);
-        emit redirectUriChanged();
+
+        if (self) {
+            emit self->redirectUriChanged(uri);
+        }
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "Dailymotion::setRedirectUri" << uri;
-#endif
 }
 
-QStringList Dailymotion::scopes() const {
+QStringList Dailymotion::scopes() {
     return QSettings().value("Dailymotion/scopes", SCOPES).toStringList();
 }
 
 void Dailymotion::setScopes(const QStringList &s) {
     if (s != scopes()) {
         QSettings().setValue("Dailymotion/scopes", s);
-        emit scopesChanged();
+
+        if (self) {
+            emit self->scopesChanged(s);
+        }
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "Dailymotion::setScopes" << s;
-#endif
 }
 
-bool Dailymotion::hasScope(const QString &scope) const {
+bool Dailymotion::hasScope(const QString &scope) {
     if (userId().isEmpty()) {
         return false;
     }
@@ -271,7 +261,7 @@ bool Dailymotion::hasScope(const QString &scope) const {
                                                 .arg(userId()));
     
     if (query.lastError().isValid()) {
-        qDebug() << "Dailymotion::hasScope: database error:" << query.lastError().text();
+        Logger::log("Dailymotion::hasScope(): database error: " + query.lastError().text());
         return false;
     }
     

@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -25,44 +25,61 @@ class CategoryNameModel;
 class ValueSelector;
 class QScrollArea;
 class QCheckBox;
+class QLineEdit;
 class QDialogButtonBox;
 class QHBoxLayout;
 
 class YouTubeDownloadDialog : public Dialog
 {
     Q_OBJECT
+
+    Q_PROPERTY(QString videoId READ videoId)
+    Q_PROPERTY(QString streamId READ streamId)
+    Q_PROPERTY(QString subtitlesLanguage READ subtitlesLanguage)
+    Q_PROPERTY(QString category READ category)
+    Q_PROPERTY(QString customCommand READ customCommand)
+    Q_PROPERTY(bool customCommandOverrideEnabled READ customCommandOverrideEnabled)
     
 public:
-    explicit YouTubeDownloadDialog(const QString &resourceId, const QString &title, QWidget *parent = 0);
+    explicit YouTubeDownloadDialog(QWidget *parent = 0);
+
+    QString videoId() const;
+
+    QString streamId() const;
+
+    QString subtitlesLanguage() const;
+
+    QString category() const;
+
+    QString customCommand() const;
+    bool customCommandOverrideEnabled() const;
     
-protected:
-    void showEvent(QShowEvent *e);
-    
+public Q_SLOTS:
+    virtual void accept();
+
+    void list(const QString &videoId);
+
 private Q_SLOTS:
-    void onCategoryChanged();
-    void onStreamChanged();
-    void onSubtitlesChanged();
     void onSubtitleCheckBoxToggled(bool enabled);
     void onStreamModelStatusChanged(QYouTube::StreamsRequest::Status status);
     void onSubtitleModelStatusChanged(QYouTube::SubtitlesRequest::Status status);
     
-    void addDownload();
-    
 private:
-    QString m_id;
-    QString m_title;
     YouTubeStreamModel *m_streamModel;
     YouTubeSubtitleModel *m_subtitleModel;
     CategoryNameModel *m_categoryModel;
     
     QScrollArea *m_scrollArea;
     QCheckBox *m_subtitleCheckBox;
-    QCheckBox *m_audioCheckBox;
+    QCheckBox *m_commandCheckBox;
+    QLineEdit *m_commandEdit;
     ValueSelector *m_streamSelector;
     ValueSelector *m_subtitleSelector;
     ValueSelector *m_categorySelector;
     QDialogButtonBox *m_buttonBox;
     QHBoxLayout *m_layout;
+
+    QString m_videoId;
 };
 
 #endif // YOUTUBEDOWNLOADDIALOG_H

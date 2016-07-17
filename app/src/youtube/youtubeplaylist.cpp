@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -105,10 +105,10 @@ void YouTubePlaylist::loadPlaylist(const QString &id) {
 }
 
 void YouTubePlaylist::loadPlaylist(const QVariantMap &playlist) {
-    QVariantMap snippet = playlist.value("snippet").toMap();
-    QVariantMap status = playlist.value("status").toMap();
-    QVariantMap contentDetails = playlist.value("contentDetails").toMap();
-    QVariantMap thumbnails = snippet.value("thumbnails").toMap();
+    const QVariantMap snippet = playlist.value("snippet").toMap();
+    const QVariantMap status = playlist.value("status").toMap();
+    const QVariantMap contentDetails = playlist.value("contentDetails").toMap();
+    const QVariantMap thumbnails = snippet.value("thumbnails").toMap();
     
     setDate(QDateTime::fromString(snippet.value("publishedAt").toString(), Qt::ISODate).toString("dd MMM yyyy"));
     setDescription(snippet.value("description").toString());
@@ -189,11 +189,11 @@ void YouTubePlaylist::removeVideo(YouTubeVideo *video) {
 void YouTubePlaylist::initRequest() {
     if (!m_request) {
         m_request = new QYouTube::ResourcesRequest(this);
-        m_request->setApiKey(YouTube::instance()->apiKey());
-        m_request->setClientId(YouTube::instance()->clientId());
-        m_request->setClientSecret(YouTube::instance()->clientSecret());
-        m_request->setAccessToken(YouTube::instance()->accessToken());
-        m_request->setRefreshToken(YouTube::instance()->refreshToken());
+        m_request->setApiKey(YouTube::apiKey());
+        m_request->setClientId(YouTube::clientId());
+        m_request->setClientSecret(YouTube::clientSecret());
+        m_request->setAccessToken(YouTube::accessToken());
+        m_request->setRefreshToken(YouTube::refreshToken());
     
         connect(m_request, SIGNAL(accessTokenChanged(QString)), YouTube::instance(), SLOT(setAccessToken(QString)));
         connect(m_request, SIGNAL(refreshTokenChanged(QString)), YouTube::instance(), SLOT(setRefreshToken(QString)));
@@ -202,7 +202,7 @@ void YouTubePlaylist::initRequest() {
 
 void YouTubePlaylist::onPlaylistRequestFinished() {
     if (m_request->status() == QYouTube::ResourcesRequest::Ready) {
-        QVariantList list = m_request->result().toMap().value("items").toList();
+        const QVariantList list = m_request->result().toMap().value("items").toList();
         
         if (!list.isEmpty()) {
             loadPlaylist(list.first().toMap());

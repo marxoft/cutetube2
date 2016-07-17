@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -50,7 +50,7 @@ QHash<int, QByteArray> VimeoAccountModel::roleNames() const {
 
 QVariant VimeoAccountModel::data(const QModelIndex &idx, int role) const {
     if (role == ActiveRole) {
-        return Vimeo::instance()->userId() == data(idx, UserIdRole);
+        return Vimeo::userId() == data(idx, UserIdRole);
     }
     
     if (role >= UserIdRole) {
@@ -86,7 +86,7 @@ bool VimeoAccountModel::addAccount(const QString &userId, const QString &usernam
     record.append(scopesField);
     
     if (insertRecord(-1, record)) {
-        Vimeo::instance()->setUserId(userId);
+        Vimeo::setUserId(userId);
         const int count = rowCount();
         emit dataChanged(index(0, 0), index(count - 1, columnCount() - 1));
         emit countChanged(count);
@@ -100,12 +100,12 @@ bool VimeoAccountModel::removeAccount(int row) {
     QString userId = data(index(row, 0)).toString();
     
     if (removeRows(row, 1)) {
-        if (userId == Vimeo::instance()->userId()) {
+        if (userId == Vimeo::userId()) {
             if (rowCount() > 0) {
                 selectAccount(0);
             }
             else {
-                Vimeo::instance()->setUserId(QString());
+                Vimeo::setUserId(QString());
             }
         }
         
@@ -120,7 +120,7 @@ bool VimeoAccountModel::selectAccount(int row) {
     QString userId = data(index(row, 0)).toString();
     
     if (!userId.isEmpty()) {
-        Vimeo::instance()->setUserId(userId);
+        Vimeo::setUserId(userId);
         emit dataChanged(index(0, 0), index(rowCount() - 1, columnCount() - 1));
         return true;
     }

@@ -1,25 +1,26 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "pluginusermodel.h"
+#include "pluginmanager.h"
 #include "resources.h"
 
 PluginUserModel::PluginUserModel(QObject *parent) :
     QAbstractListModel(parent),
-    m_request(new ResourcesRequest(this))
+    m_request(0)
 {
     m_roles[DescriptionRole] = "description";
     m_roles[IdRole] = "id";
@@ -30,24 +31,32 @@ PluginUserModel::PluginUserModel(QObject *parent) :
 #if QT_VERSION < 0x050000
     setRoleNames(m_roles);
 #endif
-    connect(m_request, SIGNAL(serviceChanged()), this, SIGNAL(serviceChanged()));
-    connect(m_request, SIGNAL(finished()), this, SLOT(onRequestFinished()));
-}
-
-QString PluginUserModel::service() const {
-    return m_request->service();
-}
-
-void PluginUserModel::setService(const QString &s) {
-    m_request->setService(s);
 }
 
 QString PluginUserModel::errorString() const {
-    return m_request->errorString();
+    return m_request ? m_request->errorString() : QString();
+}
+
+QString PluginUserModel::service() const {
+    return m_service;
+}
+
+void PluginUserModel::setService(const QString &s) {
+    if (s != service()) {
+        m_service = s;
+        emit serviceChanged();
+
+        clear();
+
+        if (m_request) {
+            m_request->deleteLater();
+            m_request = 0;
+        }
+    }
 }
 
 ResourcesRequest::Status PluginUserModel::status() const {
-    return m_request->status();
+    return m_request ? m_request->status() : ResourcesRequest::Null;
 }
 
 #if QT_VERSION >=0x050000
@@ -68,13 +77,15 @@ void PluginUserModel::fetchMore(const QModelIndex &) {
     if (!canFetchMore()) {
         return;
     }
-    
-    m_request->list(Resources::USER, m_next);
-    emit statusChanged(status());
+
+    if (ResourcesRequest *r = request()) {
+        r->list(Resources::USER, m_next);
+        emit statusChanged(status());
+    }
 }
 
 QVariant PluginUserModel::data(const QModelIndex &index, int role) const {
-    if (PluginUser *user = get(index.row())) {
+    if (const PluginUser *user = get(index.row())) {
         return user->property(m_roles[role]);
     }
     
@@ -84,7 +95,7 @@ QVariant PluginUserModel::data(const QModelIndex &index, int role) const {
 QMap<int, QVariant> PluginUserModel::itemData(const QModelIndex &index) const {
     QMap<int, QVariant> map;
     
-    if (PluginUser *user = get(index.row())) {
+    if (const PluginUser *user = get(index.row())) {
         QHashIterator<int, QByteArray> iterator(m_roles);
         
         while (iterator.hasNext()) {
@@ -97,7 +108,7 @@ QMap<int, QVariant> PluginUserModel::itemData(const QModelIndex &index) const {
 }
 
 QVariant PluginUserModel::data(int row, const QByteArray &role) const {
-    if (PluginUser *user = get(row)) {
+    if (const PluginUser *user = get(row)) {
         return user->property(role);
     }
     
@@ -107,8 +118,8 @@ QVariant PluginUserModel::data(int row, const QByteArray &role) const {
 QVariantMap PluginUserModel::itemData(int row) const {
     QVariantMap map;
     
-    if (PluginUser *user = get(row)) {
-        foreach (QByteArray role, m_roles.values()) {
+    if (const PluginUser *user = get(row)) {
+        foreach (const QByteArray &role, m_roles.values()) {
             map[role] = user->property(role);
         }
     }
@@ -124,16 +135,19 @@ PluginUser* PluginUserModel::get(int row) const {
     return 0;
 }
 
-void PluginUserModel::list(const QString &id) {
+void PluginUserModel::list(const QString &resourceId) {
     if (status() == ResourcesRequest::Loading) {
         return;
     }
     
     clear();
-    m_id = id;
+    m_resourceId = resourceId;
     m_query = QString();
-    m_request->list(Resources::USER, id);
-    emit statusChanged(status());
+
+    if (ResourcesRequest *r = request()) {
+        r->list(Resources::USER, resourceId);
+        emit statusChanged(status());
+    }
 }
 
 void PluginUserModel::search(const QString &query, const QString &order) {
@@ -142,11 +156,14 @@ void PluginUserModel::search(const QString &query, const QString &order) {
     }
     
     clear();
-    m_id = QString();
+    m_resourceId = QString();
     m_query = query;
     m_order = order;
-    m_request->search(Resources::USER, query, order);
-    emit statusChanged(status());
+
+    if (ResourcesRequest *r = request()) {
+        r->search(Resources::USER, query, order);
+        emit statusChanged(status());
+    }
 }
 
 void PluginUserModel::clear() {
@@ -161,20 +178,24 @@ void PluginUserModel::clear() {
 }
 
 void PluginUserModel::cancel() {
-    m_request->cancel();
+    if (m_request) {
+        m_request->cancel();
+    }
 }
 
 void PluginUserModel::reload() {
     clear();
-    
-    if (m_query.isEmpty()) {
-        m_request->list(Resources::USER, m_id);
+
+    if (ResourcesRequest *r = request()) {
+        if (m_query.isEmpty()) {
+            r->list(Resources::USER, m_resourceId);
+        }
+        else {
+            r->search(Resources::USER, m_query, m_order);
+        }
+        
+        emit statusChanged(status());
     }
-    else {
-        m_request->search(Resources::USER, m_query, m_order);
-    }
-    
-    emit statusChanged(status());
 }
 
 void PluginUserModel::append(PluginUser *user) {
@@ -202,17 +223,29 @@ void PluginUserModel::remove(int row) {
     }
 }
 
+ResourcesRequest* PluginUserModel::request() {
+    if (!m_request) {
+        m_request = PluginManager::instance()->createRequestForService(service(), this);
+
+        if (m_request) {
+            connect(m_request, SIGNAL(finished()), this, SLOT(onRequestFinished()));
+        }
+    }
+
+    return m_request;
+}
+
 void PluginUserModel::onRequestFinished() {
     if (m_request->status() == ResourcesRequest::Ready) {
-        QVariantMap result = m_request->result().toMap();
+        const QVariantMap result = m_request->result().toMap();
         
         if (!result.isEmpty()) {
             m_next = result.value("next").toString();
-            QVariantList list = result.value("items").toList();
+            const QVariantList list = result.value("items").toList();
 
             beginInsertRows(QModelIndex(), m_items.size(), m_items.size() + list.size() - 1);
     
-            foreach (QVariant item, list) {
+            foreach (const QVariant &item, list) {
                 m_items << new PluginUser(service(), item.toMap(), this);
             }
 

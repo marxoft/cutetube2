@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -147,8 +147,18 @@ void VimeoView::showPlaylists() {
 }
 
 void VimeoView::showSearchDialog() {
-    VimeoSearchDialog *dialog = new VimeoSearchDialog(StackedWindow::currentWindow());
-    dialog->open();
+    VimeoSearchDialog dialog(StackedWindow::currentWindow());
+
+    if (dialog.exec() == QDialog::Accepted) {
+        const QVariantMap resource = Resources::getResourceFromUrl(dialog.query());
+        
+        if (resource.value("service") == Resources::VIMEO) {
+            showResource(resource.value("type").toString(), resource.value("id").toString());
+        }
+        else {
+            search(dialog.query(), dialog.type(), dialog.order());
+        }
+    }
 }
 
 void VimeoView::showSubscriptions() {

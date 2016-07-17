@@ -1,71 +1,100 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "pluginstreammodel.h"
+#include "pluginmanager.h"
 #include "resources.h"
 
 PluginStreamModel::PluginStreamModel(QObject *parent) :
     SelectionModel(parent),
-    m_request(new ResourcesRequest(this))
+    m_request(0)
 {
-    connect(m_request, SIGNAL(serviceChanged()), this, SIGNAL(serviceChanged()));
-    connect(m_request, SIGNAL(finished()), this, SLOT(onRequestFinished()));
-}
-
-QString PluginStreamModel::service() const {
-    return m_request->service();
-}
-
-void PluginStreamModel::setService(const QString &s) {
-    m_request->setService(s);
 }
 
 QString PluginStreamModel::errorString() const {
-    return m_request->errorString();
+    return m_request ? m_request->errorString() : QString();
+}
+
+QString PluginStreamModel::service() const {
+    return m_service;
+}
+
+void PluginStreamModel::setService(const QString &s) {
+    if (s != service()) {
+        m_service = s;
+        emit serviceChanged();
+
+        clear();
+
+        if (m_request) {
+            m_request->deleteLater();
+            m_request = 0;
+        }
+    }
 }
 
 ResourcesRequest::Status PluginStreamModel::status() const {
-    return m_request->status();
+    return m_request ? m_request->status() : ResourcesRequest::Null;
 }
 
-void PluginStreamModel::list(const QString &id) {
+void PluginStreamModel::list(const QString &resourceId) {
     if (status() == ResourcesRequest::Loading) {
         return;
     }
     
     clear();
-    m_id = id;
-    m_request->list(Resources::STREAM, id);
-    emit statusChanged(status());
+    m_resourceId = resourceId;
+
+    if (ResourcesRequest *r = request()) {
+        r->list(Resources::STREAM, resourceId);
+        emit statusChanged(status());
+    }
 }
 
 void PluginStreamModel::cancel() {
-    m_request->cancel();
+    if (m_request) {
+        m_request->cancel();
+    }
 }
 
 void PluginStreamModel::reload() {
     clear();
-    m_request->list(Resources::STREAM, m_id);
-    emit statusChanged(status());
+
+    if (ResourcesRequest *r = request()) {
+        r->list(Resources::STREAM, m_resourceId);
+        emit statusChanged(status());
+    }
+}
+
+ResourcesRequest* PluginStreamModel::request() {
+    if (!m_request) {
+        m_request = PluginManager::instance()->createRequestForService(service(), this);
+
+        if (m_request) {
+            connect(m_request, SIGNAL(finished()), this, SLOT(onRequestFinished()));
+        }
+    }
+
+    return m_request;
 }
 
 void PluginStreamModel::onRequestFinished() {
     if (m_request->status() == ResourcesRequest::Ready) {
-        foreach (QVariant v, m_request->result().toMap().value("items").toList()) {
-            QVariantMap stream = v.toMap();
+        foreach (const QVariant &v, m_request->result().toMap().value("items").toList()) {
+            const QVariantMap stream = v.toMap();
             const int height = stream.value("height").toInt();
             
             if (height > 0) {

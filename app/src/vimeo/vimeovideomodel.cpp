@@ -1,25 +1,22 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "vimeovideomodel.h"
 #include "vimeo.h"
 #include "vimeoplaylist.h"
-#ifdef CUTETUBE_DEBUG
-#include <QDebug>
-#endif
 
 VimeoVideoModel::VimeoVideoModel(QObject *parent) :
     QAbstractListModel(parent),
@@ -40,9 +37,9 @@ VimeoVideoModel::VimeoVideoModel(QObject *parent) :
 #if QT_VERSION < 0x050000
     setRoleNames(m_roles);
 #endif
-    m_request->setClientId(Vimeo::instance()->clientId());
-    m_request->setClientSecret(Vimeo::instance()->clientSecret());
-    m_request->setAccessToken(Vimeo::instance()->accessToken());
+    m_request->setClientId(Vimeo::clientId());
+    m_request->setClientSecret(Vimeo::clientSecret());
+    m_request->setAccessToken(Vimeo::accessToken());
     
     connect(m_request, SIGNAL(accessTokenChanged(QString)), Vimeo::instance(), SLOT(setAccessToken(QString)));
     connect(m_request, SIGNAL(finished()), this, SLOT(onRequestFinished()));
@@ -82,7 +79,7 @@ void VimeoVideoModel::fetchMore(const QModelIndex &) {
 }
 
 QVariant VimeoVideoModel::data(const QModelIndex &index, int role) const {
-    if (VimeoVideo *video = get(index.row())) {
+    if (const VimeoVideo *video = get(index.row())) {
         return video->property(m_roles[role]);
     }
     
@@ -92,7 +89,7 @@ QVariant VimeoVideoModel::data(const QModelIndex &index, int role) const {
 QMap<int, QVariant> VimeoVideoModel::itemData(const QModelIndex &index) const {
     QMap<int, QVariant> map;
     
-    if (VimeoVideo *video = get(index.row())) {
+    if (const VimeoVideo *video = get(index.row())) {
         QHashIterator<int, QByteArray> iterator(m_roles);
         
         while (iterator.hasNext()) {
@@ -105,7 +102,7 @@ QMap<int, QVariant> VimeoVideoModel::itemData(const QModelIndex &index) const {
 }
 
 QVariant VimeoVideoModel::data(int row, const QByteArray &role) const {
-    if (VimeoVideo *video = get(row)) {
+    if (const VimeoVideo *video = get(row)) {
         return video->property(role);
     }
     
@@ -115,8 +112,8 @@ QVariant VimeoVideoModel::data(int row, const QByteArray &role) const {
 QVariantMap VimeoVideoModel::itemData(int row) const {
     QVariantMap map;
     
-    if (VimeoVideo *video = get(row)) {
-        foreach (QByteArray role, m_roles.values()) {
+    if (const VimeoVideo *video = get(row)) {
+        foreach (const QByteArray &role, m_roles.values()) {
             map[role] = video->property(role);
         }
     }
@@ -211,21 +208,21 @@ void VimeoVideoModel::remove(int row) {
 
 void VimeoVideoModel::onRequestFinished() {
     if (m_request->status() == QVimeo::ResourcesRequest::Ready) {
-        QVariantMap result = m_request->result().toMap();
+        const QVariantMap result = m_request->result().toMap();
         
         if (!result.isEmpty()) {
             m_hasMore = !result.value("paging").toMap().value("next").isNull();
-            QVariantList list = result.value("data").toList();
+            const QVariantList list = result.value("data").toList();
 
             beginInsertRows(QModelIndex(), m_items.size(), m_items.size() + list.size() - 1);
     
             if (m_resourcePath.endsWith("/feed")) {
-                foreach (QVariant item, list) {
+                foreach (const QVariant &item, list) {
                     m_items << new VimeoVideo(item.toMap().value("clip").toMap(), this);
                 }
             }
             else {
-                foreach (QVariant item, list) {
+                foreach (const QVariant &item, list) {
                     m_items << new VimeoVideo(item.toMap(), this);
                 }
             }
@@ -242,45 +239,30 @@ void VimeoVideoModel::onVideoAddedToPlaylist(VimeoVideo *video, VimeoPlaylist *p
     if (m_resourcePath.section('/', -2, -2) == playlist->id()) {
         insert(0, new VimeoVideo(video, this));
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "VimeoVideoModel::onVideoAddedToPlaylist" << video->id() << playlist->id();
-#endif
 }
 
 void VimeoVideoModel::onVideoRemovedFromPlaylist(VimeoVideo *video, VimeoPlaylist *playlist) {
     if (m_resourcePath.section('/', -2, -2) == playlist->id()) {
-        QModelIndexList list = match(index(0), IdRole, video->id(), 1, Qt::MatchExactly);
+        const QModelIndexList list = match(index(0), IdRole, video->id(), 1, Qt::MatchExactly);
         
         if (!list.isEmpty()) {
             remove(list.first().row());
         }
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "VimeoVideoModel::onVideoRemovedFromPlaylist" << video->id() << playlist->id();
-#endif
 }
 
 void VimeoVideoModel::onVideoFavourited(VimeoVideo *video) {
     insert(0, new VimeoVideo(video, this));
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "VimeoVideoModel::onVideoFavourited" << video->id();
-#endif
 }
 
 void VimeoVideoModel::onVideoUnfavourited(VimeoVideo *video) {
-    QModelIndexList list = match(index(0), IdRole, video->id(), 1, Qt::MatchExactly);
+    const QModelIndexList list = match(index(0), IdRole, video->id(), 1, Qt::MatchExactly);
     
     if (!list.isEmpty()) {
         remove(list.first().row());
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "VimeoVideoModel::onVideoUnfavourited" << video->id();
-#endif
 }
 
 void VimeoVideoModel::onVideoWatchLater(VimeoVideo *video) {
     insert(0, new VimeoVideo(video, this));
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "VimeoVideoModel::onVideoWatchLater" << video->id();
-#endif
 }

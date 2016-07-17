@@ -1,25 +1,22 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "youtubeuser.h"
 #include "resources.h"
 #include "youtube.h"
-#ifdef CUTETUBE_DEBUG
-#include <QDebug>
-#endif
 
 YouTubeUser::YouTubeUser(QObject *parent) :
     CTUser(parent),
@@ -188,11 +185,11 @@ void YouTubeUser::loadUser(const QString &id) {
 }
 
 void YouTubeUser::loadUser(const QVariantMap &user) {
-    QVariantMap brandingSettings = user.value("brandingSettings").toMap();
-    QVariantMap banners = brandingSettings.value("image").toMap();
-    QVariantMap channel = brandingSettings.value("channel").toMap();
-    QVariantMap statistics = user.value("statistics").toMap();
-    QVariantMap thumbnails = user.value("snippet").toMap().value("thumbnails").toMap();
+    const QVariantMap brandingSettings = user.value("brandingSettings").toMap();
+    const QVariantMap banners = brandingSettings.value("image").toMap();
+    const QVariantMap channel = brandingSettings.value("channel").toMap();
+    const QVariantMap statistics = user.value("statistics").toMap();
+    const QVariantMap thumbnails = user.value("snippet").toMap().value("thumbnails").toMap();
     
     setBannerUrl(banners.value("bannerMobileImageUrl").toString());
     setDescription(channel.value("description").toString());
@@ -230,9 +227,6 @@ void YouTubeUser::checkIfSubscribed() {
     }
     
     if ((YouTube::subscriptionCache.loaded) && (YouTube::subscriptionCache.nextPageToken.isEmpty())) {
-#ifdef CUTETUBE_DEBUG
-        qDebug() << "YouTubeUser::checkIfSubscribed" << id() << "not found";
-#endif
         setSubscribed(false);
         setSubscriptionId(QString());
         return;
@@ -289,11 +283,11 @@ void YouTubeUser::unsubscribe() {
 void YouTubeUser::initRequest() {
     if (!m_request) {
         m_request = new QYouTube::ResourcesRequest(this);
-        m_request->setApiKey(YouTube::instance()->apiKey());
-        m_request->setClientId(YouTube::instance()->clientId());
-        m_request->setClientSecret(YouTube::instance()->clientSecret());
-        m_request->setAccessToken(YouTube::instance()->accessToken());
-        m_request->setRefreshToken(YouTube::instance()->refreshToken());
+        m_request->setApiKey(YouTube::apiKey());
+        m_request->setClientId(YouTube::clientId());
+        m_request->setClientSecret(YouTube::clientSecret());
+        m_request->setAccessToken(YouTube::accessToken());
+        m_request->setRefreshToken(YouTube::refreshToken());
     
         connect(m_request, SIGNAL(accessTokenChanged(QString)), YouTube::instance(), SLOT(setAccessToken(QString)));
         connect(m_request, SIGNAL(refreshTokenChanged(QString)), YouTube::instance(), SLOT(setRefreshToken(QString)));
@@ -302,7 +296,7 @@ void YouTubeUser::initRequest() {
 
 void YouTubeUser::onUserRequestFinished() {
     if (m_request->status() == QYouTube::ResourcesRequest::Ready) {
-        QVariantList list = m_request->result().toMap().value("items").toList();
+        const QVariantList list = m_request->result().toMap().value("items").toList();
         
         if (!list.isEmpty()) {
             loadUser(list.first().toMap());
@@ -315,19 +309,17 @@ void YouTubeUser::onUserRequestFinished() {
 
 void YouTubeUser::onSubscribeCheckRequestFinished() {
     if (m_request->status() == QYouTube::ResourcesRequest::Ready) {
-        QVariantMap result = m_request->result().toMap();
-        QVariantList items = result.value("items").toList();
+        const QVariantMap result = m_request->result().toMap();
+        const QVariantList items = result.value("items").toList();
         YouTube::subscriptionCache.nextPageToken = result.value("nextPageToken").toString();
         YouTube::subscriptionCache.loaded = true;
         
-        foreach(QVariant item, items) {
-            QVariantMap map = item.toMap();
+        foreach (const QVariant &item, items) {
+            const QVariantMap map = item.toMap();
             YouTube::subscriptionCache.ids.insert(map.value("snippet").toMap().value("resourceId").toMap()
-                                        .value("channelId").toString(), map.value("id").toString());
+                                          .value("channelId").toString(), map.value("id").toString());
         }
-#ifdef CUTETUBE_DEBUG
-        qDebug() << "YouTubeUser::onSubscribeCheckRequestFinished OK" << YouTube::subscriptionCache.ids;
-#endif
+        
         disconnect(m_request, SIGNAL(finished()), this, SLOT(onUserRequestFinished()));
         emit statusChanged(status());
         checkIfSubscribed();
@@ -345,9 +337,6 @@ void YouTubeUser::onSubscribeRequestFinished() {
         setSubscriptionId(m_request->result().toMap().value("id").toString());
         YouTube::subscriptionCache.ids.insert(id(), subscriptionId());
         emit YouTube::instance()->userSubscribed(this);
-#ifdef CUTETUBE_DEBUG
-        qDebug() << "YouTubeUser::onSubscribeRequestFinished OK" << id();
-#endif
     }
     
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onSubscribeRequestFinished()));
@@ -361,9 +350,6 @@ void YouTubeUser::onUnsubscribeRequestFinished() {
         setSubscriptionId(QString());
         YouTube::subscriptionCache.ids.remove(id());
         emit YouTube::instance()->userUnsubscribed(this);
-#ifdef CUTETUBE_DEBUG
-        qDebug() << "YouTubeUser::onUnsubscribeRequestFinished OK" << id();
-#endif
     }
     
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onUnsubscribeRequestFinished()));

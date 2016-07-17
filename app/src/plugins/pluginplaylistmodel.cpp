@@ -1,25 +1,27 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
- * published by the Free Software Foundation.
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms and conditions of the GNU General Public License,
+ * version 3, as published by the Free Software Foundation.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
 #include "pluginplaylistmodel.h"
+#include "pluginmanager.h"
 #include "resources.h"
 
 PluginPlaylistModel::PluginPlaylistModel(QObject *parent) :
     QAbstractListModel(parent),
-    m_request(new ResourcesRequest(this))
+    m_request(0)
 {
     m_roles[DateRole] = "date";
     m_roles[DescriptionRole] = "description";
@@ -34,24 +36,32 @@ PluginPlaylistModel::PluginPlaylistModel(QObject *parent) :
 #if QT_VERSION < 0x050000
     setRoleNames(m_roles);
 #endif
-    connect(m_request, SIGNAL(serviceChanged()), this, SIGNAL(serviceChanged()));
-    connect(m_request, SIGNAL(finished()), this, SLOT(onRequestFinished()));
-}
-
-QString PluginPlaylistModel::service() const {
-    return m_request->service();
-}
-
-void PluginPlaylistModel::setService(const QString &s) {
-    m_request->setService(s);
 }
 
 QString PluginPlaylistModel::errorString() const {
-    return m_request->errorString();
+    return m_request ? m_request->errorString() : QString();
+}
+
+QString PluginPlaylistModel::service() const {
+    return m_service;
+}
+
+void PluginPlaylistModel::setService(const QString &s) {
+    if (s != service()) {
+        m_service = s;
+        emit serviceChanged();
+
+        clear();
+
+        if (m_request) {
+            m_request->deleteLater();
+            m_request = 0;
+        }
+    }
 }
 
 ResourcesRequest::Status PluginPlaylistModel::status() const {
-    return m_request->status();
+    return m_request ? m_request->status() : ResourcesRequest::Null;
 }
 
 #if QT_VERSION >=0x050000
@@ -72,13 +82,15 @@ void PluginPlaylistModel::fetchMore(const QModelIndex &) {
     if (!canFetchMore()) {
         return;
     }
-    
-    m_request->list(Resources::PLAYLIST, m_next);
-    emit statusChanged(status());
+
+    if (ResourcesRequest *r = request()) {
+        r->list(Resources::PLAYLIST, m_next);
+        emit statusChanged(status());
+    }
 }
 
 QVariant PluginPlaylistModel::data(const QModelIndex &index, int role) const {
-    if (PluginPlaylist *playlist = get(index.row())) {
+    if (const PluginPlaylist *playlist = get(index.row())) {
         return playlist->property(m_roles[role]);
     }
     
@@ -88,7 +100,7 @@ QVariant PluginPlaylistModel::data(const QModelIndex &index, int role) const {
 QMap<int, QVariant> PluginPlaylistModel::itemData(const QModelIndex &index) const {
     QMap<int, QVariant> map;
     
-    if (PluginPlaylist *playlist = get(index.row())) {
+    if (const PluginPlaylist *playlist = get(index.row())) {
         QHashIterator<int, QByteArray> iterator(m_roles);
         
         while (iterator.hasNext()) {
@@ -101,7 +113,7 @@ QMap<int, QVariant> PluginPlaylistModel::itemData(const QModelIndex &index) cons
 }
 
 QVariant PluginPlaylistModel::data(int row, const QByteArray &role) const {
-    if (PluginPlaylist *playlist = get(row)) {
+    if (const PluginPlaylist *playlist = get(row)) {
         return playlist->property(role);
     }
     
@@ -111,8 +123,8 @@ QVariant PluginPlaylistModel::data(int row, const QByteArray &role) const {
 QVariantMap PluginPlaylistModel::itemData(int row) const {
     QVariantMap map;
     
-    if (PluginPlaylist *playlist = get(row)) {
-        foreach (QByteArray role, m_roles.values()) {
+    if (const PluginPlaylist *playlist = get(row)) {
+        foreach (const QByteArray &role, m_roles.values()) {
             map[role] = playlist->property(role);
         }
     }
@@ -128,16 +140,19 @@ PluginPlaylist* PluginPlaylistModel::get(int row) const {
     return 0;
 }
 
-void PluginPlaylistModel::list(const QString &id) {
+void PluginPlaylistModel::list(const QString &resourceId) {
     if (status() == ResourcesRequest::Loading) {
         return;
     }
     
     clear();
-    m_id = id;
+    m_resourceId = resourceId;
     m_query = QString();
-    m_request->list(Resources::PLAYLIST, id);
-    emit statusChanged(status());
+
+    if (ResourcesRequest *r = request()) {
+        r->list(Resources::PLAYLIST, resourceId);
+        emit statusChanged(status());
+    }
 }
 
 void PluginPlaylistModel::search(const QString &query, const QString &order) {
@@ -146,11 +161,14 @@ void PluginPlaylistModel::search(const QString &query, const QString &order) {
     }
     
     clear();
-    m_id = QString();
+    m_resourceId = QString();
     m_query = query;
     m_order = order;
-    m_request->search(Resources::PLAYLIST, query, order);
-    emit statusChanged(status());
+
+    if (ResourcesRequest *r = request()) {
+        r->search(Resources::PLAYLIST, query, order);
+        emit statusChanged(status());
+    }
 }
 
 void PluginPlaylistModel::clear() {
@@ -170,15 +188,17 @@ void PluginPlaylistModel::cancel() {
 
 void PluginPlaylistModel::reload() {
     clear();
-    
-    if (m_query.isEmpty()) {
-        m_request->list(Resources::PLAYLIST, m_id);
+
+    if (ResourcesRequest *r = request()) {
+        if (m_query.isEmpty()) {
+            r->list(Resources::PLAYLIST, m_resourceId);
+        }
+        else {
+            r->search(Resources::PLAYLIST, m_query, m_order);
+        }
+        
+        emit statusChanged(status());
     }
-    else {
-        m_request->search(Resources::PLAYLIST, m_query, m_order);
-    }
-    
-    emit statusChanged(status());
 }
 
 void PluginPlaylistModel::append(PluginPlaylist *playlist) {
@@ -206,17 +226,29 @@ void PluginPlaylistModel::remove(int row) {
     }
 }
 
+ResourcesRequest* PluginPlaylistModel::request() {
+    if (!m_request) {
+        m_request = PluginManager::instance()->createRequestForService(service(), this);
+
+        if (m_request) {
+            connect(m_request, SIGNAL(finished()), this, SLOT(onRequestFinished()));
+        }
+    }
+
+    return m_request;
+}
+
 void PluginPlaylistModel::onRequestFinished() {
     if (m_request->status() == ResourcesRequest::Ready) {
-        QVariantMap result = m_request->result().toMap();
+        const QVariantMap result = m_request->result().toMap();
         
         if (!result.isEmpty()) {
             m_next = result.value("next").toString();
-            QVariantList list = result.value("items").toList();
+            const QVariantList list = result.value("items").toList();
 
             beginInsertRows(QModelIndex(), m_items.size(), m_items.size() + list.size() - 1);
     
-            foreach (QVariant item, list) {
+            foreach (const QVariant &item, list) {
                 m_items << new PluginPlaylist(service(), item.toMap(), this);
             }
 

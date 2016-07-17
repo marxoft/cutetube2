@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -18,9 +18,6 @@
 #include "dailymotion.h"
 #include "webview.h"
 #include <QVBoxLayout>
-#ifdef CUTETUBE_DEBUG
-#include <QDebug>
-#endif
 
 DailymotionAuthDialog::DailymotionAuthDialog(QWidget *parent) :
     Dialog(parent),
@@ -36,17 +33,22 @@ DailymotionAuthDialog::DailymotionAuthDialog(QWidget *parent) :
     connect(m_view, SIGNAL(loadFinished(bool)), this, SLOT(hideProgressIndicator()));
 }
 
-void DailymotionAuthDialog::showEvent(QShowEvent *e) {
-    Dialog::showEvent(e);
-    m_view->setUrl(Dailymotion::instance()->authUrl());
+QString DailymotionAuthDialog::code() const {
+    return m_code;
+}
+
+void DailymotionAuthDialog::setCode(const QString &code) {
+    m_code = code;
+}
+
+void DailymotionAuthDialog::login() {
+    setCode(QString());
+    m_view->setUrl(Dailymotion::authUrl());
 }
 
 void DailymotionAuthDialog::onWebViewUrlChanged(const QUrl &url) {
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "DailymotionAuthDialog::onWebViewUrlChanged" << url;
-#endif
     if (url.hasQueryItem("code")) {
-        emit codeReady(url.queryItemValue("code"));
+        setCode(url.queryItemValue("code"));
         accept();
     }
     else if ((url.hasQueryItem("reason")) && (url.queryItemValue("reason") == "access_denied")) {

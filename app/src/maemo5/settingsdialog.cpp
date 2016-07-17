@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -20,8 +20,8 @@
 #include "listview.h"
 #include "localemodel.h"
 #include "networkproxydialog.h"
+#include "pluginconfigmodel.h"
 #include "pluginsettingsdialog.h"
-#include "pluginsettingsmodel.h"
 #include "settings.h"
 #include "valueselector.h"
 #include "videoplayermodel.h"
@@ -33,46 +33,50 @@
 #include <QDialogButtonBox>
 #include <QHBoxLayout>
 #include <QFileDialog>
+#include <QMaemo5InformationBox>
 
 SettingsDialog::SettingsDialog(QWidget *parent) :
     Dialog(parent),
     m_transfersModel(new ConcurrentTransfersModel(this)),
     m_localeModel(new LocaleModel(this)),
     m_playerModel(new VideoPlayerModel(this)),
-    m_pluginModel(new PluginSettingsModel(this)),
+    m_pluginModel(new PluginConfigModel(this)),
     m_localeSelector(new ValueSelector(tr("Language filter"), this)),
     m_playerSelector(new ValueSelector(tr("Video player"), this)),
     m_transfersSelector(new ValueSelector(tr("Maximum concurrent transfers"), this)),
     m_pluginView(new ListView(this)),
     m_scrollArea(new QScrollArea(this)),
     m_downloadPathSelector(new QMaemo5ValueButton(tr("Default download path"), this)),
-    m_commandEdit(new QLineEdit(this)),
+    m_playerCommandEdit(new QLineEdit(this)),
+    m_transferCommandEdit(new QLineEdit(this)),
     m_clipboardCheckBox(new QCheckBox(tr("Monitor clipboard for URLs"), this)),
     m_safeSearchCheckBox(new QCheckBox(tr("Enable safe search"), this)),
     m_transfersCheckBox(new QCheckBox(tr("Start transfers automatically"), this)),
+    m_transferCommandCheckBox(new QCheckBox(tr("Enable custom command"), this)),
     m_categoriesButton(new QPushButton(tr("Categories"), this)),
     m_proxyButton(new QPushButton(tr("Network proxy"), this)),
     m_buttonBox(new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Vertical, this)),
     m_layout(new QHBoxLayout(this))
 {
     setWindowTitle(tr("Settings"));
+    setMinimumHeight(360);
     
-    m_downloadPathSelector->setValueText(Settings::instance()->downloadPath());
+    m_downloadPathSelector->setValueText(Settings::downloadPath());
     m_localeSelector->setModel(m_localeModel);
-    m_localeSelector->setValue(Settings::instance()->locale());
+    m_localeSelector->setValue(Settings::locale());
     m_playerSelector->setModel(m_playerModel);
-    m_playerSelector->setValue(Settings::instance()->videoPlayer());
+    m_playerSelector->setValue(Settings::videoPlayer());
     m_transfersSelector->setModel(m_transfersModel);
-    m_transfersSelector->setValue(Settings::instance()->maximumConcurrentTransfers());
+    m_transfersSelector->setValue(Settings::maximumConcurrentTransfers());
     m_pluginView->setModel(m_pluginModel);
     m_pluginView->setFixedHeight(m_pluginModel->rowCount() > 0
                                  ? m_pluginModel->rowCount() * m_pluginView->sizeHintForRow(0) : 0);
-    m_commandEdit->setPlaceholderText(tr("Custom command"));
-    m_commandEdit->setText(Settings::instance()->videoPlayerCommand());
-    m_commandEdit->setEnabled(Settings::instance()->videoPlayer() == "other");
-    m_clipboardCheckBox->setChecked(Settings::instance()->clipboardMonitorEnabled());
-    m_safeSearchCheckBox->setChecked(Settings::instance()->safeSearchEnabled());
-    m_transfersCheckBox->setChecked(Settings::instance()->startTransfersAutomatically());
+    m_playerCommandEdit->setText(Settings::videoPlayerCommand());
+    m_transferCommandEdit->setText(Settings::customTransferCommand());
+    m_clipboardCheckBox->setChecked(Settings::clipboardMonitorEnabled());
+    m_safeSearchCheckBox->setChecked(Settings::safeSearchEnabled());
+    m_transfersCheckBox->setChecked(Settings::startTransfersAutomatically());
+    m_transferCommandCheckBox->setChecked(Settings::customTransferCommandEnabled());
     
     QWidget *scrollWidget = new QWidget(m_scrollArea);
     QVBoxLayout *vbox = new QVBoxLayout(scrollWidget);
@@ -80,12 +84,16 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     vbox->addWidget(m_downloadPathSelector);
     vbox->addWidget(m_localeSelector);
     vbox->addWidget(m_playerSelector);
-    vbox->addWidget(m_commandEdit);
+    vbox->addWidget(new QLabel(tr("Custom command (%u for URI)"), this));
+    vbox->addWidget(m_playerCommandEdit);
     vbox->addWidget(m_safeSearchCheckBox);
     vbox->addWidget(m_clipboardCheckBox);
     vbox->addWidget(new QLabel(tr("Transfers"), this));
     vbox->addWidget(m_transfersCheckBox);
     vbox->addWidget(m_transfersSelector);
+    vbox->addWidget(new QLabel(tr("Custom command (%f for filename)"), this)),
+    vbox->addWidget(m_transferCommandEdit);
+    vbox->addWidget(m_transferCommandCheckBox);
     vbox->addWidget(m_proxyButton);
     vbox->addWidget(m_categoriesButton);
     vbox->addWidget(new QLabel(tr("Plugins"), this));
@@ -100,10 +108,12 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     connect(m_downloadPathSelector, SIGNAL(clicked()), this, SLOT(showFileDialog()));
     connect(m_localeSelector, SIGNAL(valueChanged(QVariant)), this, SLOT(onLocaleChanged(QVariant)));
     connect(m_playerSelector, SIGNAL(valueChanged(QVariant)), this, SLOT(onVideoPlayerChanged(QVariant)));
-    connect(m_commandEdit, SIGNAL(textEdited(QString)), Settings::instance(), SLOT(setVideoPlayerCommand(QString)));
+    connect(m_playerCommandEdit, SIGNAL(textEdited(QString)), Settings::instance(), SLOT(setVideoPlayerCommand(QString)));
+    connect(m_transferCommandEdit, SIGNAL(textEdited(QString)), Settings::instance(), SLOT(setCustomTransferCommand(QString)));
     connect(m_clipboardCheckBox, SIGNAL(toggled(bool)), Settings::instance(), SLOT(setClipboardMonitorEnabled(bool)));
     connect(m_safeSearchCheckBox, SIGNAL(toggled(bool)), Settings::instance(), SLOT(setSafeSearchEnabled(bool)));
     connect(m_transfersCheckBox, SIGNAL(toggled(bool)), Settings::instance(), SLOT(setStartTransfersAutomatically(bool)));
+    connect(m_transferCommandCheckBox, SIGNAL(toggled(bool)), Settings::instance(), SLOT(setCustomTransferCommandEnabled(bool)));
     connect(m_proxyButton, SIGNAL(clicked()), this, SLOT(showNetworkProxyDialog()));
     connect(m_categoriesButton, SIGNAL(clicked()), this, SLOT(showCategoriesDialog()));
     connect(m_pluginView, SIGNAL(activated(QModelIndex)), this, SLOT(showPluginDialog(QModelIndex)));
@@ -112,37 +122,40 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 }
 
 void SettingsDialog::showCategoriesDialog() {
-    CategoriesDialog *dialog = new CategoriesDialog(this);
-    dialog->open();
+    CategoriesDialog(this).exec();
 }
 
 void SettingsDialog::showFileDialog() {
-    QString path = QFileDialog::getExistingDirectory(this, tr("Default download path"),
-                                                     Settings::instance()->downloadPath());
+    const QString path = QFileDialog::getExistingDirectory(this, tr("Default download path"),
+                                                           Settings::downloadPath());
 
     if (!path.isEmpty()) {
         m_downloadPathSelector->setValueText(path);
-        Settings::instance()->setDownloadPath(path);
+        Settings::setDownloadPath(path);
     }
 }
 
 void SettingsDialog::showNetworkProxyDialog() {
-    NetworkProxyDialog *dialog = new NetworkProxyDialog(this);
-    dialog->open();
+    NetworkProxyDialog(this).exec();
 }
 
 void SettingsDialog::showPluginDialog(const QModelIndex &index) {
-    PluginSettingsDialog *dialog = new PluginSettingsDialog(index.data(PluginSettingsModel::NameRole).toString(),
-                                                            index.data(PluginSettingsModel::ValueRole).toString(),
-                                                            this);
-    dialog->open();
+    const QVariantList settings = index.data(PluginConfigModel::SettingsRole).toList();
+
+    if (settings.isEmpty()) {
+        QMaemo5InformationBox::information(this, tr("No settings for this plugin"));
+    }
+    else {
+        PluginSettingsDialog dialog(index.data(PluginConfigModel::IdRole).toString(), settings, this);
+        dialog.setWindowTitle(index.data(PluginConfigModel::DisplayNameRole).toString());
+        dialog.exec();
+    }
 }
 
 void SettingsDialog::onLocaleChanged(const QVariant &locale) {
-    Settings::instance()->setLocale(locale.toString());
+    Settings::setLocale(locale.toString());
 }
 
 void SettingsDialog::onVideoPlayerChanged(const QVariant &player) {
-    m_commandEdit->setEnabled(player == "other");
-    Settings::instance()->setVideoPlayer(player.toString());
+    Settings::setVideoPlayer(player.toString());
 }

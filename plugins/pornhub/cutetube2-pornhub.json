@@ -1,0 +1,184 @@
+{
+    "type": "qt",
+    "name": "Pornhub",
+    "version": 1,
+    "resources": [
+        {
+            "type": "user",
+            "method": "get",
+            "regExp": "http://www\\.pornhub\\.com/(channels|pornstar|users)/[\\w-_]+"
+        },
+
+        {
+            "type": "video",
+            "method": "get",
+            "regExp": "http://www\\.pornhub\\.com/view_video\\.php\\?viewkey=\\w+"
+        },
+        
+        {
+            "type": "stream",
+            "method": "list"
+        },
+
+        {
+            "type": "category",
+            "method": "list",
+            "label": "Categories",
+            "id": "http://www.pornhub.com/categories"
+        },
+
+        {
+            "type": "user",
+            "method": "list",
+            "label": "Most popular channels",
+            "id": "http://www.pornhub.com/channels?o=rk"
+        },
+
+        {
+            "type": "user",
+            "method": "list",
+            "label": "Most recent channels",
+            "id": "http://www.pornhub.com/channels?o=mr"
+        },
+
+        {
+            "type": "user",
+            "method": "list",
+            "label": "Trending channels",
+            "id": "http://www.pornhub.com/channels?o=tr"
+        },
+
+        {
+            "type": "user",
+            "method": "list",
+            "label": "Most popular pornstars",
+            "id": "http://www.pornhub.com/pornstars"
+        },
+
+        {
+            "type": "user",
+            "method": "list",
+            "label": "Most viewed pornstars",
+            "id": "http://www.pornhub.com/pornstars?o=mv"
+        },
+
+        {
+            "type": "user",
+            "method": "list",
+            "label": "Top trending pornstars",
+            "id": "http://www.pornhub.com/pornstars?o=t"
+        },
+
+        {
+            "type": "user",
+            "method": "list",
+            "label": "Most subscribed pornstars",
+            "id": "http://www.pornhub.com/pornstars?o=ms"
+        },
+
+        {
+            "type": "video",
+            "method": "list",
+            "label": "Most recent videos",
+            "id": "http://www.pornhub.com/video"
+        },
+
+        {
+            "type": "video",
+            "method": "list",
+            "label": "Most viewed videos",
+            "id": "http://www.pornhub.com/video?o=mv"
+        },
+
+        {
+            "type": "video",
+            "method": "list",
+            "label": "Top rated videos",
+            "id": "http://www.pornhub.com/video?o=tr"
+        },
+
+        {
+            "type": "video",
+            "method": "list",
+            "label": "Hottest videos",
+            "id": "http://www.pornhub.com/video?o=ht"
+        },
+
+        {
+            "type": "video",
+            "method": "list",
+            "label": "Longest videos",
+            "id": "http://www.pornhub.com/video?o=lg"
+        },
+
+        {
+            "type": "user",
+            "method": "search",
+            "label": "Members (popular)",
+            "order": "members_popular"
+        },
+
+        {
+            "type": "user",
+            "method": "search",
+            "label": "Members (date)",
+            "order": "members_newest"
+        },
+
+        {
+            "type": "user",
+            "method": "search",
+            "label": "Pornstars (popular)",
+            "order": "pornstars_"
+        },
+
+        {
+            "type": "user",
+            "method": "search",
+            "label": "Pornstars (views)",
+            "order": "pornstars_mv"
+        },
+
+        {
+            "type": "user",
+            "method": "search",
+            "label": "Pornstars (videos)",
+            "order": "pornstars_nv"
+        },
+
+        {
+            "type": "video",
+            "method": "search",
+            "label": "Videos (relevance)",
+            "order": ""
+        },
+
+        {
+            "type": "video",
+            "method": "search",
+            "label": "Videos (date)",
+            "order": "mr"
+        },
+
+        {
+            "type": "video",
+            "method": "search",
+            "label": "Videos (views)",
+            "order": "mv"
+        },
+
+        {
+            "type": "video",
+            "method": "search",
+            "label": "Videos (rating)",
+            "order": "tr"
+        },
+
+        {
+            "type": "video",
+            "method": "search",
+            "label": "Videos (duration)",
+            "order": "lg"
+        }        
+    ]
+}

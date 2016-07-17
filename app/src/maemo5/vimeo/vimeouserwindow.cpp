@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -77,7 +77,7 @@ VimeoUserWindow::VimeoUserWindow(const VimeoUser *user, StackedWindow *parent) :
             this, SLOT(onUserUpdateStatusChanged(QVimeo::ResourcesRequest::Status)));
     connect(m_user, SIGNAL(subscribedChanged()), this, SLOT(onUserSubscribedChanged())); 
     
-    if ((!m_user->isSubscribed()) && (!Vimeo::instance()->userId().isEmpty())) {
+    if ((!m_user->isSubscribed()) && (!Vimeo::userId().isEmpty())) {
         m_user->checkIfSubscribed();
     }
 }
@@ -121,9 +121,9 @@ void VimeoUserWindow::loadBaseUi() {
 }
 
 void VimeoUserWindow::loadUserUi() {
-    m_subscribeButton->setEnabled((!Vimeo::instance()->userId().isEmpty())
-                                  && (m_user->id() != Vimeo::instance()->userId())
-                                  && (Vimeo::instance()->hasScope(QVimeo::INTERACT_SCOPE)));
+    m_subscribeButton->setEnabled((!Vimeo::userId().isEmpty())
+                                  && (m_user->id() != Vimeo::userId())
+                                  && (Vimeo::hasScope(QVimeo::INTERACT_SCOPE)));
     m_subscribeButton->setText(m_user->isSubscribed() ? tr("Unsubscribe") : tr("Subscribe"));
     m_titleLabel->setText(m_titleLabel->fontMetrics().elidedText(m_user->username(), Qt::ElideRight, 250));
     m_statsLabel->setText(tr("%1 subscribers").arg(Utils::formatLargeNumber(m_user->subscriberCount())));
@@ -172,7 +172,7 @@ void VimeoUserWindow::showUploads() {
 }
 
 void VimeoUserWindow::showResource(const QUrl &url) {
-    QVariantMap resource = Resources::getResourceFromUrl(url.toString());
+    const QVariantMap resource = Resources::getResourceFromUrl(url.toString());
     
     if (resource.value("service") != Resources::VIMEO) {
         QDesktopServices::openUrl(url);
@@ -251,7 +251,7 @@ void VimeoUserWindow::onUserStatusChanged(QVimeo::ResourcesRequest::Status statu
             this, SLOT(onUserUpdateStatusChanged(QVimeo::ResourcesRequest::Status)));
     connect(m_user, SIGNAL(subscribedChanged()), this, SLOT(onUserSubscribedChanged())); 
     
-    if ((!m_user->isSubscribed()) && (!Vimeo::instance()->userId().isEmpty())) {
+    if ((!m_user->isSubscribed()) && (!Vimeo::userId().isEmpty())) {
         m_user->checkIfSubscribed();
     }
 }

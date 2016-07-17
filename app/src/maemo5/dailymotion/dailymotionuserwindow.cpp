@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -77,7 +77,7 @@ DailymotionUserWindow::DailymotionUserWindow(const DailymotionUser *user, Stacke
             this, SLOT(onUserUpdateStatusChanged(QDailymotion::ResourcesRequest::Status)));
     connect(m_user, SIGNAL(subscribedChanged()), this, SLOT(onUserSubscribedChanged())); 
     
-    if ((!m_user->isSubscribed()) && (!Dailymotion::instance()->userId().isEmpty())) {
+    if ((!m_user->isSubscribed()) && (!Dailymotion::userId().isEmpty())) {
         m_user->checkIfSubscribed();
     }
 }
@@ -121,9 +121,9 @@ void DailymotionUserWindow::loadBaseUi() {
 }
 
 void DailymotionUserWindow::loadUserUi() {
-    m_subscribeButton->setEnabled((!Dailymotion::instance()->userId().isEmpty())
-                                  && (m_user->id() != Dailymotion::instance()->userId())
-                                  && (Dailymotion::instance()->hasScope(QDailymotion::MANAGE_SUBSCRIPTIONS_SCOPE)));
+    m_subscribeButton->setEnabled((!Dailymotion::userId().isEmpty())
+                                  && (m_user->id() != Dailymotion::userId())
+                                  && (Dailymotion::hasScope(QDailymotion::MANAGE_SUBSCRIPTIONS_SCOPE)));
     m_subscribeButton->setText(m_user->isSubscribed() ? tr("Unsubscribe") : tr("Subscribe"));
     m_titleLabel->setText(m_titleLabel->fontMetrics().elidedText(m_user->username(), Qt::ElideRight, 250));
     m_statsLabel->setText(tr("%1 %2\n%3 %4").arg(Utils::formatLargeNumber(m_user->subscriberCount()))
@@ -138,7 +138,7 @@ void DailymotionUserWindow::loadUserUi() {
 void DailymotionUserWindow::showFavourites() {
     QVariantMap filters;
     filters["limit"] = MAX_RESULTS;
-    filters["family_filter"] = Settings::instance()->safeSearchEnabled();
+    filters["family_filter"] = Settings::safeSearchEnabled();
     
     DailymotionVideosWindow *window = new DailymotionVideosWindow(this);
     window->setWindowTitle(tr("%1's favourites").arg(m_user->username()));
@@ -149,7 +149,7 @@ void DailymotionUserWindow::showFavourites() {
 void DailymotionUserWindow::showPlaylists() {
     QVariantMap filters;
     filters["limit"] = MAX_RESULTS;
-    filters["family_filter"] = Settings::instance()->safeSearchEnabled();
+    filters["family_filter"] = Settings::safeSearchEnabled();
     
     DailymotionPlaylistsWindow *window = new DailymotionPlaylistsWindow(this);
     window->setWindowTitle(tr("%1's playlists").arg(m_user->username()));
@@ -160,7 +160,7 @@ void DailymotionUserWindow::showPlaylists() {
 void DailymotionUserWindow::showSubscriptions() {
     QVariantMap filters;
     filters["limit"] = MAX_RESULTS;
-    filters["family_filter"] = Settings::instance()->safeSearchEnabled();
+    filters["family_filter"] = Settings::safeSearchEnabled();
     
     DailymotionUsersWindow *window = new DailymotionUsersWindow(this);
     window->setWindowTitle(tr("%1's subscriptions").arg(m_user->username()));
@@ -171,7 +171,7 @@ void DailymotionUserWindow::showSubscriptions() {
 void DailymotionUserWindow::showUploads() {
     QVariantMap filters;
     filters["limit"] = MAX_RESULTS;
-    filters["family_filter"] = Settings::instance()->safeSearchEnabled();
+    filters["family_filter"] = Settings::safeSearchEnabled();
     
     DailymotionVideosWindow *window = new DailymotionVideosWindow(this);
     window->setWindowTitle(tr("%1's videos").arg(m_user->username()));
@@ -180,7 +180,7 @@ void DailymotionUserWindow::showUploads() {
 }
 
 void DailymotionUserWindow::showResource(const QUrl &url) {
-    QVariantMap resource = Resources::getResourceFromUrl(url.toString());
+    const QVariantMap resource = Resources::getResourceFromUrl(url.toString());
     
     if (resource.value("service") != Resources::DAILYMOTION) {
         QDesktopServices::openUrl(url);
@@ -259,7 +259,7 @@ void DailymotionUserWindow::onUserStatusChanged(QDailymotion::ResourcesRequest::
             this, SLOT(onUserUpdateStatusChanged(QDailymotion::ResourcesRequest::Status)));
     connect(m_user, SIGNAL(subscribedChanged()), this, SLOT(onUserSubscribedChanged())); 
     
-    if ((!m_user->isSubscribed()) && (!Dailymotion::instance()->userId().isEmpty())) {
+    if ((!m_user->isSubscribed()) && (!Dailymotion::userId().isEmpty())) {
         m_user->checkIfSubscribed();
     }
 }

@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -21,7 +21,7 @@ YouTubeCategoryModel::YouTubeCategoryModel(QObject *parent) :
     SelectionModel(parent),
     m_request(new QYouTube::ResourcesRequest(this))
 {
-    m_request->setApiKey(YouTube::instance()->apiKey());
+    m_request->setApiKey(YouTube::apiKey());
     connect(m_request, SIGNAL(finished()), this, SLOT(onRequestFinished()));
 }
 
@@ -64,8 +64,8 @@ void YouTubeCategoryModel::reload() {
 
 void YouTubeCategoryModel::onRequestFinished() {
     if (m_request->status() == QYouTube::ResourcesRequest::Ready) {
-        foreach (QVariant v, m_request->result().toMap().value("items").toList()) {
-            QVariantMap category = v.toMap();
+        foreach (const QVariant &v, m_request->result().toMap().value("items").toList()) {
+            const QVariantMap category = v.toMap();
             append(category.value("snippet").toMap().value("title").toString(), category.value("id").toString());
         }
     }

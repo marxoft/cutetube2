@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -19,9 +19,6 @@
 #include "resources.h"
 #include "utils.h"
 #include <QDateTime>
-#ifdef CUTETUBE_DEBUG
-#include <QDebug>
-#endif
 
 DailymotionVideo::DailymotionVideo(QObject *parent) :
     CTVideo(parent),
@@ -135,9 +132,6 @@ void DailymotionVideo::favourite() {
     m_request->insert("/me/favorites/" + id());
     connect(m_request, SIGNAL(finished()), this, SLOT(onFavouriteRequestFinished()));
     emit statusChanged(status());
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "DailymotionVideo::favourite" << id();
-#endif
 }
 
 void DailymotionVideo::unfavourite() {
@@ -149,18 +143,15 @@ void DailymotionVideo::unfavourite() {
     m_request->del("/me/favorites/" + id());
     connect(m_request, SIGNAL(finished()), this, SLOT(onUnfavouriteRequestFinished()));
     emit statusChanged(status());
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "DailymotionVideo::unfavourite" << id();
-#endif
 }
 
 void DailymotionVideo::initRequest() {
     if (!m_request) {
         m_request = new QDailymotion::ResourcesRequest(this);
-        m_request->setClientId(Dailymotion::instance()->clientId());
-        m_request->setClientSecret(Dailymotion::instance()->clientSecret());
-        m_request->setAccessToken(Dailymotion::instance()->accessToken());
-        m_request->setRefreshToken(Dailymotion::instance()->refreshToken());
+        m_request->setClientId(Dailymotion::clientId());
+        m_request->setClientSecret(Dailymotion::clientSecret());
+        m_request->setAccessToken(Dailymotion::accessToken());
+        m_request->setRefreshToken(Dailymotion::refreshToken());
     
         connect(m_request, SIGNAL(accessTokenChanged(QString)), Dailymotion::instance(), SLOT(setAccessToken(QString)));
         connect(m_request, SIGNAL(refreshTokenChanged(QString)), Dailymotion::instance(), SLOT(setRefreshToken(QString)));
@@ -180,9 +171,6 @@ void DailymotionVideo::onFavouriteRequestFinished() {
     if (m_request->status() == QDailymotion::ResourcesRequest::Ready) {
         setFavourite(true);
         emit Dailymotion::instance()->videoFavourited(this);
-#ifdef CUTETUBE_DEBUG
-        qDebug() << "DailymotionVideo::onFavouriteRequestFinished OK" << id();
-#endif
     }
     
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onFavouriteRequestFinished()));
@@ -193,9 +181,6 @@ void DailymotionVideo::onUnfavouriteRequestFinished() {
     if (m_request->status() == QDailymotion::ResourcesRequest::Ready) {
         setFavourite(false);
         emit Dailymotion::instance()->videoUnfavourited(this);
-#ifdef CUTETUBE_DEBUG
-        qDebug() << "DailymotionVideo::onUnfavouriteRequestFinished OK" << id();
-#endif
     }
     
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onUnfavouriteRequestFinished()));

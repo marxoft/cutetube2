@@ -1,24 +1,25 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
- * published by the Free Software Foundation.
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms and conditions of the GNU General Public License,
+ * version 3, as published by the Free Software Foundation.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
 #ifndef PLUGINNAVMODEL_H
 #define PLUGINNAVMODEL_H
 
 #include "selectionmodel.h"
-#include "resourcesplugins.h"
+#include "pluginmanager.h"
 
 class PluginNavModel : public SelectionModel
 {
@@ -48,17 +49,21 @@ public:
 public Q_SLOTS:
     inline void reload() {
         clear();
-        ResourcesPlugin plugin = ResourcesPlugins::instance()->getPluginFromName(service());
+        const ServicePluginConfig *config = PluginManager::instance()->getConfigForService(service());
+
+        if (!config) {
+            return;
+        }
         
-        if (!plugin.searchResources.isEmpty()) {
+        if (!config->searchResources().isEmpty()) {
             append(tr("Search"), "");
         }
         
-        foreach (ListResource resource, plugin.listResources.values()) {
-            QString name = resource.value("name").toString();
+        foreach (const ListResource &resource, config->listResources()) {
+            const QString label = resource.label();
             
-            if (!name.isEmpty()) {
-                append(name, resource);
+            if (!label.isEmpty()) {
+                append(label, resource);
             }
         }
     }

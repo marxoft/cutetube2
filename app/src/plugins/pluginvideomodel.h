@@ -1,25 +1,24 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef PLUGINVIDEOMODEL_H
 #define PLUGINVIDEOMODEL_H
 
-#include "resourcesrequest.h"
-#include "pluginvideo.h"
 #include <QAbstractListModel>
+#include "pluginvideo.h"
 
 class PluginVideoModel : public QAbstractListModel
 {
@@ -52,7 +51,7 @@ public:
     explicit PluginVideoModel(QObject *parent = 0);
     
     QString service() const;
-    void setService(const QString &service);
+    void setService(const QString &s);
     
     QString errorString() const;
     
@@ -80,25 +79,27 @@ public:
 public Q_SLOTS:
     void clear();
     void cancel();
-    void reload();
-    
-private:    
-    void append(PluginVideo *video);
-    void insert(int row, PluginVideo *video);
-    void remove(int row);
-    
+    void reload();    
+
 private Q_SLOTS:
     void onRequestFinished();
     
 Q_SIGNALS:
-    void countChanged(int c);
+    void countChanged(int count);
     void serviceChanged();
-    void statusChanged(ResourcesRequest::Status s);
+    void statusChanged(ResourcesRequest::Status status);
     
 private:
+    void append(PluginVideo *video);
+    void insert(int row, PluginVideo *video);
+    void remove(int row);
+
+    ResourcesRequest* request();
+    
     ResourcesRequest *m_request;
     
-    QString m_id;
+    QString m_resourceId;
+    QString m_service;
     QString m_query;
     QString m_order;
     QString m_next;

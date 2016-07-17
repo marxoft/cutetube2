@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -51,7 +51,7 @@ QHash<int, QByteArray> DailymotionAccountModel::roleNames() const {
 
 QVariant DailymotionAccountModel::data(const QModelIndex &idx, int role) const {
     if (role == ActiveRole) {
-        return Dailymotion::instance()->userId() == data(idx, UserIdRole);
+        return Dailymotion::userId() == data(idx, UserIdRole);
     }
     
     if (role >= UserIdRole) {
@@ -91,7 +91,7 @@ bool DailymotionAccountModel::addAccount(const QString &userId, const QString &u
     record.append(scopesField);
     
     if (insertRecord(-1, record)) {
-        Dailymotion::instance()->setUserId(userId);
+        Dailymotion::setUserId(userId);
         const int count = rowCount();
         emit dataChanged(index(0, 0), index(count - 1, columnCount() - 1));
         emit countChanged(count);
@@ -105,12 +105,12 @@ bool DailymotionAccountModel::removeAccount(int row) {
     QString userId = data(index(row, 0)).toString();
     
     if (removeRows(row, 1)) {
-        if (userId == Dailymotion::instance()->userId()) {
+        if (userId == Dailymotion::userId()) {
             if (rowCount() > 0) {
                 selectAccount(0);
             }
             else {
-                Dailymotion::instance()->setUserId(QString());
+                Dailymotion::setUserId(QString());
             }
         }
         
@@ -125,7 +125,7 @@ bool DailymotionAccountModel::selectAccount(int row) {
     QString userId = data(index(row, 0)).toString();
     
     if (!userId.isEmpty()) {
-        Dailymotion::instance()->setUserId(userId);
+        Dailymotion::setUserId(userId);
         emit dataChanged(index(0, 0), index(rowCount() - 1, columnCount() - 1));
         return true;
     }

@@ -1,25 +1,27 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
- * published by the Free Software Foundation.
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms and conditions of the GNU General Public License,
+ * version 3, as published by the Free Software Foundation.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This program is distributed in the hope it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
 #include "plugincommentmodel.h"
+#include "pluginmanager.h"
 #include "resources.h"
 
 PluginCommentModel::PluginCommentModel(QObject *parent) :
     QAbstractListModel(parent),
-    m_request(new ResourcesRequest(this))
+    m_request(0)
 {
     m_roles[BodyRole] = "body";
     m_roles[DateRole] = "date";
@@ -31,24 +33,32 @@ PluginCommentModel::PluginCommentModel(QObject *parent) :
 #if QT_VERSION < 0x050000
     setRoleNames(m_roles);
 #endif
-    connect(m_request, SIGNAL(serviceChanged()), this, SIGNAL(serviceChanged()));
-    connect(m_request, SIGNAL(finished()), this, SLOT(onRequestFinished()));
-}
-
-QString PluginCommentModel::service() const {
-    return m_request->service();
-}
-
-void PluginCommentModel::setService(const QString &s) {
-    m_request->setService(s);
 }
 
 QString PluginCommentModel::errorString() const {
-    return m_request->errorString();
+    return m_request ? m_request->errorString() : QString();
+}
+
+QString PluginCommentModel::service() const {
+    return m_service;
+}
+
+void PluginCommentModel::setService(const QString &s) {
+    if (s != service()) {
+        m_service = s;
+        emit serviceChanged();
+
+        clear();
+
+        if (m_request) {
+            m_request->deleteLater();
+            m_request = 0;
+        }
+    }
 }
 
 ResourcesRequest::Status PluginCommentModel::status() const {
-    return m_request->status();
+    return m_request ? m_request->status() : ResourcesRequest::Null;
 }
 
 #if QT_VERSION >=0x050000
@@ -69,13 +79,15 @@ void PluginCommentModel::fetchMore(const QModelIndex &) {
     if (!canFetchMore()) {
         return;
     }
-    
-    m_request->list(Resources::COMMENT, m_next);
-    emit statusChanged(status());
+
+    if (ResourcesRequest *r = request()) {
+        r->list(Resources::COMMENT, m_next);
+        emit statusChanged(status());
+    }
 }
 
 QVariant PluginCommentModel::data(const QModelIndex &index, int role) const {
-    if (PluginComment *comment = get(index.row())) {
+    if (const PluginComment *comment = get(index.row())) {
         return comment->property(m_roles[role]);
     }
     
@@ -85,7 +97,7 @@ QVariant PluginCommentModel::data(const QModelIndex &index, int role) const {
 QMap<int, QVariant> PluginCommentModel::itemData(const QModelIndex &index) const {
     QMap<int, QVariant> map;
     
-    if (PluginComment *comment = get(index.row())) {
+    if (const PluginComment *comment = get(index.row())) {
         QHashIterator<int, QByteArray> iterator(m_roles);
         
         while (iterator.hasNext()) {
@@ -98,7 +110,7 @@ QMap<int, QVariant> PluginCommentModel::itemData(const QModelIndex &index) const
 }
 
 QVariant PluginCommentModel::data(int row, const QByteArray &role) const {
-    if (PluginComment *comment = get(row)) {
+    if (const PluginComment *comment = get(row)) {
         return comment->property(role);
     }
     
@@ -108,8 +120,8 @@ QVariant PluginCommentModel::data(int row, const QByteArray &role) const {
 QVariantMap PluginCommentModel::itemData(int row) const {
     QVariantMap map;
     
-    if (PluginComment *comment = get(row)) {
-        foreach (QByteArray role, m_roles.values()) {
+    if (const PluginComment *comment = get(row)) {
+        foreach (const QByteArray &role, m_roles.values()) {
             map[role] = comment->property(role);
         }
     }
@@ -125,16 +137,19 @@ PluginComment* PluginCommentModel::get(int row) const {
     return 0;
 }
 
-void PluginCommentModel::list(const QString &id) {
+void PluginCommentModel::list(const QString &resourceId) {
     if (status() == ResourcesRequest::Loading) {
         return;
     }
     
     clear();
-    m_id = id;
+    m_resourceId = resourceId;
     m_query = QString();
-    m_request->list(Resources::COMMENT, id);
-    emit statusChanged(status());
+
+    if (ResourcesRequest *r = request()) {
+        r->list(Resources::COMMENT, resourceId);
+        emit statusChanged(status());
+    }
 }
 
 void PluginCommentModel::search(const QString &query, const QString &order) {
@@ -143,11 +158,14 @@ void PluginCommentModel::search(const QString &query, const QString &order) {
     }
     
     clear();
-    m_id = QString();
+    m_resourceId = QString();
     m_query = query;
     m_order = order;
-    m_request->search(Resources::COMMENT, query, order);
-    emit statusChanged(status());
+
+    if (ResourcesRequest *r = request()) {
+        r->search(Resources::COMMENT, query, order);
+        emit statusChanged(status());
+    }
 }
 
 void PluginCommentModel::clear() {
@@ -162,20 +180,24 @@ void PluginCommentModel::clear() {
 }
 
 void PluginCommentModel::cancel() {
-    m_request->cancel();
+    if (m_request) {
+        m_request->cancel();
+    }
 }
 
 void PluginCommentModel::reload() {
     clear();
-    
-    if (m_query.isEmpty()) {
-        m_request->list(Resources::COMMENT, m_id);
+
+    if (ResourcesRequest *r = request()) {
+        if (m_query.isEmpty()) {
+            r->list(Resources::COMMENT, m_resourceId);
+        }
+        else {
+            r->search(Resources::COMMENT, m_query, m_order);
+        }
+        
+        emit statusChanged(status());
     }
-    else {
-        m_request->search(Resources::COMMENT, m_query, m_order);
-    }
-    
-    emit statusChanged(status());
 }
 
 void PluginCommentModel::append(PluginComment *comment) {
@@ -203,17 +225,29 @@ void PluginCommentModel::remove(int row) {
     }
 }
 
+ResourcesRequest* PluginCommentModel::request() {
+    if (!m_request) {
+        m_request = PluginManager::instance()->createRequestForService(service(), this);
+
+        if (m_request) {
+            connect(m_request, SIGNAL(finished()), this, SLOT(onRequestFinished()));
+        }
+    }
+
+    return m_request;
+}
+
 void PluginCommentModel::onRequestFinished() {
     if (m_request->status() == ResourcesRequest::Ready) {
-        QVariantMap result = m_request->result().toMap();
+        const QVariantMap result = m_request->result().toMap();
         
         if (!result.isEmpty()) {
             m_next = result.value("next").toString();
-            QVariantList list = result.value("items").toList();
+            const QVariantList list = result.value("items").toList();
 
             beginInsertRows(QModelIndex(), m_items.size(), m_items.size() + list.size() - 1);
     
-            foreach (QVariant item, list) {
+            foreach (const QVariant &item, list) {
                 m_items << new PluginComment(service(), item.toMap(), this);
             }
 

@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -18,20 +18,55 @@
 #define RESOURCES_H
 
 #include <QObject>
+#include <QRegExp>
 #include <QVariantMap>
+
+class GetResource : public QVariantMap
+{
+
+public:
+    explicit GetResource(const QVariantMap &map);
+    explicit GetResource(const QString &type, const QRegExp &regExp);
+
+    QRegExp regExp() const;
+    void setRegExp(const QRegExp &regExp);
+
+    QString type() const;
+    void setType(const QString &type);
+};
 
 class ListResource : public QVariantMap
 {
 
 public:
-    ListResource(const QString &name, const QString &type, const QString &id);
+    explicit ListResource(const QVariantMap &map);
+    explicit ListResource(const QString &label, const QString &type, const QString &id);
+
+    QString id() const;
+    void setId(const QString &id);
+
+    QString label() const;
+    void setLabel(const QString &label);
+
+    QString type() const;
+    void setType(const QString &type);
 };
 
 class SearchResource : public QVariantMap
 {
 
 public:
-    SearchResource(const QString &name, const QString &type, const QString &order);
+    explicit SearchResource(const QVariantMap &map);
+    explicit SearchResource(const QString &label, const QString &type, const QString &order);
+
+    QString label() const;
+    void setLabel(const QString &label);
+
+    QString order() const;
+    void setOrder(const QString &order);
+
+    QString type() const;
+    void setType(const QString &type);
 };
 
 class Resources : public QObject
@@ -80,7 +115,7 @@ public:
     static QString streamConstant();
     static QString subtitleConstant();
     
-    Q_INVOKABLE static QVariantMap getResourceFromUrl(QString url);    
+    Q_INVOKABLE static QVariantMap getResourceFromUrl(QString url);
 };
 
 #endif // RESOURCES_H

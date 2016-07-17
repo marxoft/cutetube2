@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -30,6 +30,7 @@
 #include "resources.h"
 #include "settings.h"
 #include "textbrowser.h"
+#include "transfers.h"
 #include "utils.h"
 #include "videodelegate.h"
 #include "videolauncher.h"
@@ -128,6 +129,7 @@ void PluginPlaylistWindow::loadBaseUi() {
     
     m_titleLabel->setWordWrap(true);
     m_dateLabel->setStyleSheet(QString("color: %1; font-size: 13pt").arg(palette().color(QPalette::Mid).name()));
+    m_dateLabel->hide();
     m_userLabel->setStyleSheet("font-size: 13pt");
     m_userLabel->hide();
     m_noVideosLabel->hide();
@@ -173,17 +175,23 @@ void PluginPlaylistWindow::loadBaseUi() {
     connect(m_downloadAction, SIGNAL(triggered()), this, SLOT(downloadVideo()));
     connect(m_shareAction, SIGNAL(triggered()), this, SLOT(shareVideo()));
     
-    if (Settings::instance()->videoPlayer() == "cutetube") {
+    if (Settings::videoPlayer() == "cutetube") {
         connect(m_thumbnail, SIGNAL(clicked()), this, SLOT(playPlaylist()));
     }
 }
 
 void PluginPlaylistWindow::loadPlaylistUi() {
     m_titleLabel->setText(m_playlist->title());
-    m_dateLabel->setText(tr("Published on %1").arg(m_playlist->date()));
     m_descriptionLabel->setHtml(Utils::toRichText(m_playlist->description()));
     m_thumbnail->setSource(m_playlist->largeThumbnailUrl());
     m_thumbnail->setVideoCount(m_playlist->videoCount());
+    
+    const QString date = m_playlist->date();
+    
+    if (!date.isEmpty()) {
+        m_dateLabel->setText(tr("Published on %1").arg(date));
+        m_dateLabel->show();
+    }
 }
 
 void PluginPlaylistWindow::loadUserUi() {
@@ -220,13 +228,26 @@ void PluginPlaylistWindow::playPlaylist() {
 }
 
 void PluginPlaylistWindow::downloadVideo() {
-    if ((!isBusy()) && (m_view->currentIndex().isValid())) {
-        QString id = m_view->currentIndex().data(PluginVideoModel::IdRole).toString();
-        QString title = m_view->currentIndex().data(PluginVideoModel::TitleRole).toString();
-        QUrl streamUrl = m_view->currentIndex().data(PluginVideoModel::StreamUrlRole).toString();
+    if (isBusy()) {
+        return;
+    }
+    
+    const QModelIndex index = m_view->currentIndex();
+    
+    if (index.isValid()) {
+        const QString id = index.data(PluginVideoModel::IdRole).toString();
+        const QString title = index.data(PluginVideoModel::TitleRole).toString();
+        const QUrl streamUrl = index.data(PluginVideoModel::StreamUrlRole).toString();
         
-        PluginDownloadDialog *dialog = new PluginDownloadDialog(m_playlist->service(), id, streamUrl, title, this);
-        dialog->open();
+        PluginDownloadDialog dialog(m_model->service(), this);
+        dialog.list(id, streamUrl.isEmpty());
+        
+        if (dialog.exec() == QDialog::Accepted) {
+            Transfers::instance()->addDownloadTransfer(m_model->service(), id, dialog.streamId(),
+                                                       streamUrl, title, dialog.category(),
+                                                       dialog.subtitlesLanguage(), dialog.customCommand(),
+                                                       dialog.customCommandOverrideEnabled());
+        }
     }
 }
 
@@ -235,7 +256,7 @@ void PluginPlaylistWindow::playVideo(const QModelIndex &index) {
         return;
     }
     
-    if (Settings::instance()->videoPlayer() == "cutetube") {
+    if (Settings::videoPlayer() == "cutetube") {
         if (PluginVideo *video = m_model->get(index.row())) {
             VideoPlaybackWindow *window = new VideoPlaybackWindow(this);
             window->show();
@@ -243,24 +264,25 @@ void PluginPlaylistWindow::playVideo(const QModelIndex &index) {
         }
     }
     else {
-        QString url = index.data(PluginVideoModel::StreamUrlRole).toString();
+        const QString url = index.data(PluginVideoModel::StreamUrlRole).toString();
         
         if (!url.isEmpty()) {
             VideoLauncher::playVideo(url);
         }
         else {
-            QString id = index.data(PluginVideoModel::IdRole).toString();
-            QString title = index.data(PluginVideoModel::TitleRole).toString();
-    
-            PluginPlaybackDialog *dialog = new PluginPlaybackDialog(m_playlist->service(), id, title, this);
-            dialog->open();
+            PluginPlaybackDialog dialog(m_playlist->service(), this);
+            dialog.list(index.data(PluginVideoModel::IdRole).toString());
+
+            if ((dialog.exec() == QDialog::Accepted) && (!VideoLauncher::playVideo(dialog.streamUrl()))) {
+                QMessageBox::critical(this, tr("Error"), tr("Unable to play video"));
+            }
         }
     }
 }
 
 void PluginPlaylistWindow::shareVideo() {
     if (const PluginVideo *video = m_model->get(m_view->currentIndex().row())) {
-        Clipboard::instance()->setText(video->url().toString());
+        Clipboard::setText(video->url().toString());
         QMaemo5InformationBox::information(this, tr("URL copied to clipboard"));
     }
 }
@@ -284,7 +306,7 @@ void PluginPlaylistWindow::showContextMenu(const QPoint &pos) {
 }
 
 void PluginPlaylistWindow::showResource(const QUrl &url) {
-    QVariantMap resource = Resources::getResourceFromUrl(url.toString());
+    const QVariantMap resource = Resources::getResourceFromUrl(url.toString());
     
     if (resource.value("service") != m_playlist->service()) {
         QDesktopServices::openUrl(url);

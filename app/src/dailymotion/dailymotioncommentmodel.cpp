@@ -1,24 +1,21 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "dailymotioncommentmodel.h"
 #include "dailymotion.h"
-#ifdef CUTETUBE_DEBUG
-#include <QDebug>
-#endif
 
 DailymotionCommentModel::DailymotionCommentModel(QObject *parent) :
     QAbstractListModel(parent),
@@ -35,10 +32,10 @@ DailymotionCommentModel::DailymotionCommentModel(QObject *parent) :
 #if QT_VERSION < 0x050000
     setRoleNames(m_roles);
 #endif
-    m_request->setClientId(Dailymotion::instance()->clientId());
-    m_request->setClientSecret(Dailymotion::instance()->clientSecret());
-    m_request->setAccessToken(Dailymotion::instance()->accessToken());
-    m_request->setRefreshToken(Dailymotion::instance()->refreshToken());
+    m_request->setClientId(Dailymotion::clientId());
+    m_request->setClientSecret(Dailymotion::clientSecret());
+    m_request->setAccessToken(Dailymotion::accessToken());
+    m_request->setRefreshToken(Dailymotion::refreshToken());
     
     connect(m_request, SIGNAL(accessTokenChanged(QString)), Dailymotion::instance(), SLOT(setAccessToken(QString)));
     connect(m_request, SIGNAL(refreshTokenChanged(QString)), Dailymotion::instance(), SLOT(setRefreshToken(QString)));
@@ -91,7 +88,7 @@ QVariant DailymotionCommentModel::data(const QModelIndex &index, int role) const
 QMap<int, QVariant> DailymotionCommentModel::itemData(const QModelIndex &index) const {
     QMap<int, QVariant> map;
     
-    if (DailymotionComment *user = get(index.row())) {
+    if (const DailymotionComment *user = get(index.row())) {
         QHashIterator<int, QByteArray> iterator(m_roles);
         
         while (iterator.hasNext()) {
@@ -104,7 +101,7 @@ QMap<int, QVariant> DailymotionCommentModel::itemData(const QModelIndex &index) 
 }
 
 QVariant DailymotionCommentModel::data(int row, const QByteArray &role) const {
-    if (DailymotionComment *user = get(row)) {
+    if (const DailymotionComment *user = get(row)) {
         return user->property(role);
     }
     
@@ -114,8 +111,8 @@ QVariant DailymotionCommentModel::data(int row, const QByteArray &role) const {
 QVariantMap DailymotionCommentModel::itemData(int row) const {
     QVariantMap map;
     
-    if (DailymotionComment *user = get(row)) {
-        foreach (QByteArray role, m_roles.values()) {
+    if (const DailymotionComment *user = get(row)) {
+        foreach (const QByteArray &role, m_roles.values()) {
             map[role] = user->property(role);
         }
     }
@@ -191,15 +188,15 @@ void DailymotionCommentModel::remove(int row) {
 
 void DailymotionCommentModel::onRequestFinished() {
     if (m_request->status() == QDailymotion::ResourcesRequest::Ready) {
-        QVariantMap result = m_request->result().toMap();
+        const QVariantMap result = m_request->result().toMap();
         
         if (!result.isEmpty()) {
             m_hasMore = result.value("has_more").toBool();
-            QVariantList list = result.value("list").toList();
+            const QVariantList list = result.value("list").toList();
 
             beginInsertRows(QModelIndex(), m_items.size(), m_items.size() + list.size() - 1);
     
-            foreach (QVariant item, list) {
+            foreach (const QVariant &item, list) {
                 m_items << new DailymotionComment(item.toMap(), this);
             }
 
@@ -215,7 +212,4 @@ void DailymotionCommentModel::onCommentAdded(DailymotionComment *comment) {
     if (comment->videoId() == m_resourcePath.section('/', 1, 1)) {
         insert(0, new DailymotionComment(comment, this));
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "DailymotionCommentModel::onCommentAdded" << comment->videoId();
-#endif
 }

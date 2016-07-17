@@ -1,25 +1,22 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "dailymotionvideomodel.h"
 #include "dailymotion.h"
 #include "dailymotionplaylist.h"
-#ifdef CUTETUBE_DEBUG
-#include <QDebug>
-#endif
 
 DailymotionVideoModel::DailymotionVideoModel(QObject *parent) :
     QAbstractListModel(parent),
@@ -41,10 +38,10 @@ DailymotionVideoModel::DailymotionVideoModel(QObject *parent) :
 #if QT_VERSION < 0x050000
     setRoleNames(m_roles);
 #endif
-    m_request->setClientId(Dailymotion::instance()->clientId());
-    m_request->setClientSecret(Dailymotion::instance()->clientSecret());
-    m_request->setAccessToken(Dailymotion::instance()->accessToken());
-    m_request->setRefreshToken(Dailymotion::instance()->refreshToken());
+    m_request->setClientId(Dailymotion::clientId());
+    m_request->setClientSecret(Dailymotion::clientSecret());
+    m_request->setAccessToken(Dailymotion::accessToken());
+    m_request->setRefreshToken(Dailymotion::refreshToken());
     
     connect(m_request, SIGNAL(accessTokenChanged(QString)), Dailymotion::instance(), SLOT(setAccessToken(QString)));
     connect(m_request, SIGNAL(refreshTokenChanged(QString)), Dailymotion::instance(), SLOT(setRefreshToken(QString)));
@@ -95,7 +92,7 @@ QVariant DailymotionVideoModel::data(const QModelIndex &index, int role) const {
 QMap<int, QVariant> DailymotionVideoModel::itemData(const QModelIndex &index) const {
     QMap<int, QVariant> map;
     
-    if (DailymotionVideo *video = get(index.row())) {
+    if (const DailymotionVideo *video = get(index.row())) {
         QHashIterator<int, QByteArray> iterator(m_roles);
         
         while (iterator.hasNext()) {
@@ -108,7 +105,7 @@ QMap<int, QVariant> DailymotionVideoModel::itemData(const QModelIndex &index) co
 }
 
 QVariant DailymotionVideoModel::data(int row, const QByteArray &role) const {
-    if (DailymotionVideo *video = get(row)) {
+    if (const DailymotionVideo *video = get(row)) {
         return video->property(role);
     }
     
@@ -118,8 +115,8 @@ QVariant DailymotionVideoModel::data(int row, const QByteArray &role) const {
 QVariantMap DailymotionVideoModel::itemData(int row) const {
     QVariantMap map;
     
-    if (DailymotionVideo *video = get(row)) {
-        foreach (QByteArray role, m_roles.values()) {
+    if (const DailymotionVideo *video = get(row)) {
+        foreach (const QByteArray &role, m_roles.values()) {
             map[role] = video->property(role);
         }
     }
@@ -210,15 +207,15 @@ void DailymotionVideoModel::remove(int row) {
 
 void DailymotionVideoModel::onRequestFinished() {
     if (m_request->status() == QDailymotion::ResourcesRequest::Ready) {
-        QVariantMap result = m_request->result().toMap();
+        const QVariantMap result = m_request->result().toMap();
         
         if (!result.isEmpty()) {
             m_hasMore = result.value("has_more").toBool();
-            QVariantList list = result.value("list").toList();
+            const QVariantList list = result.value("list").toList();
 
             beginInsertRows(QModelIndex(), m_items.size(), m_items.size() + list.size() - 1);
     
-            foreach (QVariant item, list) {
+            foreach (const QVariant &item, list) {
                 m_items << new DailymotionVideo(item.toMap(), this);
             }
 
@@ -234,38 +231,26 @@ void DailymotionVideoModel::onVideoAddedToPlaylist(DailymotionVideo *video, Dail
     if (m_resourcePath.section('/', -2, -2) == playlist->id()) {
         insert(0, new DailymotionVideo(video, this));
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "DailymotionVideoModel::onVideoAddedToPlaylist" << video->id() << playlist->id();
-#endif
 }
 
 void DailymotionVideoModel::onVideoRemovedFromPlaylist(DailymotionVideo *video, DailymotionPlaylist *playlist) {
     if (m_resourcePath.section('/', -2, -2) == playlist->id()) {
-        QModelIndexList list = match(index(0), IdRole, video->id(), 1, Qt::MatchExactly);
+        const QModelIndexList list = match(index(0), IdRole, video->id(), 1, Qt::MatchExactly);
         
         if (!list.isEmpty()) {
             remove(list.first().row());
         }
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "DailymotionVideoModel::onVideoRemovedFromPlaylist" << video->id() << playlist->id();
-#endif
 }
 
 void DailymotionVideoModel::onVideoFavourited(DailymotionVideo *video) {
     insert(0, new DailymotionVideo(video, this));
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "DailymotionVideoModel::onVideoFavourited" << video->id();
-#endif
 }
 
 void DailymotionVideoModel::onVideoUnfavourited(DailymotionVideo *video) {
-    QModelIndexList list = match(index(0), IdRole, video->id(), 1, Qt::MatchExactly);
+    const QModelIndexList list = match(index(0), IdRole, video->id(), 1, Qt::MatchExactly);
     
     if (!list.isEmpty()) {
         remove(list.first().row());
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "DailymotionVideoModel::onVideoUnfavourited" << video->id();
-#endif
 }

@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -18,25 +18,25 @@
 #include "categorynamemodel.h"
 #include "resources.h"
 #include "settings.h"
-#include "transfers.h"
 #include "valueselector.h"
 #include <QScrollArea>
 #include <QCheckBox>
+#include <QLabel>
+#include <QLineEdit>
 #include <QDialogButtonBox>
 #include <QPushButton>
 #include <QHBoxLayout>
 #include <QMessageBox>
 
-DailymotionDownloadDialog::DailymotionDownloadDialog(const QString &resourceId, const QString &title, QWidget *parent) :
+DailymotionDownloadDialog::DailymotionDownloadDialog(QWidget *parent) :
     Dialog(parent),
-    m_id(resourceId),
-    m_title(title),
     m_streamModel(new DailymotionStreamModel(this)),
     m_subtitleModel(new DailymotionSubtitleModel(this)),
     m_categoryModel(new CategoryNameModel(this)),
     m_scrollArea(new QScrollArea(this)),
     m_subtitleCheckBox(new QCheckBox(tr("Download subtitles"), this)),
-    m_audioCheckBox(new QCheckBox(tr("Convert to audio file"), this)),
+    m_commandCheckBox(new QCheckBox(tr("Override global custom command"), this)),
+    m_commandEdit(new QLineEdit(this)),
     m_streamSelector(new ValueSelector(tr("Video format"), this)),
     m_subtitleSelector(new ValueSelector(tr("Subtitles language"), this)),
     m_categorySelector(new ValueSelector(tr("Category"), this)),
@@ -44,26 +44,28 @@ DailymotionDownloadDialog::DailymotionDownloadDialog(const QString &resourceId, 
     m_layout(new QHBoxLayout(this))
 {
     setWindowTitle(tr("Download video"));
+    setMinimumHeight(360);
     
     m_streamSelector->setModel(m_streamModel);
     m_subtitleSelector->setModel(m_subtitleModel);
     m_subtitleSelector->setEnabled(false);
     m_subtitleSelector->setCurrentIndex(qMax(0, m_subtitleModel->match("name",
-                                             Settings::instance()->subtitlesLanguage())));
+                                             Settings::subtitlesLanguage())));
     m_categorySelector->setModel(m_categoryModel);
-    m_categorySelector->setValue(Settings::instance()->defaultCategory());
+    m_categorySelector->setValue(Settings::defaultCategory());
     m_categorySelector->setEnabled(m_categoryModel->rowCount() > 0);
-    m_audioCheckBox->setEnabled(QFile::exists("/usr/bin/ffmpeg") || QFile::exists("/usr/bin/avconv"));
     
     m_buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
     
     QWidget *scrollWidget = new QWidget(m_scrollArea);
     QVBoxLayout *vbox = new QVBoxLayout(scrollWidget);
-    vbox->addWidget(m_streamSelector, 0, 0);
-    vbox->addWidget(m_audioCheckBox, 1, 0);
-    vbox->addWidget(m_subtitleCheckBox, 2, 0);
-    vbox->addWidget(m_subtitleSelector, 3, 0);
-    vbox->addWidget(m_categorySelector, 4, 0);
+    vbox->addWidget(m_streamSelector);
+    vbox->addWidget(m_subtitleCheckBox);
+    vbox->addWidget(m_subtitleSelector);
+    vbox->addWidget(m_categorySelector);
+    vbox->addWidget(new QLabel(tr("Custom command (%f for filename)"), this));
+    vbox->addWidget(m_commandEdit);
+    vbox->addWidget(m_commandCheckBox);
     vbox->setContentsMargins(0, 0, 0, 0);
     m_scrollArea->setWidget(scrollWidget);
     m_scrollArea->setWidgetResizable(true);
@@ -77,37 +79,57 @@ DailymotionDownloadDialog::DailymotionDownloadDialog(const QString &resourceId, 
     connect(m_subtitleModel, SIGNAL(statusChanged(QDailymotion::ResourcesRequest::Status)), this,
             SLOT(onSubtitleModelStatusChanged(QDailymotion::ResourcesRequest::Status)));
     connect(m_subtitleCheckBox, SIGNAL(toggled(bool)), this, SLOT(onSubtitleCheckBoxToggled(bool)));
-    connect(m_subtitleSelector, SIGNAL(valueChanged(QVariant)), this, SLOT(onSubtitlesChanged()));
-    connect(m_categorySelector, SIGNAL(valueChanged(QVariant)), this, SLOT(onCategoryChanged()));
-    connect(m_streamSelector, SIGNAL(valueChanged(QVariant)), this, SLOT(onStreamChanged()));
-    connect(m_buttonBox, SIGNAL(accepted()), this, SLOT(addDownload()));
+    connect(m_buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
     connect(m_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));    
 }
 
-void DailymotionDownloadDialog::showEvent(QShowEvent *e) {
-    Dialog::showEvent(e);
-    m_streamModel->list(m_id);
-    m_subtitleCheckBox->setChecked(Settings::instance()->subtitlesEnabled());
+QString DailymotionDownloadDialog::videoId() const {
+    return m_videoId;
 }
 
-void DailymotionDownloadDialog::onCategoryChanged() {
-    Settings::instance()->setDefaultCategory(m_categorySelector->valueText());
+QString DailymotionDownloadDialog::streamId() const {
+    return m_streamSelector->currentValue().toMap().value("id").toString();
 }
 
-void DailymotionDownloadDialog::onStreamChanged() {
-    Settings::instance()->setDefaultDownloadFormat(Resources::DAILYMOTION, m_streamSelector->valueText());
+QString DailymotionDownloadDialog::subtitlesLanguage() const {
+    return m_subtitleCheckBox->isChecked()
+           ? m_subtitleSelector->currentValue().toMap().value("id").toString()
+           : QString();
 }
 
-void DailymotionDownloadDialog::onSubtitlesChanged() {
-    Settings::instance()->setSubtitlesLanguage(m_subtitleSelector->valueText());
+QString DailymotionDownloadDialog::category() const {
+    return m_categorySelector->valueText();
 }
 
-void DailymotionDownloadDialog::onSubtitleCheckBoxToggled(bool enabled) {
-    Settings::instance()->setSubtitlesEnabled(enabled);
-    
+QString DailymotionDownloadDialog::customCommand() const {
+    return m_commandEdit->text();
+}
+
+bool DailymotionDownloadDialog::customCommandOverrideEnabled() const {
+    return m_commandCheckBox->isChecked();
+}
+
+void DailymotionDownloadDialog::accept() {
+    Settings::setDefaultDownloadFormat(Resources::DAILYMOTION, m_streamSelector->valueText());
+    Settings::setSubtitlesEnabled(m_subtitleCheckBox->isChecked());
+    Settings::setSubtitlesLanguage(subtitlesLanguage());
+    Settings::setDefaultCategory(category());
+    Dialog::accept();
+}
+
+void DailymotionDownloadDialog::list(const QString &videoId) {
+    m_videoId = videoId;
+    m_streamModel->list(videoId);
+
+    if (m_subtitleCheckBox->isChecked()) {
+        m_subtitleModel->list(videoId);
+    }
+}
+
+void DailymotionDownloadDialog::onSubtitleCheckBoxToggled(bool enabled) {    
     if (enabled) {
         if (m_subtitleModel->status() == QDailymotion::ResourcesRequest::Null) {
-            m_subtitleModel->list(m_id);
+            m_subtitleModel->list(m_videoId);
         }
     }
     else {
@@ -123,15 +145,15 @@ void DailymotionDownloadDialog::onStreamModelStatusChanged(QDailymotion::Streams
     case QDailymotion::StreamsRequest::Ready:
         if (m_streamModel->rowCount() > 0) {
             m_streamSelector->setCurrentIndex(qMax(0, m_streamModel->match("name",
-                                                   Settings::instance()->defaultDownloadFormat(Resources::DAILYMOTION))));
+                                                   Settings::defaultDownloadFormat(Resources::DAILYMOTION))));
         }
         else {
-            QMessageBox::critical(this, tr("Error"), tr("No streams available for '%1'").arg(m_title));
+            QMessageBox::critical(this, tr("Error"), tr("No streams available"));
         }
         
         break;
     case QDailymotion::StreamsRequest::Failed:
-        QMessageBox::critical(this, tr("Error"), tr("No streams available for '%1'").arg(m_title));
+        QMessageBox::critical(this, tr("Error"), tr("No streams available"));
         break;
     default:
         break;
@@ -153,7 +175,7 @@ void DailymotionDownloadDialog::onSubtitleModelStatusChanged(QDailymotion::Resou
         
         break;
     case QDailymotion::ResourcesRequest::Failed:
-        QMessageBox::information(this, tr("Error"), tr("No subtitles available for '%1'").arg(m_title));
+        QMessageBox::information(this, tr("Error"), tr("No subtitles available"));
         break;
     default:
         break;
@@ -162,14 +184,4 @@ void DailymotionDownloadDialog::onSubtitleModelStatusChanged(QDailymotion::Resou
     m_subtitleCheckBox->setChecked(m_subtitleModel->rowCount() > 0);
     m_subtitleCheckBox->setEnabled(m_subtitleModel->rowCount() > 0);
     hideProgressIndicator();
-}
-
-void DailymotionDownloadDialog::addDownload() {
-    QString streamId = m_streamSelector->currentValue().toMap().value("id").toString();
-    QString subtitles = m_subtitleCheckBox->isChecked() ? m_subtitleSelector->valueText() : QString();
-    QString category = m_categorySelector->valueText();
-    Transfers::instance()->addDownloadTransfer(Resources::DAILYMOTION, m_id, streamId, QUrl(), m_title, category, subtitles,
-                                               m_audioCheckBox->isChecked());
-    
-    accept();
 }

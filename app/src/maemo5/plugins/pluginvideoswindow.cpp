@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -22,6 +22,7 @@
 #include "pluginplaybackdialog.h"
 #include "pluginvideowindow.h"
 #include "settings.h"
+#include "transfers.h"
 #include "videodelegate.h"
 #include "videolauncher.h"
 #include "videoplaybackwindow.h"
@@ -99,13 +100,22 @@ void PluginVideosWindow::downloadVideo() {
         return;
     }
     
-    if (m_view->currentIndex().isValid()) {
-        QString id = m_view->currentIndex().data(PluginVideoModel::IdRole).toString();
-        QString title = m_view->currentIndex().data(PluginVideoModel::TitleRole).toString();
-        QUrl streamUrl = m_view->currentIndex().data(PluginVideoModel::StreamUrlRole).toString();
+    const QModelIndex index = m_view->currentIndex();
+    
+    if (index.isValid()) {
+        const QString id = index.data(PluginVideoModel::IdRole).toString();
+        const QString title = index.data(PluginVideoModel::TitleRole).toString();
+        const QUrl streamUrl = index.data(PluginVideoModel::StreamUrlRole).toString();
         
-        PluginDownloadDialog *dialog = new PluginDownloadDialog(m_model->service(), id, streamUrl, title, this);
-        dialog->open();
+        PluginDownloadDialog dialog(m_model->service(), this);
+        dialog.list(id, streamUrl.isEmpty());
+        
+        if (dialog.exec() == QDialog::Accepted) {
+            Transfers::instance()->addDownloadTransfer(m_model->service(), id, dialog.streamId(),
+                                                       streamUrl, title, dialog.category(),
+                                                       dialog.subtitlesLanguage(), dialog.customCommand(),
+                                                       dialog.customCommandOverrideEnabled());
+        }
     }
 }
 
@@ -114,7 +124,7 @@ void PluginVideosWindow::playVideo(const QModelIndex &index) {
         return;
     }
     
-    if (Settings::instance()->videoPlayer() == "cutetube") {
+    if (Settings::videoPlayer() == "cutetube") {
         if (PluginVideo *video = m_model->get(index.row())) {
             VideoPlaybackWindow *window = new VideoPlaybackWindow(this);
             window->show();
@@ -122,24 +132,25 @@ void PluginVideosWindow::playVideo(const QModelIndex &index) {
         }
     }
     else {
-        QString url = index.data(PluginVideoModel::StreamUrlRole).toString();
+        const QString url = index.data(PluginVideoModel::StreamUrlRole).toString();
         
         if (!url.isEmpty()) {
             VideoLauncher::playVideo(url);
         }
         else {
-            QString id = index.data(PluginVideoModel::IdRole).toString();
-            QString title = index.data(PluginVideoModel::TitleRole).toString();
-    
-            PluginPlaybackDialog *dialog = new PluginPlaybackDialog(m_model->service(), id, title, this);
-            dialog->open();
+            PluginPlaybackDialog dialog(m_model->service(), this);
+            dialog.list(index.data(PluginVideoModel::IdRole).toString());
+
+            if ((dialog.exec() == QDialog::Accepted) && (!VideoLauncher::playVideo(dialog.streamUrl()))) {
+                QMessageBox::critical(this, tr("Error"), tr("Unable to play video"));
+            }
         }
     }
 }
 
 void PluginVideosWindow::shareVideo() {
     if (const PluginVideo *video = m_model->get(m_view->currentIndex().row())) {
-        Clipboard::instance()->setText(video->url().toString());
+        Clipboard::setText(video->url().toString());
         QMaemo5InformationBox::information(this, tr("URL copied to clipboard"));
     }
 }

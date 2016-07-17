@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -19,9 +19,6 @@
 #include "utils.h"
 #include "vimeo.h"
 #include <QDateTime>
-#ifdef CUTETUBE_DEBUG
-#include <QDebug>
-#endif
 
 VimeoVideo::VimeoVideo(QObject *parent) :
     CTVideo(parent),
@@ -114,8 +111,8 @@ void VimeoVideo::loadVideo(const QString &id) {
 }
 
 void VimeoVideo::loadVideo(const QVariantMap &video) {
-    QVariantMap user = video.value("user").toMap();
-    QString thumbnailId = video.value("pictures").toMap().value("uri").toString().section('/', -1);
+    const QVariantMap user = video.value("user").toMap();
+    const QString thumbnailId = video.value("pictures").toMap().value("uri").toString().section('/', -1);
     
     setDate(QDateTime::fromString(video.value("created_time").toString(), Qt::ISODate).toString("dd MMM yyyy"));
     setDescription(video.value("description").toString());
@@ -146,9 +143,6 @@ void VimeoVideo::favourite() {
     m_request->insert("/me/likes/" + id());
     connect(m_request, SIGNAL(finished()), this, SLOT(onFavouriteRequestFinished()));
     emit statusChanged(status());
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "VimeoVideo::favourite" << id();
-#endif
 }
 
 void VimeoVideo::unfavourite() {
@@ -160,9 +154,6 @@ void VimeoVideo::unfavourite() {
     m_request->del("/me/likes/" + id());
     connect(m_request, SIGNAL(finished()), this, SLOT(onUnfavouriteRequestFinished()));
     emit statusChanged(status());
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "VimeoVideo::unfavourite" << id();
-#endif
 }
 
 void VimeoVideo::watchLater() {
@@ -174,17 +165,14 @@ void VimeoVideo::watchLater() {
     m_request->insert("/me/watchlater/" + id());
     connect(m_request, SIGNAL(finished()), this, SLOT(onWatchLaterRequestFinished()));
     emit statusChanged(status());
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "VimeoVideo::watchLater" << id();
-#endif
 }
 
 void VimeoVideo::initRequest() {
     if (!m_request) {
         m_request = new QVimeo::ResourcesRequest(this);
-        m_request->setClientId(Vimeo::instance()->clientId());
-        m_request->setClientSecret(Vimeo::instance()->clientSecret());
-        m_request->setAccessToken(Vimeo::instance()->accessToken());
+        m_request->setClientId(Vimeo::clientId());
+        m_request->setClientSecret(Vimeo::clientSecret());
+        m_request->setAccessToken(Vimeo::accessToken());
     
         connect(m_request, SIGNAL(accessTokenChanged(QString)), Vimeo::instance(), SLOT(setAccessToken(QString)));
     }
@@ -204,9 +192,6 @@ void VimeoVideo::onFavouriteRequestFinished() {
         setFavourite(true);
         setFavouriteCount(favouriteCount() + 1);
         emit Vimeo::instance()->videoFavourited(this);
-#ifdef CUTETUBE_DEBUG
-        qDebug() << "VimeoVideo::onFavouriteRequestFinished OK" << id();
-#endif
     }
     
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onFavouriteRequestFinished()));
@@ -218,9 +203,6 @@ void VimeoVideo::onUnfavouriteRequestFinished() {
         setFavourite(false);
         setFavouriteCount(favouriteCount() - 1);
         emit Vimeo::instance()->videoUnfavourited(this);
-#ifdef CUTETUBE_DEBUG
-        qDebug() << "VimeoVideo::onUnfavouriteRequestFinished OK" << id();
-#endif
     }
     
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onUnfavouriteRequestFinished()));
@@ -230,9 +212,6 @@ void VimeoVideo::onUnfavouriteRequestFinished() {
 void VimeoVideo::onWatchLaterRequestFinished() {
     if (m_request->status() == QVimeo::ResourcesRequest::Ready) {
         emit Vimeo::instance()->videoWatchLater(this);
-#ifdef CUTETUBE_DEBUG
-        qDebug() << "VimeoVideo::onWatchLaterRequestFinished OK" << id();
-#endif
     }
     
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onWatchLaterRequestFinished()));

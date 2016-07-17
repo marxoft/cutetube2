@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -18,13 +18,13 @@
 #include "image.h"
 #include "listview.h"
 #include "navdelegate.h"
+#include "pluginmanager.h"
 #include "pluginplaylistswindow.h"
 #include "pluginplaylistwindow.h"
 #include "pluginuserswindow.h"
 #include "pluginvideoswindow.h"
 #include "pluginvideowindow.h"
 #include "resources.h"
-#include "resourcesplugins.h"
 #include "settings.h"
 #include "textbrowser.h"
 #include "utils.h"
@@ -107,7 +107,7 @@ void PluginUserWindow::loadUserUi() {
 }
 
 void PluginUserWindow::showPlaylists() {
-    if (!ResourcesPlugins::instance()->resourceTypeIsSupported(m_user->service(), Resources::PLAYLIST)) {
+    if (!PluginManager::instance()->resourceTypeIsSupported(m_user->service(), Resources::PLAYLIST)) {
         QMaemo5InformationBox::information(this, tr("This user does not have any playlists"));
         return;
     }
@@ -119,7 +119,7 @@ void PluginUserWindow::showPlaylists() {
 }
 
 void PluginUserWindow::showVideos() {
-    if (!ResourcesPlugins::instance()->resourceTypeIsSupported(m_user->service(), Resources::VIDEO)) {
+    if (!PluginManager::instance()->resourceTypeIsSupported(m_user->service(), Resources::VIDEO)) {
         QMaemo5InformationBox::information(this, tr("This user does not have any videos"));
         return;
     }
@@ -131,7 +131,7 @@ void PluginUserWindow::showVideos() {
 }
 
 void PluginUserWindow::showResource(const QUrl &url) {
-    QVariantMap resource = Resources::getResourceFromUrl(url.toString());
+    const QVariantMap resource = Resources::getResourceFromUrl(url.toString());
     
     if (resource.value("service") != m_user->service()) {
         QDesktopServices::openUrl(url);

@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -35,7 +35,7 @@ SearchHistoryDialog::SearchHistoryDialog(QWidget *parent) :
     m_layout(new QHBoxLayout(this))
 {
     setWindowTitle(tr("Search history"));
-    setMinimumHeight(340);
+    setMinimumHeight(360);
     
     m_view->setModel(m_model);
     m_view->addAction(m_removeAction);
@@ -58,7 +58,7 @@ SearchHistoryDialog::SearchHistoryDialog(QWidget *parent) :
     m_filterBox->hide();
     
     connect(m_model, SIGNAL(countChanged(int)), this, SLOT(onCountChanged(int)));
-    connect(m_view, SIGNAL(activated(QModelIndex)), this, SLOT(chooseSearch(QModelIndex)));
+    connect(m_view, SIGNAL(activated(QModelIndex)), this, SLOT(accept()));
     connect(m_filterBox, SIGNAL(textChanged(QString)), this, SLOT(onFilterTextChanged(QString)));
     connect(m_removeAction, SIGNAL(triggered()), this, SLOT(removeSearch()));
     connect(m_clearButton, SIGNAL(clicked()), m_model, SLOT(clear()));
@@ -66,16 +66,24 @@ SearchHistoryDialog::SearchHistoryDialog(QWidget *parent) :
     onCountChanged(m_model->rowCount());
 }
 
+QString SearchHistoryDialog::query() const {
+    return m_query;
+}
+
+void SearchHistoryDialog::setQuery(const QString &query) {
+    m_query = query;
+}
+
+void SearchHistoryDialog::accept() {
+    setQuery(m_view->currentIndex().data().toString());
+    Dialog::accept();
+}
+
 void SearchHistoryDialog::keyPressEvent(QKeyEvent *e) {
     if ((m_filterBox->isHidden()) && (e->key() >= Qt::Key_0) && (e->key() <= Qt::Key_Z)) {
         m_filterBox->setText(e->text());
         m_filterBox->setFocus(Qt::OtherFocusReason);
     }
-}
-
-void SearchHistoryDialog::chooseSearch(const QModelIndex &index) {
-    emit searchChosen(index.data().toString());
-    accept();
 }
 
 void SearchHistoryDialog::removeSearch() {

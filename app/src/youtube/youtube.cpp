@@ -1,30 +1,28 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "youtube.h"
 #include "database.h"
 #include "json.h"
+#include "logger.h"
 #include <qyoutube/urls.h>
 #include <QSettings>
 #include <QSqlRecord>
 #if QT_VERSION >= 0x050000
 #include <QUrlQuery>
-#endif
-#ifdef CUTETUBE_DEBUG
-#include <QDebug>
 #endif
 
 static const QString API_KEY("AIzaSyDhIlkLzHJKDCNr6thsjlQpZrkY3lO_Uu4");
@@ -39,22 +37,17 @@ YouTube::SubscriptionCache YouTube::subscriptionCache;
 
 YouTube* YouTube::self = 0;
 
-YouTube::YouTube(QObject *parent) :
-    QObject(parent)
+YouTube::YouTube() :
+    QObject()
 {
-    if (!self) {
-        self = this;
-    }
 }
 
 YouTube::~YouTube() {
-    if (self == this) {
-        self = 0;
-    }
+    self = 0;
 }
 
 YouTube* YouTube::instance() {
-    return self;
+    return self ? self : self = new YouTube;
 }
 
 QString YouTube::formatDuration(const QString &duration) {    
@@ -88,15 +81,15 @@ QString YouTube::formatDuration(const QString &duration) {
 }
 
 QString YouTube::getErrorString(const QVariantMap &error) {
-    QVariantMap em = error.contains("error") ? error.value("error").toMap() : error;
+    const QVariantMap em = error.contains("error") ? error.value("error").toMap() : error;
 
     if (em.contains("message")) {
         return em.value("message").toString();
     }
     
     if (em.contains("errors")) {
-        foreach (QVariant e, error.value("errors").toList()) {
-            QVariantMap m = e.toMap();
+        foreach (const QVariant &e, error.value("errors").toList()) {
+            const QVariantMap m = e.toMap();
             
             if (m.contains("message")) {
                 return m.value("message").toString();
@@ -151,11 +144,11 @@ QString YouTube::getVideoId(const QVariantMap &video) {
     return video.value("id").toString();
 }
 
-QString YouTube::relatedPlaylist(const QString &name) const {
+QString YouTube::relatedPlaylist(const QString &name) {
     return relatedPlaylists().value(name).toString();
 }
 
-QUrl YouTube::authUrl() const {
+QUrl YouTube::authUrl() {
     QUrl url(QYouTube::AUTH_URL);
 #if QT_VERSION >= 0x050000
     QUrlQuery query(url);
@@ -188,7 +181,7 @@ QUrl YouTube::authUrl() const {
     return url;
 }
 
-QString YouTube::userId() const {
+QString YouTube::userId() {
     return QSettings().value("YouTube/userId").toString();
 }
 
@@ -198,11 +191,14 @@ void YouTube::setUserId(const QString &id) {
         subscriptionCache.ids.clear();
         subscriptionCache.nextPageToken = QString();
         subscriptionCache.loaded = false;
-        emit userIdChanged();
+
+        if (self) {
+            emit self->userIdChanged(id);
+        }
     }
 }
 
-QString YouTube::accessToken() const {
+QString YouTube::accessToken() {
     if (userId().isEmpty()) {
         return QString();
     }
@@ -211,7 +207,7 @@ QString YouTube::accessToken() const {
                                                 .arg(userId()));
     
     if (query.lastError().isValid()) {
-        qDebug() << "YouTube::accessToken: database error:" << query.lastError().text();
+        Logger::log("YouTube::accessToken(): database error: " + query.lastError().text());
         return QString();
     }
     
@@ -227,17 +223,14 @@ void YouTube::setAccessToken(const QString &token) {
                                                 .arg(token).arg(userId()));
 
     if (query.lastError().isValid()) {
-        qDebug() << "YouTube::setAccessToken: database error:" << query.lastError().text();
+        Logger::log("YouTube::setAccessToken(): database error: " + query.lastError().text());
     }
-    else {
-        emit accessTokenChanged();
+    else if (self) {
+        emit self->accessTokenChanged(token);
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "YouTube::setAccessToken" << token;
-#endif
 }
 
-QString YouTube::refreshToken() const {
+QString YouTube::refreshToken() {
     if (userId().isEmpty()) {
         return QString();
     }
@@ -246,7 +239,7 @@ QString YouTube::refreshToken() const {
                                                 .arg(userId()));
     
     if (query.lastError().isValid()) {
-        qDebug() << "YouTube::refreshToken: database error:" << query.lastError().text();
+        Logger::log("YouTube::refreshToken(): database error: " + query.lastError().text());
         return QString();
     }
     
@@ -262,17 +255,14 @@ void YouTube::setRefreshToken(const QString &token) {
                                                 .arg(token).arg(userId()));
 
     if (query.lastError().isValid()) {
-        qDebug() << "YouTube::setRefreshToken: database error:" << query.lastError().text();
+        Logger::log("YouTube::setRefreshToken(): database error: " + query.lastError().text());
     }
-    else {
-        emit refreshTokenChanged();
+    else if (self) {
+        emit self->refreshTokenChanged(token);
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "YouTube::setRefreshToken" << token;
-#endif
 }
 
-QVariantMap YouTube::relatedPlaylists() const {
+QVariantMap YouTube::relatedPlaylists() {
     if (userId().isEmpty()) {
         return QVariantMap();
     }
@@ -281,7 +271,7 @@ QVariantMap YouTube::relatedPlaylists() const {
                                                 .arg(userId()));
     
     if (query.lastError().isValid()) {
-        qDebug() << "YouTube::refreshToken: database error:" << query.lastError().text();
+        Logger::log("YouTube::refreshToken(): database error: " + query.lastError().text());
         return QVariantMap();
     }
     
@@ -297,73 +287,70 @@ void YouTube::setRelatedPlaylists(const QVariantMap &playlists) {
                                                 .arg(QString(QtJson::Json::serialize(playlists))).arg(userId()));
 
     if (query.lastError().isValid()) {
-        qDebug() << "YouTube::setRelatedPlaylists: database error:" << query.lastError().text();
+        Logger::log("YouTube::setRelatedPlaylists(): database error: " + query.lastError().text());
     }
-    else {
-        emit relatedPlaylistsChanged();
+    else if (self) {
+        emit self->relatedPlaylistsChanged(playlists);
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "YouTube::setRelatedPlaylists" << playlists;
-#endif
 }
 
-QString YouTube::apiKey() const {
+QString YouTube::apiKey() {
     return QSettings().value("YouTube/apiKey", API_KEY).toString();
 }
 
 void YouTube::setApiKey(const QString &key) {
     if (key != apiKey()) {
         QSettings().setValue("YouTube/apiKey", key);
-        emit apiKeyChanged();
+
+        if (self) {
+            emit self->apiKeyChanged(key);
+        }
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "YouTube::setApiKey" << key;
-#endif
 }
 
-QString YouTube::clientId() const {
+QString YouTube::clientId() {
     return QSettings().value("YouTube/clientId", CLIENT_ID).toString();
 }
 
 void YouTube::setClientId(const QString &id) {
     if (id != clientId()) {
         QSettings().setValue("YouTube/clientId", id);
-        emit clientIdChanged();
+
+        if (self) {
+            emit self->clientIdChanged(id);
+        }
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "YouTube::setClientId" << id;
-#endif
 }
 
-QString YouTube::clientSecret() const {
+QString YouTube::clientSecret() {
     return QSettings().value("YouTube/clientSecret", CLIENT_SECRET).toString();
 }
 
 void YouTube::setClientSecret(const QString &secret) {
     if (secret != clientSecret()) {
         QSettings().setValue("YouTube/clientSecret", secret);
-        emit clientSecretChanged();
+
+        if (self) {
+            emit self->clientSecretChanged(secret);
+        }
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "YouTube::setClientSecret" << secret;
-#endif
 }
 
-QStringList YouTube::scopes() const {
+QStringList YouTube::scopes() {
     return QSettings().value("YouTube/scopes", SCOPES).toStringList();
 }
 
 void YouTube::setScopes(const QStringList &s) {
     if (s != scopes()) {
         QSettings().setValue("YouTube/scopes", s);
-        emit scopesChanged();
+
+        if (self) {
+            emit self->scopesChanged(s);
+        }
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "YouTube::setScopes" << s;
-#endif
 }
 
-bool YouTube::hasScope(const QString &scope) const {
+bool YouTube::hasScope(const QString &scope) {
     if (userId().isEmpty()) {
         return false;
     }
@@ -372,7 +359,7 @@ bool YouTube::hasScope(const QString &scope) const {
                                                 .arg(userId()));
     
     if (query.lastError().isValid()) {
-        qDebug() << "YouTube::hasScope: database error:" << query.lastError().text();
+        Logger::log("YouTube::hasScope(): database error: " + query.lastError().text());
         return false;
     }
     

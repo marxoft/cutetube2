@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -23,8 +23,11 @@
 #include "dailymotionvideowindow.h"
 #include "imagecache.h"
 #include "listview.h"
+#include "resources.h"
 #include "settings.h"
+#include "transfers.h"
 #include "videodelegate.h"
+#include "videolauncher.h"
 #include "videoplaybackwindow.h"
 #include <qdailymotion/urls.h>
 #include <QLabel>
@@ -82,14 +85,14 @@ DailymotionVideosWindow::DailymotionVideosWindow(StackedWindow *parent) :
     connect(m_downloadAction, SIGNAL(triggered()), this, SLOT(downloadVideo()));
     connect(m_shareAction, SIGNAL(triggered()), this, SLOT(shareVideo()));
     
-    if (!Dailymotion::instance()->userId().isEmpty()) {
-        if (Dailymotion::instance()->hasScope(QDailymotion::MANAGE_FAVORITES_SCOPE)) {
+    if (!Dailymotion::userId().isEmpty()) {
+        if (Dailymotion::hasScope(QDailymotion::MANAGE_FAVORITES_SCOPE)) {
             m_favouriteAction = new QAction(this);
             m_contextMenu->addAction(m_favouriteAction);
             connect(m_favouriteAction, SIGNAL(triggered()), this, SLOT(setVideoFavourite()));
         }
         
-        if (Dailymotion::instance()->hasScope(QDailymotion::MANAGE_PLAYLISTS_SCOPE)) {
+        if (Dailymotion::hasScope(QDailymotion::MANAGE_PLAYLISTS_SCOPE)) {
             m_playlistAction = new QAction(tr("Add to playlist"), this);
             m_contextMenu->addAction(m_playlistAction);
             connect(m_playlistAction, SIGNAL(triggered()), this, SLOT(addVideoToPlaylist()));
@@ -112,8 +115,7 @@ void DailymotionVideosWindow::addVideoToPlaylist() {
     }
     
     if (DailymotionVideo *video = m_model->get(m_view->currentIndex().row())) {
-        DailymotionPlaylistDialog *dialog = new DailymotionPlaylistDialog(video, this);
-        dialog->open();
+        DailymotionPlaylistDialog(video, this).exec();
     }
 }
 
@@ -122,12 +124,21 @@ void DailymotionVideosWindow::downloadVideo() {
         return;
     }
     
-    if (m_view->currentIndex().isValid()) {
-        QString id = m_view->currentIndex().data(DailymotionVideoModel::IdRole).toString();
-        QString title = m_view->currentIndex().data(DailymotionVideoModel::TitleRole).toString();
+    const QModelIndex index = m_view->currentIndex();
+    
+    if (index.isValid()) {
+        const QString id = index.data(DailymotionVideoModel::IdRole).toString();
+        const QString title = index.data(DailymotionVideoModel::TitleRole).toString();
         
-        DailymotionDownloadDialog *dialog = new DailymotionDownloadDialog(id, title, this);
-        dialog->open();
+        DailymotionDownloadDialog dialog(this);
+        dialog.list(id);
+
+        if (dialog.exec() == QDialog::Accepted) {
+            Transfers::instance()->addDownloadTransfer(Resources::DAILYMOTION, id, dialog.streamId(),
+                                                       QUrl(), title, dialog.category(),
+                                                       dialog.subtitlesLanguage(), dialog.customCommand(),
+                                                       dialog.customCommandOverrideEnabled());
+        }
     }
 }
 
@@ -136,19 +147,20 @@ void DailymotionVideosWindow::playVideo(const QModelIndex &index) {
         return;
     }
     
-    if (Settings::instance()->videoPlayer() == "cutetube") {
+    if (Settings::videoPlayer() == "cutetube") {
         if (DailymotionVideo *video = m_model->get(index.row())) {
             VideoPlaybackWindow *window = new VideoPlaybackWindow(this);
             window->show();
             window->addVideo(video);
         }
     }
-    else {
-        QString id = index.data(DailymotionVideoModel::IdRole).toString();
-        QString title = index.data(DailymotionVideoModel::TitleRole).toString();
-    
-        DailymotionPlaybackDialog *dialog = new DailymotionPlaybackDialog(id, title, this);
-        dialog->open();
+    else {    
+        DailymotionPlaybackDialog dialog(this);
+        dialog.list(index.data(DailymotionVideoModel::IdRole).toString());
+
+        if ((dialog.exec() == QDialog::Accepted) && (!VideoLauncher::playVideo(dialog.streamUrl()))) {
+            QMessageBox::critical(this, tr("Error"), tr("Unable to play video"));
+        }
     }
 }
 
@@ -172,7 +184,7 @@ void DailymotionVideosWindow::setVideoFavourite() {
 
 void DailymotionVideosWindow::shareVideo() {
     if (const DailymotionVideo *video = m_model->get(m_view->currentIndex().row())) {
-        Clipboard::instance()->setText(video->url().toString());
+        Clipboard::setText(video->url().toString());
         QMaemo5InformationBox::information(this, tr("URL copied to clipboard"));
     }
 }

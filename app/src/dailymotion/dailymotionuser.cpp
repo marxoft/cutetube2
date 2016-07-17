@@ -1,25 +1,22 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "dailymotionuser.h"
 #include "dailymotion.h"
 #include "resources.h"
-#ifdef CUTETUBE_DEBUG
-#include <QDebug>
-#endif
 
 DailymotionUser::DailymotionUser(QObject *parent) :
     CTUser(parent),
@@ -186,9 +183,6 @@ void DailymotionUser::checkIfSubscribed() {
     }
     
     if (!Dailymotion::subscriptionCache.hasMore) {
-#ifdef CUTETUBE_DEBUG
-        qDebug() << "DailymotionUser::checkIfSubscribed" << id() << "not found";
-#endif
         setSubscribed(false);
         return;
     }
@@ -226,10 +220,10 @@ void DailymotionUser::unsubscribe() {
 void DailymotionUser::initRequest() {
     if (!m_request) {
         m_request = new QDailymotion::ResourcesRequest(this);
-        m_request->setClientId(Dailymotion::instance()->clientId());
-        m_request->setClientSecret(Dailymotion::instance()->clientSecret());
-        m_request->setAccessToken(Dailymotion::instance()->accessToken());
-        m_request->setRefreshToken(Dailymotion::instance()->refreshToken());
+        m_request->setClientId(Dailymotion::clientId());
+        m_request->setClientSecret(Dailymotion::clientSecret());
+        m_request->setAccessToken(Dailymotion::accessToken());
+        m_request->setRefreshToken(Dailymotion::refreshToken());
     
         connect(m_request, SIGNAL(accessTokenChanged(QString)), Dailymotion::instance(), SLOT(setAccessToken(QString)));
         connect(m_request, SIGNAL(refreshTokenChanged(QString)), Dailymotion::instance(), SLOT(setRefreshToken(QString)));
@@ -247,20 +241,18 @@ void DailymotionUser::onUserRequestFinished() {
 
 void DailymotionUser::onSubscribeCheckRequestFinished() {
     if (m_request->status() == QDailymotion::ResourcesRequest::Ready) {
-        QVariantMap result = m_request->result().toMap();
-        QVariantList list = result.value("list").toList();
+        const QVariantMap result = m_request->result().toMap();
+        const QVariantList list = result.value("list").toList();
         Dailymotion::subscriptionCache.hasMore = result.value("has_more").toBool();
         
         const int page = Dailymotion::subscriptionCache.filters.value("page").toInt();
         Dailymotion::subscriptionCache.filters["page"] = (page > 0 ? page + 1 : 2);
         
-        foreach (QVariant item, list) {
-            QVariantMap map = item.toMap();
+        foreach (const QVariant &item, list) {
+            const QVariantMap map = item.toMap();
             Dailymotion::subscriptionCache.ids.append(map.value("id").toString());
         }
-#ifdef CUTETUBE_DEBUG
-        qDebug() << "DailymotionUser::onSubscribeCheckRequestFinished OK" << Dailymotion::subscriptionCache.ids;
-#endif
+        
         disconnect(m_request, SIGNAL(finished()), this, SLOT(onUserRequestFinished()));
         emit statusChanged(status());
         checkIfSubscribed();
@@ -277,9 +269,6 @@ void DailymotionUser::onSubscribeRequestFinished() {
         setSubscriberCount(subscriberCount() + 1);
         Dailymotion::subscriptionCache.ids.append(id());
         emit Dailymotion::instance()->userSubscribed(this);
-#ifdef CUTETUBE_DEBUG
-        qDebug() << "DailymotionUser::onSubscribeRequestFinished OK" << id();
-#endif
     }
     
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onSubscribeRequestFinished()));
@@ -292,9 +281,6 @@ void DailymotionUser::onUnsubscribeRequestFinished() {
         setSubscriberCount(subscriberCount() - 1);
         Dailymotion::subscriptionCache.ids.removeOne(id());
         emit Dailymotion::instance()->userUnsubscribed(this);
-#ifdef CUTETUBE_DEBUG
-        qDebug() << "DailymotionUser::onUnsubscribeRequestFinished OK" << id();
-#endif
     }
     
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onUnsubscribeRequestFinished()));

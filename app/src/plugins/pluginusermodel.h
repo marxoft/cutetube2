@@ -1,25 +1,24 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef PLUGINUSERMODEL_H
 #define PLUGINUSERMODEL_H
 
-#include "resourcesrequest.h"
-#include "pluginuser.h"
 #include <QAbstractListModel>
+#include "pluginuser.h"
 
 class PluginUserModel : public QAbstractListModel
 {
@@ -42,11 +41,11 @@ public:
     };
     
     explicit PluginUserModel(QObject *parent = 0);
+
+    QString errorString() const;
     
     QString service() const;
-    void setService(const QString &service);
-    
-    QString errorString() const;
+    void setService(const QString &s);    
     
     ResourcesRequest::Status status() const;
     
@@ -66,31 +65,33 @@ public:
     
     Q_INVOKABLE PluginUser* get(int row) const;
     
-    Q_INVOKABLE void list(const QString &id = QString());
+    Q_INVOKABLE void list(const QString &resourceId);
     Q_INVOKABLE void search(const QString &query, const QString &order);
 
 public Q_SLOTS:
     void clear();
     void cancel();
-    void reload();
-    
-private:    
-    void append(PluginUser *user);
-    void insert(int row, PluginUser *user);
-    void remove(int row);
-    
+    void reload();    
+
 private Q_SLOTS:
     void onRequestFinished();
     
 Q_SIGNALS:
-    void countChanged(int c);
+    void countChanged(int count);
     void serviceChanged();
-    void statusChanged(ResourcesRequest::Status s);
+    void statusChanged(ResourcesRequest::Status status);
     
 private:
+    void append(PluginUser *user);
+    void insert(int row, PluginUser *user);
+    void remove(int row);
+
+    ResourcesRequest* request();
+    
     ResourcesRequest *m_request;
     
-    QString m_id;
+    QString m_resourceId;
+    QString m_service;
     QString m_query;
     QString m_order;
     QString m_next;

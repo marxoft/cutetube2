@@ -1,0 +1,6 @@
+6efbf80b53cde8e3d8755dffeebd65f2  opt/cutetube2/bin/cutetube2
+df657173ce060e08748b9220478d06cc  usr/share/applications/hildon/cutetube2.desktop
+439ef10d64dfa8393ad87bbd19f64cc4  usr/share/dbus-1/interfaces/org.marxoft.cutetube2.xml
+96b519aa935408e95bb8c2a58ea3e546  usr/share/dbus-1/services/org.marxoft.cutetube2.service
+099bd87aa75649e40f7190c1b87ab770  usr/share/doc/cutetube2/changelog.gz
+ebf7b244d4307c28f482646183b88e0b  usr/share/icons/hicolor/64x64/apps/cutetube2.png

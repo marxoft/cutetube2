@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -97,8 +97,18 @@ void PluginView::showPlaylists(const QString &name, const QString &id) {
 }
 
 void PluginView::showSearchDialog() {
-    PluginSearchDialog *dialog = new PluginSearchDialog(m_model->service(), StackedWindow::currentWindow());
-    dialog->open();
+    PluginSearchDialog dialog(m_model->service(), StackedWindow::currentWindow());
+
+    if (dialog.exec() == QDialog::Accepted) {
+        const QVariantMap resource = Resources::getResourceFromUrl(dialog.query());
+        
+        if (resource.value("service") == m_model->service()) {
+            showResource(resource.value("type").toString(), resource.value("id").toString());
+        }
+        else {
+            search(dialog.query(), dialog.type(), dialog.order());
+        }
+    }
 }
 
 void PluginView::showUsers(const QString &name, const QString &id) {
@@ -116,7 +126,7 @@ void PluginView::showVideos(const QString &name, const QString &id) {
 }
 
 void PluginView::onItemActivated(const QModelIndex &index) {
-    QVariantMap type = index.data(PluginNavModel::ValueRole).toMap();
+    const QVariantMap type = index.data(PluginNavModel::ValueRole).toMap();
     
     if (type.isEmpty()) {
         showSearchDialog();

@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -75,9 +75,9 @@ void YouTubeView::search(const QString &query, const QString &type, const QStrin
     params["q"] = query;
     params["order"] = order;
     params["maxResults"] = MAX_RESULTS;
-    params["safeSearch"] = Settings::instance()->safeSearchEnabled() ? "strict" : "none";
+    params["safeSearch"] = Settings::safeSearchEnabled() ? "strict" : "none";
     
-    QString locale = Settings::instance()->locale();
+    QString locale = Settings::locale();
     params["regionCode"] = locale.mid(locale.indexOf('_') + 1);
     params["relevanceLanguage"] = locale.left(locale.indexOf('_'));
     
@@ -126,7 +126,7 @@ void YouTubeView::showAccounts() {
 
 void YouTubeView::showCategories() {
     QVariantMap filters;
-    QString locale = Settings::instance()->locale();
+    QString locale = Settings::locale();
     filters["regionCode"] = locale.mid(locale.indexOf('_') + 1);
     
     QVariantMap params;
@@ -139,7 +139,7 @@ void YouTubeView::showCategories() {
 }
 
 void YouTubeView::showFavourites() {
-    QString playlistId = YouTube::instance()->relatedPlaylist("favorites");
+    const QString playlistId = YouTube::relatedPlaylist("favorites");
     
     if (playlistId.isEmpty()) {
         QMaemo5InformationBox::information(this, tr("This channel does not have any favourites"));
@@ -172,7 +172,7 @@ void YouTubeView::showLatestVideos() {
 }
 
 void YouTubeView::showLikes() {
-    QString playlistId = YouTube::instance()->relatedPlaylist("likes");
+    const QString playlistId = YouTube::relatedPlaylist("likes");
     
     if (playlistId.isEmpty()) {
         QMaemo5InformationBox::information(this, tr("This channel does not have any likes"));
@@ -205,8 +205,18 @@ void YouTubeView::showPlaylists() {
 }
 
 void YouTubeView::showSearchDialog() {
-    YouTubeSearchDialog *dialog = new YouTubeSearchDialog(StackedWindow::currentWindow());
-    dialog->open();
+    YouTubeSearchDialog dialog(StackedWindow::currentWindow());
+
+    if (dialog.exec() == QDialog::Accepted) {
+        const QVariantMap resource = Resources::getResourceFromUrl(dialog.query());
+        
+        if (resource.value("service") == Resources::YOUTUBE) {
+            showResource(resource.value("type").toString(), resource.value("id").toString());
+        }
+        else {
+            search(dialog.query(), dialog.type(), dialog.order());
+        }
+    }
 }
 
 void YouTubeView::showSubscriptions() {
@@ -224,7 +234,7 @@ void YouTubeView::showSubscriptions() {
 }
 
 void YouTubeView::showUploads() {
-    QString playlistId = YouTube::instance()->relatedPlaylist("uploads");
+    const QString playlistId = YouTube::relatedPlaylist("uploads");
     
     if (playlistId.isEmpty()) {
         QMaemo5InformationBox::information(this, tr("This channel does not have any videos"));
@@ -244,7 +254,7 @@ void YouTubeView::showUploads() {
 }
 
 void YouTubeView::showWatchHistory() {
-    QString playlistId = YouTube::instance()->relatedPlaylist("watchHistory");
+    const QString playlistId = YouTube::relatedPlaylist("watchHistory");
     
     if (playlistId.isEmpty()) {
         QMaemo5InformationBox::information(this, tr("This channel does not have any watch history"));
@@ -264,7 +274,7 @@ void YouTubeView::showWatchHistory() {
 }
 
 void YouTubeView::showWatchLater() {
-    QString playlistId = YouTube::instance()->relatedPlaylist("watchLater");
+    const QString playlistId = YouTube::relatedPlaylist("watchLater");
     
     if (playlistId.isEmpty()) {
         QMaemo5InformationBox::information(this, tr("This channel does not have any watch later playlist"));

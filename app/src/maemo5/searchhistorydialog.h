@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -30,24 +30,29 @@ class QModelIndex;
 class SearchHistoryDialog : public Dialog
 {
     Q_OBJECT
+
+    Q_PROPERTY(QString query READ query)
     
 public:
     explicit SearchHistoryDialog(QWidget *parent = 0);
-    
+
+    QString query() const;
+
+public Q_SLOTS:
+    virtual void accept();
+
 protected:
-    void keyPressEvent(QKeyEvent *e);
+    virtual void keyPressEvent(QKeyEvent *e);
     
 private Q_SLOTS:
-    void chooseSearch(const QModelIndex &index);
     void removeSearch();
     
     void onCountChanged(int count);
     void onFilterTextChanged(const QString &text);
     
-Q_SIGNALS:
-    void searchChosen(const QString &query);
-    
 private:
+    void setQuery(const QString &query);
+    
     SearchHistoryModel *m_model;
     
     ListView *m_view;
@@ -56,6 +61,8 @@ private:
     QDialogButtonBox *m_buttonBox;
     QPushButton *m_clearButton;
     QHBoxLayout *m_layout;
+
+    QString m_query;
 };
     
 #endif // SEARCHHISTORYDIALOG_H

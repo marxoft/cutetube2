@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -53,7 +53,7 @@ QHash<int, QByteArray> YouTubeAccountModel::roleNames() const {
 
 QVariant YouTubeAccountModel::data(const QModelIndex &idx, int role) const {
     if (role == ActiveRole) {
-        return YouTube::instance()->userId() == data(idx, UserIdRole);
+        return YouTube::userId() == data(idx, UserIdRole);
     }
     
     if (role >= UserIdRole) {
@@ -98,7 +98,7 @@ bool YouTubeAccountModel::addAccount(const QString &userId, const QString &usern
     record.append(scopesField);
     
     if (insertRecord(-1, record)) {
-        YouTube::instance()->setUserId(userId);
+        YouTube::setUserId(userId);
         const int count = rowCount();
         emit dataChanged(index(0, 0), index(count - 1, columnCount() - 1));
         emit countChanged(count);
@@ -112,12 +112,12 @@ bool YouTubeAccountModel::removeAccount(int row) {
     QString userId = data(index(row, 0)).toString();
     
     if (removeRows(row, 1)) {
-        if (userId == YouTube::instance()->userId()) {
+        if (userId == YouTube::userId()) {
             if (rowCount() > 0) {
                 selectAccount(0);
             }
             else {
-                YouTube::instance()->setUserId(QString());
+                YouTube::setUserId(QString());
             }
         }
         
@@ -132,7 +132,7 @@ bool YouTubeAccountModel::selectAccount(int row) {
     QString userId = data(index(row, 0)).toString();
     
     if (!userId.isEmpty()) {
-        YouTube::instance()->setUserId(userId);
+        YouTube::setUserId(userId);
         emit dataChanged(index(0, 0), index(rowCount() - 1, columnCount() - 1));
         return true;
     }

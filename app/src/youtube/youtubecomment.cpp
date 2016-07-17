@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -18,9 +18,6 @@
 #include "youtube.h"
 #include "resources.h"
 #include <QDateTime>
-#ifdef CUTETUBE_DEBUG
-#include <QDebug>
-#endif
 
 YouTubeComment::YouTubeComment(QObject *parent) :
     CTComment(parent),
@@ -87,7 +84,7 @@ void YouTubeComment::loadComment(const QString &id) {
 }
 
 void YouTubeComment::loadComment(const QVariantMap &comment) {
-    QVariantMap snippet = comment.value("snippet").toMap();
+    const QVariantMap snippet = comment.value("snippet").toMap();
     setBody(QString::fromUtf8(snippet.value("textDisplay").toString().toUtf8().replace("\ufeff", "").simplified()));
     setDate(QDateTime::fromString(snippet.value("publishedAt").toString(), Qt::ISODate).toString("dd MMM yyyy"));
     setId(comment.value("id").toString());
@@ -118,7 +115,7 @@ void YouTubeComment::addComment() {
         QVariantMap topLevelSnippet;
         topLevelSnippet["textOriginal"] = body();
         topLevelComment["snippet"] = topLevelSnippet;
-        snippet["channelId"] = YouTube::instance()->userId();
+        snippet["channelId"] = YouTube::userId();
         snippet["topLevelComment"] = topLevelComment;
         
         if (!videoId().isEmpty()) {
@@ -147,11 +144,11 @@ void YouTubeComment::addComment(const QVariantMap &comment) {
 void YouTubeComment::initRequest() {
     if (!m_request) {
         m_request = new QYouTube::ResourcesRequest(this);
-        m_request->setApiKey(YouTube::instance()->apiKey());
-        m_request->setClientId(YouTube::instance()->clientId());
-        m_request->setClientSecret(YouTube::instance()->clientSecret());
-        m_request->setAccessToken(YouTube::instance()->accessToken());
-        m_request->setRefreshToken(YouTube::instance()->refreshToken());
+        m_request->setApiKey(YouTube::apiKey());
+        m_request->setClientId(YouTube::clientId());
+        m_request->setClientSecret(YouTube::clientSecret());
+        m_request->setAccessToken(YouTube::accessToken());
+        m_request->setRefreshToken(YouTube::refreshToken());
     
         connect(m_request, SIGNAL(accessTokenChanged(QString)), YouTube::instance(), SLOT(setAccessToken(QString)));
         connect(m_request, SIGNAL(refreshTokenChanged(QString)), YouTube::instance(), SLOT(setRefreshToken(QString)));
@@ -169,7 +166,7 @@ void YouTubeComment::onCommentRequestFinished() {
 
 void YouTubeComment::onAddCommentRequestFinished() {
     if (m_request->status() == QYouTube::ResourcesRequest::Ready) {
-        QVariantMap result = m_request->result().toMap();
+        const QVariantMap result = m_request->result().toMap();
         
         if (result.value("kind") == "youtube#commentThread") {
             loadComment(result.value("snippet").toMap().value("topLevelComment").toMap());
@@ -179,9 +176,6 @@ void YouTubeComment::onAddCommentRequestFinished() {
         }
         
         emit YouTube::instance()->commentAdded(this);
-#ifdef CUTETUBE_DEBUG
-        qDebug() << "YouTubeComment::onAddCommentRequestFinished OK" << id() << parentId() << videoId();
-#endif
     }
     
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onAddCommentRequestFinished()));

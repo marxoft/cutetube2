@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -78,7 +78,7 @@ YouTubeUserWindow::YouTubeUserWindow(const YouTubeUser *user, StackedWindow *par
             this, SLOT(onUserUpdateStatusChanged(QYouTube::ResourcesRequest::Status)));
     connect(m_user, SIGNAL(subscribedChanged()), this, SLOT(onUserSubscribedChanged()));
     
-    if ((!m_user->isSubscribed()) && (!YouTube::instance()->userId().isEmpty())) {
+    if ((!m_user->isSubscribed()) && (!YouTube::userId().isEmpty())) {
         m_user->checkIfSubscribed();
     }
 }
@@ -122,10 +122,10 @@ void YouTubeUserWindow::loadBaseUi() {
 }
 
 void YouTubeUserWindow::loadUserUi() {
-    m_subscribeButton->setEnabled((!YouTube::instance()->userId().isEmpty())
-                                  && (m_user->id() != YouTube::instance()->userId())
-                                  && ((YouTube::instance()->hasScope(QYouTube::READ_WRITE_SCOPE))
-                                  || (YouTube::instance()->hasScope(QYouTube::FORCE_SSL_SCOPE))));
+    m_subscribeButton->setEnabled((!YouTube::userId().isEmpty())
+                                  && (m_user->id() != YouTube::userId())
+                                  && ((YouTube::hasScope(QYouTube::READ_WRITE_SCOPE))
+                                  || (YouTube::hasScope(QYouTube::FORCE_SSL_SCOPE))));
     m_subscribeButton->setText(m_user->isSubscribed() ? tr("Unsubscribe") : tr("Subscribe"));
     m_titleLabel->setText(m_titleLabel->fontMetrics().elidedText(m_user->username(), Qt::ElideRight, 250));
     m_statsLabel->setText(tr("%1 %2\n%3 %4").arg(Utils::formatLargeNumber(m_user->subscriberCount()))
@@ -201,7 +201,7 @@ void YouTubeUserWindow::showUploads() {
 }
 
 void YouTubeUserWindow::showResource(const QUrl &url) {
-    QVariantMap resource = Resources::getResourceFromUrl(url.toString());
+    const QVariantMap resource = Resources::getResourceFromUrl(url.toString());
     
     if (resource.value("service") != Resources::YOUTUBE) {
         QDesktopServices::openUrl(url);
@@ -280,7 +280,7 @@ void YouTubeUserWindow::onUserStatusChanged(QYouTube::ResourcesRequest::Status s
             this, SLOT(onUserUpdateStatusChanged(QYouTube::ResourcesRequest::Status)));
     connect(m_user, SIGNAL(subscribedChanged()), this, SLOT(onUserSubscribedChanged())); 
     
-    if ((!m_user->isSubscribed()) && (!YouTube::instance()->userId().isEmpty())) {
+    if ((!m_user->isSubscribed()) && (!YouTube::userId().isEmpty())) {
         m_user->checkIfSubscribed();
     }
 }

@@ -1,0 +1,73 @@
+{
+    "type": "qt",
+    "name": "XHamster",
+    "version": 1,
+    "resources": [
+        {
+            "type": "video",
+            "method": "get",
+            "regExp": "http://xhamster\\.com/movies/\\d+/[\\w-_]+"
+        },
+        
+        {
+            "type": "stream",
+            "method": "list"
+        },
+
+        {
+            "type": "category",
+            "method": "list",
+            "label": "Categories",
+            "id": "http://xhamster.com/channels.php"
+        },
+
+        {
+            "type": "video",
+            "method": "list",
+            "label": "Most recent videos",
+            "id": "http://xhamster.com/new/1.html"
+        },
+
+        {
+            "type": "video",
+            "method": "list",
+            "label": "Top rated videos",
+            "id": "http://xhamster.com/rankings/weekly-top-videos.html"
+        },
+
+        {
+            "type": "video",
+            "method": "search",
+            "label": "Videos (relevance)",
+            "order": "rl"
+        },
+
+        {
+            "type": "video",
+            "method": "search",
+            "label": "Videos (date)",
+            "order": "da"
+        },
+
+        {
+            "type": "video",
+            "method": "search",
+            "label": "Videos (views)",
+            "order": "vc"
+        },
+
+        {
+            "type": "video",
+            "method": "search",
+            "label": "Videos (rating)",
+            "order": "rt"
+        },
+
+        {
+            "type": "video",
+            "method": "search",
+            "label": "Videos (duration)",
+            "order": "dr"
+        }        
+    ]
+}

@@ -1,9 +1,7 @@
 TEMPLATE = app
 TARGET = cutetube2
 
-#DEFINES += CUTETUBE_DEBUG
-
-QT += network sql xml
+QT += network script sql xml
 
 INCLUDEPATH += \
     src/base \
@@ -13,30 +11,24 @@ INCLUDEPATH += \
     src/youtube
 
 HEADERS += \
-    src/base/audioconverter.h \
     src/base/categorymodel.h \
     src/base/categorynamemodel.h \
-    src/base/clipboard.h \
     src/base/comment.h \
     src/base/concurrenttransfersmodel.h \
-    src/base/database.h \
     src/base/json.h \
     src/base/localemodel.h \
+    src/base/logger.h \
     src/base/networkproxytypemodel.h \
     src/base/playlist.h \
     src/base/resources.h \
     src/base/searchhistorymodel.h \
     src/base/selectionmodel.h \
     src/base/servicemodel.h \
-    src/base/settings.h \
-    src/base/transfer.h \
     src/base/transfers.h \
     src/base/user.h \
     src/base/utils.h \
     src/base/video.h \
     src/base/videomodel.h \
-    src/base/videolauncher.h \
-    src/base/videoplayermodel.h \
     src/dailymotion/dailymotion.h \
     src/dailymotion/dailymotionaccountmodel.h \
     src/dailymotion/dailymotioncategorymodel.h \
@@ -53,16 +45,19 @@ HEADERS += \
     src/dailymotion/dailymotionusermodel.h \
     src/dailymotion/dailymotionvideo.h \
     src/dailymotion/dailymotionvideomodel.h \
+    src/plugins/javascriptresourcesrequest.h \
+    src/plugins/javascriptresourcesrequestglobalobject.h \
+    src/plugins/javascriptserviceplugin.h \
     src/plugins/plugincategorymodel.h \
     src/plugins/plugincomment.h \
     src/plugins/plugincommentmodel.h \
+    src/plugins/pluginconfigmodel.h \
+    src/plugins/pluginmanager.h \
     src/plugins/pluginnavmodel.h \
     src/plugins/pluginplaylist.h \
     src/plugins/pluginplaylistmodel.h \
-    src/plugins/pluginsettingsmodel.h \
-    src/plugins/resourcesplugins.h \
-    src/plugins/resourcesrequest.h \
     src/plugins/pluginsearchtypemodel.h \
+    src/plugins/pluginsettings.h \
     src/plugins/pluginstreammodel.h \
     src/plugins/pluginsubtitlemodel.h \
     src/plugins/plugintransfer.h \
@@ -70,6 +65,10 @@ HEADERS += \
     src/plugins/pluginusermodel.h \
     src/plugins/pluginvideo.h \
     src/plugins/pluginvideomodel.h \
+    src/plugins/resourcesrequest.h \
+    src/plugins/serviceplugin.h \
+    src/plugins/servicepluginconfig.h \
+    src/plugins/xmlhttprequest.h \
     src/vimeo/vimeo.h \
     src/vimeo/vimeoaccountmodel.h \
     src/vimeo/vimeocategorymodel.h \
@@ -104,23 +103,19 @@ HEADERS += \
     src/youtube/youtubevideomodel.h
     
 SOURCES += \
-    src/base/audioconverter.cpp \
     src/base/categorymodel.cpp \
-    src/base/clipboard.cpp \
     src/base/comment.cpp \
     src/base/json.cpp \
+    src/base/logger.cpp \
     src/base/playlist.cpp \
     src/base/resources.cpp \
     src/base/searchhistorymodel.cpp \
     src/base/selectionmodel.cpp \
-    src/base/settings.cpp \
-    src/base/transfer.cpp \
     src/base/transfers.cpp \
     src/base/user.cpp \
     src/base/utils.cpp \
     src/base/video.cpp \
     src/base/videomodel.cpp \
-    src/base/videolauncher.cpp \
     src/dailymotion/dailymotion.cpp \
     src/dailymotion/dailymotionaccountmodel.cpp \
     src/dailymotion/dailymotioncategorymodel.cpp \
@@ -136,13 +131,17 @@ SOURCES += \
     src/dailymotion/dailymotiontransfer.cpp \
     src/dailymotion/dailymotionvideo.cpp \
     src/dailymotion/dailymotionvideomodel.cpp \
+    src/plugins/javascriptresourcesrequest.cpp \
+    src/plugins/javascriptresourcesrequestglobalobject.cpp \
+    src/plugins/javascriptserviceplugin.cpp \
     src/plugins/plugincategorymodel.cpp \
     src/plugins/plugincomment.cpp \
     src/plugins/plugincommentmodel.cpp \
+    src/plugins/pluginconfigmodel.cpp \
+    src/plugins/pluginmanager.cpp \
     src/plugins/pluginplaylist.cpp \
     src/plugins/pluginplaylistmodel.cpp \
-    src/plugins/resourcesplugins.cpp \
-    src/plugins/resourcesrequest.cpp \
+    src/plugins/pluginsettings.cpp \
     src/plugins/pluginstreammodel.cpp \
     src/plugins/pluginsubtitlemodel.cpp \
     src/plugins/plugintransfer.cpp \
@@ -150,6 +149,8 @@ SOURCES += \
     src/plugins/pluginuser.cpp \
     src/plugins/pluginvideomodel.cpp \
     src/plugins/pluginvideo.cpp \
+    src/plugins/servicepluginconfig.cpp \
+    src/plugins/xmlhttprequest.cpp \
     src/vimeo/vimeo.cpp \
     src/vimeo/vimeoaccountmodel.cpp \
     src/vimeo/vimeocategorymodel.cpp \
@@ -204,7 +205,10 @@ maemo5 {
         src/maemo5/accountdelegate.h \
         src/maemo5/banner.h \
         src/maemo5/categoriesdialog.h \
+        src/maemo5/clipboard.h \
         src/maemo5/commentdelegate.h \
+        src/maemo5/customcommanddialog.h \
+        src/maemo5/database.h \
         src/maemo5/definitions.h \
         src/maemo5/dialog.h \
         src/maemo5/drawing.h \
@@ -218,21 +222,26 @@ maemo5 {
         src/maemo5/newcategorydialog.h \
         src/maemo5/playlistdelegate.h \
         src/maemo5/playlistthumbnail.h \
+        src/maemo5/pluginsettingsdialog.h \
         src/maemo5/qwebviewselectionsuppressor.h \
         src/maemo5/screensaver.h \
         src/maemo5/searchhistorydialog.h \
+        src/maemo5/settings.h \
         src/maemo5/settingsdialog.h \
         src/maemo5/stackedwindow.h \
         src/maemo5/textbrowser.h \
+        src/maemo5/transfer.h \
         src/maemo5/transferswindow.h \
         src/maemo5/userdelegate.h \
         src/maemo5/valueselector.h \
         src/maemo5/valueselectoraction.h \
         src/maemo5/videocontrols.h \
         src/maemo5/videodelegate.h \
+        src/maemo5/videolauncher.h \
         src/maemo5/videoplaybackdelegate.h \
         src/maemo5/videoplaybackwindow.h \
         src/maemo5/videoplayerbutton.h \
+        src/maemo5/videoplayermodel.h \
         src/maemo5/videothumbnail.h \
         src/maemo5/videowidget.h \
         src/maemo5/webview.h \
@@ -257,12 +266,6 @@ maemo5 {
         src/maemo5/plugins/pluginplaylistswindow.h \
         src/maemo5/plugins/pluginplaylistwindow.h \
         src/maemo5/plugins/pluginsearchdialog.h \
-        src/maemo5/plugins/pluginsettingscheckbox.h \
-        src/maemo5/plugins/pluginsettingsdialog.h \
-        src/maemo5/plugins/pluginsettingslineedit.h \
-        src/maemo5/plugins/pluginsettingsselector.h \
-        src/maemo5/plugins/pluginsettingsslider.h \
-        src/maemo5/plugins/pluginsettingsspinbox.h \
         src/maemo5/plugins/pluginuserswindow.h \
         src/maemo5/plugins/pluginuserwindow.h \
         src/maemo5/plugins/pluginvideoswindow.h \
@@ -305,7 +308,9 @@ maemo5 {
         src/maemo5/accountdelegate.cpp \
         src/maemo5/banner.cpp \
         src/maemo5/categoriesdialog.cpp \
+        src/maemo5/clipboard.cpp \
         src/maemo5/commentdelegate.cpp \
+        src/maemo5/customcommanddialog.cpp \
         src/maemo5/dialog.cpp \
         src/maemo5/filterbox.cpp \
         src/maemo5/image.cpp \
@@ -318,17 +323,21 @@ maemo5 {
         src/maemo5/newcategorydialog.cpp \
         src/maemo5/playlistdelegate.cpp \
         src/maemo5/playlistthumbnail.cpp \
+        src/maemo5/pluginsettingsdialog.cpp \
         src/maemo5/screensaver.cpp \
         src/maemo5/searchhistorydialog.cpp \
+        src/maemo5/settings.cpp \
         src/maemo5/settingsdialog.cpp \
         src/maemo5/stackedwindow.cpp \
         src/maemo5/textbrowser.cpp \
+        src/maemo5/transfer.cpp \
         src/maemo5/transferswindow.cpp \
         src/maemo5/userdelegate.cpp \
         src/maemo5/valueselector.cpp \
         src/maemo5/valueselectoraction.cpp \
         src/maemo5/videocontrols.cpp \
         src/maemo5/videodelegate.cpp \
+        src/maemo5/videolauncher.cpp \
         src/maemo5/videoplaybackdelegate.cpp \
         src/maemo5/videoplaybackwindow.cpp \
         src/maemo5/videoplayerbutton.cpp \
@@ -356,12 +365,6 @@ maemo5 {
         src/maemo5/plugins/pluginplaylistswindow.cpp \
         src/maemo5/plugins/pluginplaylistwindow.cpp \
         src/maemo5/plugins/pluginsearchdialog.cpp \
-        src/maemo5/plugins/pluginsettingscheckbox.cpp \
-        src/maemo5/plugins/pluginsettingsdialog.cpp \
-        src/maemo5/plugins/pluginsettingslineedit.cpp \
-        src/maemo5/plugins/pluginsettingsselector.cpp \
-        src/maemo5/plugins/pluginsettingsslider.cpp \
-        src/maemo5/plugins/pluginsettingsspinbox.cpp \
         src/maemo5/plugins/pluginuserswindow.cpp \
         src/maemo5/plugins/pluginuserwindow.cpp \
         src/maemo5/plugins/pluginvideoswindow.cpp \
@@ -397,233 +400,17 @@ maemo5 {
         src/maemo5/youtube/youtubevideoswindow.cpp \
         src/maemo5/youtube/youtubevideowindow.cpp \
         src/maemo5/youtube/youtubeview.cpp
-        
+    
+    target.path = /opt/cutetube2/bin
+    
     desktop.files = desktop/maemo5/cutetube2.desktop
     desktop.path = /usr/share/applications/hildon
     
     icon.files = desktop/maemo5/64/cutetube2.png
     icon.path = /usr/share/icons/hicolor/64x64/apps
     
-    INSTALLS += desktop icon
+    INSTALLS += target desktop icon
     
-} else:contains(MEEGO_EDITION,harmattan) {
-    LIBS += -L../../qdailymotion/lib -lqdailymotion
-    LIBS += -L../../qvimeo/lib -lqvimeo
-    LIBS += -L../../qyoutube/lib -lqyoutube
-    
-    QT += declarative opengl
-    CONFIG += \
-        link_pkgconfig \
-        qdeclarative-boostable \
-        libtuiclient \
-        libcontentaction \
-        shareuiinterface-maemo-meegotouch \
-        share-ui-common \
-        mdatauri \
-        qmsystem2
-    
-    INCLUDEPATH += \
-        src/harmattan
-    
-    HEADERS += \
-        src/harmattan/activecolormodel.h \
-        src/harmattan/cookiejar.h \
-        src/harmattan/definitions.h \
-        src/harmattan/maskeditem.h \
-        src/harmattan/maskeffect.h \
-        src/harmattan/networkaccessmanagerfactory.h \
-        src/harmattan/screenorientationmodel.h \
-        src/harmattan/screensaver.h \
-        src/harmattan/shareui.h
-        
-    SOURCES += \
-        src/harmattan/cookiejar.cpp \
-        src/harmattan/main.cpp \
-        src/harmattan/maskeditem.cpp \
-        src/harmattan/maskeffect.cpp \
-        src/harmattan/networkaccessmanagerfactory.cpp \
-        src/harmattan/screensaver.cpp \
-        src/harmattan/shareui.cpp
-
-    base_qml.files = $$files(src/harmattan/qml/*.qml)
-    base_qml.path = /opt/cutetube2/qml
-
-    dailymotion_qml.files = $$files(src/harmattan/qml/dailymotion/*.qml)
-    dailymotion_qml.path = /opt/cutetube2/qml/dailymotion
-
-    plugins_qml.files = $$files(src/harmattan/qml/plugins/*.qml)
-    plugins_qml.path = /opt/cutetube2/qml/plugins
-
-    vimeo_qml.files = $$files(src/harmattan/qml/vimeo/*.qml)
-    vimeo_qml.path = /opt/cutetube2/qml/vimeo
-
-    youtube_qml.files = $$files(src/harmattan/qml/youtube/*.qml)
-    youtube_qml.path = /opt/cutetube2/qml/youtube
-
-    images.files = $$files(src/harmattan/qml/images/*.*)
-    images.path = /opt/cutetube2/qml/images
-
-    desktop.files = desktop/harmattan/cutetube2.desktop
-    desktop.path = /usr/share/applications
-
-    icon.files = desktop/harmattan/80/cutetube2.png
-    icon.path = /usr/share/icons/hicolor/80x80/apps
-
-    contentaction.files = desktop/harmattan/cutetube2.xml
-    contentaction.path = /usr/share/contentaction
-
-    splash.files = desktop/harmattan/splash/*.png
-    splash.path = /opt/cutetube2/splash
-
-    INSTALLS += \
-        base_qml \
-        dailymotion_qml \
-        plugins_qml \
-        vimeo_qml \
-        youtube_qml \
-        images \
-        desktop \
-        icon \
-        contentaction \
-        splash
-
-} else:symbian {
-    DEFINES += SYMBIAN_OS
-
-    TARGET.UID3 = 0xE72CBA6D
-    TARGET.CAPABILITY += NetworkServices ReadUserData WriteUserData
-    TARGET.EPOCHEAPSIZE = 0x20000 0x8000000
-    TARGET.EPOCSTACKSIZE = 0x14000
-
-    VERSION = 0.2.8
-    ICON = desktop/symbian/cutetube2.svg
-
-    MMP_RULES += "DEBUGGABLE_UDEBONLY"
-
-    LIBS += -lqdailymotion
-    LIBS += -lqvimeo
-    LIBS += -lqyoutube
-    LIBS += -L\\epoc32\\release\\armv5\\lib -lremconcoreapi
-    LIBS += -L\\epoc32\\release\\armv5\\lib -lremconinterfacebase
-
-    QT += \
-        declarative \
-        script
-    
-    CONFIG += \
-        link_pkgconfig \
-        qtcomponents
-
-    INCLUDEPATH += \
-        MW_LAYER_SYSTEMINCLUDE \
-        src/symbian
-
-    HEADERS += \
-        src/base/transfermodel.h \
-        src/base/transferprioritymodel.h \
-        src/symbian/cookiejar.h \
-        src/symbian/definitions.h \
-        src/symbian/maskeditem.h \
-        src/symbian/maskeffect.h \
-        src/symbian/mediakeycaptureitem.h \
-        src/symbian/networkaccessmanagerfactory.h \
-        src/symbian/screenorientationmodel.h
-
-    SOURCES += \
-        src/base/transfermodel.cpp \
-        src/symbian/cookiejar.cpp \
-        src/symbian/main.cpp \
-        src/symbian/maskeditem.cpp \
-        src/symbian/maskeffect.cpp \
-        src/symbian/mediakeycaptureitem.cpp \
-        src/symbian/networkaccessmanagerfactory.cpp
-
-    base_qml.sources = $$files(src/symbian/qml/*.qml)
-    base_qml.path = !:/Private/e72cba6d/qml
-
-    dailymotion_qml.sources = $$files(src/symbian/qml/dailymotion/*.qml)
-    dailymotion_qml.path = !:/Private/e72cba6d/qml/dailymotion
-
-    plugins_qml.sources = $$files(src/symbian/qml/plugins/*.qml)
-    plugins_qml.path = !:/Private/e72cba6d/qml/plugins
-
-    vimeo_qml.sources = $$files(src/symbian/qml/vimeo/*.qml)
-    vimeo_qml.path = !:/Private/e72cba6d/qml/vimeo
-
-    youtube_qml.sources = $$files(src/symbian/qml/youtube/*.qml)
-    youtube_qml.path = !:/Private/e72cba6d/qml/youtube
-
-    images.sources = $$files(src/symbian/qml/images/*.*)
-    images.path = !:/Private/e72cba6d/qml/images
-
-    scripts.sources = $$files(src/symbian/qml/scripts/*.js)
-    scripts.path = !:/Private/e72cba6d/qml/scripts
-
-    vendorinfo += "%{\"Stuart Howarth\"}" ":\"Stuart Howarth\""
-    qtcomponentsdep = "; Default dependency to Qt Quick Components for Symbian library" \
-        "(0x200346DE), 1, 1, 0, {\"Qt Quick components for Symbian\"}"
-
-    cutetube2_deployment.pkg_prerules += vendorinfo qtcomponentsdep
-
-    DEPLOYMENT.display_name = cuteTube2
-
-    DEPLOYMENT += \
-        cutetube2_deployment \
-        base_qml \
-        dailymotion_qml \
-        plugins_qml \
-        vimeo_qml \
-        youtube_qml \
-        images \
-        scripts
-
-} else:unix {    
-    QT += qml quick widgets
-    
-    LIBS += -L/usr/lib -lqdailymotion -lqvimeo -lqyoutube
-    CONFIG += link_prl
-    PKGCONFIG += libqdailymotion libqvimeo libqyoutube
-    
-    INCLUDEPATH += src/desktop-qml
-    
-    HEADERS += \
-        src/base/transfermodel.h \
-        src/base/transferprioritymodel.h \
-        src/desktop-qml/cookiejar.h \
-        src/desktop-qml/definitions.h \
-        src/desktop-qml/networkaccessmanagerfactory.h
-    
-    SOURCES += \
-        src/base/transfermodel.cpp \
-        src/desktop-qml/cookiejar.cpp \
-        src/desktop-qml/main.cpp \
-        src/desktop-qml/networkaccessmanagerfactory.cpp
-    
-    base_qml.files = $$files(src/desktop-qml/qml/*.qml)
-    base_qml.path = /opt/cutetube2/qml
-    
-    dailymotion_qml.files = $$files(src/desktop-qml/qml/dailymotion/*.qml)
-    dailymotion_qml.path = /opt/cutetube2/qml/dailymotion
-    
-    plugins_qml.files = $$files(src/desktop-qml/qml/plugins/*.qml)
-    plugins_qml.path = /opt/cutetube2/qml/plugins
-    
-    vimeo_qml.files = $$files(src/desktop-qml/qml/vimeo/*.qml)
-    vimeo_qml.path = /opt/cutetube2/qml/vimeo
-    
-    youtube_qml.files = $$files(src/desktop-qml/qml/youtube/*.qml)
-    youtube_qml.path = /opt/cutetube2/qml/youtube
-    
-    images.files = $$files(src/desktop-qml/qml/images/*.*)
-    images.path = /opt/cutetube2/qml/images
-    
-    INSTALLS += \
-        base_qml \
-        dailymotion_qml \
-        plugins_qml \
-        vimeo_qml \
-        youtube_qml \
-        images
 }
 
 unix:!symbian {
@@ -639,10 +426,6 @@ unix:!symbian {
 
     dbus_interface.files = dbus/org.marxoft.cutetube2.xml
     dbus_interface.path = /usr/share/dbus-1/interfaces
-
-    target.path = /opt/cutetube2/bin
     
     INSTALLS += dbus_service dbus_interface
 }
-
-INSTALLS += target

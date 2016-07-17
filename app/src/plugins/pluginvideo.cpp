@@ -1,68 +1,68 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "pluginvideo.h"
+#include "pluginmanager.h"
 #include "resources.h"
 
 PluginVideo::PluginVideo(QObject *parent) :
     CTVideo(parent),
-    m_request(new ResourcesRequest(this))
+    m_request(0)
 {
-    connect(m_request, SIGNAL(finished()), this, SLOT(onRequestFinished()));
 }
 
 PluginVideo::PluginVideo(const QString &service, const QString &id, QObject *parent) :
     CTVideo(parent),
-    m_request(new ResourcesRequest(this))
+    m_request(0)
 {
     loadVideo(service, id);
-    connect(m_request, SIGNAL(finished()), this, SLOT(onRequestFinished()));
 }
 
 PluginVideo::PluginVideo(const QString &service, const QVariantMap &video, QObject *parent) :
     CTVideo(parent),
-    m_request(new ResourcesRequest(this))
+    m_request(0)
 {
     loadVideo(service, video);
-    connect(m_request, SIGNAL(finished()), this, SLOT(onRequestFinished()));
 }
 
 PluginVideo::PluginVideo(const PluginVideo *video, QObject *parent) :
     CTVideo(video, parent),
-    m_request(new ResourcesRequest(this))
+    m_request(0)
 {
 }
 
 QString PluginVideo::errorString() const {
-    return m_request->errorString();
+    return m_request ? m_request->errorString() : QString();
 }
 
 ResourcesRequest::Status PluginVideo::status() const {
-    return m_request->status();
+    return m_request ? m_request->status() : ResourcesRequest::Null;
 }
 
 void PluginVideo::loadVideo(const QString &service, const QString &id) {
+    setService(service);
+    
     if (status() == ResourcesRequest::Loading) {
         return;
     }
     
-    m_request->setService(service);
-    m_request->get(Resources::VIDEO, id);
-
-    emit statusChanged(status());
+    if (ResourcesRequest *r = request()) {
+        r->get(Resources::VIDEO, id);
+        emit statusChanged(status());
+    }
 }
 
 void PluginVideo::loadVideo(const QString &service, const QVariantMap &video) {
@@ -86,9 +86,21 @@ void PluginVideo::loadVideo(PluginVideo *video) {
     CTVideo::loadVideo(video);
 }
 
+ResourcesRequest* PluginVideo::request() {
+    if (!m_request) {
+        m_request = PluginManager::instance()->createRequestForService(service(), this);
+
+        if (m_request) {
+            connect(m_request, SIGNAL(finished()), this, SLOT(onRequestFinished()));
+        }
+    }
+
+    return m_request;
+} 
+
 void PluginVideo::onRequestFinished() {
     if (m_request->status() == ResourcesRequest::Ready) {
-        loadVideo(m_request->service(), m_request->result().toMap());
+        loadVideo(service(), m_request->result().toMap());
     }
     
     emit statusChanged(status());

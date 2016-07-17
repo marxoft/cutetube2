@@ -2,15 +2,15 @@
  * Copyright (C) 2014 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU Lesser General Public License,
+ * under the terms and conditions of the GNU General Public License,
  * version 3, as published by the Free Software Foundation.
  *
  * This program is distributed in the hope it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
  */
@@ -21,7 +21,7 @@
 #include "valueselector.h"
 #include <QGroupBox>
 #include <QLineEdit>
-#include <QGridLayout>
+#include <QVBoxLayout>
 #include <QScrollArea>
 #include <QLabel>
 #include <QDialogButtonBox>
@@ -38,31 +38,31 @@ NetworkProxyDialog::NetworkProxyDialog(QWidget *parent) :
     setWindowTitle(tr("Network proxy"));
     
     m_proxyTypeSelector->setModel(new NetworkProxyTypeModel(this));
-    m_proxyTypeSelector->setValue(Settings::instance()->networkProxyType());
+    m_proxyTypeSelector->setValue(Settings::networkProxyType());
 
     m_hostEdit->setMinimumWidth(380);
-    m_hostEdit->setText(Settings::instance()->networkProxyHost());
+    m_hostEdit->setText(Settings::networkProxyHost());
     m_portEdit->setValidator(new QIntValidator(0, 100000, this));
-    m_portEdit->setText(QString::number(Settings::instance()->networkProxyPort()));
+    m_portEdit->setText(QString::number(Settings::networkProxyPort()));
     m_passEdit->setEchoMode(QLineEdit::Password);
-    m_passEdit->setText(Settings::instance()->networkProxyPassword());
-    m_userEdit->setText(Settings::instance()->networkProxyUsername());
+    m_passEdit->setText(Settings::networkProxyPassword());
+    m_userEdit->setText(Settings::networkProxyUsername());
 
     QGroupBox *proxyGroup = new QGroupBox(tr("Use network proxy"), this);
     proxyGroup->setCheckable(true);
-    proxyGroup->setChecked(Settings::instance()->networkProxyEnabled());
+    proxyGroup->setChecked(Settings::networkProxyEnabled());
     
-    QGridLayout *proxyGrid = new QGridLayout(proxyGroup);
-    proxyGrid->setContentsMargins(0, 0, 0, 0);
-    proxyGrid->addWidget(m_proxyTypeSelector, 0, 0, 1, 2);
-    proxyGrid->addWidget(new QLabel(tr("Host"), this), 1, 0, 1, 1);
-    proxyGrid->addWidget(new QLabel(tr("Port"), this), 1, 1, 1, 1);
-    proxyGrid->addWidget(m_hostEdit, 2, 0, 1, 1);
-    proxyGrid->addWidget(m_portEdit, 2, 1, 1, 1);
-    proxyGrid->addWidget(new QLabel(tr("Username"), this), 3, 0, 1, 2);
-    proxyGrid->addWidget(m_userEdit, 4, 0, 1, 2);
-    proxyGrid->addWidget(new QLabel(tr("Password"), this), 5, 0, 1, 2);
-    proxyGrid->addWidget(m_passEdit, 6, 0, 1, 2);
+    QVBoxLayout *proxyLayout = new QVBoxLayout(proxyGroup);
+    proxyLayout->setContentsMargins(0, 0, 0, 0);
+    proxyLayout->addWidget(m_proxyTypeSelector);
+    proxyLayout->addWidget(new QLabel(tr("Host"), this));
+    proxyLayout->addWidget(m_hostEdit);
+    proxyLayout->addWidget(new QLabel(tr("Port"), this));
+    proxyLayout->addWidget(m_portEdit);
+    proxyLayout->addWidget(new QLabel(tr("Username"), this));
+    proxyLayout->addWidget(m_userEdit);
+    proxyLayout->addWidget(new QLabel(tr("Password"), this));
+    proxyLayout->addWidget(m_passEdit);
 
     QWidget *scrollWidget = new QWidget(this);
     QVBoxLayout *vbox = new QVBoxLayout(scrollWidget);
@@ -88,14 +88,14 @@ NetworkProxyDialog::NetworkProxyDialog(QWidget *parent) :
 }
 
 void NetworkProxyDialog::accept() {
-    Settings::instance()->setNetworkProxy();
+    Settings::setNetworkProxy();
     Dialog::accept();
 }
 
 void NetworkProxyDialog::setNetworkProxyPort(const QString &port) {
-    Settings::instance()->setNetworkProxyPort(port.toInt());
+    Settings::setNetworkProxyPort(port.toInt());
 }
 
 void NetworkProxyDialog::setNetworkProxyType(const QVariant &type) {
-    Settings::instance()->setNetworkProxyType(type.toInt());
+    Settings::setNetworkProxyType(type.toInt());
 }

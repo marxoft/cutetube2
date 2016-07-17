@@ -1,0 +1,9 @@
+<node>
+    <interface name="org.marxoft.cutetube2">
+    <method name="showResource">
+        <arg name="url" type="s" direction="in" />
+    </method>
+    <method name="showResource">
+        <arg name="url" type="as" direction="in" />
+    </method>
+</node>

@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -18,9 +18,6 @@
 #include "vimeo.h"
 #include <qvimeo/resourcesrequest.h>
 #include <qvimeo/streamsrequest.h>
-#ifdef CUTETUBE_DEBUG
-#include <QDebug>
-#endif
 
 VimeoTransfer::VimeoTransfer(QObject *parent) :
     Transfer(parent),
@@ -41,9 +38,9 @@ void VimeoTransfer::listStreams() {
 void VimeoTransfer::listSubtitles() {
     if (!m_subtitlesRequest) {
         m_subtitlesRequest = new QVimeo::ResourcesRequest(this);
-        m_subtitlesRequest->setClientId(Vimeo::instance()->clientId());
-        m_subtitlesRequest->setClientSecret(Vimeo::instance()->clientSecret());
-        m_subtitlesRequest->setAccessToken(Vimeo::instance()->accessToken());
+        m_subtitlesRequest->setClientId(Vimeo::clientId());
+        m_subtitlesRequest->setClientSecret(Vimeo::clientSecret());
+        m_subtitlesRequest->setAccessToken(Vimeo::accessToken());
         connect(m_subtitlesRequest, SIGNAL(finished()), this, SLOT(onSubtitlesRequestFinished()));
     }
     
@@ -52,10 +49,10 @@ void VimeoTransfer::listSubtitles() {
 
 void VimeoTransfer::onStreamsRequestFinished() {
     if (m_streamsRequest->status() == QVimeo::StreamsRequest::Ready) {
-        QVariantList list = m_streamsRequest->result().toList();
+        const QVariantList list = m_streamsRequest->result().toList();
         
-        foreach (QVariant v, list) {
-            QVariantMap stream = v.toMap();
+        foreach (const QVariant &v, list) {
+            const QVariantMap stream = v.toMap();
         
             if (stream.value("id") == streamId()) {
                 startDownload(stream.value("url").toString());
@@ -70,10 +67,10 @@ void VimeoTransfer::onStreamsRequestFinished() {
 
 void VimeoTransfer::onSubtitlesRequestFinished() {
     if (m_subtitlesRequest->status() == QVimeo::ResourcesRequest::Ready) {
-        QVariantList list = m_subtitlesRequest->result().toMap().value("items").toList();
+        const QVariantList list = m_subtitlesRequest->result().toMap().value("items").toList();
     
-        foreach (QVariant v, list) {
-            QVariantMap sub = v.toMap();
+        foreach (const QVariant &v, list) {
+            const QVariantMap sub = v.toMap();
         
             if (sub.value("name") == subtitlesLanguage()) {
                 startSubtitlesDownload(sub.value("url").toString());
@@ -81,13 +78,8 @@ void VimeoTransfer::onSubtitlesRequestFinished() {
             }
         }
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "VimeoTransfer::onSubtitlesRequestFinished: No subtitles found";
-#endif
-    if (convertToAudio()) {
-        startAudioConversion();
-    }
-    else {
+    
+    if (!executeCustomCommands()) {
         moveDownloadedFiles();
     }
 }

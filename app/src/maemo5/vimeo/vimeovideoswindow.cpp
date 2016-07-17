@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -18,8 +18,11 @@
 #include "clipboard.h"
 #include "imagecache.h"
 #include "listview.h"
+#include "resources.h"
 #include "settings.h"
+#include "transfers.h"
 #include "videodelegate.h"
+#include "videolauncher.h"
 #include "videoplaybackwindow.h"
 #include "vimeo.h"
 #include "vimeodownloaddialog.h"
@@ -83,8 +86,8 @@ VimeoVideosWindow::VimeoVideosWindow(StackedWindow *parent) :
     connect(m_downloadAction, SIGNAL(triggered()), this, SLOT(downloadVideo()));
     connect(m_shareAction, SIGNAL(triggered()), this, SLOT(shareVideo()));
     
-    if (!Vimeo::instance()->userId().isEmpty()) {
-        if (Vimeo::instance()->hasScope(QVimeo::INTERACT_SCOPE)) {
+    if (!Vimeo::userId().isEmpty()) {
+        if (Vimeo::hasScope(QVimeo::INTERACT_SCOPE)) {
             m_favouriteAction = new QAction(this);
             m_watchLaterAction = new QAction(tr("Watch later"), this);
             m_contextMenu->addAction(m_favouriteAction);
@@ -93,7 +96,7 @@ VimeoVideosWindow::VimeoVideosWindow(StackedWindow *parent) :
             connect(m_watchLaterAction, SIGNAL(triggered()), this, SLOT(watchVideoLater()));
         }
         
-        if (Vimeo::instance()->hasScope(QVimeo::EDIT_SCOPE)) {
+        if (Vimeo::hasScope(QVimeo::EDIT_SCOPE)) {
             m_playlistAction = new QAction(tr("Add to album"), this);
             m_contextMenu->addAction(m_playlistAction);
             connect(m_playlistAction, SIGNAL(triggered()), this, SLOT(addVideoToPlaylist()));
@@ -116,8 +119,7 @@ void VimeoVideosWindow::addVideoToPlaylist() {
     }
     
     if (VimeoVideo *video = m_model->get(m_view->currentIndex().row())) {
-        VimeoPlaylistDialog *dialog = new VimeoPlaylistDialog(video, this);
-        dialog->open();
+        VimeoPlaylistDialog(video, this).exec();
     }
 }
 
@@ -126,12 +128,21 @@ void VimeoVideosWindow::downloadVideo() {
         return;
     }
     
-    if (m_view->currentIndex().isValid()) {
-        QString id = m_view->currentIndex().data(VimeoVideoModel::IdRole).toString();
-        QString title = m_view->currentIndex().data(VimeoVideoModel::TitleRole).toString();
+    const QModelIndex index = m_view->currentIndex();
+    
+    if (index.isValid()) {
+        const QString id = index.data(VimeoVideoModel::IdRole).toString();
+        const QString title = index.data(VimeoVideoModel::TitleRole).toString();
         
-        VimeoDownloadDialog *dialog = new VimeoDownloadDialog(id, title, this);
-        dialog->open();
+        VimeoDownloadDialog dialog(this);
+        dialog.list(id);
+
+        if (dialog.exec() == QDialog::Accepted) {
+            Transfers::instance()->addDownloadTransfer(Resources::VIMEO, id, dialog.streamId(),
+                                                       QUrl(), title, dialog.category(),
+                                                       dialog.subtitlesLanguage(), dialog.customCommand(),
+                                                       dialog.customCommandOverrideEnabled());
+        }
     }
 }
 
@@ -140,19 +151,20 @@ void VimeoVideosWindow::playVideo(const QModelIndex &index) {
         return;
     }
     
-    if (Settings::instance()->videoPlayer() == "cutetube") {
+    if (Settings::videoPlayer() == "cutetube") {
         if (VimeoVideo *video = m_model->get(index.row())) {
             VideoPlaybackWindow *window = new VideoPlaybackWindow(this);
             window->show();
             window->addVideo(video);
         }
     }
-    else {
-        QString id = index.data(VimeoVideoModel::IdRole).toString();
-        QString title = index.data(VimeoVideoModel::TitleRole).toString();
-    
-        VimeoPlaybackDialog *dialog = new VimeoPlaybackDialog(id, title, this);
-        dialog->open();
+    else {    
+        VimeoPlaybackDialog dialog(this);
+        dialog.list(index.data(VimeoVideoModel::IdRole).toString());
+
+        if ((dialog.exec() == QDialog::Accepted) && (!VideoLauncher::playVideo(dialog.streamUrl()))) {
+            QMessageBox::critical(this, tr("Error"), tr("Unable to play video"));
+        }
     }
 }
 
@@ -176,7 +188,7 @@ void VimeoVideosWindow::setVideoFavourite() {
 
 void VimeoVideosWindow::shareVideo() {
     if (const VimeoVideo *video = m_model->get(m_view->currentIndex().row())) {
-        Clipboard::instance()->setText(video->url().toString());
+        Clipboard::setText(video->url().toString());
         QMaemo5InformationBox::information(this, tr("URL copied to clipboard"));
     }
 }

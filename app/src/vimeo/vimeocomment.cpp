@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -18,9 +18,6 @@
 #include "vimeo.h"
 #include "resources.h"
 #include <QDateTime>
-#ifdef CUTETUBE_DEBUG
-#include <QDebug>
-#endif
 
 VimeoComment::VimeoComment(QObject *parent) :
     CTComment(parent),
@@ -71,7 +68,7 @@ void VimeoComment::loadComment(const QString &id) {
 }
 
 void VimeoComment::loadComment(const QVariantMap &comment) {
-    QVariantMap user = comment.value("user").toMap();
+    const QVariantMap user = comment.value("user").toMap();
     
     setBody(comment.value("text").toString());
     setDate(QDateTime::fromString(comment.value("created_on").toString(), Qt::ISODate).toString("dd MMM yyyy"));
@@ -104,9 +101,9 @@ void VimeoComment::addComment(const QVariantMap &comment) {
 void VimeoComment::initRequest() {
     if (!m_request) {
         m_request = new QVimeo::ResourcesRequest(this);
-        m_request->setClientId(Vimeo::instance()->clientId());
-        m_request->setClientSecret(Vimeo::instance()->clientSecret());
-        m_request->setAccessToken(Vimeo::instance()->accessToken());
+        m_request->setClientId(Vimeo::clientId());
+        m_request->setClientSecret(Vimeo::clientSecret());
+        m_request->setAccessToken(Vimeo::accessToken());
     
         connect(m_request, SIGNAL(accessTokenChanged(QString)), Vimeo::instance(), SLOT(setAccessToken(QString)));
     }
@@ -125,9 +122,6 @@ void VimeoComment::onAddCommentRequestFinished() {
     if (m_request->status() == QVimeo::ResourcesRequest::Ready) {
         loadComment(m_request->result().toMap());
         emit Vimeo::instance()->commentAdded(this);
-#ifdef CUTETUBE_DEBUG
-        qDebug() << "VimeoComment::onAddCommentRequestFinished OK" << videoId();
-#endif
     }
     
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onAddCommentRequestFinished()));

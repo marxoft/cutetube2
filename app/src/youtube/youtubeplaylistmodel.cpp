@@ -1,24 +1,21 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "youtubeplaylistmodel.h"
 #include "youtube.h"
-#ifdef CUTETUBE_DEBUG
-#include <QDebug>
-#endif
 
 YouTubePlaylistModel::YouTubePlaylistModel(QObject *parent) :
     QAbstractListModel(parent),
@@ -37,11 +34,11 @@ YouTubePlaylistModel::YouTubePlaylistModel(QObject *parent) :
 #if QT_VERSION < 0x050000
     setRoleNames(m_roles);
 #endif
-    m_request->setApiKey(YouTube::instance()->apiKey());
-    m_request->setClientId(YouTube::instance()->clientId());
-    m_request->setClientSecret(YouTube::instance()->clientSecret());
-    m_request->setAccessToken(YouTube::instance()->accessToken());
-    m_request->setRefreshToken(YouTube::instance()->refreshToken());
+    m_request->setApiKey(YouTube::apiKey());
+    m_request->setClientId(YouTube::clientId());
+    m_request->setClientSecret(YouTube::clientSecret());
+    m_request->setAccessToken(YouTube::accessToken());
+    m_request->setRefreshToken(YouTube::refreshToken());
     
     connect(m_request, SIGNAL(accessTokenChanged(QString)), YouTube::instance(), SLOT(setAccessToken(QString)));
     connect(m_request, SIGNAL(refreshTokenChanged(QString)), YouTube::instance(), SLOT(setRefreshToken(QString)));
@@ -87,7 +84,7 @@ void YouTubePlaylistModel::fetchMore(const QModelIndex &) {
 }
 
 QVariant YouTubePlaylistModel::data(const QModelIndex &index, int role) const {
-    if (YouTubePlaylist *playlist = get(index.row())) {
+    if (const YouTubePlaylist *playlist = get(index.row())) {
         return playlist->property(m_roles[role]);
     }
     
@@ -97,7 +94,7 @@ QVariant YouTubePlaylistModel::data(const QModelIndex &index, int role) const {
 QMap<int, QVariant> YouTubePlaylistModel::itemData(const QModelIndex &index) const {
     QMap<int, QVariant> map;
     
-    if (YouTubePlaylist *playlist = get(index.row())) {
+    if (const YouTubePlaylist *playlist = get(index.row())) {
         QHashIterator<int, QByteArray> iterator(m_roles);
         
         while (iterator.hasNext()) {
@@ -110,7 +107,7 @@ QMap<int, QVariant> YouTubePlaylistModel::itemData(const QModelIndex &index) con
 }
 
 QVariant YouTubePlaylistModel::data(int row, const QByteArray &role) const {
-    if (YouTubePlaylist *playlist = get(row)) {
+    if (const YouTubePlaylist *playlist = get(row)) {
         return playlist->property(role);
     }
     
@@ -120,8 +117,8 @@ QVariant YouTubePlaylistModel::data(int row, const QByteArray &role) const {
 QVariantMap YouTubePlaylistModel::itemData(int row) const {
     QVariantMap map;
     
-    if (YouTubePlaylist *playlist = get(row)) {
-        foreach (QByteArray role, m_roles.values()) {
+    if (const YouTubePlaylist *playlist = get(row)) {
+        foreach (const QByteArray &role, m_roles.values()) {
             map[role] = playlist->property(role);
         }
     }
@@ -154,7 +151,7 @@ void YouTubePlaylistModel::list(const QString &resourcePath, const QStringList &
     
     disconnect(YouTube::instance(), 0, this, 0);
     
-    if ((filters.contains("mine")) || (filters.value("channelId") == YouTube::instance()->userId())) {
+    if ((filters.contains("mine")) || (filters.value("channelId") == YouTube::userId())) {
         connect(YouTube::instance(), SIGNAL(playlistCreated(YouTubePlaylist*)),
                 this, SLOT(onPlaylistCreated(YouTubePlaylist*)));
         connect(YouTube::instance(), SIGNAL(playlistDeleted(YouTubePlaylist*)),
@@ -186,11 +183,11 @@ void YouTubePlaylistModel::reload() {
 void YouTubePlaylistModel::getAdditionalContent() {
     if (!m_contentRequest) {
         m_contentRequest = new QYouTube::ResourcesRequest(this);
-        m_contentRequest->setApiKey(YouTube::instance()->apiKey());
-        m_contentRequest->setClientId(YouTube::instance()->clientId());
-        m_contentRequest->setClientSecret(YouTube::instance()->clientSecret());
-        m_contentRequest->setAccessToken(YouTube::instance()->accessToken());
-        m_contentRequest->setRefreshToken(YouTube::instance()->refreshToken());
+        m_contentRequest->setApiKey(YouTube::apiKey());
+        m_contentRequest->setClientId(YouTube::clientId());
+        m_contentRequest->setClientSecret(YouTube::clientSecret());
+        m_contentRequest->setAccessToken(YouTube::accessToken());
+        m_contentRequest->setRefreshToken(YouTube::refreshToken());
 
         connect(m_contentRequest, SIGNAL(accessTokenChanged(QString)),
                 YouTube::instance(), SLOT(setAccessToken(QString)));
@@ -201,26 +198,14 @@ void YouTubePlaylistModel::getAdditionalContent() {
     
     QStringList ids;
     
-    foreach (QVariant result, m_results) {
-        ids << YouTube::getPlaylistId(result.toMap());
+    for (int i = 0; i < m_results.size(); i++) {
+        ids << m_results.at(i).first;
     }
     
     QVariantMap filters;
     filters["id"] = ids.join(",");
     
     m_contentRequest->list("/playlists", QStringList() << "contentDetails", filters);
-}
-
-void YouTubePlaylistModel::loadResults() {
-    beginInsertRows(QModelIndex(), m_items.size(), m_items.size() + m_results.size() - 1);
-    
-    foreach (QVariant result, m_results) {
-        m_items << new YouTubePlaylist(result.toMap(), this);
-    }
-
-    endInsertRows();
-    emit countChanged(rowCount());
-    emit statusChanged(status());
 }
 
 void YouTubePlaylistModel::append(YouTubePlaylist *playlist) {
@@ -250,18 +235,31 @@ void YouTubePlaylistModel::remove(int row) {
 
 void YouTubePlaylistModel::onRequestFinished() {
     if (m_request->status() == QYouTube::ResourcesRequest::Ready) {
-        QVariantMap result = m_request->result().toMap();
+        const QVariantMap result = m_request->result().toMap();
         
         if (!result.isEmpty()) {
             m_nextPageToken = result.value("nextPageToken").toString();
-            m_results = result.value("items").toList();
+            const QVariantList list = result.value("items").toList();
 
-            if (!m_results.isEmpty()) {
+            if (!list.isEmpty()) {
                 if (result.value("kind") == "youtube#searchListResponse") {
+                    foreach (const QVariant &v, list) {
+                        const QVariantMap item = v.toMap();
+                        m_results << QPair<QString, QVariantMap>(YouTube::getPlaylistId(item), item);
+                    }
+                    
                     getAdditionalContent();
                 }
                 else {
-                    loadResults();
+                    beginInsertRows(QModelIndex(), m_items.size(), m_items.size() + list.size() - 1);
+                    
+                    foreach (const QVariant &item, list) {
+                        m_items << new YouTubePlaylist(item.toMap(), this);
+                    }
+                    
+                    endInsertRows();
+                    emit countChanged(rowCount());
+                    emit statusChanged(status());
                 }
 
                 return;
@@ -274,38 +272,44 @@ void YouTubePlaylistModel::onRequestFinished() {
 
 void YouTubePlaylistModel::onContentRequestFinished() {
     if (m_contentRequest->status() == QYouTube::ResourcesRequest::Ready) {
-        QVariantMap result = m_contentRequest->result().toMap();
+        const QVariantMap result = m_contentRequest->result().toMap();
         
         if (!result.isEmpty()) {
-            QVariantList list = result.value("items").toList();
-            const int count = qMin(list.size(), m_results.size());
-            
-            for (int i = 0; i < count; i++) {
-                QVariantMap item = list.at(i).toMap();
-                QVariantMap playlist = m_results.takeAt(i).toMap();
-                playlist["contentDetails"] = item.value("contentDetails");
-                m_results.insert(i, playlist);
+            const QVariantList list = result.value("items").toList();
+
+            if (!list.isEmpty()) {
+                beginInsertRows(QModelIndex(), m_items.size(), m_items.size() + list.size() - 1);
+                
+                foreach (const QVariant &v, list) {
+                    const QVariantMap item = v.toMap();
+                    
+                    for (int i = 0; i < m_results.size(); i++) {
+                        if (m_results.at(i).first == YouTube::getPlaylistId(item)) {
+                            QVariantMap playlist = m_results.takeAt(i).second;
+                            playlist["contentDetails"] = item.value("contentDetails");
+                            m_items << new YouTubePlaylist(playlist, this);
+                            break;
+                        }
+                    }
+                }
+
+                endInsertRows();
+                emit countChanged(rowCount());
             }
         }
     }
 
-    loadResults();
+    emit statusChanged(status());
 }
 
 void YouTubePlaylistModel::onPlaylistCreated(YouTubePlaylist *playlist) {
     insert(0, new YouTubePlaylist(playlist, this));
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "YouTubePlaylistModel::onPlaylistCreated" << playlist->title();
-#endif
 }
 
 void YouTubePlaylistModel::onPlaylistDeleted(YouTubePlaylist *playlist) {
-    QModelIndexList list = match(index(0), IdRole, playlist->id(), 1, Qt::MatchExactly);
+    const QModelIndexList list = match(index(0), IdRole, playlist->id(), 1, Qt::MatchExactly);
     
     if (!list.isEmpty()) {
         remove(list.first().row());
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "YouTubePlaylistModel::onPlaylistDeleted" << playlist->id();
-#endif
 }

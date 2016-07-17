@@ -1,0 +1,102 @@
+{
+    "type": "qt",
+    "name": "Wenoo.net",
+    "version": 1,
+    "resources": [
+        {
+            "method": "get",
+            "type": "user",
+            "regExp": "http://(www\\.|)wenoo\\.net/user/[\\w-_]+"
+        },
+
+        {
+            "method": "get",
+            "type": "video",
+            "regExp": "http://(www\\.|)wenoo\\.net/video/\\w+"
+        },
+        
+        {
+            "method": "list",
+            "type": "category",
+            "label": "Categories",
+            "id": "http://wenoo.net/categories"
+        },
+
+        {
+            "method": "list",
+            "type": "user",
+            "label": "Most viewed channels",
+            "id": "http://wenoo.net/channels/mv"
+        },
+
+        {
+            "method": "list",
+            "type": "user",
+            "label": "Most subscribed channels",
+            "id": "http://wenoo.net/channels/ms"
+        },
+
+        {
+            "method": "list",
+            "type": "video",
+            "label": "Most recent videos",
+            "id": "http://wenoo.net/videos/recent/all_time"
+        },
+
+        {
+            "method": "list",
+            "type": "video",
+            "label": "Most viewed videos",
+            "id": "http://wenoo.net/videos/most_viewed/all_time"
+        },
+
+        {
+            "method": "list",
+            "type": "video",
+            "label": "Top rated videos",
+            "id": "http://wenoo.net/videos/top_rated/all_time"
+        },
+
+        {
+            "method": "list",
+            "type": "video",
+            "label": "Top favourite videos",
+            "id": "http://wenoo.net/videos/top_favorites/all_time"
+        },
+
+        {
+            "method": "list",
+            "type": "video",
+            "label": "Random videos",
+            "id": "http://wenoo.net/videos/random/all_time"
+        },
+
+        {
+            "method": "search",
+            "type": "video",
+            "label": "Videos (relevance)",
+            "order": ""
+        },
+
+        {
+            "method": "search",
+            "type": "video",
+            "label": "Videos (date)",
+            "order": "most_recent"
+        },
+
+        {
+            "method": "search",
+            "type": "video",
+            "label": "Videos (views)",
+            "order": "most_played"
+        },
+
+        {
+            "method": "search",
+            "type": "video",
+            "label": "Videos (rating)",
+            "order": "top_rated"
+        }
+    ]
+}

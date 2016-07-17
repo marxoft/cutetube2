@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -48,7 +48,6 @@ class Vimeo : public QObject
     Q_PROPERTY(QString UPLOAD_SCOPE READ uploadScope CONSTANT)
         
 public:
-    explicit Vimeo(QObject *parent = 0);
     ~Vimeo();
     
     static const QRegExp URL_REGEXP;
@@ -57,21 +56,21 @@ public:
         
     Q_INVOKABLE static QString getErrorString(const QVariantMap &error);
     
-    Q_INVOKABLE QUrl authUrl() const;
+    Q_INVOKABLE static QUrl authUrl();
     
-    QString userId() const;
+    static QString userId();
     
-    QString accessToken() const;
+    static QString accessToken();
             
-    QString clientId() const;
+    static QString clientId();
     
-    QString clientSecret() const;
+    static QString clientSecret();
     
-    QString redirectUri() const;
+    static QString redirectUri();
     
-    QStringList scopes() const;
+    static QStringList scopes();
     
-    Q_INVOKABLE bool hasScope(const QString &scope) const;
+    Q_INVOKABLE static bool hasScope(const QString &scope);
     
     static QString createScope();
     static QString deleteScope();
@@ -83,25 +82,25 @@ public:
     static QString uploadScope();
     
 public Q_SLOTS:
-    void setUserId(const QString &id);
+    static void setUserId(const QString &id);
     
-    void setAccessToken(const QString &token);
+    static void setAccessToken(const QString &token);
     
-    void setClientId(const QString &id);
+    static void setClientId(const QString &id);
     
-    void setClientSecret(const QString &secret);
+    static void setClientSecret(const QString &secret);
     
-    void setRedirectUri(const QString &uri);
+    static void setRedirectUri(const QString &uri);
     
-    void setScopes(const QStringList &s);
+    static void setScopes(const QStringList &s);
         
 Q_SIGNALS:
-    void userIdChanged();
-    void accessTokenChanged();
-    void clientIdChanged();
-    void clientSecretChanged();
-    void redirectUriChanged();
-    void scopesChanged();
+    void userIdChanged(const QString &id);
+    void accessTokenChanged(const QString &token);
+    void clientIdChanged(const QString &id);
+    void clientSecretChanged(const QString &secret);
+    void redirectUriChanged(const QString &uri);
+    void scopesChanged(const QStringList &scopes);
     
     void commentAdded(VimeoComment *comment);
     
@@ -118,6 +117,8 @@ Q_SIGNALS:
     void videoWatchLater(VimeoVideo *video);
 
 private:
+    Vimeo();
+    
     struct SubscriptionCache {
         QStringList ids;
         QVariantMap filters;

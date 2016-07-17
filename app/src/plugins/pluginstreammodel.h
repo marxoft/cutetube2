@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -30,15 +30,15 @@ class PluginStreamModel : public SelectionModel
     
 public:
     explicit PluginStreamModel(QObject *parent = 0);
+
+    QString errorString() const;
     
     QString service() const;
-    void setService(const QString &service);
-    
-    QString errorString() const;
+    void setService(const QString &s);
     
     ResourcesRequest::Status status() const;
     
-    Q_INVOKABLE void list(const QString &id);
+    Q_INVOKABLE void list(const QString &resourceId);
         
 public Q_SLOTS:
     void cancel();
@@ -49,12 +49,15 @@ private Q_SLOTS:
     
 Q_SIGNALS:
     void serviceChanged();
-    void statusChanged(ResourcesRequest::Status s);
+    void statusChanged(ResourcesRequest::Status status);
         
 private:
     ResourcesRequest *m_request;
-    
-    QString m_id;
+
+    ResourcesRequest* request();
+
+    QString m_service;
+    QString m_resourceId;
 };
     
 #endif // PLUGINSTREAMMODEL_H

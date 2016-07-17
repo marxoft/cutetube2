@@ -1,0 +1,101 @@
+{
+    "type": "qt",
+    "name": "PornTrex",
+    "version": 1,
+    "resources": [
+        {
+            "method": "list",
+            "type": "stream"
+        },
+
+        {
+            "label": "Categories",
+            "method": "list",
+            "type": "category",
+            "id": "http://porntrex.com/categories"
+        },
+
+        {
+            "label": "Most recent videos",
+            "method": "list",
+            "type": "video",
+            "id": "http://porntrex.com/videos?o=mr"
+        },
+
+        {
+            "label": "Most viewed videos",
+            "method": "list",
+            "type": "video",
+            "id": "http://porntrex.com/videos?o=mv"
+        },
+
+        {
+            "label": "Top rated videos",
+            "method": "list",
+            "type": "video",
+            "id": "http://porntrex.com/videos?o=tr"
+        },
+
+        {
+            "label": "Top favourite videos",
+            "method": "list",
+            "type": "video",
+            "id": "http://porntrex.com/videos?o=tf"
+        },
+
+        {
+            "label": "Longest videos",
+            "method": "list",
+            "type": "video",
+            "id": "http://porntrex.com/videos?o=lg"
+        },
+
+        {
+            "label": "Watched videos",
+            "method": "list",
+            "type": "video",
+            "id": "http://porntrex.com/videos?o=bw"
+        },
+
+        {
+            "label": "Videos (relevance)",
+            "method": "search",
+            "type": "video",
+            "order": ""
+        },
+
+        {
+            "label": "Videos (date)",
+            "method": "search",
+            "type": "video",
+            "order": "mr"
+        },
+
+        {
+            "label": "Videos (views)",
+            "method": "search",
+            "type": "video",
+            "order": "mv"
+        },
+
+        {
+            "label": "Videos (rating)",
+            "method": "search",
+            "type": "video",
+            "order": "tr"
+        },
+
+        {
+            "label": "Videos (duration)",
+            "method": "search",
+            "type": "video",
+            "order": "lg"
+        },
+
+        {
+            "method": "get",
+            "type": "video",
+            "regExp": "http://(www\\.|)porntrex\\.com/video/\\d+"
+        }
+    ]
+}

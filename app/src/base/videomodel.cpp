@@ -1,23 +1,20 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "videomodel.h"
-#ifdef CUTETUBE_DEBUG
-#include <QDebug>
-#endif
 
 VideoModel::VideoModel(QObject *parent) :
     QAbstractListModel(parent)
@@ -49,7 +46,7 @@ int VideoModel::rowCount(const QModelIndex &) const {
 }
 
 QVariant VideoModel::data(const QModelIndex &index, int role) const {
-    if (CTVideo *video = get(index.row())) {
+    if (const CTVideo *video = get(index.row())) {
         return video->property(m_roles[role]);
     }
     
@@ -59,7 +56,7 @@ QVariant VideoModel::data(const QModelIndex &index, int role) const {
 QMap<int, QVariant> VideoModel::itemData(const QModelIndex &index) const {
     QMap<int, QVariant> map;
     
-    if (CTVideo *video = get(index.row())) {
+    if (const CTVideo *video = get(index.row())) {
         QHashIterator<int, QByteArray> iterator(m_roles);
         
         while (iterator.hasNext()) {
@@ -72,7 +69,7 @@ QMap<int, QVariant> VideoModel::itemData(const QModelIndex &index) const {
 }
 
 QVariant VideoModel::data(int row, const QByteArray &role) const {
-    if (CTVideo *video = get(row)) {
+    if (const CTVideo *video = get(row)) {
         return video->property(role);
     }
     
@@ -82,8 +79,8 @@ QVariant VideoModel::data(int row, const QByteArray &role) const {
 QVariantMap VideoModel::itemData(int row) const {
     QVariantMap map;
     
-    if (CTVideo *video = get(row)) {
-        foreach (QByteArray role, m_roles.values()) {
+    if (const CTVideo *video = get(row)) {
+        foreach (const QByteArray &role, m_roles.values()) {
             map[role] = video->property(role);
         }
     }

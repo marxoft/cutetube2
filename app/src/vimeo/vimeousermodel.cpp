@@ -1,24 +1,21 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "vimeousermodel.h"
 #include "vimeo.h"
-#ifdef CUTETUBE_DEBUG
-#include <QDebug>
-#endif
 
 VimeoUserModel::VimeoUserModel(QObject *parent) :
     QAbstractListModel(parent),
@@ -36,9 +33,9 @@ VimeoUserModel::VimeoUserModel(QObject *parent) :
 #if QT_VERSION < 0x050000
     setRoleNames(m_roles);
 #endif
-    m_request->setClientId(Vimeo::instance()->clientId());
-    m_request->setClientSecret(Vimeo::instance()->clientSecret());
-    m_request->setAccessToken(Vimeo::instance()->accessToken());
+    m_request->setClientId(Vimeo::clientId());
+    m_request->setClientSecret(Vimeo::clientSecret());
+    m_request->setAccessToken(Vimeo::accessToken());
     
     connect(m_request, SIGNAL(accessTokenChanged(QString)), Vimeo::instance(), SLOT(setAccessToken(QString)));
     connect(m_request, SIGNAL(finished()), this, SLOT(onRequestFinished()));
@@ -78,7 +75,7 @@ void VimeoUserModel::fetchMore(const QModelIndex &) {
 }
 
 QVariant VimeoUserModel::data(const QModelIndex &index, int role) const {
-    if (VimeoUser *user = get(index.row())) {
+    if (const VimeoUser *user = get(index.row())) {
         return user->property(m_roles[role]);
     }
     
@@ -88,7 +85,7 @@ QVariant VimeoUserModel::data(const QModelIndex &index, int role) const {
 QMap<int, QVariant> VimeoUserModel::itemData(const QModelIndex &index) const {
     QMap<int, QVariant> map;
     
-    if (VimeoUser *user = get(index.row())) {
+    if (const VimeoUser *user = get(index.row())) {
         QHashIterator<int, QByteArray> iterator(m_roles);
         
         while (iterator.hasNext()) {
@@ -101,7 +98,7 @@ QMap<int, QVariant> VimeoUserModel::itemData(const QModelIndex &index) const {
 }
 
 QVariant VimeoUserModel::data(int row, const QByteArray &role) const {
-    if (VimeoUser *user = get(row)) {
+    if (const VimeoUser *user = get(row)) {
         return user->property(role);
     }
     
@@ -111,8 +108,8 @@ QVariant VimeoUserModel::data(int row, const QByteArray &role) const {
 QVariantMap VimeoUserModel::itemData(int row) const {
     QVariantMap map;
     
-    if (VimeoUser *user = get(row)) {
-        foreach (QByteArray role, m_roles.values()) {
+    if (const VimeoUser *user = get(row)) {
+        foreach (const QByteArray &role, m_roles.values()) {
             map[role] = user->property(role);
         }
     }
@@ -197,15 +194,15 @@ void VimeoUserModel::remove(int row) {
 
 void VimeoUserModel::onRequestFinished() {
     if (m_request->status() == QVimeo::ResourcesRequest::Ready) {
-        QVariantMap result = m_request->result().toMap();
+        const QVariantMap result = m_request->result().toMap();
         
         if (!result.isEmpty()) {
             m_hasMore = !result.value("paging").toMap().value("next").isNull();
-            QVariantList list = result.value("data").toList();
+            const QVariantList list = result.value("data").toList();
 
             beginInsertRows(QModelIndex(), m_items.size(), m_items.size() + list.size() - 1);
     
-            foreach (QVariant item, list) {
+            foreach (const QVariant &item, list) {
                 m_items << new VimeoUser(item.toMap(), this);
             }
 
@@ -219,18 +216,12 @@ void VimeoUserModel::onRequestFinished() {
 
 void VimeoUserModel::onUserSubscribed(VimeoUser *user) {
     insert(0, new VimeoUser(user, this));
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "VimeoUserModel::onUserSubscribed" << user->id();
-#endif
 }
 
 void VimeoUserModel::onUserUnsubscribed(VimeoUser *user) {
-    QModelIndexList list = match(index(0), IdRole, user->id(), 1, Qt::MatchExactly);
+    const QModelIndexList list = match(index(0), IdRole, user->id(), 1, Qt::MatchExactly);
     
     if (!list.isEmpty()) {
         remove(list.first().row());
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "VimeoUserModel::onUserUnsubscribed" << user->id();
-#endif
 }

@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -33,21 +33,17 @@
 
 MainWindow* MainWindow::self = 0;
 
-MainWindow::MainWindow(StackedWindow *parent) :
-    StackedWindow(parent),
+MainWindow::MainWindow() :
+    StackedWindow(),
     m_serviceModel(new ServiceModel(this)),
     m_serviceAction(new ValueSelectorAction(this)),
     m_transfersAction(new QAction(tr("Transfers"), this)),
     m_settingsAction(new QAction(tr("Settings"), this)),
     m_aboutAction(new QAction(tr("About"), this))
 {
-    if (!self) {
-        self = this;
-    }
-        
     m_serviceAction->setText(tr("Service"));
     m_serviceAction->setModel(m_serviceModel);
-    m_serviceAction->setValue(Settings::instance()->currentService());
+    m_serviceAction->setValue(Settings::currentService());
     
     menuBar()->addAction(m_serviceAction);
     menuBar()->addAction(m_transfersAction);
@@ -60,23 +56,22 @@ MainWindow::MainWindow(StackedWindow *parent) :
     connect(m_aboutAction, SIGNAL(triggered()), this, SLOT(showAboutDialog()));
     connect(Transfers::instance(), SIGNAL(transferAdded(Transfer*)), this, SLOT(onTransferAdded(Transfer*)));
     
-    setService(Settings::instance()->currentService());
+    setService(Settings::currentService());
 }
 
 MainWindow::~MainWindow() {
-    if (self == this) {
-        self = 0;
-    }
+    self = 0;
 }
 
 MainWindow* MainWindow::instance() {
-    return self;
+    return self ? self : self = new MainWindow;
 }
 
 bool MainWindow::search(const QString &service, const QString &query, const QString &type, const QString &order) {
     clearWindows();
+    activateWindow();
     
-    if (service != Settings::instance()->currentService()) {
+    if (service != Settings::currentService()) {
         setService(service);
     }
     
@@ -85,7 +80,7 @@ bool MainWindow::search(const QString &service, const QString &query, const QStr
 }
 
 bool MainWindow::showResource(const QString &url) {
-    QVariantMap resource = Resources::getResourceFromUrl(url);
+    const QVariantMap resource = Resources::getResourceFromUrl(url);
     
     if (resource.isEmpty()) {
         return false;
@@ -98,9 +93,9 @@ bool MainWindow::showResource(const QVariantMap &resource) {
     clearWindows();
     activateWindow();
     
-    QVariant service = resource.value("service");
+    const QVariant service = resource.value("service");
     
-    if (service != Settings::instance()->currentService()) {
+    if (service != Settings::currentService()) {
         setService(service);
     }
     
@@ -124,22 +119,20 @@ void MainWindow::setService(const QVariant &service) {
     }
     
     m_serviceAction->setValue(service);
-    Settings::instance()->setCurrentService(service.toString());
+    Settings::setCurrentService(service.toString());
     
-    QString text = m_serviceModel->data(m_serviceModel->index(m_serviceModel->match("value", service)),
-                                        ServiceModel::NameRole).toString();
+    const QString text = m_serviceModel->data(m_serviceModel->index(m_serviceModel->match("value", service)),
+                                              ServiceModel::NameRole).toString();
     
     setWindowTitle(text.isEmpty() ? "cuteTube" : text);
 }
 
 void MainWindow::showAboutDialog() {
-    AboutDialog *dialog = new AboutDialog(this);
-    dialog->open();
+    AboutDialog(this).exec();
 }
 
 void MainWindow::showSettingsDialog() {
-    SettingsDialog *dialog = new SettingsDialog(this);
-    dialog->open();
+    SettingsDialog(this).exec();
 }
 
 void MainWindow::showTransfers() {

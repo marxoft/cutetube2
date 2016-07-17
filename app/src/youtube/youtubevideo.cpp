@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -18,9 +18,6 @@
 #include "resources.h"
 #include "youtube.h"
 #include <QDateTime>
-#ifdef CUTETUBE_DEBUG
-#include <QDebug>
-#endif
 
 YouTubeVideo::YouTubeVideo(QObject *parent) :
     CTVideo(parent),
@@ -221,10 +218,10 @@ void YouTubeVideo::loadVideo(const QString &id) {
 }
 
 void YouTubeVideo::loadVideo(const QVariantMap &video) {
-    QVariantMap snippet = video.value("snippet").toMap();
-    QVariantMap contentDetails = video.value("contentDetails").toMap();
-    QVariantMap statistics = video.value("statistics").toMap();
-    QVariantMap thumbnails = snippet.value("thumbnails").toMap();
+    const QVariantMap snippet = video.value("snippet").toMap();
+    const QVariantMap contentDetails = video.value("contentDetails").toMap();
+    const QVariantMap statistics = video.value("statistics").toMap();
+    const QVariantMap thumbnails = snippet.value("thumbnails").toMap();
     
     setDate(QDateTime::fromString(snippet.value("publishedAt").toString(), Qt::ISODate).toString("dd MMM yyyy"));
     setDescription(snippet.value("description").toString());
@@ -245,14 +242,14 @@ void YouTubeVideo::loadVideo(const QVariantMap &video) {
     else if (video.value("kind") == "youtube#playlistItem") {
         setId(snippet.value("resourceId").toMap().value("videoId").toString());
         
-        if (snippet.value("playlistId") == YouTube::instance()->relatedPlaylist("favorites")) {
+        if (snippet.value("playlistId") == YouTube::relatedPlaylist("favorites")) {
             setFavourite(true);
             setFavouriteId(video.value("id").toString());
         }
         else {
             setPlaylistItemId(video.value("id").toString());
             
-            if (snippet.value("playlistId") == YouTube::instance()->relatedPlaylist("likes")) {
+            if (snippet.value("playlistId") == YouTube::relatedPlaylist("likes")) {
                 setLiked(true);
             }
         }
@@ -288,16 +285,13 @@ void YouTubeVideo::favourite() {
     QVariantMap resourceId;
     resourceId["kind"] = "youtube#video";
     resourceId["videoId"] = id();
-    snippet["playlistId"] = YouTube::instance()->relatedPlaylist("favorites");
+    snippet["playlistId"] = YouTube::relatedPlaylist("favorites");
     snippet["resourceId"] = resourceId;
     resource["snippet"] = snippet;
     
     m_request->insert(resource, "/playlistItems", QStringList() << "snippet");
     connect(m_request, SIGNAL(finished()), this, SLOT(onFavouriteRequestFinished()));
     emit statusChanged(status());
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "YouTubeVideo::favourite" << id();
-#endif
 }
 
 void YouTubeVideo::unfavourite() {
@@ -309,9 +303,6 @@ void YouTubeVideo::unfavourite() {
     m_request->del(favouriteId(), "/playlistItems");
     connect(m_request, SIGNAL(finished()), this, SLOT(onUnfavouriteRequestFinished()));
     emit statusChanged(status());
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "YouTubeVideo::unfavourite" << favouriteId();
-#endif
 }
 
 void YouTubeVideo::dislike() {
@@ -328,9 +319,6 @@ void YouTubeVideo::dislike() {
     m_request->insert(QVariantMap(), "/videos/rate", QStringList(), params);
     connect(m_request, SIGNAL(finished()), this, SLOT(onDislikeRequestFinished()));
     emit statusChanged(status());
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "YouTubeVideo::dislike" << id();
-#endif
 }
 
 void YouTubeVideo::like() {
@@ -347,9 +335,6 @@ void YouTubeVideo::like() {
     m_request->insert(QVariantMap(), "/videos/rate", QStringList(), params);
     connect(m_request, SIGNAL(finished()), this, SLOT(onLikeRequestFinished()));
     emit statusChanged(status());
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "YouTubeVideo::like" << id();
-#endif
 }
 
 void YouTubeVideo::watchLater() {
@@ -364,26 +349,23 @@ void YouTubeVideo::watchLater() {
     QVariantMap resourceId;
     resourceId["kind"] = "youtube#video";
     resourceId["videoId"] = id();
-    snippet["playlistId"] = YouTube::instance()->relatedPlaylist("watchLater");
+    snippet["playlistId"] = YouTube::relatedPlaylist("watchLater");
     snippet["resourceId"] = resourceId;
     resource["snippet"] = snippet;
     
     m_request->insert(resource, "/playlistItems", QStringList() << "snippet");
     connect(m_request, SIGNAL(finished()), this, SLOT(onWatchLaterRequestFinished()));
     emit statusChanged(status());
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "YouTubeVideo::watchLater" << id();
-#endif
 }
 
 void YouTubeVideo::initRequest() {
     if (!m_request) {
         m_request = new QYouTube::ResourcesRequest(this);
-        m_request->setApiKey(YouTube::instance()->apiKey());
-        m_request->setClientId(YouTube::instance()->clientId());
-        m_request->setClientSecret(YouTube::instance()->clientSecret());
-        m_request->setAccessToken(YouTube::instance()->accessToken());
-        m_request->setRefreshToken(YouTube::instance()->refreshToken());
+        m_request->setApiKey(YouTube::apiKey());
+        m_request->setClientId(YouTube::clientId());
+        m_request->setClientSecret(YouTube::clientSecret());
+        m_request->setAccessToken(YouTube::accessToken());
+        m_request->setRefreshToken(YouTube::refreshToken());
     
         connect(m_request, SIGNAL(accessTokenChanged(QString)), YouTube::instance(), SLOT(setAccessToken(QString)));
         connect(m_request, SIGNAL(refreshTokenChanged(QString)), YouTube::instance(), SLOT(setRefreshToken(QString)));
@@ -392,7 +374,7 @@ void YouTubeVideo::initRequest() {
 
 void YouTubeVideo::onVideoRequestFinished() {
     if (m_request->status() == QYouTube::ResourcesRequest::Ready) {
-        QVariantList list = m_request->result().toMap().value("items").toList();
+        const QVariantList list = m_request->result().toMap().value("items").toList();
         
         if (!list.isEmpty()) {
             loadVideo(list.first().toMap());
@@ -409,9 +391,6 @@ void YouTubeVideo::onFavouriteRequestFinished() {
         setFavouriteCount(favouriteCount() + 1);
         setFavouriteId(m_request->result().toMap().value("id").toString());
         emit YouTube::instance()->videoFavourited(this);
-#ifdef CUTETUBE_DEBUG
-        qDebug() << "YouTubeVideo::onFavouriteRequestFinished OK" << id();
-#endif
     }
     
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onFavouriteRequestFinished()));
@@ -424,9 +403,6 @@ void YouTubeVideo::onUnfavouriteRequestFinished() {
         setFavouriteCount(favouriteCount() - 1);
         setFavouriteId(QString());
         emit YouTube::instance()->videoUnfavourited(this);
-#ifdef CUTETUBE_DEBUG
-        qDebug() << "YouTubeVideo::onUnfavouriteRequestFinished OK" << id();
-#endif
     }
     
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onUnfavouriteRequestFinished()));
@@ -439,9 +415,6 @@ void YouTubeVideo::onLikeRequestFinished() {
         setLikeCount(likeCount() + 1);
         setDisliked(false);
         emit YouTube::instance()->videoLiked(this);
-#ifdef CUTETUBE_DEBUG
-        qDebug() << "YouTubeVideo::onLikeRequestFinished OK" << id();
-#endif
     }
     
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onLikeRequestFinished()));
@@ -454,9 +427,6 @@ void YouTubeVideo::onDislikeRequestFinished() {
         setDislikeCount(dislikeCount() + 1);
         setLiked(false);
         emit YouTube::instance()->videoDisliked(this);
-#ifdef CUTETUBE_DEBUG
-        qDebug() << "YouTubeVideo::onDislikeRequestFinished OK" << id();
-#endif
     }
     
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onDislikeRequestFinished()));
@@ -466,9 +436,6 @@ void YouTubeVideo::onDislikeRequestFinished() {
 void YouTubeVideo::onWatchLaterRequestFinished() {
     if (m_request->status() == QYouTube::ResourcesRequest::Ready) {
         emit YouTube::instance()->videoWatchLater(this);
-#ifdef CUTETUBE_DEBUG
-        qDebug() << "YouTubeVideo::onWatchLaterRequestFinished OK" << id();
-#endif
     }
     
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onWatchLaterRequestFinished()));

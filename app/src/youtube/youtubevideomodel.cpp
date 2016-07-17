@@ -1,25 +1,22 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "youtubevideomodel.h"
 #include "youtube.h"
 #include "youtubeplaylist.h"
-#ifdef CUTETUBE_DEBUG
-#include <QDebug>
-#endif
 
 YouTubeVideoModel::YouTubeVideoModel(QObject *parent) :
     QAbstractListModel(parent),
@@ -48,11 +45,11 @@ YouTubeVideoModel::YouTubeVideoModel(QObject *parent) :
 #if QT_VERSION < 0x050000
     setRoleNames(m_roles);
 #endif
-    m_request->setApiKey(YouTube::instance()->apiKey());
-    m_request->setClientId(YouTube::instance()->clientId());
-    m_request->setClientSecret(YouTube::instance()->clientSecret());
-    m_request->setAccessToken(YouTube::instance()->accessToken());
-    m_request->setRefreshToken(YouTube::instance()->refreshToken());
+    m_request->setApiKey(YouTube::apiKey());
+    m_request->setClientId(YouTube::clientId());
+    m_request->setClientSecret(YouTube::clientSecret());
+    m_request->setAccessToken(YouTube::accessToken());
+    m_request->setRefreshToken(YouTube::refreshToken());
     
     connect(m_request, SIGNAL(accessTokenChanged(QString)), YouTube::instance(), SLOT(setAccessToken(QString)));
     connect(m_request, SIGNAL(refreshTokenChanged(QString)), YouTube::instance(), SLOT(setRefreshToken(QString)));
@@ -98,7 +95,7 @@ void YouTubeVideoModel::fetchMore(const QModelIndex &) {
 }
 
 QVariant YouTubeVideoModel::data(const QModelIndex &index, int role) const {
-    if (YouTubeVideo *video = get(index.row())) {
+    if (const YouTubeVideo *video = get(index.row())) {
         return video->property(m_roles[role]);
     }
     
@@ -108,7 +105,7 @@ QVariant YouTubeVideoModel::data(const QModelIndex &index, int role) const {
 QMap<int, QVariant> YouTubeVideoModel::itemData(const QModelIndex &index) const {
     QMap<int, QVariant> map;
     
-    if (YouTubeVideo *video = get(index.row())) {
+    if (const YouTubeVideo *video = get(index.row())) {
         QHashIterator<int, QByteArray> iterator(m_roles);
         
         while (iterator.hasNext()) {
@@ -121,7 +118,7 @@ QMap<int, QVariant> YouTubeVideoModel::itemData(const QModelIndex &index) const 
 }
 
 QVariant YouTubeVideoModel::data(int row, const QByteArray &role) const {
-    if (YouTubeVideo *video = get(row)) {
+    if (const YouTubeVideo *video = get(row)) {
         return video->property(role);
     }
     
@@ -131,8 +128,8 @@ QVariant YouTubeVideoModel::data(int row, const QByteArray &role) const {
 QVariantMap YouTubeVideoModel::itemData(int row) const {
     QVariantMap map;
     
-    if (YouTubeVideo *video = get(row)) {
-        foreach (QByteArray role, m_roles.values()) {
+    if (const YouTubeVideo *video = get(row)) {
+        foreach (const QByteArray &role, m_roles.values()) {
             map[role] = video->property(role);
         }
     }
@@ -166,13 +163,13 @@ void YouTubeVideoModel::list(const QString &resourcePath, const QStringList &par
     disconnect(YouTube::instance(), 0, this, 0);
         
     if (resourcePath.endsWith("playlistItems")) {
-        if (filters.value("playlistId") == YouTube::instance()->relatedPlaylist("favorites")) {
+        if (filters.value("playlistId") == YouTube::relatedPlaylist("favorites")) {
             connect(YouTube::instance(), SIGNAL(videoFavourited(YouTubeVideo*)),
                     this, SLOT(onVideoFavourited(YouTubeVideo*)));
             connect(YouTube::instance(), SIGNAL(videoUnfavourited(YouTubeVideo*)),
                     this, SLOT(onVideoUnfavourited(YouTubeVideo*)));
         }
-        else if (filters.value("playlistId") == YouTube::instance()->relatedPlaylist("watchLater")) {
+        else if (filters.value("playlistId") == YouTube::relatedPlaylist("watchLater")) {
             connect(YouTube::instance(), SIGNAL(videoWatchLater(YouTubeVideo*)),
                     this, SLOT(onVideoWatchLater(YouTubeVideo*)));
         }
@@ -209,11 +206,11 @@ void YouTubeVideoModel::reload() {
 void YouTubeVideoModel::getAdditionalContent() {
     if (!m_contentRequest) {
         m_contentRequest = new QYouTube::ResourcesRequest(this);
-        m_contentRequest->setApiKey(YouTube::instance()->apiKey());
-        m_contentRequest->setClientId(YouTube::instance()->clientId());
-        m_contentRequest->setClientSecret(YouTube::instance()->clientSecret());
-        m_contentRequest->setAccessToken(YouTube::instance()->accessToken());
-        m_contentRequest->setRefreshToken(YouTube::instance()->refreshToken());
+        m_contentRequest->setApiKey(YouTube::apiKey());
+        m_contentRequest->setClientId(YouTube::clientId());
+        m_contentRequest->setClientSecret(YouTube::clientSecret());
+        m_contentRequest->setAccessToken(YouTube::accessToken());
+        m_contentRequest->setRefreshToken(YouTube::refreshToken());
 
         connect(m_contentRequest, SIGNAL(accessTokenChanged(QString)),
                 YouTube::instance(), SLOT(setAccessToken(QString)));
@@ -224,26 +221,14 @@ void YouTubeVideoModel::getAdditionalContent() {
     
     QStringList ids;
     
-    foreach (QVariant result, m_results) {
-        ids << YouTube::getVideoId(result.toMap());
+    for (int i = 0; i < m_results.size(); i++) {
+        ids << m_results.at(i).first;
     }
     
     QVariantMap filters;
     filters["id"] = ids.join(",");
     
     m_contentRequest->list("/videos", QStringList() << "contentDetails" << "statistics", filters);
-}
-
-void YouTubeVideoModel::loadResults() {
-    beginInsertRows(QModelIndex(), m_items.size(), m_items.size() + m_results.size() - 1);
-    
-    foreach (QVariant result, m_results) {
-        m_items << new YouTubeVideo(result.toMap(), this);
-    }
-
-    endInsertRows();
-    emit countChanged(rowCount());
-    emit statusChanged(status());
 }
 
 void YouTubeVideoModel::append(YouTubeVideo *video) {
@@ -273,26 +258,31 @@ void YouTubeVideoModel::remove(int row) {
 
 void YouTubeVideoModel::onRequestFinished() {
     if (m_request->status() == QYouTube::ResourcesRequest::Ready) {
-        QVariantMap result = m_request->result().toMap();
+        const QVariantMap result = m_request->result().toMap();
         
         if (!result.isEmpty()) {
             m_nextPageToken = result.value("nextPageToken").toString();
-            m_results = result.value("items").toList();
+            const QVariantList list = result.value("items").toList();
 
-            if (!m_results.isEmpty()) {
+            if (!list.isEmpty()) {
                 if (result.value("kind") != "youtube#videoListResponse") {
-                    if (result.value("kind") == "youtube#activityListResponse") {
-                        foreach (QVariant item, m_results) {
-                            if (item.toMap().value("snippet").toMap().value("type") != "upload") {
-                                m_results.removeOne(item);
-                            }
-                        }
+                    foreach (const QVariant &v, list) {
+                        const QVariantMap item = v.toMap();
+                        m_results << QPair<QString, QVariantMap>(YouTube::getVideoId(item), item);
                     }
                     
                     getAdditionalContent();
                 }
                 else {
-                    loadResults();
+                    beginInsertRows(QModelIndex(), m_items.size(), m_items.size() + list.size() - 1);
+                    
+                    foreach (const QVariant &item, list) {
+                        m_items << new YouTubeVideo(item.toMap(), this);
+                    }
+                    
+                    endInsertRows();
+                    emit countChanged(rowCount());
+                    emit statusChanged(status());
                 }
 
                 return;
@@ -305,68 +295,65 @@ void YouTubeVideoModel::onRequestFinished() {
 
 void YouTubeVideoModel::onContentRequestFinished() {
     if (m_contentRequest->status() == QYouTube::ResourcesRequest::Ready) {
-        QVariantMap result = m_contentRequest->result().toMap();
+        const QVariantMap result = m_contentRequest->result().toMap();
         
         if (!result.isEmpty()) {
-            QVariantList list = result.value("items").toList();
-            const int count = qMin(list.size(), m_results.size());
-            
-            for (int i = 0; i < count; i++) {
-                QVariantMap item = list.at(i).toMap();
-                QVariantMap video = m_results.takeAt(i).toMap();
-                video["contentDetails"] = item.value("contentDetails");
-                video["statistics"] = item.value("statistics");
-                m_results.insert(i, video);
+            const QVariantList list = result.value("items").toList();
+
+            if (!list.isEmpty()) {
+                beginInsertRows(QModelIndex(), m_items.size(), m_items.size() + list.size() - 1);
+                
+                foreach (const QVariant &v, list) {
+                    const QVariantMap item = v.toMap();
+                    
+                    for (int i = 0; i < m_results.size(); i++) {
+                        if (m_results.at(i).first == YouTube::getUserId(item)) {
+                            QVariantMap video = m_results.takeAt(i).second;
+                            video["contentDetails"] = item.value("contentDetails");
+                            video["statistics"] = item.value("statistics");
+                            m_items << new YouTubeVideo(video, this);
+                            break;
+                        }
+                    }
+                }
+
+                endInsertRows();
+                emit countChanged(rowCount());
             }
         }
     }
 
-    loadResults();
+    emit statusChanged(status());
 }
 
 void YouTubeVideoModel::onVideoAddedToPlaylist(YouTubeVideo *video, YouTubePlaylist *playlist) {
     if (m_filters.value("playlistId") == playlist->id()) {
         insert(0, new YouTubeVideo(video, this));
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "YouTubeVideoModel::onVideoAddedToPlaylist" << video->id() << playlist->id();
-#endif
 }
 
 void YouTubeVideoModel::onVideoRemovedFromPlaylist(YouTubeVideo *video, YouTubePlaylist *playlist) {
     if (m_filters.value("playlistId") == playlist->id()) {
-        QModelIndexList list = match(index(0), IdRole, video->id(), 1, Qt::MatchExactly);
+        const QModelIndexList list = match(index(0), IdRole, video->id(), 1, Qt::MatchExactly);
         
         if (!list.isEmpty()) {
             remove(list.first().row());
         }
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "YouTubeVideoModel::onVideoRemovedFromPlaylist" << video->id() << playlist->id();
-#endif
 }
 
 void YouTubeVideoModel::onVideoFavourited(YouTubeVideo *video) {
     insert(0, new YouTubeVideo(video, this));
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "YouTubeVideoModel::onVideoFavourited" << video->id();
-#endif
 }
 
 void YouTubeVideoModel::onVideoUnfavourited(YouTubeVideo *video) {
-    QModelIndexList list = match(index(0), IdRole, video->id(), 1, Qt::MatchExactly);
+    const QModelIndexList list = match(index(0), IdRole, video->id(), 1, Qt::MatchExactly);
     
     if (!list.isEmpty()) {
         remove(list.first().row());
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "YouTubeVideoModel::onVideoUnfavourited" << video->id();
-#endif
 }
 
 void YouTubeVideoModel::onVideoWatchLater(YouTubeVideo *video) {
     insert(0, new YouTubeVideo(video, this));
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "YouTubeVideoModel::onVideoWatchLater" << video->id();
-#endif
 }

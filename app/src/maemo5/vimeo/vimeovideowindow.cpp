@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -24,8 +24,10 @@
 #include "resources.h"
 #include "settings.h"
 #include "textbrowser.h"
+#include "transfers.h"
 #include "utils.h"
 #include "videodelegate.h"
+#include "videolauncher.h"
 #include "videoplaybackwindow.h"
 #include "videothumbnail.h"
 #include "vimeo.h"
@@ -219,8 +221,8 @@ void VimeoVideoWindow::loadBaseUi() {
     connect(m_relatedDownloadAction, SIGNAL(triggered()), this, SLOT(downloadRelatedVideo()));
     connect(m_relatedShareAction, SIGNAL(triggered()), this, SLOT(shareRelatedVideo()));
     
-    if (!Vimeo::instance()->userId().isEmpty()) {
-        bool interact = Vimeo::instance()->hasScope(QVimeo::INTERACT_SCOPE);
+    if (!Vimeo::userId().isEmpty()) {
+        bool interact = Vimeo::hasScope(QVimeo::INTERACT_SCOPE);
         
         if (interact) {
             m_favouriteAction = new QAction(tr("Like"), this);
@@ -237,7 +239,7 @@ void VimeoVideoWindow::loadBaseUi() {
             connect(m_relatedWatchLaterAction, SIGNAL(triggered()), this, SLOT(watchRelatedVideoLater()));
         }
         
-        if (Vimeo::instance()->hasScope(QVimeo::EDIT_SCOPE)) {
+        if (Vimeo::hasScope(QVimeo::EDIT_SCOPE)) {
             m_playlistAction = new QAction(tr("Add to album"), this);
             m_relatedPlaylistAction = new QAction(tr("Add to album"), this);
             menuBar()->addAction(m_playlistAction);
@@ -284,8 +286,7 @@ void VimeoVideoWindow::addComment() {
         return;
     }
     
-    VimeoCommentDialog *dialog = new VimeoCommentDialog(m_video->id(), this);
-    dialog->open();
+    VimeoCommentDialog(m_video->id(), this).exec();
 }
 
 void VimeoVideoWindow::addVideoToPlaylist() {
@@ -293,8 +294,7 @@ void VimeoVideoWindow::addVideoToPlaylist() {
         return;
     }
     
-    VimeoPlaylistDialog *dialog = new VimeoPlaylistDialog(m_video, this);
-    dialog->open();
+    VimeoPlaylistDialog(m_video, this).exec();
 }
 
 void VimeoVideoWindow::downloadVideo() {
@@ -302,8 +302,15 @@ void VimeoVideoWindow::downloadVideo() {
         return;
     }
     
-    VimeoDownloadDialog *dialog = new VimeoDownloadDialog(m_video->id(), m_video->title(), this);
-    dialog->open();
+    VimeoDownloadDialog dialog(this);
+    dialog.list(m_video->id());
+    
+    if (dialog.exec() == QDialog::Accepted) {
+        Transfers::instance()->addDownloadTransfer(Resources::VIMEO, m_video->id(), dialog.streamId(),
+                                                   QUrl(), m_video->title(), dialog.category(),
+                                                   dialog.subtitlesLanguage(), dialog.customCommand(),
+                                                   dialog.customCommandOverrideEnabled());
+    }
 }
 
 void VimeoVideoWindow::playVideo() {
@@ -311,14 +318,18 @@ void VimeoVideoWindow::playVideo() {
         return;
     }
     
-    if (Settings::instance()->videoPlayer() == "cutetube") {
+    if (Settings::videoPlayer() == "cutetube") {
         VideoPlaybackWindow *window = new VideoPlaybackWindow(this);
         window->show();
         window->addVideo(m_video);
     }
-    else {
-        VimeoPlaybackDialog *dialog = new VimeoPlaybackDialog(m_video->id(), m_video->title(), this);
-        dialog->open();
+    else {    
+        VimeoPlaybackDialog dialog(this);
+        dialog.list(m_video->id());
+
+        if ((dialog.exec() == QDialog::Accepted) && (!VideoLauncher::playVideo(dialog.streamUrl()))) {
+            QMessageBox::critical(this, tr("Error"), tr("Unable to play video"));
+        }
     }
 }
 
@@ -339,7 +350,7 @@ void VimeoVideoWindow::setVideoFavourite() {
 }
 
 void VimeoVideoWindow::shareVideo() {
-    Clipboard::instance()->setText(m_video->url().toString());
+    Clipboard::setText(m_video->url().toString());
     QMaemo5InformationBox::information(this, tr("URL copied to clipboard"));
 }
 
@@ -359,18 +370,30 @@ void VimeoVideoWindow::addRelatedVideoToPlaylist() {
     }
     
     if (VimeoVideo *video = m_relatedModel->get(m_relatedView->currentIndex().row())) {
-        VimeoPlaylistDialog *dialog = new VimeoPlaylistDialog(video, this);
-        dialog->open();
+        VimeoPlaylistDialog(video, this).exec();
     }
 }
 
 void VimeoVideoWindow::downloadRelatedVideo() {
-    if ((!isBusy()) && (m_relatedView->currentIndex().isValid())) {
-        QString id = m_relatedView->currentIndex().data(VimeoVideoModel::IdRole).toString();
-        QString title = m_relatedView->currentIndex().data(VimeoVideoModel::TitleRole).toString();
+    if (isBusy()) {
+        return;
+    }
+    
+    const QModelIndex index = m_relatedView->currentIndex();
+    
+    if (index.isValid()) {
+        const QString id = index.data(VimeoVideoModel::IdRole).toString();
+        const QString title = index.data(VimeoVideoModel::TitleRole).toString();
         
-        VimeoDownloadDialog *dialog = new VimeoDownloadDialog(id, title, this);
-        dialog->open();
+        VimeoDownloadDialog dialog(this);
+        dialog.list(id);
+
+        if (dialog.exec() == QDialog::Accepted) {
+            Transfers::instance()->addDownloadTransfer(Resources::VIMEO, id, dialog.streamId(),
+                                                       QUrl(), title, dialog.category(),
+                                                       dialog.subtitlesLanguage(), dialog.customCommand(),
+                                                       dialog.customCommandOverrideEnabled());
+        }
     }
 }
 
@@ -379,19 +402,20 @@ void VimeoVideoWindow::playRelatedVideo(const QModelIndex &index) {
         return;
     }
     
-    if (Settings::instance()->videoPlayer() == "cutetube") {
+    if (Settings::videoPlayer() == "cutetube") {
         if (VimeoVideo *video = m_relatedModel->get(index.row())) {
             VideoPlaybackWindow *window = new VideoPlaybackWindow(this);
             window->show();
             window->addVideo(video);
         }
     }
-    else {
-        QString id = index.data(VimeoVideoModel::IdRole).toString();
-        QString title = index.data(VimeoVideoModel::TitleRole).toString();
-    
-        VimeoPlaybackDialog *dialog = new VimeoPlaybackDialog(id, title, this);
-        dialog->open();
+    else {    
+        VimeoPlaybackDialog dialog(this);
+        dialog.list(index.data(VimeoVideoModel::IdRole).toString());
+
+        if ((dialog.exec() == QDialog::Accepted) && (!VideoLauncher::playVideo(dialog.streamUrl()))) {
+            QMessageBox::critical(this, tr("Error"), tr("Unable to play video"));
+        }
     }
 }
 
@@ -415,7 +439,7 @@ void VimeoVideoWindow::setRelatedVideoFavourite() {
 
 void VimeoVideoWindow::shareRelatedVideo() {
     if (const VimeoVideo *video = m_relatedModel->get(m_relatedView->currentIndex().row())) {
-        Clipboard::instance()->setText(video->url().toString());
+        Clipboard::setText(video->url().toString());
         QMaemo5InformationBox::information(this, tr("URL copied to clipboard"));
     }
 }
@@ -507,7 +531,7 @@ void VimeoVideoWindow::showRelatedVideos() {
 }
 
 void VimeoVideoWindow::showResource(const QUrl &url) {
-    QVariantMap resource = Resources::getResourceFromUrl(url.toString());
+    const QVariantMap resource = Resources::getResourceFromUrl(url.toString());
     
     if (resource.value("service") != Resources::VIMEO) {
         QDesktopServices::openUrl(url);

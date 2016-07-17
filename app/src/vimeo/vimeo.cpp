@@ -1,29 +1,27 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "vimeo.h"
 #include "database.h"
+#include "logger.h"
 #include <qvimeo/urls.h>
 #include <QSettings>
 #include <QSqlRecord>
 #if QT_VERSION >= 0x050000
 #include <QUrlQuery>
-#endif
-#ifdef CUTETUBE_DEBUG
-#include <QDebug>
 #endif
 
 static const QString CLIENT_ID("0bf284bf5a0e46630f5097a590a76ef976a94322");
@@ -40,29 +38,24 @@ Vimeo::SubscriptionCache Vimeo::subscriptionCache;
 
 Vimeo* Vimeo::self = 0;
 
-Vimeo::Vimeo(QObject *parent) :
-    QObject(parent)
+Vimeo::Vimeo() :
+    QObject()
 {
-    if (!self) {
-        self = this;
-    }
 }
 
 Vimeo::~Vimeo() {
-    if (self == this) {
-        self = 0;
-    }
+    self = 0;
 }
 
 Vimeo* Vimeo::instance() {
-    return self;
+    return self ? self : self = new Vimeo;
 }
 
 QString Vimeo::getErrorString(const QVariantMap &error) {
     return error.contains("error") ? error.value("error").toString() : tr("Unknown error");
 }
 
-QUrl Vimeo::authUrl() const {
+QUrl Vimeo::authUrl() {
     QUrl url(QVimeo::AUTH_URL);
 #if QT_VERSION >= 0x050000
     QUrlQuery query(url);
@@ -91,7 +84,7 @@ QUrl Vimeo::authUrl() const {
     return url;
 }
 
-QString Vimeo::userId() const {
+QString Vimeo::userId() {
     return QSettings().value("Vimeo/userId").toString();
 }
 
@@ -101,11 +94,14 @@ void Vimeo::setUserId(const QString &id) {
         subscriptionCache.ids.clear();
         subscriptionCache.filters.clear();
         subscriptionCache.hasMore = true;
-        emit userIdChanged();
+
+        if (self) {
+            emit self->userIdChanged(id);
+        }
     }
 }
 
-QString Vimeo::accessToken() const {
+QString Vimeo::accessToken() {
     if (userId().isEmpty()) {
         return CLIENT_TOKEN;
     }
@@ -114,7 +110,7 @@ QString Vimeo::accessToken() const {
                                                 .arg(userId()));
     
     if (query.lastError().isValid()) {
-        qDebug() << "Vimeo::accessToken: database error:" << query.lastError().text();
+        Logger::log("Vimeo::accessToken(): database error: " + query.lastError().text());
         return QString();
     }
     
@@ -130,73 +126,70 @@ void Vimeo::setAccessToken(const QString &token) {
                                                 .arg(token).arg(userId()));
 
     if (query.lastError().isValid()) {
-        qDebug() << "Vimeo::setAccessToken: database error:" << query.lastError().text();
+        Logger::log("Vimeo::setAccessToken(): database error: " + query.lastError().text());
     }
-    else {
-        emit accessTokenChanged();
+    else if (self) {
+        emit self->accessTokenChanged(token);
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "Vimeo::setAccessToken" << token;
-#endif
 }
 
-QString Vimeo::clientId() const {
+QString Vimeo::clientId() {
     return QSettings().value("Vimeo/clientId", CLIENT_ID).toString();
 }
 
 void Vimeo::setClientId(const QString &id) {
     if (id != clientId()) {
         QSettings().setValue("Vimeo/clientId", id);
-        emit clientIdChanged();
+
+        if (self) {
+            emit self->clientIdChanged(id);
+        }
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "Vimeo::setClientId" << id;
-#endif
 }
 
-QString Vimeo::clientSecret() const {
+QString Vimeo::clientSecret() {
     return QSettings().value("Vimeo/clientSecret", CLIENT_SECRET).toString();
 }
 
 void Vimeo::setClientSecret(const QString &secret) {
     if (secret != clientSecret()) {
         QSettings().setValue("Vimeo/clientSecret", secret);
-        emit clientSecretChanged();
+
+        if (self) {
+            emit self->clientSecretChanged(secret);
+        }
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "Vimeo::setClientSecret" << secret;
-#endif
 }
 
-QString Vimeo::redirectUri() const {
+QString Vimeo::redirectUri() {
     return QSettings().value("Vimeo/redirectUri", REDIRECT_URI).toString();
 }
 
 void Vimeo::setRedirectUri(const QString &uri) {
     if (uri != redirectUri()) {
         QSettings().setValue("Vimeo/redirectUri", uri);
-        emit redirectUriChanged();
+
+        if (self) {
+            emit self->redirectUriChanged(uri);
+        }
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "Vimeo::setRedirectUri" << uri;
-#endif
 }
 
-QStringList Vimeo::scopes() const {
+QStringList Vimeo::scopes() {
     return QSettings().value("Vimeo/scopes", SCOPES).toStringList();
 }
 
 void Vimeo::setScopes(const QStringList &s) {
     if (s != scopes()) {
         QSettings().setValue("Vimeo/scopes", s);
-        emit scopesChanged();
+
+        if (self) {
+            emit self->scopesChanged(s);
+        }
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "Vimeo::setScopes" << s;
-#endif
 }
 
-bool Vimeo::hasScope(const QString &scope) const {
+bool Vimeo::hasScope(const QString &scope) {
     if (userId().isEmpty()) {
         return false;
     }
@@ -205,7 +198,7 @@ bool Vimeo::hasScope(const QString &scope) const {
                                                 .arg(userId()));
     
     if (query.lastError().isValid()) {
-        qDebug() << "Vimeo::hasScope: database error:" << query.lastError().text();
+        Logger::log("Vimeo::hasScope(): database error: " + query.lastError().text());
         return false;
     }
     

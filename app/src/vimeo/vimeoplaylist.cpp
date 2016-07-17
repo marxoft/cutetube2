@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -113,8 +113,8 @@ void VimeoPlaylist::loadPlaylist(const QString &id) {
 }
 
 void VimeoPlaylist::loadPlaylist(const QVariantMap &playlist) {
-    QVariantMap user = playlist.value("user").toMap();
-    QString thumbnailId = playlist.value("pictures").toMap().value("uri").toString().section('/', -1);
+    const QVariantMap user = playlist.value("user").toMap();
+    const QString thumbnailId = playlist.value("pictures").toMap().value("uri").toString().section('/', -1);
     
     setDate(QDateTime::fromString(playlist.value("created_time").toString(), Qt::ISODate).toString("dd MMM yyyy"));
     setDescription(playlist.value("description").toString());
@@ -181,9 +181,9 @@ void VimeoPlaylist::removeVideo(VimeoVideo *video) {
 void VimeoPlaylist::initRequest() {
     if (!m_request) {
         m_request = new QVimeo::ResourcesRequest(this);
-        m_request->setClientId(Vimeo::instance()->clientId());
-        m_request->setClientSecret(Vimeo::instance()->clientSecret());
-        m_request->setAccessToken(Vimeo::instance()->accessToken());
+        m_request->setClientId(Vimeo::clientId());
+        m_request->setClientSecret(Vimeo::clientSecret());
+        m_request->setAccessToken(Vimeo::accessToken());
     
         connect(m_request, SIGNAL(accessTokenChanged(QString)), Vimeo::instance(), SLOT(setAccessToken(QString)));
     }

@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -51,7 +51,6 @@ class Dailymotion : public QObject
     Q_PROPERTY(QString USER_INFO_SCOPE READ userInfoScope CONSTANT)
         
 public:
-    explicit Dailymotion(QObject *parent = 0);
     ~Dailymotion();
     
     static const QStringList CATEGORY_FIELDS;
@@ -66,23 +65,23 @@ public:
             
     Q_INVOKABLE static QString getErrorString(const QVariantMap &error);
     
-    Q_INVOKABLE QUrl authUrl() const;
+    Q_INVOKABLE static QUrl authUrl();
     
-    QString userId() const;
+    static QString userId();
     
-    QString accessToken() const;
+    static QString accessToken();
     
-    QString refreshToken() const;
+    static QString refreshToken();
             
-    QString clientId() const;
+    static QString clientId();
     
-    QString clientSecret() const;
+    static QString clientSecret();
     
-    QString redirectUri() const;
+    static QString redirectUri();
     
-    QStringList scopes() const;
+    static QStringList scopes();
     
-    Q_INVOKABLE bool hasScope(const QString &scope) const;
+    Q_INVOKABLE static bool hasScope(const QString &scope);
     
     static QString emailScope();
     static QString manageCommentsScope();
@@ -96,28 +95,28 @@ public:
     static QString userInfoScope();
     
 public Q_SLOTS:    
-    void setUserId(const QString &id);
+    static void setUserId(const QString &id);
     
-    void setAccessToken(const QString &token);
+    static void setAccessToken(const QString &token);
     
-    void setRefreshToken(const QString &token);
+    static void setRefreshToken(const QString &token);
     
-    void setClientId(const QString &id);
+    static void setClientId(const QString &id);
     
-    void setClientSecret(const QString &secret);
+    static void setClientSecret(const QString &secret);
     
-    void setRedirectUri(const QString &uri);
+    static void setRedirectUri(const QString &uri);
     
-    void setScopes(const QStringList &s);
+    static void setScopes(const QStringList &s);
     
 Q_SIGNALS:
-    void userIdChanged();
-    void accessTokenChanged();
-    void refreshTokenChanged();
-    void clientIdChanged();
-    void clientSecretChanged();
-    void redirectUriChanged();
-    void scopesChanged();
+    void userIdChanged(const QString &id);
+    void accessTokenChanged(const QString &token);
+    void refreshTokenChanged(const QString &token);
+    void clientIdChanged(const QString &id);
+    void clientSecretChanged(const QString &secret);
+    void redirectUriChanged(const QString &uri);
+    void scopesChanged(const QStringList &scopes);
 
     void commentAdded(DailymotionComment *comment);
     
@@ -133,6 +132,8 @@ Q_SIGNALS:
     void videoUnfavourited(DailymotionVideo *video);
 
 private:
+    Dailymotion();
+    
     struct SubscriptionCache {
         QStringList ids;
         QVariantMap filters;
@@ -150,7 +151,7 @@ private:
     friend class DailymotionComment;
     friend class DailymotionPlaylist;
     friend class DailymotionUser;
-    friend class DailymotionVideo;  
+    friend class DailymotionVideo;
 };
 
 #endif // DAILYMOTION_H

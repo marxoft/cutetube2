@@ -1,24 +1,21 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "youtubecommentmodel.h"
 #include "youtube.h"
-#ifdef CUTETUBE_DEBUG
-#include <QDebug>
-#endif
 
 YouTubeCommentModel::YouTubeCommentModel(QObject *parent) :
     QAbstractListModel(parent),
@@ -35,11 +32,11 @@ YouTubeCommentModel::YouTubeCommentModel(QObject *parent) :
 #if QT_VERSION < 0x050000
     setRoleNames(m_roles);
 #endif
-    m_request->setApiKey(YouTube::instance()->apiKey());
-    m_request->setClientId(YouTube::instance()->clientId());
-    m_request->setClientSecret(YouTube::instance()->clientSecret());
-    m_request->setAccessToken(YouTube::instance()->accessToken());
-    m_request->setRefreshToken(YouTube::instance()->refreshToken());
+    m_request->setApiKey(YouTube::apiKey());
+    m_request->setClientId(YouTube::clientId());
+    m_request->setClientSecret(YouTube::clientSecret());
+    m_request->setAccessToken(YouTube::accessToken());
+    m_request->setRefreshToken(YouTube::refreshToken());
     
     connect(m_request, SIGNAL(accessTokenChanged(QString)), YouTube::instance(), SLOT(setAccessToken(QString)));
     connect(m_request, SIGNAL(refreshTokenChanged(QString)), YouTube::instance(), SLOT(setRefreshToken(QString)));
@@ -83,7 +80,7 @@ void YouTubeCommentModel::fetchMore(const QModelIndex &) {
 }
 
 QVariant YouTubeCommentModel::data(const QModelIndex &index, int role) const {
-    if (YouTubeComment *comment = get(index.row())) {
+    if (const YouTubeComment *comment = get(index.row())) {
         return comment->property(m_roles[role]);
     }
     
@@ -93,7 +90,7 @@ QVariant YouTubeCommentModel::data(const QModelIndex &index, int role) const {
 QMap<int, QVariant> YouTubeCommentModel::itemData(const QModelIndex &index) const {
     QMap<int, QVariant> map;
     
-    if (YouTubeComment *comment = get(index.row())) {
+    if (const YouTubeComment *comment = get(index.row())) {
         QHashIterator<int, QByteArray> iterator(m_roles);
         
         while (iterator.hasNext()) {
@@ -106,7 +103,7 @@ QMap<int, QVariant> YouTubeCommentModel::itemData(const QModelIndex &index) cons
 }
 
 QVariant YouTubeCommentModel::data(int row, const QByteArray &role) const {
-    if (YouTubeComment *comment = get(row)) {
+    if (const YouTubeComment *comment = get(row)) {
         return comment->property(role);
     }
     
@@ -116,8 +113,8 @@ QVariant YouTubeCommentModel::data(int row, const QByteArray &role) const {
 QVariantMap YouTubeCommentModel::itemData(int row) const {
     QVariantMap map;
     
-    if (YouTubeComment *comment = get(row)) {
-        foreach (QByteArray role, m_roles.values()) {
+    if (const YouTubeComment *comment = get(row)) {
+        foreach (const QByteArray &role, m_roles.values()) {
             map[role] = comment->property(role);
         }
     }
@@ -197,18 +194,18 @@ void YouTubeCommentModel::remove(int row) {
 
 void YouTubeCommentModel::onRequestFinished() {
     if (m_request->status() == QYouTube::ResourcesRequest::Ready) {
-        QVariantMap result = m_request->result().toMap();
+        const QVariantMap result = m_request->result().toMap();
         
         if (!result.isEmpty()) {
             m_nextPageToken = result.value("nextPageToken").toString();
-            QVariantList list = result.value("items").toList();
+            const QVariantList list = result.value("items").toList();
     
             if (result.value("kind") == "youtube#commentThreadListResponse") {
                 foreach (QVariant item, list) {
-                    QVariantMap thread = item.toMap();
+                    const QVariantMap thread = item.toMap();
                     append(new YouTubeComment(thread.value("snippet").toMap().value("topLevelComment").toMap(), this));
                     
-                    foreach (QVariant reply, thread.value("replies").toList()) {
+                    foreach (const QVariant &reply, thread.value("replies").toList()) {
                         append(new YouTubeComment(reply.toMap(), this));
                     }
                 }
@@ -216,7 +213,7 @@ void YouTubeCommentModel::onRequestFinished() {
             else {
                 beginInsertRows(QModelIndex(), m_items.size(), m_items.size() + list.size() - 1);
                 
-                foreach (QVariant item, list) {
+                foreach (const QVariant &item, list) {
                     m_items << new YouTubeComment(item.toMap(), this);
                 }
                 
@@ -236,11 +233,8 @@ void YouTubeCommentModel::onCommentAdded(YouTubeComment *comment) {
             insert(0, new YouTubeComment(comment, this));
         }
         else {
-            QModelIndexList list = match(index(0), IdRole, comment->parentId(), 1, Qt::MatchExactly);
+            const QModelIndexList list = match(index(0), IdRole, comment->parentId(), 1, Qt::MatchExactly);
             insert(list.isEmpty() ? 0 : list.first().row() + 1, new YouTubeComment(comment, this));
         }
     }
-#ifdef CUTETUBE_DEBUG
-    qDebug() << "YouTubeCommentModel::onCommentAdded" << comment->videoId() << comment->parentId();
-#endif
 }
