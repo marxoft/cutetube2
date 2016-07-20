@@ -46,7 +46,7 @@ private Q_SLOTS:
     void onRequestFinished();
     
 Q_SIGNALS:
-    void statusChanged(ResourcesRequest::Status status);
+    void statusChanged(ResourcesRequest::Status s);
 
 private:
     ResourcesRequest* request();

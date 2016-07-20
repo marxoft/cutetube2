@@ -90,7 +90,7 @@ private Q_SLOTS:
     void onVideoWatchLater(VimeoVideo *video);
     
 Q_SIGNALS:
-    void countChanged(int c);
+    void countChanged(int count);
     void statusChanged(QVimeo::ResourcesRequest::Status s);
     
 private:

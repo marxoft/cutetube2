@@ -89,7 +89,7 @@ private Q_SLOTS:
     void onTransferStatusChanged();
     
 Q_SIGNALS:
-    void countChanged(int c);
+    void countChanged(int count);
     
 private:
     QHash<int, QByteArray> m_roles;

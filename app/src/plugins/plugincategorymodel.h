@@ -55,7 +55,7 @@ private Q_SLOTS:
     
 Q_SIGNALS:
     void serviceChanged();
-    void statusChanged(ResourcesRequest::Status status);
+    void statusChanged(ResourcesRequest::Status s);
         
 private:
     ResourcesRequest* request();

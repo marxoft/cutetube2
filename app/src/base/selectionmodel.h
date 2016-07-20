@@ -63,7 +63,7 @@ public Q_SLOTS:
     void clear();
     
 Q_SIGNALS:
-    void countChanged(int c);
+    void countChanged(int count);
     void textAlignmentChanged();
     
 protected:

@@ -83,7 +83,7 @@ private Q_SLOTS:
     void onCommentAdded(YouTubeComment *comment);
     
 Q_SIGNALS:
-    void countChanged(int c);
+    void countChanged(int count);
     void statusChanged(QYouTube::ResourcesRequest::Status s);
     
 private:

@@ -82,7 +82,7 @@ private Q_SLOTS:
     void onPlaylistDeleted(DailymotionPlaylist *playlist);
     
 Q_SIGNALS:
-    void countChanged(int c);
+    void countChanged(int count);
     void statusChanged(QDailymotion::ResourcesRequest::Status s);
     
 private:

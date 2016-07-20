@@ -60,6 +60,9 @@ public Q_SLOTS:
 
     int load();
 
+Q_SIGNALS:
+    void loaded(int count);
+
 private:
     ServicePluginConfig* getConfigByFilePath(const QString &filePath) const;
 

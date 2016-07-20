@@ -54,7 +54,7 @@ public:
     Q_INVOKABLE bool selectAccount(int row);
 
 Q_SIGNALS:
-    void countChanged(int c);
+    void countChanged(int count);
     
 private:
     QHash<int, QByteArray> m_roles;

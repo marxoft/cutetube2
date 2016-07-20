@@ -89,7 +89,7 @@ private Q_SLOTS:
     void onVideoUnfavourited(DailymotionVideo *video);
     
 Q_SIGNALS:
-    void countChanged(int c);
+    void countChanged(int count);
     void statusChanged(QDailymotion::ResourcesRequest::Status s);
     
 private:

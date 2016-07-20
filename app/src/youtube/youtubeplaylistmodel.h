@@ -87,7 +87,7 @@ private Q_SLOTS:
     void onPlaylistDeleted(YouTubePlaylist *playlist);
     
 Q_SIGNALS:
-    void countChanged(int c);
+    void countChanged(int count);
     void statusChanged(QYouTube::ResourcesRequest::Status s);
     
 private:

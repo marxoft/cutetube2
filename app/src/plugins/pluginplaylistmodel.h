@@ -84,7 +84,7 @@ private Q_SLOTS:
 Q_SIGNALS:
     void countChanged(int count);
     void serviceChanged();
-    void statusChanged(ResourcesRequest::Status status);
+    void statusChanged(ResourcesRequest::Status s);
     
 private:
     void append(PluginPlaylist *playlist);

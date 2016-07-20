@@ -74,6 +74,8 @@ private:
     QNetworkAccessManager* networkAccessManager();
 
     static const QString BASE_URL;
+
+    static const QByteArray USER_AGENT;
     
     static const QRegExp PAGE_REGEXP;
         

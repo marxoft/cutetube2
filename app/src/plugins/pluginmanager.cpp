@@ -164,6 +164,7 @@ int PluginManager::load() {
 
     if (count > 0) {
         qSort(m_plugins.begin(), m_plugins.end(), displayNameLessThan);
+        emit loaded(count);
     }
 
     m_lastLoaded = QDateTime::currentDateTime();

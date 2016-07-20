@@ -29,6 +29,8 @@
 
 const QString XHamsterRequest::BASE_URL("http://xhamster.com");
 
+const QByteArray XHamsterRequest::USER_AGENT("Wget/1.13.4 (linux-gnu)");
+
 const QRegExp XHamsterRequest::PAGE_REGEXP("new-(\\d+)\\.html$");
 
 const int XHamsterRequest::MAX_REDIRECTS = 8;
@@ -130,7 +132,9 @@ bool XHamsterRequest::search(const QString &resourceType, const QString &query, 
 void XHamsterRequest::getVideo(const QString &url) {
     setStatus(Loading);
     m_redirects = 0;
-    QNetworkReply *reply = networkAccessManager()->get(QNetworkRequest(url));
+    QNetworkRequest request(url);
+    request.setRawHeader("User-Agent", USER_AGENT);
+    QNetworkReply *reply = networkAccessManager()->get(request);
     connect(reply, SIGNAL(finished()), this, SLOT(checkVideo()));
     connect(this, SIGNAL(finished()), reply, SLOT(deleteLater()));
 }
@@ -195,7 +199,9 @@ void XHamsterRequest::checkVideo() {
 void XHamsterRequest::listVideos(const QString &url) {
     setStatus(Loading);
     m_redirects = 0;
-    QNetworkReply *reply = networkAccessManager()->get(QNetworkRequest(url));
+    QNetworkRequest request(url);
+    request.setRawHeader("User-Agent", USER_AGENT);
+    QNetworkReply *reply = networkAccessManager()->get(request);
     connect(reply, SIGNAL(finished()), this, SLOT(checkVideos()));
     connect(this, SIGNAL(finished()), reply, SLOT(deleteLater()));
 }
@@ -281,7 +287,9 @@ void XHamsterRequest::checkVideos() {
 void XHamsterRequest::listCategories(const QString &url) {
     setStatus(Loading);
     m_redirects = 0;
-    QNetworkReply *reply = networkAccessManager()->get(QNetworkRequest(url));
+    QNetworkRequest request(url);
+    request.setRawHeader("User-Agent", USER_AGENT);
+    QNetworkReply *reply = networkAccessManager()->get(request);
     connect(reply, SIGNAL(finished()), this, SLOT(checkCategories()));
     connect(this, SIGNAL(finished()), reply, SLOT(deleteLater()));
 }
@@ -347,7 +355,9 @@ void XHamsterRequest::checkCategories() {
 void XHamsterRequest::listStreams(const QString &url) {
     setStatus(Loading);
     m_redirects = 0;
-    QNetworkReply *reply = networkAccessManager()->get(QNetworkRequest(url));
+    QNetworkRequest request(url);
+    request.setRawHeader("User-Agent", USER_AGENT);
+    QNetworkReply *reply = networkAccessManager()->get(request);
     connect(reply, SIGNAL(finished()), this, SLOT(checkStreams()));
     connect(this, SIGNAL(finished()), reply, SLOT(deleteLater()));
 }
@@ -452,7 +462,9 @@ QUrl XHamsterRequest::incrementPageNumber(QUrl url) {
 
 void XHamsterRequest::followRedirect(const QString &url, const char *slot) {
     m_redirects++;
-    QNetworkReply *reply = networkAccessManager()->get(QNetworkRequest(url));
+    QNetworkRequest request(url);
+    request.setRawHeader("User-Agent", USER_AGENT);
+    QNetworkReply *reply = networkAccessManager()->get(request);
     connect(reply, SIGNAL(finished()), this, slot);
 }
 

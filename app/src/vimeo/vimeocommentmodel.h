@@ -80,7 +80,7 @@ private Q_SLOTS:
     void onCommentAdded(VimeoComment *comment);
     
 Q_SIGNALS:
-    void countChanged(int c);
+    void countChanged(int count);
     void statusChanged(QVimeo::ResourcesRequest::Status s);
     
 private:

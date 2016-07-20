@@ -80,7 +80,7 @@ private Q_SLOTS:
     void onCommentAdded(DailymotionComment *comment);
     
 Q_SIGNALS:
-    void countChanged(int c);
+    void countChanged(int count);
     void statusChanged(QDailymotion::ResourcesRequest::Status s);
     
 private:

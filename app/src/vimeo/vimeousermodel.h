@@ -84,7 +84,7 @@ private Q_SLOTS:
     void onUserUnsubscribed(VimeoUser *user);
     
 Q_SIGNALS:
-    void countChanged(int c);
+    void countChanged(int count);
     void statusChanged(QVimeo::ResourcesRequest::Status s);
     
 private:

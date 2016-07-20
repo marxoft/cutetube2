@@ -91,7 +91,7 @@ private Q_SLOTS:
     void onUserUnsubscribed(YouTubeUser *user);
     
 Q_SIGNALS:
-    void countChanged(int c);
+    void countChanged(int count);
     void statusChanged(QYouTube::ResourcesRequest::Status s);
     
 private:

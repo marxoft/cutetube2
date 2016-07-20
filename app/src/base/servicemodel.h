@@ -30,6 +30,7 @@ public:
         SelectionModel(parent)
     {
         reload();
+        connect(PluginManager::instance(), SIGNAL(loaded(int)), this, SLOT(reload()));
     }
 
 public Q_SLOTS:

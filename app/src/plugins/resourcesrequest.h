@@ -57,7 +57,7 @@ public Q_SLOTS:
     virtual bool search(const QString &resourceType, const QString &query, const QString &order) = 0;
 
 Q_SIGNALS:
-    void statusChanged(ResourcesRequest::Status status);
+    void statusChanged(ResourcesRequest::Status s);
     void finished();
 };
 
