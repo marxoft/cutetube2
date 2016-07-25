@@ -1,0 +1,11 @@
+#!/bin/sh
+
+set -e
+
+echo "Removing highlight handlers from defaults.list"
+sed -i -e '/x-maemo-highlight\/youtube-video-url=cutetube2.desktop\x-maemo-highlight\/dailymotion-video-url=cutetube2.desktop\x-maemo-highlight\/vimeo-video-url=cutetube2.desktop/d' /usr/share/applications/defaults.list
+
+#DEBHELPER#
+
+# Make sure the uninstallation is always considered successful
+exit 0
