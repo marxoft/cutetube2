@@ -1,3 +1,8 @@
+cutetube2 (0.3.1) unstable; urgency=low
+  * Allow accounts to be deleted if revoking the access token fails.
+
+ -- Stuart Howarth <showarth@marxoft.co.uk>  Sat, 23 Jul 2016 15:44:26 +0100
+
 cutetube2 (0.3.0) unstable; urgency=low
   * New plugin API supporting Qt/C++ and JS plugins.
   * Replace option to save as audio with custom command.
