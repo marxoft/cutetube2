@@ -15,6 +15,7 @@
  */
 
 #include "youtubeauthdialog.h"
+#include "logger.h"
 #include "youtube.h"
 #include "webview.h"
 #include <QVBoxLayout>
@@ -25,6 +26,7 @@ YouTubeAuthDialog::YouTubeAuthDialog(QWidget *parent) :
     m_layout(new QVBoxLayout(this))
 {
     setWindowTitle(tr("Authentication"));
+    setMinimumHeight(360);
     
     m_layout->addWidget(m_view);
     
@@ -47,6 +49,8 @@ void YouTubeAuthDialog::login() {
 }
 
 void YouTubeAuthDialog::onWebViewTitleChanged(const QString &title) {
+    Logger::log("DailymotionAuthDialog::onWebViewTitleChanged(): " + title);
+    
     if (title.contains("code=")) {
         setCode(title.section("code=", 1, 1).section('&', 0, 0));
         accept();

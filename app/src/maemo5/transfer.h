@@ -266,6 +266,8 @@ private:
     TransferType m_transferType;
     
     CommandList m_commands;
+    
+    bool m_metadataSet;
 };
     
 #endif // TRANSFER_H

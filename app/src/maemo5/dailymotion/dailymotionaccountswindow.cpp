@@ -37,7 +37,8 @@ DailymotionAccountsWindow::DailymotionAccountsWindow(StackedWindow *parent) :
     m_view(new ListView(this)),
     m_addAction(new QAction(tr("Add account"), this)),
     m_removeAction(new QAction(tr("Remove"), this)),
-    m_label(new QLabel(tr("Sign in to your Dailymotion account"), this))
+    m_label(new QLabel(tr("Sign in to your Dailymotion account"), this)),
+    m_revoke(false)
 {
     setWindowTitle(tr("Accounts"));
     setCentralWidget(new QWidget);
@@ -108,6 +109,7 @@ void DailymotionAccountsWindow::showAuthDialog() {
     if (dialog.exec() == QDialog::Accepted) {
         initAuthRequest();
         showProgressIndicator();
+        m_revoke = false;
         m_authRequest->exchangeCodeForAccessToken(dialog.code());
     }
 }
@@ -115,6 +117,7 @@ void DailymotionAccountsWindow::showAuthDialog() {
 void DailymotionAccountsWindow::revokeAccessToken() {
     initAuthRequest();
     showProgressIndicator();
+    m_revoke = true;
     m_authRequest->setAccessToken(m_view->currentIndex().data(DailymotionAccountModel::AccessTokenRole).toString());
     m_authRequest->setRefreshToken(m_view->currentIndex().data(DailymotionAccountModel::RefreshTokenRole).toString());
     m_authRequest->revokeAccessToken();
@@ -124,7 +127,7 @@ void DailymotionAccountsWindow::onAuthRequestFinished() {
     const QVariantMap result = m_authRequest->result().toMap();
     
     if (m_authRequest->status() == QDailymotion::AuthenticationRequest::Ready) {        
-        if (result.isEmpty()) {
+        if (m_revoke) {
             m_view->setEnabled(true);
             m_addAction->setEnabled(true);
             hideProgressIndicator();
@@ -148,7 +151,23 @@ void DailymotionAccountsWindow::onAuthRequestFinished() {
         }
     }
     
-    QMessageBox::critical(this, tr("Authentication failed"), Dailymotion::getErrorString(result));
+    if (m_revoke) {
+        if (QMessageBox::question(this, tr("Error"),
+            tr("Unable to revoke access token. Do you want to delete the account anyway?"),
+            QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
+            const QString username = m_view->currentIndex().data(DailymotionAccountModel::UsernameRole).toString();
+            
+            if (m_model->removeAccount(m_view->currentIndex().row())) {
+                QMaemo5InformationBox::information(this, tr("Account '%1' removed").arg(username));
+            }
+            else {
+                QMessageBox::critical(this, tr("Database error"), m_model->errorString());
+            }
+        }
+    }
+    else {
+        QMessageBox::critical(this, tr("Authentication failed"), Dailymotion::getErrorString(result));
+    }
     
     m_view->setEnabled(true);
     m_addAction->setEnabled(true);

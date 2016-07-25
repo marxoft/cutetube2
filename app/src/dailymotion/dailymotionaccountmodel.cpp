@@ -90,9 +90,21 @@ bool DailymotionAccountModel::addAccount(const QString &userId, const QString &u
     record.append(refreshTokenField);
     record.append(scopesField);
     
+    const int count = rowCount();
+    
+    for (int i = 0; i < count; i++) {
+        if (data(index(i, 0)) == userId) {
+            if (setRecord(i, record)) {
+                Dailymotion::setUserId(userId);
+                return true;
+            }
+            
+            return false;
+        }
+    }
+    
     if (insertRecord(-1, record)) {
         Dailymotion::setUserId(userId);
-        const int count = rowCount();
         emit dataChanged(index(0, 0), index(count - 1, columnCount() - 1));
         emit countChanged(count);
         return true;
@@ -102,7 +114,7 @@ bool DailymotionAccountModel::addAccount(const QString &userId, const QString &u
 }
 
 bool DailymotionAccountModel::removeAccount(int row) {
-    QString userId = data(index(row, 0)).toString();
+    const QString userId = data(index(row, 0)).toString();
     
     if (removeRows(row, 1)) {
         if (userId == Dailymotion::userId()) {

@@ -40,7 +40,8 @@ Transfer::Transfer(QObject *parent) :
     m_bytesTransferred(0),
     m_redirects(0),
     m_status(Paused),
-    m_transferType(Download)
+    m_transferType(Download),
+    m_metadataSet(false)
 {
 }
 
@@ -582,28 +583,45 @@ void Transfer::moveDownloadedFiles() {
 }
 
 void Transfer::onReplyMetaDataChanged() {
-    if (size() > 0) {
+    if ((m_metadataSet) || (m_reply->error() != QNetworkReply::NoError) || (!m_reply->rawHeader("Location").isEmpty())) {
         return;
     }
+
+    qint64 bytes = m_reply->header(QNetworkRequest::ContentLengthHeader).toLongLong();
     
-    qint64 s = m_reply->header(QNetworkRequest::ContentLengthHeader).toLongLong();
-    
-    if (s <= 0) {
-        s = m_reply->rawHeader("Content-Length").toLongLong();
+    if (bytes <= 0) {
+        bytes = m_reply->rawHeader("Content-Length").toLongLong();
     }
 
-    if (s <= 0) {
-        if (!m_reply->rawHeader("Location").isEmpty()) {
-            return;
-        }
+    Logger::log("Transfer::onReplyMetadataChanged(): Content-Length: " + QString::number(bytes));
+    
+    if (bytes > 0) {
+        setSize(bytes + bytesTransferred());
     }
     
-    setSize(s);
+    m_metadataSet = true;
 }
 
 void Transfer::onReplyReadyRead() {
-    m_bytesTransferred += m_reply->bytesAvailable();
-    m_file.write(m_reply->readAll());
+    if (!m_metadataSet) {
+        return;
+    }
+
+    const qint64 bytes = m_reply->bytesAvailable();
+
+    if (bytes < DOWNLOAD_BUFFER_SIZE) {
+        return;
+    }
+
+    if (m_file.write(m_reply->read(bytes)) == -1) {
+        m_reply->deleteLater();
+	m_reply = 0;
+        setErrorString(tr("Cannot write to file - %1").arg(m_file.errorString()));
+        setStatus(Failed);
+        return;
+    }
+    
+    m_bytesTransferred += bytes;
     
     if (m_size > 0) {
         setProgress(m_bytesTransferred * 100 / m_size);
@@ -611,19 +629,13 @@ void Transfer::onReplyReadyRead() {
 }
 
 void Transfer::onReplyFinished() {
-    const QNetworkReply::NetworkError error = m_reply->error();
-    const QString errorString = m_reply->errorString();
-    QString redirect = QString::fromUtf8(m_reply->rawHeader("Location"));
+    const QString redirect = QString::fromUtf8(m_reply->rawHeader("Location"));
 
-    if (redirect.startsWith("/")) {
-        redirect.prepend(m_reply->url().scheme() + "://" + m_reply->url().authority());
-    }
-
-    m_file.close();
-    m_reply->deleteLater();
-    m_reply = 0;
-    
     if (!redirect.isEmpty()) {
+	m_file.close();
+        m_reply->deleteLater();
+        m_reply = 0;
+        
         if (m_redirects < MAX_REDIRECTS) {
             followRedirect(redirect);
         }
@@ -634,6 +646,26 @@ void Transfer::onReplyFinished() {
         
         return;
     }
+
+    const QNetworkReply::NetworkError error = m_reply->error();
+    const QString errorString = m_reply->errorString();
+
+    if ((m_reply->isOpen()) && (error == QNetworkReply::NoError) && (m_file.isOpen())) {
+        const qint64 bytes = m_reply->bytesAvailable();
+        
+        if ((bytes > 0) && (m_metadataSet)) {
+            m_file.write(m_reply->read(bytes));
+            m_bytesTransferred += bytes;
+            
+            if (m_size > 0) {
+                setProgress(m_bytesTransferred * 100 / m_size);
+            }
+        }
+    }
+
+    m_file.close();
+    m_reply->deleteLater();
+    m_reply = 0;
         
     switch (error) {
     case QNetworkReply::NoError:

@@ -97,6 +97,19 @@ bool YouTubeAccountModel::addAccount(const QString &userId, const QString &usern
     record.append(refreshTokenField);
     record.append(scopesField);
     
+    const int count = rowCount();
+    
+    for (int i = 0; i < count; i++) {
+        if (data(index(i, 0)) == userId) {
+            if (setRecord(i, record)) {
+                YouTube::setUserId(userId);
+                return true;
+            }
+            
+            return false;
+        }
+    }
+    
     if (insertRecord(-1, record)) {
         YouTube::setUserId(userId);
         const int count = rowCount();

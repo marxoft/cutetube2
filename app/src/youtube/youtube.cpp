@@ -25,11 +25,12 @@
 #include <QUrlQuery>
 #endif
 
-static const QString API_KEY("AIzaSyDhIlkLzHJKDCNr6thsjlQpZrkY3lO_Uu4");
-static const QString CLIENT_ID("957843447749-ur7hg6de229ug0svjakaiovok76s6ecr.apps.googleusercontent.com");
-static const QString CLIENT_SECRET("dDs2_WwgS16LZVuzqA9rIg-I");
-static const QStringList SCOPES = QStringList() << QYouTube::READ_WRITE_SCOPE << QYouTube::FORCE_SSL_SCOPE;
+const QString YouTube::API_KEY("AIzaSyDhIlkLzHJKDCNr6thsjlQpZrkY3lO_Uu4");
+const QString YouTube::CLIENT_ID("957843447749-ur7hg6de229ug0svjakaiovok76s6ecr.apps.googleusercontent.com");
+const QString YouTube::CLIENT_SECRET("dDs2_WwgS16LZVuzqA9rIg-I");
+const QStringList YouTube::SCOPES = QStringList() << QYouTube::READ_WRITE_SCOPE << QYouTube::FORCE_SSL_SCOPE;
 
+const QRegExp YouTube::DURATION_REGEXP("T((\\d+)H|)((\\d+)M|)((\\d+)S|)");
 const QRegExp YouTube::URL_REGEXP("(http(s|)://(www.|m.|)youtube.com/(v/|.+)(v=|list=|)|http://youtu.be/)",
                                   Qt::CaseInsensitive);
 
@@ -50,37 +51,35 @@ YouTube* YouTube::instance() {
     return self ? self : self = new YouTube;
 }
 
-QString YouTube::formatDuration(const QString &duration) {    
-    QStringList nums;
-    QString num;
-    QRegExp re;
-    
-    foreach (QString s, QStringList() << "H" << "M" << "S") {
-        if (duration.contains(s)) {
-            re.setPattern("\\d+(?=" + s + ")");
-        
-            if (re.indexIn(duration) != -1) {
-                num = re.cap();
-            
-                if (num.size() < 2) {
-                    num.prepend("0");
-                }
-                
-                nums << num;
-            }
-            else if (s != "H") {
-                nums << "00";
-            }
-        }
-        else if (s != "H") {
-            nums << "00";
-        }
+void YouTube::init() {
+    if (accessToken().isEmpty()) {
+        setUserId(QString());
     }
+}
 
-    return nums.join(":");
+QString YouTube::formatDuration(const QString &duration) {
+    if (DURATION_REGEXP.indexIn(duration) != -1) {        
+        const int hours = qMax(0, DURATION_REGEXP.cap(2).toInt());
+        const int mins = qMax(0, DURATION_REGEXP.cap(4).toInt());
+        const int secs = qMax(0, DURATION_REGEXP.cap(6).toInt());
+        
+        if (hours > 0) {
+            return QString("%1:%2:%3").arg(hours, 2, 10, QChar('0'))
+                                      .arg(mins, 2, 10, QChar('0'))
+                                      .arg(secs, 2, 10, QChar('0'));
+        }
+        
+        return QString("%1:%2").arg(mins, 2, 10, QChar('0')).arg(secs, 2, 10, QChar('0'));
+    }
+    
+    return QString("00:00");
 }
 
 QString YouTube::getErrorString(const QVariantMap &error) {
+    if (error.contains("error_description")) {
+        return error.value("error_description").toString();
+    }
+
     const QVariantMap em = error.contains("error") ? error.value("error").toMap() : error;
 
     if (em.contains("message")) {

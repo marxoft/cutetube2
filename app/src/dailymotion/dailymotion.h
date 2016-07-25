@@ -62,7 +62,7 @@ public:
     static const QRegExp URL_REGEXP;
     
     static Dailymotion* instance();
-            
+                
     Q_INVOKABLE static QString getErrorString(const QVariantMap &error);
     
     Q_INVOKABLE static QUrl authUrl();
@@ -75,6 +75,7 @@ public:
             
     static QString clientId();
     
+
     static QString clientSecret();
     
     static QString redirectUri();
@@ -94,7 +95,9 @@ public:
     static QString manageVideosScope();
     static QString userInfoScope();
     
-public Q_SLOTS:    
+public Q_SLOTS:
+    static void init();
+    
     static void setUserId(const QString &id);
     
     static void setAccessToken(const QString &token);
@@ -108,7 +111,7 @@ public Q_SLOTS:
     static void setRedirectUri(const QString &uri);
     
     static void setScopes(const QStringList &s);
-    
+        
 Q_SIGNALS:
     void userIdChanged(const QString &id);
     void accessTokenChanged(const QString &token);
@@ -147,6 +150,12 @@ private:
     
     static SubscriptionCache subscriptionCache;
     static Dailymotion *self;
+    
+    static const QString CLIENT_ID;
+    static const QString CLIENT_SECRET;
+    static const QString REDIRECT_URI;
+    
+    static const QStringList SCOPES;
     
     friend class DailymotionComment;
     friend class DailymotionPlaylist;

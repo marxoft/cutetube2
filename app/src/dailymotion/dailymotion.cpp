@@ -24,16 +24,16 @@
 #include <QUrlQuery>
 #endif
 
-static const QString CLIENT_ID("71e91852b1af82bfcb41");
-static const QString CLIENT_SECRET("eed72ef8e1ef42d0c72fa3b1c7905a9e1abc079e");
-static const QString REDIRECT_URI("http://marxoft.co.uk/projects/cutetube");
-static const QStringList SCOPES = QStringList() << QDailymotion::USER_INFO_SCOPE
-                                                << QDailymotion::MANAGE_VIDEOS_SCOPE
-                                                << QDailymotion::MANAGE_COMMENTS_SCOPE
-                                                << QDailymotion::MANAGE_PLAYLISTS_SCOPE
-                                                << QDailymotion::MANAGE_SUBSCRIPTIONS_SCOPE
-                                                << QDailymotion::MANAGE_FAVORITES_SCOPE
-                                                << QDailymotion::MANAGE_GROUPS_SCOPE;
+const QString Dailymotion::CLIENT_ID("71e91852b1af82bfcb41");
+const QString Dailymotion::CLIENT_SECRET("eed72ef8e1ef42d0c72fa3b1c7905a9e1abc079e");
+const QString Dailymotion::REDIRECT_URI("http://marxoft.co.uk/projects/cutetube");
+const QStringList Dailymotion::SCOPES = QStringList() << QDailymotion::USER_INFO_SCOPE
+                                                      << QDailymotion::MANAGE_VIDEOS_SCOPE
+                                                      << QDailymotion::MANAGE_COMMENTS_SCOPE
+                                                      << QDailymotion::MANAGE_PLAYLISTS_SCOPE
+                                                      << QDailymotion::MANAGE_SUBSCRIPTIONS_SCOPE
+                                                      << QDailymotion::MANAGE_FAVORITES_SCOPE
+                                                      << QDailymotion::MANAGE_GROUPS_SCOPE;
 
 const QStringList Dailymotion::CATEGORY_FIELDS = QStringList() << "id" << "name";
 
@@ -72,6 +72,12 @@ Dailymotion::~Dailymotion() {
 
 Dailymotion* Dailymotion::instance() {
     return self ? self : self = new Dailymotion;
+}
+
+void Dailymotion::init() {
+    if (accessToken().isEmpty()) {
+        setUserId(QString());
+    }
 }
 
 QString Dailymotion::getErrorString(const QVariantMap &error) {

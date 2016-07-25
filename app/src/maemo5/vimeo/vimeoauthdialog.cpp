@@ -15,6 +15,7 @@
  */
 
 #include "vimeoauthdialog.h"
+#include "logger.h"
 #include "vimeo.h"
 #include "webview.h"
 #include <QVBoxLayout>
@@ -25,6 +26,7 @@ VimeoAuthDialog::VimeoAuthDialog(QWidget *parent) :
     m_layout(new QVBoxLayout(this))
 {
     setWindowTitle(tr("Authentication"));
+    setMinimumHeight(360);
     
     m_layout->addWidget(m_view);
     
@@ -47,6 +49,8 @@ void VimeoAuthDialog::login() {
 }
 
 void VimeoAuthDialog::onWebViewUrlChanged(const QUrl &url) {
+    Logger::log("VimeoAuthDialog::onWebViewUrlChanged(): " + url.toString());
+    
     if (url.toString() == "https://vimeo.com/") {
         // Work-around as for some reason Vimeo sends you to the homepage on the first attempt.
         m_view->setUrl(Vimeo::authUrl());

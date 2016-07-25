@@ -62,6 +62,8 @@ private:
     QAction *m_removeAction;
     QLabel *m_label;
     QVBoxLayout *m_layout;
+    
+    bool m_revoke;
 };
     
 #endif // DAILYMOTIONACCOUNTSWINDOW_H

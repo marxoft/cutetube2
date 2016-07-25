@@ -53,6 +53,9 @@ int main(int argc, char *argv[]) {
     
     initDatabase();
     Settings::setNetworkProxy();
+    Dailymotion::init();
+    Vimeo::init();
+    YouTube::init();
 
     clipboard.data()->setEnabled(Settings::clipboardMonitorEnabled());
     plugins.data()->load();

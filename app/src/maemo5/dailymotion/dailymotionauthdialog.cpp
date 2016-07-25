@@ -16,6 +16,7 @@
 
 #include "dailymotionauthdialog.h"
 #include "dailymotion.h"
+#include "logger.h"
 #include "webview.h"
 #include <QVBoxLayout>
 
@@ -25,6 +26,7 @@ DailymotionAuthDialog::DailymotionAuthDialog(QWidget *parent) :
     m_layout(new QVBoxLayout(this))
 {
     setWindowTitle(tr("Authentication"));
+    setMinimumHeight(360);
     
     m_layout->addWidget(m_view);
     
@@ -47,6 +49,8 @@ void DailymotionAuthDialog::login() {
 }
 
 void DailymotionAuthDialog::onWebViewUrlChanged(const QUrl &url) {
+    Logger::log("DailymotionAuthDialog::onWebViewUrlChanged(): " + url.toString());
+    
     if (url.hasQueryItem("code")) {
         setCode(url.queryItemValue("code"));
         accept();

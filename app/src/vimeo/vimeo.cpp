@@ -24,12 +24,12 @@
 #include <QUrlQuery>
 #endif
 
-static const QString CLIENT_ID("0bf284bf5a0e46630f5097a590a76ef976a94322");
-static const QString CLIENT_SECRET("7nnZ1OPS13hjKAVhzuXx/4AIdKxmgDNasHkj5QraWWkrNsd6mxYWZG73AKaFUdLzoNWhGA75jSffs+JyAFfi\
+const QString Vimeo::CLIENT_ID("0bf284bf5a0e46630f5097a590a76ef976a94322");
+const QString Vimeo::CLIENT_SECRET("7nnZ1OPS13hjKAVhzuXx/4AIdKxmgDNasHkj5QraWWkrNsd6mxYWZG73AKaFUdLzoNWhGA75jSffs+JyAFfi\
 0MiFi1OXnzHsxaL0HCIFpxk0GpZlXcScWmJTHvGGtVv1");
-static const QString CLIENT_TOKEN("fb5c66ebe6938e858921963f850355a0");
-static const QString REDIRECT_URI("http://marxoft.co.uk/projects/cutetube");
-static const QStringList SCOPES = QStringList() << QVimeo::PUBLIC_SCOPE << QVimeo::PRIVATE_SCOPE << QVimeo::CREATE_SCOPE
+const QString Vimeo::CLIENT_TOKEN("fb5c66ebe6938e858921963f850355a0");
+const QString Vimeo::REDIRECT_URI("http://marxoft.co.uk/projects/cutetube");
+const QStringList Vimeo::SCOPES = QStringList() << QVimeo::PUBLIC_SCOPE << QVimeo::PRIVATE_SCOPE << QVimeo::CREATE_SCOPE
                                                 << QVimeo::EDIT_SCOPE << QVimeo::DELETE_SCOPE << QVimeo::INTERACT_SCOPE;
 
 const QRegExp Vimeo::URL_REGEXP("http(s|)://vimeo.com/\\w+", Qt::CaseInsensitive);
@@ -49,6 +49,12 @@ Vimeo::~Vimeo() {
 
 Vimeo* Vimeo::instance() {
     return self ? self : self = new Vimeo;
+}
+
+void Vimeo::init() {
+    if (accessToken().isEmpty()) {
+        setUserId(QString());
+    }
 }
 
 QString Vimeo::getErrorString(const QVariantMap &error) {

@@ -93,6 +93,8 @@ public:
     static QString uploadScope();
     
 public Q_SLOTS:
+    static void init();
+    
     static void setUserId(const QString &id);
     
     static void setAccessToken(const QString &token);
@@ -151,6 +153,14 @@ private:
     
     static SubscriptionCache subscriptionCache;
     static YouTube *self;
+    
+    static const QString API_KEY;
+    static const QString CLIENT_ID;
+    static const QString CLIENT_SECRET;
+    
+    static const QStringList SCOPES;
+    
+    static const QRegExp DURATION_REGEXP;
     
     friend class YouTubeComment;
     friend class YouTubePlaylist;
