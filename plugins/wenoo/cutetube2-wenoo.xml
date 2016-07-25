@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<actions>
+    <highlight regexp="[Hh][Tt][Tt][Pp]://([Ww][Ww][Ww]\.|)[Ww][Ee][Nn][Oo][Oo]\.[Nn][Ee][Tt]/[Vv][Ii][Dd][Ee][Oo]/[\w-_]+" name="wenoo-video-url" specialCaseOf="http-url"/>
+    <highlight regexp="[Hh][Tt][Tt][Pp]://([Ww][Ww][Ww]\.|)[Ww][Ee][Nn][Oo][Oo]\.[Nn][Ee][Tt]/[Uu][Ss][Ee][Rr]/[\W-_]+" name="wenoo-user-url" specialCaseOf="http-url"/>
+</actions>

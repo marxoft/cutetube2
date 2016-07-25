@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<actions>
+    <highlight regexp="[Hh][Tt][Tt][Pp]://[Xx][Hh][Aa][Mm][Ss][Tt][Ee][Rr]\.[Cc][Oo][Mm]/[Mm][Oo][Vv][Ii][Ee][Ss]/\d+/[\w-_]+" name="xhamster-video-url" specialCaseOf="http-url"/>
+</actions>

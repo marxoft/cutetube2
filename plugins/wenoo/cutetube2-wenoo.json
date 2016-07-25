@@ -12,7 +12,7 @@
         {
             "method": "get",
             "type": "video",
-            "regExp": "http://(www\\.|)wenoo\\.net/video/\\w+"
+            "regExp": "http://(www\\.|)wenoo\\.net/video/[\\w-_]+"
         },
         
         {

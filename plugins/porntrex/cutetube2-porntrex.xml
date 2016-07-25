@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<actions>
+    <highlight regexp="[Hh][Tt][Tt][Pp]://([Ww][Ww][Ww]\.|)[Pp][Oo][Rr][Nn][Tt][Rr][Ee][Xx]\.[Cc][Oo][Mm]/[Vv][Ii][Dd][Ee][Oo]/\d+" name="porntrex-video-url" specialCaseOf="http-url"/>
+</actions>

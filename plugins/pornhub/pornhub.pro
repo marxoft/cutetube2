@@ -42,6 +42,25 @@ symbian {
         lib \
         stub
 
+} else:contains(MEEGO_EDITION,harmattan) {
+    INCLUDEPATH += ../src
+    HEADERS += \
+        ../src/resourcesrequest.h \
+        ../src/serviceplugin.h
+    
+    config.files = "$$TARGET".json
+    config.path = /opt/cutetube2/plugins
+    
+    contentaction.files = "$$TARGET".xml
+    contentaction.path = /usr/share/contentaction
+
+    target.path = /opt/cutetube2/plugins
+    
+    INSTALLS += \
+        target \
+        config \
+        contentaction
+
 } else:unix {
     INCLUDEPATH += /usr/include/cutetube2
     HEADERS += \

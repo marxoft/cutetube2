@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<actions>
+    <highlight regexp="[Hh][Tt][Tt][Pp]://[Ww][Ww][Ww]\.[Pp][Oo][Rr][Nn][Hh][Uu][Bb]\.[Cc][Oo][Mm]/[Vv][Ii][Ee][Ww]_[Vv][Ii][Dd][Ee][Oo]\.[Pp][Hh][Pp]\?[Vv][Ii][Ee][Ww][Kk][Ee][Yy]=\w+" name="pornhub-video-url" specialCaseOf="http-url"/>
+    <highlight regexp="[Hh][Tt][Tt][Pp]://[Ww][Ww][Ww]\.[Pp][Oo][Rr][Nn][Hh][Uu][Bb]\.[Cc][Oo][Mm]/([Cc][Hh][Aa][Nn][Nn][Ee][Ll][Ss]|[Pp][Oo][Rr][Nn][Ss][Tt][Aa][Rr]|[Uu][Ss][Ee][Rr][Ss])/[\W-_]+" name="pornhub-user-url" specialCaseOf="http-url"/>
+</actions>
