@@ -1,0 +1,65 @@
+{
+    "type": "qt",
+    "name": "VBOX7",
+    "version": 1,
+    "resources": [
+        {
+            "type": "user",
+            "method": "get",
+            "regExp": "http://vbox7\\.com/user:[\\w-_]+"
+        },
+        
+        {
+            "type": "video",
+            "method": "get",
+            "regExp": "http://vbox7\\.com/play:\\w+"
+        },
+        
+        {
+            "type": "stream",
+            "method": "list"
+        },
+
+        {
+            "type": "video",
+            "method": "list",
+            "label": "Most recent videos",
+            "id": "http://vbox7.com/browse:popular?&ord=date"
+        },
+
+        {
+            "type": "video",
+            "method": "list",
+            "label": "Most popular videos",
+            "id": "http://vbox7.com/browse:popular"
+        },
+
+        {
+            "type": "video",
+            "method": "search",
+            "label": "Videos (relevance)",
+            "order": ""
+        },
+
+        {
+            "type": "video",
+            "method": "search",
+            "label": "Videos (date)",
+            "order": "date"
+        },
+
+        {
+            "type": "video",
+            "method": "search",
+            "label": "Videos (alphabetical)",
+            "order": "name"
+        },
+
+        {
+            "type": "video",
+            "method": "search",
+            "label": "Videos (rating)",
+            "order": "rate"
+        }      
+    ]
+}
