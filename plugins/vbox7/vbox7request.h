@@ -76,6 +76,8 @@ private:
 
     static const QString BASE_URL;
     static const QString SEARCH_URL;
+
+    static const QByteArray USER_AGENT;
     
     static const QRegExp DURATION;
     static const QRegExp NO_JS_ERROR;

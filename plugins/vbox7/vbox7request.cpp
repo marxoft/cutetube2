@@ -24,6 +24,8 @@
 const QString Vbox7Request::BASE_URL("http://vbox7.com");
 const QString Vbox7Request::SEARCH_URL(BASE_URL + "/search/combined_search.do");
 
+const QByteArray Vbox7Request::USER_AGENT("Wget/1.13.4 (linux-gnu)");
+
 const QRegExp Vbox7Request::DURATION("T((\\d+)H|)((\\d+)M|)((\\d+)S|)");
 const QRegExp Vbox7Request::NO_JS_ERROR("/show:missjavascript\\?[^']+");
 
@@ -127,7 +129,9 @@ void Vbox7Request::getUser(const QString &url) {
     setStatus(Loading);
     m_url = url;
     m_redirects = 0;
-    QNetworkReply *reply = networkAccessManager()->get(QNetworkRequest(m_url));
+    QNetworkRequest request(m_url);
+    request.setRawHeader("User-Agent", USER_AGENT);
+    QNetworkReply *reply = networkAccessManager()->get(request);
     connect(reply, SIGNAL(finished()), this, SLOT(checkUser()));
     connect(this, SIGNAL(finished()), reply, SLOT(deleteLater()));
 }
@@ -211,7 +215,9 @@ void Vbox7Request::getVideo(const QString &url) {
     setStatus(Loading);
     m_url = url;
     m_redirects = 0;
-    QNetworkReply *reply = networkAccessManager()->get(QNetworkRequest(m_url));
+    QNetworkRequest request(m_url);
+    request.setRawHeader("User-Agent", USER_AGENT);
+    QNetworkReply *reply = networkAccessManager()->get(request);
     connect(reply, SIGNAL(finished()), this, SLOT(checkVideo()));
     connect(this, SIGNAL(finished()), reply, SLOT(deleteLater()));
 }
@@ -311,8 +317,9 @@ void Vbox7Request::listVideos(const QString &url) {
     setStatus(Loading);
     m_url = url.contains(QRegExp("/user:\\w+$")) ? url + "?p=allvideos" : url;
     m_redirects = 0;
-    QNetworkReply *reply =
-    networkAccessManager()->get(QNetworkRequest(m_url));
+    QNetworkRequest request(m_url);
+    request.setRawHeader("User-Agent", USER_AGENT);
+    QNetworkReply *reply = networkAccessManager()->get(request);
     connect(reply, SIGNAL(finished()), this, SLOT(checkVideos()));
     connect(this, SIGNAL(finished()), reply, SLOT(deleteLater()));
 }
@@ -418,7 +425,9 @@ void Vbox7Request::listStreams(const QString &url) {
     setStatus(Loading);
     m_url = url;
     m_redirects = 0;
-    QNetworkReply *reply = networkAccessManager()->get(QNetworkRequest(url));
+    QNetworkRequest request(m_url);
+    request.setRawHeader("User-Agent", USER_AGENT);
+    QNetworkReply *reply = networkAccessManager()->get(request);
     connect(reply, SIGNAL(finished()), this, SLOT(checkStreams()));
     connect(this, SIGNAL(finished()), reply, SLOT(deleteLater()));
 }
@@ -557,7 +566,9 @@ QString Vbox7Request::getRedirect(const QString &response, const QString &url) {
 
 void Vbox7Request::followRedirect(const QString &url, const char *slot) {
     m_redirects++;
-    QNetworkReply *reply = networkAccessManager()->get(QNetworkRequest(url));
+    QNetworkRequest request(url);
+    request.setRawHeader("User-Agent", USER_AGENT);
+    QNetworkReply *reply = networkAccessManager()->get(request);
     connect(reply, SIGNAL(finished()), this, slot);
     connect(this, SIGNAL(finished()), reply, SLOT(deleteLater()));
 }
