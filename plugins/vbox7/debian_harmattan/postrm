@@ -3,7 +3,7 @@
 set -e
 
 echo "Removing highlight handlers from defaults.list"
-sed -i -e '/x-maemo-highlight\/vbox7-video-url=cutetube2.desktop\x-maemo-highlight/d' /usr/share/applications/defaults.list
+sed -i -e '/x-maemo-highlight\/vbox7-video-url=cutetube2.desktop\x-maemo-highlight\/vbox7-user-url=cutetube2.desktop\x-maemo-highlight/d' /usr/share/applications/defaults.list
 
 #DEBHELPER#
 
