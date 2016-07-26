@@ -428,9 +428,7 @@ maemo5 {
     LIBS += -L\\epoc32\\release\\armv5\\lib -lremconcoreapi
     LIBS += -L\\epoc32\\release\\armv5\\lib -lremconinterfacebase
 
-    QT += \
-        declarative \
-        script
+    QT += declarative
     
     CONFIG += \
         link_pkgconfig \
