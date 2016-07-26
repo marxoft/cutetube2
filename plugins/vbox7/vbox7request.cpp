@@ -559,6 +559,7 @@ void Vbox7Request::followRedirect(const QString &url, const char *slot) {
     m_redirects++;
     QNetworkReply *reply = networkAccessManager()->get(QNetworkRequest(url));
     connect(reply, SIGNAL(finished()), this, slot);
+    connect(this, SIGNAL(finished()), reply, SLOT(deleteLater()));
 }
 
 QNetworkAccessManager* Vbox7Request::networkAccessManager() {

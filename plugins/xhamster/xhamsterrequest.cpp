@@ -466,6 +466,7 @@ void XHamsterRequest::followRedirect(const QString &url, const char *slot) {
     request.setRawHeader("User-Agent", USER_AGENT);
     QNetworkReply *reply = networkAccessManager()->get(request);
     connect(reply, SIGNAL(finished()), this, slot);
+    connect(this, SIGNAL(finished()), reply, SLOT(deleteLater()));
 }
 
 QNetworkAccessManager* XHamsterRequest::networkAccessManager() {
