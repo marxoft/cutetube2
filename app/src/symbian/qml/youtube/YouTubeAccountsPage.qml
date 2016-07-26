@@ -92,7 +92,7 @@ MyPage {
                 onClicked: {
                     authRequest.accessToken = accountModel.data(view.currentIndex, "accessToken");
                     authRequest.refreshToken = accountModel.data(view.currentIndex, "refreshToken");
-                    authRequest.revoke = false;
+                    authRequest.revoke = true;
                     authRequest.revokeAccessToken();
                 }
             }
@@ -150,7 +150,6 @@ MyPage {
             if (status == QYouTube.ResourcesRequest.Ready) {
                 if (result.items.length > 0) {
                     var user = result.items[0];
-
                     var username = user.snippet.title;
 
                     if (accountModel.addAccount(user.id, username, user.contentDetails.relatedPlaylists,
