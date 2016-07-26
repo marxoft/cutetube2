@@ -165,7 +165,6 @@ void Vbox7Request::checkUser() {
     }
     
     const QString result = QString::fromUtf8(reply->readAll());
-    
     redirect = getRedirect(result, m_url);
     
     if (!redirect.isEmpty()) {
@@ -250,7 +249,6 @@ void Vbox7Request::checkVideo() {
     }
     
     const QString result = QString::fromUtf8(reply->readAll());
-    
     redirect = getRedirect(result, m_url);
     
     if (!redirect.isEmpty()) {
@@ -356,7 +354,6 @@ void Vbox7Request::checkVideos() {
     }
     
     const QString result = QString::fromUtf8(reply->readAll());
-    
     redirect = getRedirect(result, m_url);
     
     if (!redirect.isEmpty()) {
@@ -436,7 +433,7 @@ void Vbox7Request::checkStreams() {
         return;
     }
     
-    const QString redirect = getRedirect(reply);
+    QString redirect = getRedirect(reply);
     
     if (!redirect.isEmpty()) {
         if (m_redirects < MAX_REDIRECTS) {
@@ -459,23 +456,11 @@ void Vbox7Request::checkStreams() {
     }
     
     const QString result = QString::fromUtf8(reply->readAll());
+    redirect = getRedirect(result, m_url);
     
-    if (result == "1") {
+    if (!redirect.isEmpty()) {
         if (m_redirects < MAX_REDIRECTS) {
-            followRedirect(m_url, SLOT(checkStreams()));
-        }
-        else {
-            setErrorString(tr("Maximum redirects reached"));
-            setStatus(Failed);
-            emit finished();
-        }
-        
-        return;
-    }
-    
-    if (NO_JS_ERROR.indexIn(result) != -1) {
-        if (m_redirects < MAX_REDIRECTS) {
-            followRedirect(BASE_URL + NO_JS_ERROR.cap(), SLOT(checkStreams()));
+            followRedirect(redirect, SLOT(checkStreams()));
         }
         else {
             setErrorString(tr("Maximum redirects reached"));
