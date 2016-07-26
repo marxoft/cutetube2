@@ -80,13 +80,23 @@ QString YouTube::getErrorString(const QVariantMap &error) {
         return error.value("error_description").toString();
     }
 
-    const QVariantMap em = error.contains("error") ? error.value("error").toMap() : error;
+    if (error.contains("error")) {
+        const QVariant e = error.value("error");
 
-    if (em.contains("message")) {
-        return em.value("message").toString();
+        if (e.type() == QVariant::String) {
+            return e.toString();
+        }
+
+        const QVariantMap map = e.toMap();
+
+        if (map.contains("message")) {
+            return map.value("message").toString();
+        }
+
+        return tr("Unknown error");
     }
     
-    if (em.contains("errors")) {
+    if (error.contains("errors")) {
         foreach (const QVariant &e, error.value("errors").toList()) {
             const QVariantMap m = e.toMap();
             
