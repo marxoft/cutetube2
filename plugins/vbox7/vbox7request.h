@@ -80,6 +80,7 @@ private:
     static const QByteArray USER_AGENT;
     
     static const QRegExp DURATION;
+    static const QRegExp HTML;
     static const QRegExp NO_JS_ERROR;
         
     static const int MAX_REDIRECTS;    

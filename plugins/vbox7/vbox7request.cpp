@@ -27,6 +27,7 @@ const QString Vbox7Request::SEARCH_URL(BASE_URL + "/search/combined_search.do");
 const QByteArray Vbox7Request::USER_AGENT("Wget/1.13.4 (linux-gnu)");
 
 const QRegExp Vbox7Request::DURATION("T((\\d+)H|)((\\d+)M|)((\\d+)S|)");
+const QRegExp Vbox7Request::HTML("<[^>]*>");
 const QRegExp Vbox7Request::NO_JS_ERROR("/show:missjavascript\\?[^']+");
 
 const int Vbox7Request::MAX_REDIRECTS = 8;
@@ -190,7 +191,8 @@ void Vbox7Request::checkUser() {
         setStatus(Failed);
     }
     else {
-        const QString description = result.section("<div id=\"descCont\" >", 1, 1).section("</div>", 0, 0).trimmed();
+        const QString description = result.section("<div id=\"descCont\" >", 1, 1).section("</div>", 0, 0)
+                                          .remove(HTML).trimmed();
         const QString info = result.section("<header class=\"user-header\"", 1, 1).section("</header>", 0, 0);
         const QString thumbnailUrl = "http:" + info.section("src=\"", 1, 1).section("\"", 0, 0);
         const QUrl url = reply->url();
