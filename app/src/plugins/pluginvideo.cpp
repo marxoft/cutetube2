@@ -17,6 +17,7 @@
 #include "pluginvideo.h"
 #include "pluginmanager.h"
 #include "resources.h"
+#include "utils.h"
 
 PluginVideo::PluginVideo(QObject *parent) :
     CTVideo(parent),
@@ -70,7 +71,6 @@ void PluginVideo::loadVideo(const QString &service, const QVariantMap &video) {
     setDate(video.value("date").toString());
     setDescription(video.value("description").toString());
     setDownloadable(video.value("downloadable", true).toBool());
-    setDuration(video.value("duration").toString());
     setId(video.value("id").toString());
     setLargeThumbnailUrl(video.value("largeThumbnailUrl").toString());
     setStreamUrl(video.value("streamUrl").toString());
@@ -79,7 +79,16 @@ void PluginVideo::loadVideo(const QString &service, const QVariantMap &video) {
     setUrl(video.value("url").toString());
     setUserId(video.value("userId").toString());
     setUsername(video.value("username").toString());
-    setViewCount(video.value("viewCount").toLongLong());    
+    setViewCount(video.value("viewCount").toLongLong());
+
+    const QVariant &duration = video.value("duration");
+
+    if (duration.type() == QVariant::String) {
+        setDuration(duration.toString());
+    }
+    else {
+        setDuration(Utils::formatSecs(qMax(0, duration.toInt())));
+    }
 }
 
 void PluginVideo::loadVideo(PluginVideo *video) {
@@ -96,7 +105,7 @@ ResourcesRequest* PluginVideo::request() {
     }
 
     return m_request;
-} 
+}
 
 void PluginVideo::onRequestFinished() {
     if (m_request->status() == ResourcesRequest::Ready) {
