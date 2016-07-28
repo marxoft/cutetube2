@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<actions>
+    <highlight regexp="[Hh][Tt][Tt][Pp]://([Ww][Ww][Ww]\\.|)[Vv][Ee][Oo][Hh]\.[Cc][Oo][Mm]/[Ww][Aa][Tt][Cc][Hh]/[Vv]\w+" name="vbox7-video-url" specialCaseOf="http-url"/>
+</actions>

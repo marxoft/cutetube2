@@ -1,0 +1,45 @@
+{
+    "type": "qt",
+    "name": "Veoh",
+    "version": 1,
+    "resources": [
+        {
+            "type": "video",
+            "method": "get",
+            "regExp": "http://(www\\.|)veoh\\.com/watch/v\\w+"
+        },
+        
+        {
+            "type": "stream",
+            "method": "list"
+        },
+
+        {
+            "type": "video",
+            "method": "search",
+            "label": "Videos (relevance)",
+            "order": "relevance"
+        },
+
+        {
+            "type": "video",
+            "method": "search",
+            "label": "Videos (date)",
+            "order": "most+recent"
+        },
+
+        {
+            "type": "video",
+            "method": "search",
+            "label": "Videos (popularity)",
+            "order": "most+viewed"
+        },
+
+        {
+            "type": "video",
+            "method": "search",
+            "label": "Videos (duration)",
+            "order": "run+length"
+        }      
+    ]
+}
