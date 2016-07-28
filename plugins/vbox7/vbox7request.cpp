@@ -381,32 +381,62 @@ void Vbox7Request::checkVideos() {
     const QStringList videos = result.split("<div class=\"clip-thumb");
     QVariantMap response;
     QVariantList items;
-    
-    for (int i = 1; i < videos.size(); i++) {
-        const QString &video = videos.at(i);
-        const QString date = video.section("<p>", 1, 1).section("<", 0, 0).trimmed().replace(".", "/");
-        const QString duration = video.section("class=\"thumb-time\"><span>", 1, 1).section("<", 0, 0).trimmed();
-        const QString id = BASE_URL + video.section("href=\"", 1, 1).section("\"", 0, 0);
-        const QString thumbnailUrl = "http:" + video.section("src=\"", 1, 1).section("\"", 0, 0);
-        const QString title = video.section("alt=\"", 1, 1).section("\"", 0, 0);
-        const QString user = video.section("class=\"clip-user", 1, 1).section("</a>", 0, 0);
-        const QString userId = BASE_URL + user.section("href=\"", -1).section("\"", 0, 0);
-        const QString username = user.section(">", -1);
-        const int viewCount = qMax(0, video.section("class=\"icon-eye\"></i>", 1, 1)
-                                           .section("<", 0, 0).trimmed().remove("&nbsp;").remove(" ").toInt());
-        
-        QVariantMap item;
-        item["date"] = date;
-        item["duration"] = duration;
-        item["id"] = id;
-        item["largeThumbnailUrl"] = thumbnailUrl;
-        item["thumbnailUrl"] = thumbnailUrl;
-        item["title"] = title;
-        item["url"] = id;
-        item["userId"] = userId;
-        item["username"] = username;
-        item["viewCount"] = viewCount;
-        items << item;
+    QRegExp re("/user:([^\\?&]+)");
+
+    if (re.indexIn(reply->url().toString()) != -1) {
+        const QString username = re.cap(1);
+
+        for (int i = 1; i < videos.size(); i++) {
+            const QString &video = videos.at(i);
+            const QString date = video.section("<p>", 1, 1).section("<", 0, 0).trimmed().replace(".", "/");
+            const QString duration = video.section("class=\"thumb-time\"><span>", 1, 1).section("<", 0, 0).trimmed();
+            const QString id = BASE_URL + video.section("href=\"", 1, 1).section("\"", 0, 0);
+            const QString thumbnailUrl = "http:" + video.section("src=\"", 1, 1).section("\"", 0, 0);
+            const QString title = video.section("alt=\"", 1, 1).section("\"", 0, 0);
+            const int viewCount = qMax(0, video.section("class=\"icon-eye\"></i>", 1, 1)
+                                               .section("<", 0, 0).trimmed().remove("&nbsp;").remove(" ").toInt());
+            
+            QVariantMap item;
+            item["date"] = date;
+            item["duration"] = duration;
+            item["id"] = id;
+            item["largeThumbnailUrl"] = thumbnailUrl;
+            item["thumbnailUrl"] = thumbnailUrl;
+            item["title"] = title;
+            item["url"] = id;
+            item["userId"] = QString("%1/user:%2").arg(BASE_URL).arg(username);
+            item["username"] = username;
+            item["viewCount"] = viewCount;
+            items << item;
+        }
+    }
+    else {
+        for (int i = 1; i < videos.size(); i++) {
+            const QString &video = videos.at(i);
+            const QString date = video.section("<p>", 1, 1).section("<", 0, 0).trimmed().replace(".", "/");
+            const QString duration = video.section("class=\"thumb-time\"><span>", 1, 1).section("<", 0, 0).trimmed();
+            const QString id = BASE_URL + video.section("href=\"", 1, 1).section("\"", 0, 0);
+            const QString thumbnailUrl = "http:" + video.section("src=\"", 1, 1).section("\"", 0, 0);
+            const QString title = video.section("alt=\"", 1, 1).section("\"", 0, 0);
+            const QString user = video.section("class=\"clip-user", 1, 1).section("</a>", 0, 0);
+            const QString userId = BASE_URL + user.section("href=\"", -1).section("\"", 0, 0);
+            const QString username = user.section(">", -1);
+            const int viewCount = qMax(0, video.section("class=\"icon-eye\"></i>", 1, 1)
+                                               .section("<", 0, 0).trimmed().remove("&nbsp;").remove(" ").toInt());
+            
+            QVariantMap item;
+            item["date"] = date;
+            item["duration"] = duration;
+            item["id"] = id;
+            item["largeThumbnailUrl"] = thumbnailUrl;
+            item["thumbnailUrl"] = thumbnailUrl;
+            item["title"] = title;
+            item["url"] = id;
+            item["userId"] = userId;
+            item["username"] = username;
+            item["viewCount"] = viewCount;
+            items << item;
+        }
     }
     
     response["items"] = items;
