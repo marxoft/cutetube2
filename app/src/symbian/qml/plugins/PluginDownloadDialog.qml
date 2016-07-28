@@ -121,7 +121,7 @@ MySheet {
                     id: subtitleSelector
 
                     width: parent.width
-                    title: qsTr("Video format")
+                    title: qsTr("Subtitles language")
                     focusItem: flicker
                     enabled: subtitleSwitch.checked
                     model: PluginSubtitleModel {

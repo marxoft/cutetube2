@@ -129,7 +129,7 @@ MySheet {
                     id: subtitleSelector
 
                     width: parent.width
-                    title: qsTr("Video format")
+                    title: qsTr("Subtitles language")
                     enabled: subtitleSwitch.checked
                     model: PluginSubtitleModel {
                         id: subtitleModel
