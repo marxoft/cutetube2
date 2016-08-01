@@ -250,7 +250,7 @@ MyPage {
                     else if (i >= 0) {
                         var v = data(i, "value");
                         videoPlayer.playUrl(v.url);
-                        formatLabel.text = v.height + "p";
+                        formatLabel.text = (v.height ? v.height + "p" : v.description);
                     }
                     else {
                         dialogLoader.sourceComponent = streamDialog;
@@ -398,6 +398,7 @@ MyPage {
                     drag.axis: Drag.XAxis
                     drag.minimumX: -40
                     drag.maximumX: width - platformStyle.paddingLarge
+                    enabled: videoPlayer.seekable
                     onExited: posInsideMouseArea = false
                     onEntered: posInsideMouseArea = true
                     onPressed: {
