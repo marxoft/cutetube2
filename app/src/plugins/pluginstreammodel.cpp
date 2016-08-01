@@ -101,7 +101,7 @@ void PluginStreamModel::onRequestFinished() {
                 append(QString("%1p %2").arg(height).arg(stream.value("description").toString()), stream);
             }
             else {
-                append(tr("Unknown resolution %1").arg(stream.value("description").toString()), stream);
+                append(stream.value("description").toString(), stream);
             }
         }
     }
