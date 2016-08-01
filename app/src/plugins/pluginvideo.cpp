@@ -83,11 +83,15 @@ void PluginVideo::loadVideo(const QString &service, const QVariantMap &video) {
 
     const QVariant &duration = video.value("duration");
 
-    if (duration.type() == QVariant::String) {
-        setDuration(duration.toString());
-    }
-    else {
+    switch (duration.type()) {
+    case QVariant::Int:
+    case QVariant::LongLong:
+    case QVariant::Double:
         setDuration(Utils::formatSecs(qMax(0, duration.toInt())));
+        break;
+    default:
+        setDuration(duration.toString());
+        break;
     }
 }
 
