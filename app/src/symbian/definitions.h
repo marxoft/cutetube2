@@ -29,10 +29,12 @@
 // Home
 static const QString ROOT_PATH("C:/");
 static const QString HOME_PATH("E:/");
+static const QString CARD_PATH("F:/");
 
 // Plugins
 static const QStringList PLUGIN_PATHS = QStringList() << QString(ROOT_PATH + "cutetube2/plugins/")
-                                                      << QString(HOME_PATH + "cutetube2/plugins/");
+                                                      << QString(HOME_PATH + "cutetube2/plugins/")
+                                                      << QString(CARD_PATH + "cutetube2/plugins/");
 
 static const QString LIB_PREFIX;
 static const QString LIB_SUFFIX(".qtplugin");
@@ -60,6 +62,6 @@ static const QColor ACTIVE_COLOR("#0881cb");
 static const QString ACTIVE_COLOR_STRING("color7");
 
 // Version
-static const QString VERSION_NUMBER("0.3.1");
+static const QString VERSION_NUMBER("0.3.2");
 
 #endif // DEFINITIONS_H
