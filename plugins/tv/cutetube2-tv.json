@@ -1,0 +1,46 @@
+{
+    "type": "qt",
+    "version": 1,
+    "name": "TV",
+    "resources": [
+        {
+            "type": "stream",
+            "method": "list"
+        },
+
+        {
+            "type": "category",
+            "method": "list",
+            "label": "Channels by group"
+            "id": "ORDER BY title ASC"
+        },
+        
+        {
+            "type": "video",
+            "method": "list",
+            "label": "All channels (ascending)"
+            "id": "ORDER BY title ASC LIMIT 0, 20"
+        },
+        
+        {
+            "type": "video",
+            "method": "list",
+            "label": "All channels (descending)"
+            "id": "ORDER BY title DESC LIMIT 0, 20"
+        },        
+        
+        {
+            "type": "video",
+            "method": "search",
+            "label": "Channels (ascending)"
+            "order": "ORDER BY title ASC LIMIT 0, 20"
+        },
+        
+        {
+            "type": "video",
+            "method": "search",
+            "label": "Channels (descending)"
+            "order": "ORDER BY title DESC LIMIT 0, 20"
+        }
+    ]
+}
