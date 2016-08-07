@@ -21,12 +21,12 @@
 #include <QNetworkRequest>
 #include <QStringList>
 
-QString PornTrexRequest::BASE_URL("http://www.porntrex.com");
-QString PornTrexRequest::SD_STREAM_URL(BASE_URL + "/mobile_src.php?id=");
-QString PornTrexRequest::HD_STREAM_URL(BASE_URL + "/mobile_hd_src.php?id=");
-QString PornTrexRequest::RELATED_VIDEOS_URL(BASE_URL + "/ajax/related_videos");
+const QString PornTrexRequest::BASE_URL("http://www.porntrex.com");
+const QString PornTrexRequest::SD_STREAM_URL(BASE_URL + "/mobile_src.php?id=");
+const QString PornTrexRequest::HD_STREAM_URL(BASE_URL + "/mobile_hd_src.php?id=");
+const QString PornTrexRequest::RELATED_VIDEOS_URL(BASE_URL + "/ajax/related_videos");
 
-int PornTrexRequest::MAX_REDIRECTS = 8;
+const int PornTrexRequest::MAX_REDIRECTS = 8;
 
 PornTrexRequest::PornTrexRequest(QObject *parent) :
     ResourcesRequest(parent),

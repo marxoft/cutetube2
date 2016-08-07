@@ -70,12 +70,12 @@ private:
     
     QNetworkAccessManager* networkAccessManager();
 
-    static QString BASE_URL;
-    static QString SD_STREAM_URL;
-    static QString HD_STREAM_URL;
-    static QString RELATED_VIDEOS_URL;
+    static const QString BASE_URL;
+    static const QString SD_STREAM_URL;
+    static const QString HD_STREAM_URL;
+    static const QString RELATED_VIDEOS_URL;
 
-    static int MAX_REDIRECTS;
+    static const int MAX_REDIRECTS;
     
     QNetworkAccessManager *m_nam;
 
