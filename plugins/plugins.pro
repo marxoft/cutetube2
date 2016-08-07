@@ -5,5 +5,6 @@ SUBDIRS += \
     tv \
     vbox7 \
     veoh \
+    videoclip \
     wenoo \
     xhamster

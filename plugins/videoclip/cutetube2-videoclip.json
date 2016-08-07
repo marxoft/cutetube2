@@ -1,0 +1,105 @@
+{
+    "type": "qt",
+    "name": "Videoclip.bg",
+    "version": 1,
+    "resources": [
+        {
+            "method": "get",
+            "type": "user",
+            "regExp": "http://(www\\.|)videoclip\\.bg/user/[\\w-_]+"
+        },
+
+        {
+            "method": "get",
+            "type": "video",
+            "regExp": "http://(www\\.|)videoclip\\.bg/watch/\\d+"
+        },
+
+        {
+            "method": "list",
+            "type": "comment"
+        },
+
+        {
+            "method": "list",
+            "type": "stream"
+        },
+
+        {
+            "method": "list",
+            "type": "video",
+            "label": "Latest videos",
+            "id": "http://www.videoclip.bg/latest"
+        },
+
+        {
+            "method": "list",
+            "type": "video",
+            "label": "Popular videos",
+            "id": "http://www.videoclip.bg/chart_yearly"
+        },
+
+        {
+            "method": "search",
+            "type": "video",
+            "label": "Videos (relevance)",
+            "order": "0"
+        },
+
+        {
+            "method": "search",
+            "type": "video",
+            "label": "Videos (A-Z)",
+            "order": "1"
+        },
+
+        {
+            "method": "search",
+            "type": "video",
+            "label": "Videos (latest)",
+            "order": "2"
+        },
+
+        {
+            "method": "search",
+            "type": "video",
+            "label": "Videos (most viewed)",
+            "order": "3"
+        },
+
+        {
+            "method": "search",
+            "type": "video",
+            "label": "Videos (most popular)",
+            "order": "4"
+        },
+
+        {
+            "method": "search",
+            "type": "video",
+            "label": "Videos (top rated)",
+            "order": "5"
+        },
+
+        {
+            "method": "search",
+            "type": "video",
+            "label": "Videos (longest)",
+            "order": "6"
+        },
+
+        {
+            "method": "search",
+            "type": "video",
+            "label": "Videos (shortest)",
+            "order": "7"
+        },
+
+        {
+            "method": "search",
+            "type": "video",
+            "label": "Videos (oldest)",
+            "order": "8"
+        }
+    ]
+}
