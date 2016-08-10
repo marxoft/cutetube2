@@ -52,7 +52,8 @@ MyPage {
         }
         delegate: LabelDelegate {
             text: name
-            onClicked: appWindow.pageStack.push(Qt.resolvedUrl("PluginVideosPage.qml"), {title: name}).model.list(value)
+            onClicked: appWindow.pageStack.push(Qt.resolvedUrl("PluginVideosPage.qml"), {title: name})
+            .model.list(value.videosId)
         }
     }
 

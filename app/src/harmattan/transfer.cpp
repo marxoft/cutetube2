@@ -254,17 +254,6 @@ QString Transfer::progressString() const {
                               .arg(progress());
 }
 
-QString Transfer::resourceId() const {
-    return m_resourceId;
-}
-
-void Transfer::setResourceId(const QString &ri) {
-    if (ri != resourceId()) {
-        m_resourceId = ri;
-        emit resourceIdChanged();
-    }
-}
-
 QString Transfer::service() const {
     return m_service;
 }
@@ -415,6 +404,17 @@ QUrl Transfer::url() const {
     return m_reply ? m_reply->url() : QUrl();
 }
 
+QString Transfer::videoId() const {
+    return m_videoId;
+}
+
+void Transfer::setVideoId(const QString &vi) {
+    if (vi != videoId()) {
+        m_videoId = vi;
+        emit videoIdChanged();
+    }
+}
+
 void Transfer::queue() {
     switch (status()) {
     case Canceled:
@@ -519,6 +519,7 @@ void Transfer::startDownload(const QUrl &u) {
     }
     
     QNetworkRequest request(u);
+    request.setRawHeader("User-Agent", USER_AGENT);
     
     if (m_bytesTransferred > 0) {
         request.setRawHeader("Range", "bytes=" + QByteArray::number(m_bytesTransferred) + "-");
@@ -550,6 +551,7 @@ void Transfer::followRedirect(const QUrl &u) {
     }
     
     QNetworkRequest request(u);
+    request.setRawHeader("User-Agent", USER_AGENT);
     
     if (m_bytesTransferred > 0) {
         request.setRawHeader("Range", "bytes=" + QByteArray::number(m_bytesTransferred) + "-");
@@ -567,7 +569,9 @@ void Transfer::startSubtitlesDownload(const QUrl &u) {
         m_ownNetworkAccessManager = true;
     }
     
-    m_reply = m_nam->get(QNetworkRequest(u));
+    QNetworkRequest request(u);
+    request.setRawHeader("User-Agent", USER_AGENT);
+    m_reply = m_nam->get(request);
     connect(m_reply, SIGNAL(finished()), this, SLOT(onSubtitlesReplyFinished()));
 }
 
@@ -695,6 +699,7 @@ void Transfer::onReplyReadyRead() {
     }
     
     m_bytesTransferred += bytes;
+    emit bytesTransferredChanged();
     
     if (m_size > 0) {
         setProgress(m_bytesTransferred * 100 / m_size);

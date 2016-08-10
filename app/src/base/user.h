@@ -71,7 +71,7 @@ Q_SIGNALS:
     void thumbnailUrlChanged();
     void usernameChanged();
 
-protected:
+private:
     QString m_description;
     QString m_id;
     QUrl m_largeThumbnailUrl;

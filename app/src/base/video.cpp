@@ -19,6 +19,7 @@
 CTVideo::CTVideo(QObject *parent) :
     QObject(parent),
     m_downloadable(true),
+    m_subtitles(false),
     m_viewCount(0)
 {
 }
@@ -33,6 +34,7 @@ CTVideo::CTVideo(const CTVideo *video, QObject *parent) :
     m_largeThumbnailUrl(video->largeThumbnailUrl()),
     m_service(video->service()),
     m_streamUrl(video->streamUrl()),
+    m_subtitles(false),
     m_thumbnailUrl(video->thumbnailUrl()),
     m_title(video->title()),
     m_url(video->url()),
@@ -72,6 +74,17 @@ void CTVideo::setDuration(const QString &d) {
     if (d != duration()) {
         m_duration = d;
         emit durationChanged();
+    }
+}
+
+bool CTVideo::hasSubtitles() const {
+    return m_subtitles;
+}
+
+void CTVideo::setHasSubtitles(bool s) {
+    if (s != hasSubtitles()) {
+        m_subtitles = s;
+        emit subtitlesChanged();
     }
 }
 
@@ -205,6 +218,7 @@ void CTVideo::loadVideo(CTVideo *video) {
     setDescription(video->description());
     setDownloadable(video->isDownloadable()),
     setDuration(video->duration());
+    setHasSubtitles(video->hasSubtitles());
     setId(video->id());
     setLargeThumbnailUrl(video->largeThumbnailUrl());
     setService(video->service());

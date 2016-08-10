@@ -29,6 +29,7 @@ YouTubeVideo::YouTubeVideo(QObject *parent) :
     m_liked(false),
     m_likeCount(0)
 {
+    setHasSubtitles(true);
     setService(Resources::YOUTUBE);
     connect(YouTube::instance(), SIGNAL(videoDisliked(YouTubeVideo*)),
             this, SLOT(onVideoUpdated(YouTubeVideo*)));
@@ -50,6 +51,7 @@ YouTubeVideo::YouTubeVideo(const QString &id, QObject *parent) :
     m_liked(false),
     m_likeCount(0)
 {
+    setHasSubtitles(true);
     setService(Resources::YOUTUBE);
     loadVideo(id);
     connect(YouTube::instance(), SIGNAL(videoDisliked(YouTubeVideo*)),
@@ -72,6 +74,7 @@ YouTubeVideo::YouTubeVideo(const QVariantMap &video, QObject *parent) :
     m_liked(false),
     m_likeCount(0)
 {
+    setHasSubtitles(true);
     setService(Resources::YOUTUBE);
     loadVideo(video);
     connect(YouTube::instance(), SIGNAL(videoDisliked(YouTubeVideo*)),

@@ -92,9 +92,7 @@ QString VimeoDownloadDialog::streamId() const {
 }
 
 QString VimeoDownloadDialog::subtitlesLanguage() const {
-    return m_subtitleCheckBox->isChecked()
-           ? m_subtitleSelector->currentValue().toMap().value("id").toString()
-           : QString();
+    return m_subtitleCheckBox->isChecked() ? m_subtitleSelector->valueText() : QString();
 }
 
 QString VimeoDownloadDialog::category() const {
@@ -123,6 +121,9 @@ void VimeoDownloadDialog::list(const QString &videoId) {
 
     if (m_subtitleCheckBox->isChecked()) {
         m_subtitleModel->list(videoId);
+    }
+    else {
+        m_subtitleCheckBox->setChecked(Settings::subtitlesEnabled());
     }
 }
 
@@ -170,7 +171,7 @@ void VimeoDownloadDialog::onSubtitleModelStatusChanged(QVimeo::ResourcesRequest:
         return;
     case QVimeo::ResourcesRequest::Ready:
         if (m_subtitleModel->rowCount() > 0) {
-            m_subtitleSelector->setCurrentIndex(0);
+            m_subtitleSelector->setCurrentIndex(qMax(0, m_subtitleModel->match("name", Settings::subtitlesLanguage())));
         }
         
         break;

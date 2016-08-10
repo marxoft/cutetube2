@@ -56,12 +56,13 @@ static const int DOWNLOAD_BUFFER_SIZE = 512000;
 static const int MAX_CONCURRENT_TRANSFERS = 4;
 static const int MAX_REDIRECTS = 8;
 static const int MAX_RESULTS = 20;
+static const QByteArray USER_AGENT("Wget/1.13.4 (linux-gnu)");
 
 // Appearance
 static const QColor ACTIVE_COLOR("#0881cb");
 static const QString ACTIVE_COLOR_STRING("color7");
 
 // Version
-static const QString VERSION_NUMBER("0.3.2");
+static const QString VERSION_NUMBER("0.4.0");
 
 #endif // DEFINITIONS_H

@@ -44,20 +44,22 @@ public:
     
     explicit ResourcesRequest(QObject *parent = 0) : QObject(parent) {}
 
-    virtual QString errorString() const = 0;
+    virtual QString errorString() const { return QString(); }
 
-    virtual QVariant result() const = 0;
+    virtual QVariant result() const { return QVariant(); }
     
-    virtual Status status() const = 0;
+    virtual Status status() const { return Null; }
 
 public Q_SLOTS:
-    virtual bool cancel() = 0;
-    virtual bool get(const QString &resourceType, const QString &resourceId) = 0;
-    virtual bool list(const QString &resourceType, const QString &resourceId) = 0;
-    virtual bool search(const QString &resourceType, const QString &query, const QString &order) = 0;
+    virtual bool cancel() { return false; }
+    virtual bool del(const QString &, const QString &, const QString &, const QString &) { return false; }
+    virtual bool get(const QString &, const QString &) { return false; }
+    virtual bool insert(const QString &, const QString &, const QString &, const QString &) { return false; }
+    virtual bool list(const QString &, const QString &) { return false; }
+    virtual bool search(const QString &, const QString &, const QString &) { return false; }
 
 Q_SIGNALS:
-    void statusChanged(ResourcesRequest::Status status);
+    void statusChanged(ResourcesRequest::Status s);
     void finished();
 };
 

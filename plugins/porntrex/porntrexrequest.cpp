@@ -163,6 +163,7 @@ void PornTrexRequest::checkVideo() {
     video["description"] = description;
     video["id"] = id;
     video["largeThumbnailUrl"] = thumbnailUrl;
+    video["relatedVideosId"] = id;
     video["thumbnailUrl"] = thumbnailUrl;
     video["title"] = title;
     video["url"] = id;
@@ -239,6 +240,7 @@ void PornTrexRequest::checkVideos() {
         item["duration"] = duration;
         item["id"] = id;
         item["largeThumbnailUrl"] = largeThumbnailUrl;
+        item["relatedVideosId"] = id;
         item["thumbnailUrl"] = thumbnailUrl;
         item["title"] = title;
         item["url"] = id;
@@ -322,6 +324,7 @@ void PornTrexRequest::checkRelatedVideos() {
         item["duration"] = duration;
         item["id"] = id;
         item["largeThumbnailUrl"] = largeThumbnailUrl;
+        item["relatedVideosId"] = id;
         item["thumbnailUrl"] = thumbnailUrl;
         item["title"] = title;
         item["url"] = id;
@@ -415,6 +418,7 @@ void PornTrexRequest::checkCategories() {
         QVariantMap item;
         item["id"] = id;
         item["title"] = title;
+        item["videosId"] = id;
         items << item;
     }
     

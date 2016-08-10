@@ -44,7 +44,11 @@ public:
 
 public Q_SLOTS:
     virtual bool cancel();
+    virtual bool del(const QString &sourceType, const QString &sourceId, const QString &destinationType,
+                     const QString &destinationId);
     virtual bool get(const QString &resourceType, const QString &resourceId);
+    virtual bool insert(const QString &sourceType, const QString &sourceId, const QString &destinationType,
+                        const QString &destinationId);
     virtual bool list(const QString &resourceType, const QString &resourceId);
     virtual bool search(const QString &resourceType, const QString &query, const QString &order);
 

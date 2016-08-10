@@ -1,17 +1,12 @@
 {
     "type": "qt",
     "name": "Veoh",
-    "version": 1,
+    "version": 2,
     "resources": [
         {
             "type": "video",
             "method": "get",
             "regExp": "http://(www\\.|)veoh\\.com/watch/v\\w+"
-        },
-        
-        {
-            "type": "stream",
-            "method": "list"
         },
 
         {

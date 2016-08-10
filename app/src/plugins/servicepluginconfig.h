@@ -51,14 +51,15 @@ public:
 
     QList<GetResource> getResources() const;
     QList<ListResource> listResources() const;
-    QList<SearchResource> searchResources() const;
-    
-    bool resourceTypeIsSupported(const QString &resourceType, const QString &method = QString("list")) const;
+    QList<SearchResource> searchResources() const;    
     
     QVariantList settings() const;
     
     int version() const;
 
+public Q_SLOTS:
+    bool resourceTypeIsSupported(const QString &resourceType, const QString &method = QString("list")) const;
+    
     bool load(const QString &filePath);
 
 Q_SIGNALS:

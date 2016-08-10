@@ -23,10 +23,6 @@
 class QNetworkAccessManager;
 class QNetworkReply;
 
-namespace QYouTube {
-    class StreamsRequest;
-}
-
 class VideoclipRequest : public ResourcesRequest
 {
     Q_OBJECT
@@ -58,7 +54,8 @@ private Q_SLOTS:
     void checkUsers();
     
     void checkStreams();
-    void checkYouTubeStreams();
+    
+    void checkSubtitles();
 
 private:
     static QString getRedirect(const QNetworkReply *reply);
@@ -71,8 +68,8 @@ private:
     
     void getVideo(const QString &id);
     void listVideos(const QString &url);
-    void listRelatedVideos(const QString &id);
-    void listUserVideos(const QString &id);
+    void listRelatedVideos(const QString &url);
+    void listUserVideos(const QString &url);
     void searchVideos(const QString &query, const QString &order);
 
     void listComments(const QString &id);
@@ -82,11 +79,11 @@ private:
         
     void listStreams(const QString &id);
     
+    void listSubtitles(const QString &id);
+    
     void followRedirect(const QString &url, const char *slot);
     
     QNetworkAccessManager* networkAccessManager();
-
-    QYouTube::StreamsRequest* youtubeRequest();
 
     static const QString BASE_URL;
     static const QString API_URL;
@@ -101,14 +98,11 @@ private:
 
     static const QRegExp HTML;
     static const QRegExp NEXT_PAGE;
-    static const QRegExp USER_ID;
-    static const QRegExp VIDEO_ID;
+    static const QRegExp SUBTITLES;
     
     static const int MAX_REDIRECTS;
         
     QNetworkAccessManager *m_nam;
-
-    QYouTube::StreamsRequest *m_youtubeRequest;
 
     QString m_errorString;
 

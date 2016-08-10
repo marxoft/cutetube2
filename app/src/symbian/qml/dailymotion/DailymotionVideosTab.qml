@@ -21,7 +21,6 @@ import cuteTube 2.0
 import QDailymotion 1.0 as QDailymotion
 import ".."
 
-
 Tab {
     id: root
 
@@ -108,8 +107,8 @@ Tab {
                 text: qsTr("Download")
                 onClicked: {
                     dialogLoader.sourceComponent = downloadDialog;
-                    dialogLoader.item.resourceId = videoModel.data(view.currentIndex, "id");
-                    dialogLoader.item.resourceTitle = videoModel.data(view.currentIndex, "title");
+                    dialogLoader.item.videoId = videoModel.data(view.currentIndex, "id");
+                    dialogLoader.item.videoTitle = videoModel.data(view.currentIndex, "title");
                     dialogLoader.item.open();
                 }
             }
@@ -123,7 +122,7 @@ Tab {
             }
 
             MenuItem {
-                text: videoModel.data(view.currentIndex, "favourited") ? qsTr("Unfavourite") : qsTr("Favourite")
+                text: videoModel.data(view.currentIndex, "favourited") ? qsTr("Unlike") : qsTr("Like")
                 enabled: (Dailymotion.userId) && (Dailymotion.hasScope(Dailymotion.MANAGE_FAVOURITES_SCOPE))
                 onClicked: {
                     video.loadVideo(videoModel.get(view.currentIndex))

@@ -18,13 +18,10 @@
 #define TVREQUEST_H
 
 #include "resourcesrequest.h"
-#include <QRegExp>
 #include <QVariantList>
 
 class QNetworkAccessManager;
 class QNetworkReply;
-class QSqlDatabase;
-class QSqlQuery;
 
 class TVRequest : public ResourcesRequest
 {
@@ -41,21 +38,17 @@ public:
 
 public Q_SLOTS:
     virtual bool cancel();
-    virtual bool get(const QString &resourceType, const QString &resourceId);
     virtual bool list(const QString &resourceType, const QString &resourceId);
     virtual bool search(const QString &resourceType, const QString &query, const QString &order);
 
 private Q_SLOTS:
+    void checkChannels();
+    
+    void checkCategories();
+    
     void checkStreams();
 
 private:
-    static void initDatabase();
-    static QSqlDatabase getDatabase();
-    static QVariantMap getChannel(const QSqlQuery &query);
-    static QString getChannelId(const QString &id);
-    static QVariantMap getGroup(const QSqlQuery &query);
-    static QString getGroupId(const QString &id);
-    
     static QString getRedirect(const QNetworkReply *reply);
         
     void setErrorString(const QString &e);
@@ -64,13 +57,10 @@ private:
 
     void setStatus(ResourcesRequest::Status s);
     
-    void getChannel(const QString &id);
-    void listChannels(const QString &idOrQuery);
-    void listChannelsByGroup(const QString &id);
-    void listChannelsByQuery(const QString &queryString);
+    void listChannels(const QString &url);
     void searchChannels(const QString &query, const QString &order);
     
-    void listGroups(const QString &queryString);
+    void listCategories(const QString &url);
     
     void listStreams(const QString &id, const QString &protocol);
     
@@ -79,15 +69,10 @@ private:
     QNetworkAccessManager* networkAccessManager();
     
     static const QString API_URL;
-    static const QString CHANNEL_URL;
     static const QString LOGO_URL;
-    static const QString DATABASE_NAME;
-    
-    static const QRegExp DATABASE_LIMIT;
+    static const QString STREAMS_URL;
         
     static const int MAX_REDIRECTS;
-    
-    static bool dbinit;
     
     QNetworkAccessManager *m_nam;
 

@@ -176,6 +176,7 @@ void WenooRequest::checkVideo() {
     video["description"] = description;
     video["id"] = id;
     video["largeThumbnailUrl"] = thumbnailUrl;
+    video["relatedVideosId"] = id;
     video["streamUrl"] = streamUrl;
     video["thumbnailUrl"] = thumbnailUrl;
     video["title"] = title;
@@ -267,6 +268,7 @@ void WenooRequest::checkVideos() {
         item["duration"] = duration;
         item["id"] = id;
         item["largeThumbnailUrl"] = largeThumbnailUrl;
+        item["relatedVideosId"] = id;
         item["streamUrl"] = streamUrl;
         item["thumbnailUrl"] = thumbnailUrl;
         item["title"] = title;
@@ -355,6 +357,7 @@ void WenooRequest::checkRelatedVideos() {
         item["duration"] = duration;
         item["id"] = id;
         item["largeThumbnailUrl"] = largeThumbnailUrl;
+        item["relatedVideosId"] = id;
         item["streamUrl"] = streamUrl;
         item["thumbnailUrl"] = thumbnailUrl;
         item["title"] = title;
@@ -437,6 +440,7 @@ void WenooRequest::checkUserVideos() {
         item["duration"] = duration;
         item["id"] = id;
         item["largeThumbnailUrl"] = largeThumbnailUrl;
+        item["relatedVideosId"] = id;
         item["streamUrl"] = streamUrl;
         item["thumbnailUrl"] = thumbnailUrl;
         item["title"] = title;
@@ -514,6 +518,7 @@ void WenooRequest::checkUser() {
     user["largeThumbnailUrl"] = thumbnailUrl;
     user["thumbnailUrl"] = thumbnailUrl;
     user["username"] = username;
+    user["videosId"] = id;
     setResult(user);
     setStatus(Ready);
     emit finished();
@@ -574,6 +579,7 @@ void WenooRequest::checkUsers() {
         item["largeThumbnailUrl"] = thumbnailUrl;
         item["thumbnailUrl"] = thumbnailUrl;
         item["username"] = username;
+        item["videosId"] = id;
         items << item;
     }
     
@@ -644,6 +650,7 @@ void WenooRequest::checkCategories() {
         QVariantMap item;
         item["id"] = id;
         item["title"] = title;
+        item["videosId"] = id;
         items << item;
     }
     

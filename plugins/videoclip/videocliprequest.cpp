@@ -16,7 +16,6 @@
 
 #include "videocliprequest.h"
 #include "json.h"
-#include <qyoutube/streamsrequest.h>
 #include <QDateTime>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
@@ -36,15 +35,13 @@ const QByteArray VideoclipRequest::USER_AGENT("Wget/1.13.4 (linux-gnu)");
 
 const QRegExp VideoclipRequest::HTML("<[^>]*>");
 const QRegExp VideoclipRequest::NEXT_PAGE(QString::fromUtf8("data-page=\"\\d+\"\\s+href=\"([^\"]+)\"\\s+>\\s+Следваща"));
-const QRegExp VideoclipRequest::USER_ID("(^[\\w-_]+$|/user/[\\w-_]+)");
-const QRegExp VideoclipRequest::VIDEO_ID("^\\d+$");
+const QRegExp VideoclipRequest::SUBTITLES("<track kind=\"subtitles\" src=\"([^\"]+)\" srclang=\"([^\"]+)\" label=\"([^\"]+)\"");
 
 const int VideoclipRequest::MAX_REDIRECTS = 8;
 
 VideoclipRequest::VideoclipRequest(QObject *parent) :
     ResourcesRequest(parent),
     m_nam(0),
-    m_youtubeRequest(0),
     m_status(Null),
     m_redirects(0)
 {
@@ -129,6 +126,11 @@ bool VideoclipRequest::list(const QString &resourceType, const QString &resource
         listStreams(resourceId);
         return true;
     }
+    
+    if (resourceType == "subtitle") {
+        listSubtitles(resourceId);
+        return true;
+    }
 
     return false;
 }
@@ -206,10 +208,14 @@ void VideoclipRequest::checkVideo() {
     }
     else {
         QVariantMap item;
+        const QString id = video.value("id").toString();
+        item["commentsId"] = id;
         item["date"] = video.value("date").toDateTime().toString("dd MMM yyyy");
         item["duration"] = video.value("duration", 0);
-        item["id"] = video.value("id");
+        item["id"] = id;
         item["largeThumbnailUrl"] = video.value("t_360");
+        item["relatedVideosId"] = RELATED_VIDEOS_URL.arg(id);
+        item["subtitles"] = video.value("has_subtitles");
         item["thumbnailUrl"] = video.value("t_96");
         item["title"] = video.value("title");
         item["url"] = video.value("url");
@@ -225,12 +231,12 @@ void VideoclipRequest::checkVideo() {
 }
 
 void VideoclipRequest::listVideos(const QString &url) {
-    if (url.contains(VIDEO_ID)) {
+    if (url.endsWith("/related")) {
         listRelatedVideos(url);
         return;
     }
 
-    if ((url.contains(USER_ID))) {
+    if ((url.contains("/user/"))) {
         listUserVideos(url);
         return;
     }
@@ -291,15 +297,19 @@ void VideoclipRequest::checkVideos() {
         const QString duration = video.section("<span class=\"thumb-duration\">", 1, 1).section("<", 0, 0);
         const QString id = video.section("data-video=\"", 1, 1).section("\"", 0, 0);
         const QString largeThumbnailUrl = "http:" + video.section("src=\"", 1, 1).section("\"", 0, 0);
+        const bool subtitles = video.contains(">SUB<");
         const QString thumbnailUrl = largeThumbnailUrl.left(largeThumbnailUrl.lastIndexOf("_") + 1) + "96.jpeg";
-        const QString title = video.section("title=\"", 1, 1).section("\"", 0, 0);
+        const QString title = video.section("alt=\"", 1, 1).section("\"", 0, 0);
         const QString url = BASE_URL + video.section("href=\"", 1, 1).section("\"", 0, 0);
         const QString userId = BASE_URL + video.section("href=\"", -1).section("\"", 0, 0);
         const QString username = video.section("data-username=\"", 1, 1).section("\"", 0, 0);
         QVariantMap item;
+        item["commentsId"] = id;
         item["duration"] = duration;
         item["id"] = id;
         item["largeThumbnailUrl"] = largeThumbnailUrl;
+        item["relatedVideosId"] = RELATED_VIDEOS_URL.arg(id);
+        item["subtitles"] = subtitles;
         item["thumbnailUrl"] = thumbnailUrl;
         item["title"] = title;
         item["url"] = url;
@@ -324,10 +334,10 @@ void VideoclipRequest::checkVideos() {
     emit finished();
 }
 
-void VideoclipRequest::listRelatedVideos(const QString &id) {
+void VideoclipRequest::listRelatedVideos(const QString &url) {
     setStatus(Loading);
     m_redirects = 0;
-    QNetworkRequest request(RELATED_VIDEOS_URL.arg(id));
+    QNetworkRequest request(url);
     request.setRawHeader("User-Agent", USER_AGENT);
     QNetworkReply *reply = networkAccessManager()->get(request);
     connect(reply, SIGNAL(finished()), this, SLOT(checkRelatedVideos()));
@@ -373,11 +383,15 @@ void VideoclipRequest::checkRelatedVideos() {
 
     foreach (const QVariant &v, videos) {
         const QVariantMap video = v.toMap();
+        const QString id = video.value("id").toString();
         QVariantMap item;
+        item["commentsId"] = id;
         item["date"] = video.value("date").toDateTime().toString("dd MMM yyyy");
         item["duration"] = video.value("duration", 0);
-        item["id"] = video.value("id");
+        item["id"] = id;
         item["largeThumbnailUrl"] = video.value("t_360");
+        item["relatedVideosId"] = RELATED_VIDEOS_URL.arg(id);
+        item["subtitles"] = video.value("has_subtitles");
         item["thumbnailUrl"] = video.value("t_96");
         item["title"] = video.value("title");
         item["url"] = video.value("url");
@@ -394,18 +408,10 @@ void VideoclipRequest::checkRelatedVideos() {
     emit finished();
 }
 
-void VideoclipRequest::listUserVideos(const QString &id) {
+void VideoclipRequest::listUserVideos(const QString &url) {
     setStatus(Loading);
     m_redirects = 0;
-    QNetworkRequest request;
-
-    if (!id.contains("/user/")) {
-        request.setUrl(USER_VIDEOS_URL.arg(id));
-    }
-    else {
-        request.setUrl(id);
-    }
-    
+    QNetworkRequest request(url);
     request.setRawHeader("User-Agent", USER_AGENT);
     QNetworkReply *reply = networkAccessManager()->get(request);
     connect(reply, SIGNAL(finished()), this, SLOT(checkUserVideos()));
@@ -457,15 +463,19 @@ void VideoclipRequest::checkUserVideos() {
         const QString duration = video.section("<span class=\"thumb-duration\">", 1, 1).section("<", 0, 0);
         const QString id = video.section("data-video=\"", 1, 1).section("\"", 0, 0);
         const QString largeThumbnailUrl = "http:" + video.section("src=\"", 1, 1).section("\"", 0, 0);
+        const bool subtitles = video.contains(">SUB<");
         const QString thumbnailUrl = largeThumbnailUrl.left(largeThumbnailUrl.lastIndexOf("_") + 1) + "96.jpeg";
-        const QString title = video.section("title=\"", 1, 1).section("\"", 0, 0);
+        const QString title = video.section("alt=\"", 1, 1).section("\"", 0, 0);
         const QString url = BASE_URL + video.section("href=\"", 1, 1).section("\"", 0, 0);
         const QString userId = QString("%1/user/%2").arg(BASE_URL).arg(username);
         QVariantMap item;
+        item["commentsId"] = id;
         item["date"] = date;
         item["duration"] = duration;
         item["id"] = id;
         item["largeThumbnailUrl"] = largeThumbnailUrl;
+        item["relatedVideosId"] = RELATED_VIDEOS_URL.arg(id);
+        item["subtitles"] = subtitles;
         item["thumbnailUrl"] = thumbnailUrl;
         item["title"] = title;
         item["url"] = url;
@@ -624,13 +634,14 @@ void VideoclipRequest::checkUser() {
         setStatus(Failed);
     }
     else {
-        const QVariant username = user.value("username");
+        const QString username = user.value("username").toString();
         const QString avatar = "http:" + user.value("avatar").toString();
         QVariantMap item;
         item["id"] = username;
         item["largeThumbnailUrl"] = avatar;
         item["thumbnailUrl"] = avatar;
         item["username"] = username;
+        item["videosId"] = USER_VIDEOS_URL.arg(username);
         setErrorString(QString());
         setResult(item);
         setStatus(Ready);
@@ -695,6 +706,7 @@ void VideoclipRequest::checkUsers() {
         item["largeThumbnailUrl"] = thumbnailUrl;
         item["thumbnailUrl"] = thumbnailUrl;
         item["username"] = username;
+        item["videosId"] = USER_VIDEOS_URL.arg(username);
         items << item;
     }
     
@@ -762,7 +774,8 @@ void VideoclipRequest::checkStreams() {
         QVariantMap result;
         QVariantList items;
         QVariantMap item;
-        item["description"] = "MP4";
+        item["description"] = tr("MP4 original");
+        item["ext"] = "mp4";
         item["id"] = "original";
         item["url"] = streamUrl;
         items << item;
@@ -770,35 +783,134 @@ void VideoclipRequest::checkStreams() {
         setErrorString(QString());
         setResult(result);
         setStatus(Ready);
-        emit finished();
     }
     else {
         streamUrl = response.section("youtube.com/embed/", 1, 1).section("\"", 0, 0);
 
         if (!streamUrl.isEmpty()) {
-            youtubeRequest()->list(streamUrl);
+            QVariantMap result;
+            result["service"] = "youtube";
+            result["id"] = streamUrl;
+            setErrorString(QString());
+            setResult(result);
+            setStatus(Ready);
         }
         else {
-            setErrorString(tr("No streams found"));
-            setResult(QVariant());
+            streamUrl = response.section("dailymotion.com/embed/video/", 1, 1).section("\"", 0, 0);
+
+            if (!streamUrl.isEmpty()) {
+                QVariantMap result;
+                result["service"] = "dailymotion";
+                result["id"] = streamUrl;
+                setErrorString(QString());
+                setResult(result);
+                setStatus(Ready);
+            }
+            else {
+                setErrorString(tr("No streams found"));
+                setResult(QVariant());
+                setStatus(Failed);
+            }
+        }
+    }
+
+    emit finished();
+}
+
+void VideoclipRequest::listSubtitles(const QString &id) {
+    setStatus(Loading);
+    m_redirects = 0;
+    QNetworkRequest request(STREAM_URL.arg(id));
+    request.setRawHeader("User-Agent", USER_AGENT);
+    QNetworkReply *reply = networkAccessManager()->get(request);
+    connect(reply, SIGNAL(finished()), this, SLOT(checkSubtitles()));
+    connect(this, SIGNAL(finished()), reply, SLOT(deleteLater()));
+}
+
+void VideoclipRequest::checkSubtitles() {
+    QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
+    
+    if (!reply) {
+        setErrorString(tr("Network error"));
+        setStatus(Failed);
+        emit finished();
+        return;
+    }
+    
+    const QString redirect = getRedirect(reply);
+    
+    if (!redirect.isEmpty()) {
+        if (m_redirects < MAX_REDIRECTS) {
+            followRedirect(redirect, SLOT(checkSubtitles()));
+        }
+        else {
+            setErrorString(tr("Maximum redirects reached"));
             setStatus(Failed);
             emit finished();
         }
+        
+        return;
     }
-}
+    
+    if (reply->error() != QNetworkReply::NoError) {
+        setErrorString(reply->errorString());
+        setStatus(Failed);
+        emit finished();
+        return;
+    }
+    
+    const QString response = QString::fromUtf8(reply->readAll());
+    QString streamUrl = response.section("contentURL\" src=\"", 1, 1).section("\"", 0, 0);
 
-void VideoclipRequest::checkYouTubeStreams() {
-    if (m_youtubeRequest->status() == QYouTube::StreamsRequest::Ready) {
+    if (!streamUrl.isEmpty()) {
         QVariantMap result;
-        result["items"] = m_youtubeRequest->result();
+        QVariantList items;
+
+        int pos = 0;
+
+        while ((pos = SUBTITLES.indexIn(response, pos)) != -1) {
+            QVariantMap item;
+            item["ext"] = "srt";
+            item["id"] = SUBTITLES.cap(2);
+            item["title"] = SUBTITLES.cap(3);
+            item["url"] = BASE_URL + SUBTITLES.cap(1);
+            items << item;
+            pos += SUBTITLES.matchedLength();
+        }
+
+        result["items"] = items;
         setErrorString(QString());
         setResult(result);
         setStatus(Ready);
     }
     else {
-        setErrorString(m_youtubeRequest->errorString());
-        setResult(QVariant());
-        setStatus(Failed);
+        streamUrl = response.section("youtube.com/embed/", 1, 1).section("\"", 0, 0);
+
+        if (!streamUrl.isEmpty()) {
+            QVariantMap result;
+            result["service"] = "youtube";
+            result["id"] = streamUrl;
+            setErrorString(QString());
+            setResult(result);
+            setStatus(Ready);
+        }
+        else {
+            streamUrl = response.section("dailymotion.com/embed/video/", 1, 1).section("\"", 0, 0);
+
+            if (!streamUrl.isEmpty()) {
+                QVariantMap result;
+                result["service"] = "dailymotion";
+                result["id"] = streamUrl;
+                setErrorString(QString());
+                setResult(result);
+                setStatus(Ready);
+            }
+            else {
+                setErrorString(tr("No subtitles found"));
+                setResult(QVariant());
+                setStatus(Failed);
+            }
+        }
     }
 
     emit finished();
@@ -825,14 +937,4 @@ void VideoclipRequest::followRedirect(const QString &url, const char *slot) {
 
 QNetworkAccessManager* VideoclipRequest::networkAccessManager() {
     return m_nam ? m_nam : m_nam = new QNetworkAccessManager(this);
-}
-
-QYouTube::StreamsRequest* VideoclipRequest::youtubeRequest() {
-    if (!m_youtubeRequest) {
-        m_youtubeRequest = new QYouTube::StreamsRequest(this);
-        connect(m_youtubeRequest, SIGNAL(finished()), this, SLOT(checkYouTubeStreams()));
-        connect(this, SIGNAL(finished()), m_youtubeRequest, SLOT(cancel()));
-    }
-
-    return m_youtubeRequest;
 }

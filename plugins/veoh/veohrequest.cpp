@@ -175,14 +175,16 @@ void VeohRequest::checkVideo() {
     }
     else {
         QVariantMap video;
+        const QVariant id = json.value("videoPageUrl");
         video["date"] = json.value("age");
         video["description"] = json.value("description");
         video["duration"] = json.value("length").toInt();
-        video["id"] = json.value("videoPageUrl");
+        video["id"] = id;
         video["largeThumbnailUrl"] = json.value("highResImage");
+        video["relatedVideosId"] = id;
         video["thumbnailUrl"] = json.value("medResImage");
         video["title"] = json.value("title");
-        video["url"] = json.value("videoPageUrl");
+        video["url"] = id;
         video["viewCount"] = json.value("views").toInt();
         setErrorString(QString());
         setResult(video);
@@ -248,10 +250,12 @@ void VeohRequest::checkVideos() {
 
         foreach (const QVariant &r, related) {
             const QVariantMap rv = r.toMap();
+            const QString id = VIDEO_URL + rv.value("permalinkId").toString();
             QVariantMap video;
             video["duration"] = rv.value("length").toInt();
-            video["id"] = VIDEO_URL + rv.value("permalinkId").toString();
+            video["id"] = id;
             video["largeThumbnailUrl"] = rv.value("highResImage");
+            video["relatedVideosId"] = id;
             video["thumbnailUrl"] = rv.value("medResImage");
             video["title"] = rv.value("title");
             video["url"] = video.value("id");
@@ -267,12 +271,14 @@ void VeohRequest::checkVideos() {
             
             if ((!json.isEmpty()) && (json.value("isExternalMedia") == "0")) {
                 QVariantMap video;
+                const QString id = VIDEO_URL + json.value("videoId").toString();
                 video["duration"] = json.value("length").toInt();
-                video["id"] = VIDEO_URL + json.value("videoId").toString();
+                video["id"] = id;
                 video["largeThumbnailUrl"] = json.value("thumbnailUrl");
+                video["relatedVideosId"] = id;
                 video["thumbnailUrl"] = json.value("thumbnailUrl");
                 video["title"] = json.value("title");
-                video["url"] = video.value("id");
+                video["url"] = id;
                 videos << video;
             }
             

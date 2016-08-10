@@ -1,7 +1,7 @@
 {
     "type": "qt",
     "name": "Wenoo.net",
-    "version": 1,
+    "version": 2,
     "resources": [
         {
             "method": "get",

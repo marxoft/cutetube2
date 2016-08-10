@@ -61,7 +61,7 @@ void PluginCategoriesWindow::list(const QString &service, const QString &id) {
 void PluginCategoriesWindow::showCategory(const QModelIndex &index) {
     PluginVideosWindow *window = new PluginVideosWindow(this);
     window->setWindowTitle(index.data(PluginCategoryModel::NameRole).toString());
-    window->list(m_model->service(), index.data(PluginCategoryModel::ValueRole).toString());
+    window->list(m_model->service(), index.data(PluginCategoryModel::ValueRole).toMap().value("videosId").toString());
     window->show();
 }
 

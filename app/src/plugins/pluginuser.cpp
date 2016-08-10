@@ -40,8 +40,32 @@ PluginUser::PluginUser(const QString &service, const QVariantMap &user, QObject 
 
 PluginUser::PluginUser(const PluginUser *user, QObject *parent) :
     CTUser(user, parent),
-    m_request(0)
+    m_request(0),
+    m_playlistsId(user->playlistsId()),
+    m_videosId(user->videosId())
 {
+}
+
+QString PluginUser::playlistsId() const {
+    return m_playlistsId;
+}
+
+void PluginUser::setPlaylistsId(const QString &i) {
+    if (i != playlistsId()) {
+        m_playlistsId = i;
+        emit playlistsIdChanged();
+    }
+}
+
+QString PluginUser::videosId() const {
+    return m_videosId;
+}
+
+void PluginUser::setVideosId(const QString &i) {
+    if (i != videosId()) {
+        m_videosId = i;
+        emit videosIdChanged();
+    }
 }
 
 QString PluginUser::errorString() const {
@@ -70,12 +94,16 @@ void PluginUser::loadUser(const QString &service, const QVariantMap &user) {
     setDescription(user.value("description").toString());
     setId(user.value("id").toString());
     setLargeThumbnailUrl(user.value("largeThumbnailUrl").toString());
+    setPlaylistsId(user.value("playlistsId").toString());
     setThumbnailUrl(user.value("thumbnailUrl").toString());
     setUsername(user.value("username").toString());
+    setVideosId(user.value("videosId").toString());
 }
 
 void PluginUser::loadUser(PluginUser *user) {
     CTUser::loadUser(user);
+    setPlaylistsId(user->playlistsId());
+    setVideosId(user->videosId());
 }
 
 ResourcesRequest* PluginUser::request() {

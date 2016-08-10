@@ -92,9 +92,7 @@ QString YouTubeDownloadDialog::streamId() const {
 }
 
 QString YouTubeDownloadDialog::subtitlesLanguage() const {
-    return m_subtitleCheckBox->isChecked()
-           ? m_subtitleSelector->currentValue().toMap().value("id").toString()
-           : QString();
+    return m_subtitleCheckBox->isChecked() ? m_subtitleSelector->valueText() : QString();
 }
 
 QString YouTubeDownloadDialog::category() const {
@@ -123,6 +121,9 @@ void YouTubeDownloadDialog::list(const QString &videoId) {
 
     if (m_subtitleCheckBox->isChecked()) {
         m_subtitleModel->list(videoId);
+    }
+    else {
+        m_subtitleCheckBox->setChecked(Settings::subtitlesEnabled());
     }
 }
 
@@ -170,7 +171,7 @@ void YouTubeDownloadDialog::onSubtitleModelStatusChanged(QYouTube::SubtitlesRequ
         return;
     case QYouTube::SubtitlesRequest::Ready:
         if (m_subtitleModel->rowCount() > 0) {
-            m_subtitleSelector->setCurrentIndex(0);
+            m_subtitleSelector->setCurrentIndex(qMax(0, m_subtitleModel->match("name", Settings::subtitlesLanguage())));
         }
         
         break;

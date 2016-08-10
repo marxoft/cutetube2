@@ -17,7 +17,7 @@
 
 #include "networkaccessmanagerfactory.h"
 #include "cookiejar.h"
-#include <QNetworkAccessManager>
+#include "networkaccessmanager.h"
 
 NetworkAccessManagerFactory::NetworkAccessManagerFactory() :
     m_cookieJar(new CookieJar)
@@ -36,7 +36,7 @@ QNetworkCookieJar* NetworkAccessManagerFactory::cookieJar() const {
 }
 
 QNetworkAccessManager* NetworkAccessManagerFactory::create(QObject *parent) {
-    QNetworkAccessManager *manager = new QNetworkAccessManager(parent);
+    NetworkAccessManager *manager = new NetworkAccessManager(parent);
 
     if (!m_cookieJar) {
         m_cookieJar = new CookieJar;

@@ -35,7 +35,7 @@ MyListItem {
             verticalCenter: parent.verticalCenter
         }
         source: thumbnailUrl
-        text: videoCount ? videoCount + " " + qsTr("videos") : qsTr("No videos")
+        text: videoCount == - 1 ? "" : videoCount > 0 ? videoCount + " " + qsTr("videos") : qsTr("No videos")
         enabled: false
     }
 

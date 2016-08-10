@@ -43,8 +43,8 @@ class PluginDownloadDialog : public Dialog
 public:
     explicit PluginDownloadDialog(const QString &service, QWidget *parent = 0);
     
-QString videoId() const;
-
+    QString videoId() const;
+    
     QString streamId() const;
 
     QString subtitlesLanguage() const;
@@ -57,7 +57,7 @@ QString videoId() const;
 public Q_SLOTS:
     virtual void accept();
 
-    void list(const QString &videoId, bool listStreams = true);
+    void list(const QString &videoId, bool listStreams = true, bool listSubtitles = false);
     
 private Q_SLOTS:
     void onSubtitleCheckBoxToggled(bool enabled);

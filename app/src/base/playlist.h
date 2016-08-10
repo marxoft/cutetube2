@@ -95,7 +95,7 @@ Q_SIGNALS:
     void usernameChanged();
     void videoCountChanged();
 
-protected:
+private:
     QString m_date;
     QString m_description;
     QString m_id;

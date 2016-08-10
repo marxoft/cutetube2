@@ -110,8 +110,8 @@ Tab {
                 text: qsTr("Download")
                 onClicked: {
                     dialogLoader.sourceComponent = downloadDialog;
-                    dialogLoader.item.resourceId = videoModel.data(view.currentIndex, "id");
-                    dialogLoader.item.resourceTitle = videoModel.data(view.currentIndex, "title");
+                    dialogLoader.item.videoId = videoModel.data(view.currentIndex, "id");
+                    dialogLoader.item.videoTitle = videoModel.data(view.currentIndex, "title");
                     dialogLoader.item.open();
                 }
             }

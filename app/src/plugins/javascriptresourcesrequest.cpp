@@ -110,6 +110,44 @@ bool JavaScriptResourcesRequest::cancel() {
     return m_engine->globalObject().property("cancel").call(QScriptValue()).toBool();
 }
 
+bool JavaScriptResourcesRequest::del(const QString &sourceType, const QString &sourceId, const QString &destinationType,
+                                     const QString &destinationId) {
+    if (status() == Loading) {
+        return false;
+    }
+    
+    initEngine();
+    QScriptValue func = m_engine->globalObject().property("del");
+
+    if (func.isFunction()) {
+        const QScriptValue result = func.call(QScriptValue(), QScriptValueList() << sourceType << sourceId
+                                                                                 << destinationType << destinationId);
+
+        if (result.isError()) {
+            const QString errorString = result.toString();
+            Logger::log("JavaScriptResourcesRequest::del(). Error calling del(): " + errorString);
+            setErrorString(errorString);
+            setStatus(Failed);
+            emit finished();
+            return false;
+        }
+
+        if (result.toBool()) {
+            setErrorString(QString());
+            setStatus(Loading);
+            return true;
+        }
+    }
+    else {
+        Logger::log("JavaScriptResourcesRequest::del(). del() function not defined");
+        setErrorString(tr("del() function not defined"));
+        setStatus(Failed);
+        emit finished();
+    }
+
+    return false;
+}
+
 bool JavaScriptResourcesRequest::get(const QString &resourceType, const QString &resourceId) {
     if (status() == Loading) {
         return false;
@@ -139,6 +177,44 @@ bool JavaScriptResourcesRequest::get(const QString &resourceType, const QString 
     else {
         Logger::log("JavaScriptResourcesRequest::get(). get() function not defined");
         setErrorString(tr("get() function not defined"));
+        setStatus(Failed);
+        emit finished();
+    }
+
+    return false;
+}
+
+bool JavaScriptResourcesRequest::insert(const QString &sourceType, const QString &sourceId,
+                                        const QString &destinationType, const QString &destinationId) {
+    if (status() == Loading) {
+        return false;
+    }
+    
+    initEngine();
+    QScriptValue func = m_engine->globalObject().property("insert");
+
+    if (func.isFunction()) {
+        const QScriptValue result = func.call(QScriptValue(), QScriptValueList() << sourceType << sourceId
+                                                                                 << destinationType << destinationId);
+
+        if (result.isError()) {
+            const QString errorString = result.toString();
+            Logger::log("JavaScriptResourcesRequest::insert(). Error calling insert(): " + errorString);
+            setErrorString(errorString);
+            setStatus(Failed);
+            emit finished();
+            return false;
+        }
+
+        if (result.toBool()) {
+            setErrorString(QString());
+            setStatus(Loading);
+            return true;
+        }
+    }
+    else {
+        Logger::log("JavaScriptResourcesRequest::insert(). insert() function not defined");
+        setErrorString(tr("insert() function not defined"));
         setStatus(Failed);
         emit finished();
     }
@@ -219,12 +295,15 @@ bool JavaScriptResourcesRequest::search(const QString &resourceType, const QStri
 }
 
 void JavaScriptResourcesRequest::onRequestError(const QString &errorString) {
+    Logger::log("JavaScriptResourcesRequest::onRequestError(): " + errorString);
     setErrorString(errorString);
+    setResult(QVariant());
     setStatus(Failed);
     emit finished();
 }
 
 void JavaScriptResourcesRequest::onRequestFinished(const QVariant &result) {
+    Logger::log("JavaScriptResourcesRequest::onRequestFinished()");
     setErrorString(QString());
     setResult(result);
     setStatus(Ready);

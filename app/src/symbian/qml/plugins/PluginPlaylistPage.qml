@@ -35,7 +35,7 @@ MyPage {
         }
         else {
             playlist.loadPlaylist(Settings.currentService, playlistOrId)
-            videosTab.model.list(playlistOrId);
+            videosTab.model.list(playlistOrId.videosId);
         }
     }
 

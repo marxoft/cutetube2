@@ -33,6 +33,7 @@ PluginPlaylistModel::PluginPlaylistModel(QObject *parent) :
     m_roles[UserIdRole] = "userId";
     m_roles[UsernameRole] = "username";
     m_roles[VideoCountRole] = "videoCount";
+    m_roles[VideosIdRole] = "videosId";
 #if QT_VERSION < 0x050000
     setRoleNames(m_roles);
 #endif

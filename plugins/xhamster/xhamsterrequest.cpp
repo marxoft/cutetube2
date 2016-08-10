@@ -186,11 +186,11 @@ void XHamsterRequest::checkVideo() {
     video["duration"] = duration;
     video["id"] = id;
     video["largeThumbnailUrl"] = thumbnailUrl;
+    video["relatedVideosId"] = id;
     video["thumbnailUrl"] = thumbnailUrl;
     video["title"] = title;
     video["url"] = id;
     video["viewCount"] = viewCount;
-    
     setResult(video);
     setStatus(Ready);
     emit finished();
@@ -266,6 +266,7 @@ void XHamsterRequest::checkVideos() {
         item["duration"] = duration;
         item["id"] = id;
         item["largeThumbnailUrl"] = thumbnailUrl;
+        item["relatedVideosId"] = id;
         item["thumbnailUrl"] = thumbnailUrl;
         item["title"] = title;
         item["url"] = id;
@@ -342,6 +343,7 @@ void XHamsterRequest::checkCategories() {
             QVariantMap item;
             item["id"] = id;
             item["title"] = title;
+            item["videosId"] = id;
             items << item;
         }
     }

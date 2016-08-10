@@ -32,7 +32,7 @@ void VimeoTransfer::listStreams() {
         connect(m_streamsRequest, SIGNAL(finished()), this, SLOT(onStreamsRequestFinished()));
     }
     
-    m_streamsRequest->list(resourceId());
+    m_streamsRequest->list(videoId());
 }
 
 void VimeoTransfer::listSubtitles() {
@@ -44,7 +44,7 @@ void VimeoTransfer::listSubtitles() {
         connect(m_subtitlesRequest, SIGNAL(finished()), this, SLOT(onSubtitlesRequestFinished()));
     }
     
-    m_subtitlesRequest->list(QString("/videos/%1/texttracks").arg(resourceId()));
+    m_subtitlesRequest->list(QString("/videos/%1/texttracks").arg(videoId()));
 }
 
 void VimeoTransfer::onStreamsRequestFinished() {

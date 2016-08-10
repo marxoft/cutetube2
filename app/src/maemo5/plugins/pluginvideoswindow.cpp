@@ -21,6 +21,7 @@
 #include "plugindownloaddialog.h"
 #include "pluginplaybackdialog.h"
 #include "pluginvideowindow.h"
+#include "resources.h"
 #include "settings.h"
 #include "transfers.h"
 #include "videodelegate.h"
@@ -106,15 +107,15 @@ void PluginVideosWindow::downloadVideo() {
         const QString id = index.data(PluginVideoModel::IdRole).toString();
         const QString title = index.data(PluginVideoModel::TitleRole).toString();
         const QUrl streamUrl = index.data(PluginVideoModel::StreamUrlRole).toString();
+        const bool subtitles = index.data(PluginVideoModel::SubtitlesRole).toBool();
         
         PluginDownloadDialog dialog(m_model->service(), this);
-        dialog.list(id, streamUrl.isEmpty());
+        dialog.list(id, streamUrl.isEmpty(), subtitles);
         
         if (dialog.exec() == QDialog::Accepted) {
             Transfers::instance()->addDownloadTransfer(m_model->service(), id, dialog.streamId(),
-                                                       streamUrl, title, dialog.category(),
-                                                       dialog.subtitlesLanguage(), dialog.customCommand(),
-                                                       dialog.customCommandOverrideEnabled());
+                                                       streamUrl, title, dialog.category(), dialog.subtitlesLanguage(),
+                                                       dialog.customCommand(), dialog.customCommandOverrideEnabled());
         }
     }
 }

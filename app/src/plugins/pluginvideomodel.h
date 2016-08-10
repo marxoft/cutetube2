@@ -32,14 +32,17 @@ class PluginVideoModel : public QAbstractListModel
     
 public:
     enum Roles {
-        DateRole = Qt::UserRole + 1,
+        CommentsIdRole = Qt::UserRole + 1,
+        DateRole,
         DescriptionRole,
         DownloadableRole,
         DurationRole,
         IdRole,
         LargeThumbnailUrlRole,
+        RelatedVideosIdRole,
         ServiceRole,
         StreamUrlRole,
+        SubtitlesRole,
         ThumbnailUrlRole,
         TitleRole,
         UrlRole,

@@ -24,8 +24,8 @@ import ".."
 MySheet {
     id: root
 
-    property string resourceId
-    property string resourceTitle
+    property string videoId
+    property string videoTitle
 
     showProgressIndicator: (streamModel.status == QDailymotion.StreamsRequest.Loading)
                            || (subtitleModel.status == QDailymotion.ResourcesRequest.Loading)
@@ -107,7 +107,7 @@ MySheet {
                     onCheckedChanged: {
                         if (checked) {
                             if (subtitleModel.status != QDailymotion.ResourcesRequest.Loading) {
-                                subtitleModel.list(root.resourceId);
+                                subtitleModel.list(root.videoId);
                             }
                         }
                         else {
@@ -166,16 +166,19 @@ MySheet {
         }
     }
 
-    onAccepted: Transfers.addDownloadTransfer(Resources.DAILYMOTION, resourceId, streamSelector.value.id, "",
-                                              resourceTitle, Settings.defaultCategory,
+    onAccepted: Transfers.addDownloadTransfer(Resources.DAILYMOTION, videoId, streamSelector.value.id, "",
+                                              videoTitle, Settings.defaultCategory,
                                               subtitleSwitch.checked ? Settings.subtitlesLanguage : "")
 
     onStatusChanged: {
         switch (status) {
         case DialogStatus.Open: {
+            streamModel.clear();
+            streamSelector.selectedIndex = -1;
             subtitleSwitch.checked = false;
             subtitleModel.clear();
-            streamModel.list(resourceId);
+            subtitleSelector.selectedIndex = -1;
+            streamModel.list(videoId);
             break;
         }
         case DialogStatus.Closed: {

@@ -25,6 +25,7 @@ DailymotionVideo::DailymotionVideo(QObject *parent) :
     m_request(0),
     m_favourite(false)
 {
+    setHasSubtitles(true);
     setService(Resources::DAILYMOTION);
     connect(Dailymotion::instance(), SIGNAL(videoFavourited(DailymotionVideo*)),
             this, SLOT(onVideoUpdated(DailymotionVideo*)));
@@ -37,6 +38,7 @@ DailymotionVideo::DailymotionVideo(const QString &id, QObject *parent) :
     m_request(0),
     m_favourite(false)
 {
+    setHasSubtitles(true);
     setService(Resources::DAILYMOTION);
     loadVideo(id);
     connect(Dailymotion::instance(), SIGNAL(videoFavourited(DailymotionVideo*)),
@@ -50,6 +52,7 @@ DailymotionVideo::DailymotionVideo(const QVariantMap &video, QObject *parent) :
     m_request(0),
     m_favourite(false)
 {
+    setHasSubtitles(true);
     setService(Resources::DAILYMOTION);
     loadVideo(video);
     connect(Dailymotion::instance(), SIGNAL(videoFavourited(DailymotionVideo*)),
@@ -107,9 +110,9 @@ void DailymotionVideo::loadVideo(const QVariantMap &video) {
     setDate(QDateTime::fromTime_t(video.value("created_time").toLongLong()).toString("dd MMM yyyy"));
     setDescription(video.value("description").toString());
     setDuration(Utils::formatSecs(video.value("duration").toLongLong()));
-    setFavourite(video.value("favorited_at").toLongLong() > 0);
+    setFavourite(video.value("liked_at").toLongLong() > 0);
     setId(video.value("id").toString());
-    setLargeThumbnailUrl(video.value("thumbnail_url").toString());
+    setLargeThumbnailUrl(video.value("thumbnail_360_url").toString());
     setUrl(video.value("url").toString());
     setUserId(video.value("owner.id").toString());
     setUsername(video.value("owner.screenname").toString());
@@ -129,7 +132,7 @@ void DailymotionVideo::favourite() {
     }
     
     initRequest();
-    m_request->insert("/me/favorites/" + id());
+    m_request->insert("/me/likes/" + id());
     connect(m_request, SIGNAL(finished()), this, SLOT(onFavouriteRequestFinished()));
     emit statusChanged(status());
 }
@@ -140,7 +143,7 @@ void DailymotionVideo::unfavourite() {
     }
     
     initRequest();
-    m_request->del("/me/favorites/" + id());
+    m_request->del("/me/likes/" + id());
     connect(m_request, SIGNAL(finished()), this, SLOT(onUnfavouriteRequestFinished()));
     emit statusChanged(status());
 }

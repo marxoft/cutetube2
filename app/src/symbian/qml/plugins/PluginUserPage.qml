@@ -172,7 +172,14 @@ MyPage {
             title: user.username + "'s " + qsTr("videos")
             tab: Component {
                 PluginVideosTab {
-                    Component.onCompleted: model.list(user.id)
+                    Component.onCompleted: {                        
+                        if (user.videosId) {
+                            model.list(user.videosId);
+                        }
+                        else {
+                            infoBanner.showMessage(qsTr("This channel does not have any videos"));
+                        }
+                    }
                 }
             }
         }
@@ -185,9 +192,9 @@ MyPage {
             title: user.username + "'s " + qsTr("playlists")
             tab: Component {
                 PluginPlaylistsTab {
-                    Component.onCompleted: {
-                        if (Plugins.resourceTypeIsSupported(Settings.currentService, Resources.PLAYLIST)) {
-                            model.list(user.id);
+                    Component.onCompleted: {                        
+                        if (user.playlistsId) {
+                            model.list(user.playlistsId);
                         }
                         else {
                             infoBanner.showMessage(qsTr("This channel does not have any playlists"));

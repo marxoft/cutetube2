@@ -20,7 +20,6 @@ import com.nokia.symbian 1.1
 import cuteTube 2.0
 import ".."
 
-
 MyPage {
     id: root
 
@@ -114,9 +113,10 @@ MyPage {
                         enabled: video.downloadable
                         onClicked: {
                             dialogLoader.sourceComponent = downloadDialog;
-                            dialogLoader.item.resourceId = video.id;
-                            dialogLoader.item.resourceTitle = video.title;
+                            dialogLoader.item.videoId = video.id;
+                            dialogLoader.item.videoTitle = video.title;
                             dialogLoader.item.streamUrl = video.streamUrl;
+                            dialogLoader.item.listSubtitles = video.subtitles;
                             dialogLoader.item.open();
                         }
                     }
@@ -317,7 +317,14 @@ MyPage {
             title: qsTr("Related")
             tab: Component {
                 PluginVideosTab {
-                    Component.onCompleted: model.list(video.id)
+                    Component.onCompleted: {                        
+                        if (video.relatedVideosId) {
+                            model.list(video.relatedVideosId);
+                        }
+                        else {
+                            infoBanner.showMessage(qsTr("This video does not have any related videos"));
+                        }
+                    }
                 }
             }
         }
@@ -330,9 +337,9 @@ MyPage {
             title: qsTr("Comments")
             tab: Component {
                 PluginCommentsTab {
-                    Component.onCompleted: {
-                        if (Plugins.resourceTypeIsSupported(Settings.currentService, Resources.COMMENT)) {
-                            model.list(video.id);
+                    Component.onCompleted: {                        
+                        if (video.commentsId) {
+                            model.list(video.commentsId);
                         }
                         else {
                             infoBanner.showMessage(qsTr("This video does not have any comments"));

@@ -135,9 +135,8 @@ void DailymotionVideosWindow::downloadVideo() {
 
         if (dialog.exec() == QDialog::Accepted) {
             Transfers::instance()->addDownloadTransfer(Resources::DAILYMOTION, id, dialog.streamId(),
-                                                       QUrl(), title, dialog.category(),
-                                                       dialog.subtitlesLanguage(), dialog.customCommand(),
-                                                       dialog.customCommandOverrideEnabled());
+                                                       QUrl(), title, dialog.category(), dialog.subtitlesLanguage(),
+                                                       dialog.customCommand(), dialog.customCommandOverrideEnabled());
         }
     }
 }
@@ -204,7 +203,7 @@ void DailymotionVideosWindow::showContextMenu(const QPoint &pos) {
     if ((!isBusy()) && (m_view->currentIndex().isValid())) {
         if (m_favouriteAction) {
             m_favouriteAction->setText(m_view->currentIndex().data(DailymotionVideoModel::FavouriteRole).toBool()
-                                       ? tr("Unfavourite") : tr("Favourite"));
+                                       ? tr("Unlike") : tr("Like"));
         }
         
         m_contextMenu->popup(pos, m_downloadAction);

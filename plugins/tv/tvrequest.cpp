@@ -19,32 +19,15 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
-#include <QSqlDatabase>
-#include <QSqlError>
-#include <QSqlQuery>
-#include <QSqlRecord>
-#ifdef Q_OS_SYMBIAN
-#include <QCoreApplication>
-#include <QDebug>
-#include <QFile>
-#endif
 #if QT_VERSION >= 0x050000
 #include <QUrlQuery>
 #endif
 
-const QString TVRequest::API_URL("http://www.filmon.tv/api-v2");
-const QString TVRequest::CHANNEL_URL(API_URL + "/channel");
+const QString TVRequest::API_URL("http://marxoft.co.uk/api/cutetv");
 const QString TVRequest::LOGO_URL("http://static.filmon.com/assets/channels/%1/big_logo.png");
-#ifdef Q_OS_LINUX
-const QString TVRequest::DATABASE_NAME("/opt/cutetube2/plugins/cutetube2-tv/cutetube2-tv.db");
-#else
-const QString TVRequest::DATABASE_NAME("cutetube2-tv.db");
-#endif
-const QRegExp TVRequest::DATABASE_LIMIT("LIMIT (\\d+), (\\d+)");
+const QString TVRequest::STREAMS_URL("http://www.filmon.tv/api-v2/channel");
 
 const int TVRequest::MAX_REDIRECTS = 8;
-
-bool TVRequest::dbinit = false;
 
 TVRequest::TVRequest(QObject *parent) :
     ResourcesRequest(parent),
@@ -91,19 +74,6 @@ bool TVRequest::cancel() {
     return false;
 }
 
-bool TVRequest::get(const QString &resourceType, const QString &resourceId) {
-    if ((status() == Loading) || (resourceId.isEmpty())) {
-        return false;
-    }
-
-    if (resourceType == "video") {
-        getChannel(resourceId);
-        return true;
-    }
-
-    return false;
-}
-
 bool TVRequest::list(const QString &resourceType, const QString &resourceId) {
     if ((status() == Loading) || (resourceId.isEmpty())) {
         return false;
@@ -115,7 +85,7 @@ bool TVRequest::list(const QString &resourceType, const QString &resourceId) {
     }
 
     if (resourceType == "category") {
-        listGroups(resourceId);
+        listCategories(resourceId);
         return true;
     }
     
@@ -141,108 +111,142 @@ bool TVRequest::search(const QString &resourceType, const QString &query, const 
     return false;
 }
 
-void TVRequest::getChannel(const QString &id) {
-    QSqlQuery query = getDatabase().exec("SELECT * FROM channels WHERE id = " + getChannelId(id));
-    
-    if ((query.record().count() > 0) && (query.next())) {
-        setErrorString(QString());
-        setResult(getChannel(query));
-        setStatus(Ready);
-    }
-    else {
-        const QSqlError error = query.lastError();
-        
-        if (error.isValid()) {
-            setErrorString(error.text());
-        }
-        else {
-            setErrorString(tr("Database error"));
-        }
-        
-        setResult(QVariant());
-        setStatus(Failed);
-    }
-    
-    emit finished();
-}
-
-void TVRequest::listChannels(const QString &idOrQuery) {
-    if (idOrQuery.contains("group_")) {
-        listChannelsByGroup(idOrQuery.section("group_", -1));
-    }
-    else {
-        listChannelsByQuery(idOrQuery);
-    }
-}
-
-void TVRequest::listChannelsByGroup(const QString &id) {
-    listChannels(QString("WHERE groupId = %1 ORDER BY title ASC LIMIT 0, 20").arg(id));
-}
-
-void TVRequest::listChannelsByQuery(const QString &queryString) {
-    QSqlQuery query = getDatabase().exec("SELECT * FROM channels " + queryString);
-    const QSqlError error = query.lastError();
-    
-    if (error.isValid()) {
-        setErrorString(error.text());
-        setResult(QVariant());
-        setStatus(Failed);
-    }
-    else {
-        QVariantMap result;
-        QVariantList items;
-        
-        while (query.next()) {
-            items << getChannel(query);
-        }
-        
-        result["items"] = items;
-        
-        if (!items.isEmpty()) {
-            const int pos = DATABASE_LIMIT.indexIn(queryString);
-            
-            if (pos != -1) {
-                const int offset = qMax(0, DATABASE_LIMIT.cap(1).toInt()) + items.size();
-                const int max = qMax(1, DATABASE_LIMIT.cap(2).toInt());
-                result["next"] = QString("%1 LIMIT %2, %3").arg(queryString.left(pos)).arg(offset).arg(max);
-            }
-        }
-        
-        setErrorString(QString());
-        setResult(result);
-        setStatus(Ready);
-    }
-    
-    emit finished();
+void TVRequest::listChannels(const QString &url) {
+    setStatus(Loading);
+    m_redirects = 0;
+    QNetworkReply *reply = networkAccessManager()->get(QNetworkRequest(url));
+    connect(reply, SIGNAL(finished()), this, SLOT(checkChannels()));
+    connect(this, SIGNAL(finished()), reply, SLOT(deleteLater()));
 }
 
 void TVRequest::searchChannels(const QString &query, const QString &order) {
-    listChannelsByQuery(QString("WHERE title LIKE '%%1%' OR description LIKE '%%1%' %2").arg(query).arg(order));
+    listChannels(QString("%1/channels?search=%2&sort=%3").arg(API_URL).arg(query).arg(order));
 }
 
-void TVRequest::listGroups(const QString &queryString) {
-    QSqlQuery query = getDatabase().exec("SELECT * FROM groups " + queryString);
-    const QSqlError error = query.lastError();
+void TVRequest::checkChannels() {
+    QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
     
-    if (error.isValid()) {
-        setErrorString(error.text());
-        setResult(QVariant());
+    if (!reply) {
+        setErrorString(tr("Network error"));
         setStatus(Failed);
+        emit finished();
+        return;
     }
-    else {
-        QVariantMap result;
-        QVariantList items;
-        
-        while (query.next()) {
-            items << getGroup(query);
+    
+    const QString redirect = getRedirect(reply);
+    
+    if (!redirect.isEmpty()) {
+        if (m_redirects < MAX_REDIRECTS) {
+            followRedirect(redirect, SLOT(checkChannels()));
+        }
+        else {
+            setErrorString(tr("Maximum redirects reached"));
+            setStatus(Failed);
+            emit finished();
         }
         
-        result["items"] = items;
-        setErrorString(QString());
-        setResult(result);
-        setStatus(Ready);
+        return;
     }
     
+    if (reply->error() != QNetworkReply::NoError) {
+        setErrorString(reply->errorString());
+        setStatus(Failed);
+        emit finished();
+        return;
+    }
+    
+    const QVariantMap response = QtJson::Json::parse(QString::fromUtf8(reply->readAll())).toMap();
+    const QVariantList channels = response.value("items").toList();
+    QVariantMap result;
+    QVariantList items;
+    
+    foreach (const QVariant &c, channels) {
+        QVariantMap item = c.toMap();
+        const QString logo = LOGO_URL.arg(item.value("id").toString());
+        item["downloadable"] = false;
+        item["largeThumbnailUrl"] = logo;
+        item["relatedVideosId"] = QString("%1/channels?genre=%2&sort=title").arg(API_URL)
+                                                                            .arg(item.value("genre").toString());
+        item["thumbnailUrl"] = logo;
+        item["url"] = item.value("id");
+        items << item;
+    }
+    
+    result["items"] = items;
+    
+    if (response.contains("next")) {
+        result["next"] = API_URL + response.value("next").toString();
+    }
+    
+    setErrorString(QString());
+    setResult(result);
+    setStatus(Ready);
+    emit finished();
+}
+
+void TVRequest::listCategories(const QString &url) {
+    setStatus(Loading);
+    m_redirects = 0;
+    QNetworkReply *reply = networkAccessManager()->get(QNetworkRequest(url));
+    connect(reply, SIGNAL(finished()), this, SLOT(checkCategories()));
+    connect(this, SIGNAL(finished()), reply, SLOT(deleteLater()));
+}
+
+void TVRequest::checkCategories() {
+    QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
+    
+    if (!reply) {
+        setErrorString(tr("Network error"));
+        setStatus(Failed);
+        emit finished();
+        return;
+    }
+    
+    const QString redirect = getRedirect(reply);
+    
+    if (!redirect.isEmpty()) {
+        if (m_redirects < MAX_REDIRECTS) {
+            followRedirect(redirect, SLOT(checkCategories()));
+        }
+        else {
+            setErrorString(tr("Maximum redirects reached"));
+            setStatus(Failed);
+            emit finished();
+        }
+        
+        return;
+    }
+    
+    if (reply->error() != QNetworkReply::NoError) {
+        setErrorString(reply->errorString());
+        setStatus(Failed);
+        emit finished();
+        return;
+    }
+    
+    const QVariantMap response = QtJson::Json::parse(QString::fromUtf8(reply->readAll())).toMap();
+    const QVariantList categories = response.value("items").toList();
+    QString categoryType = reply->url().path().section("/", -1);
+    categoryType.chop(1);
+    QVariantMap result;
+    QVariantList items;
+    
+    foreach (const QVariant &c, categories) {
+        QVariantMap item = c.toMap();
+        item["videosId"] = QString("%1/channels?%2=%3&sort=title").arg(API_URL).arg(categoryType)
+                                                                  .arg(item.value("title").toString());
+        items << item;
+    }
+    
+    result["items"] = items;
+    
+    if (response.contains("next")) {
+        result["next"] = API_URL + response.value("next").toString();
+    }
+    
+    setErrorString(QString());
+    setResult(result);
+    setStatus(Ready);
     emit finished();
 }
 
@@ -250,8 +254,8 @@ void TVRequest::listStreams(const QString &id, const QString &protocol) {
     setStatus(Loading);
     m_redirects = 0;
     QNetworkReply *reply =
-    networkAccessManager()->get(QNetworkRequest(QString("%1/%2?protocol=%3").arg(CHANNEL_URL)
-                                                                            .arg(getChannelId(id))
+    networkAccessManager()->get(QNetworkRequest(QString("%1/%2?protocol=%3").arg(STREAMS_URL)
+                                                                            .arg(id)
                                                                             .arg(protocol)));
     connect(reply, SIGNAL(finished()), this, SLOT(checkStreams()));
     connect(this, SIGNAL(finished()), reply, SLOT(deleteLater()));
@@ -330,70 +334,6 @@ void TVRequest::checkStreams() {
     else {
         listStreams(channel.value("id").toString(), "rtsp");
     }    
-}
-
-void TVRequest::initDatabase() {
-#ifdef Q_OS_SYMBIAN
-    const QString name(QCoreApplication::applicationDirPath() + "/cutetube2-tv.db");
-    QString oldName("C:/cutetube2/plugins/cutetube2-tv.db");
-
-    if (!QFile::exists(oldName)) {
-        oldName.replace(0, 1, "E");
-    }
-
-    if (!QFile::exists(oldName)) {
-        oldName.replace(0, 1, "F");
-    }
-
-    if (QFile::exists(oldName)) {
-        if (QFile::exists(name)) {
-            qDebug() << "TVRequest::initDatabase(): Removing old database" << name << "Result:" << QFile::remove(name);
-        }
-
-        qDebug() << "TVRequest::initDatabase(): Moving database from " << oldName << "to" << name
-                 << "Result:" << QFile::rename(oldName, name);
-    }
-#endif
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", "cutetube2-tv");
-    db.setDatabaseName(DATABASE_NAME);
-    dbinit = db.isValid();
-}
-
-QSqlDatabase TVRequest::getDatabase() {
-    if (!dbinit) {
-        initDatabase();
-    }
-    
-    return QSqlDatabase::database("cutetube2-tv", true);
-}
-
-QVariantMap TVRequest::getChannel(const QSqlQuery &query) {
-    QVariantMap channel;
-    const QString id = query.value(0).toString();
-    const QString logo = LOGO_URL.arg(id);
-    channel["id"] = QString("channel_%1_group_%2").arg(id).arg(query.value(3).toString());
-    channel["title"] = query.value(1);
-    channel["description"] = query.value(2);
-    channel["largeThumbnailUrl"] = logo;
-    channel["thumbnailUrl"] = logo;
-    channel["url"] = QString("%1/%2").arg(CHANNEL_URL).arg(id);
-    channel["downloadable"] = false;
-    return channel;
-}
-
-QString TVRequest::getChannelId(const QString &id) {
-    return id.section("channel_", -1).section("_", 0, 0);
-}
-
-QVariantMap TVRequest::getGroup(const QSqlQuery &query) {
-    QVariantMap group;
-    group["id"] = "group_" + query.value(0).toString();
-    group["title"] = query.value(1);
-    return group;
-}
-
-QString TVRequest::getGroupId(const QString &id) {
-    return id.section("group_", -1).section("_", 0, 0);
 }
 
 QString TVRequest::getRedirect(const QNetworkReply *reply) {

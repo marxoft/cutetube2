@@ -219,7 +219,7 @@ void DailymotionVideoWindow::loadBaseUi() {
     
     if (!Dailymotion::userId().isEmpty()) {        
         if (Dailymotion::hasScope(QDailymotion::MANAGE_FAVORITES_SCOPE)) {
-            m_favouriteAction = new QAction(tr("Favourite"), this);
+            m_favouriteAction = new QAction(tr("Like"), this);
             m_relatedFavouriteAction = new QAction(this);
             menuBar()->addAction(m_favouriteAction);
             m_contextMenu->addAction(m_relatedFavouriteAction);
@@ -257,7 +257,7 @@ void DailymotionVideoWindow::loadVideoUi() {
     m_thumbnail->setDuration(m_video->duration());
     
     if (m_favouriteAction) {
-        m_favouriteAction->setText(m_video->isFavourite() ? tr("Unfavourite") : tr("Favourite"));
+        m_favouriteAction->setText(m_video->isFavourite() ? tr("Unlike") : tr("Like"));
     }
 }
 
@@ -368,9 +368,8 @@ void DailymotionVideoWindow::downloadRelatedVideo() {
 
         if (dialog.exec() == QDialog::Accepted) {
             Transfers::instance()->addDownloadTransfer(Resources::DAILYMOTION, id, dialog.streamId(),
-                                                       QUrl(), title, dialog.category(),
-                                                       dialog.subtitlesLanguage(), dialog.customCommand(),
-                                                       dialog.customCommandOverrideEnabled());
+                                                       QUrl(), title, dialog.category(), dialog.subtitlesLanguage(),
+                                                       dialog.customCommand(), dialog.customCommandOverrideEnabled());
         }
     }
 }
@@ -448,7 +447,7 @@ void DailymotionVideoWindow::showContextMenu(const QPoint &pos) {
     if ((!isBusy()) && (m_relatedView->currentIndex().isValid())) {
         if (m_relatedFavouriteAction) {
             m_relatedFavouriteAction->setText(m_relatedView->currentIndex().data(DailymotionVideoModel::FavouriteRole).toBool()
-                                              ? tr("Unfavourite") : tr("Favourite"));
+                                              ? tr("Unlike") : tr("Like"));
         }
         
         m_contextMenu->popup(pos, m_relatedDownloadAction);

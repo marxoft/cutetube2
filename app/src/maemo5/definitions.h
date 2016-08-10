@@ -39,12 +39,13 @@ static const QString DOWNLOAD_PATH(HOME_PATH + "MyDocs/cuteTube2/");
 static const QRegExp ILLEGAL_FILENAME_CHARS_RE("[\"@&~=\\/:?#!|<>*^]");
 
 // Network
-static const int DOWNLOAD_BUFFER_SIZE = 0;
+static const int DOWNLOAD_BUFFER_SIZE = 64000;
 static const int MAX_CONCURRENT_TRANSFERS = 4;
 static const int MAX_REDIRECTS = 8;
 static const int MAX_RESULTS = 20;
+static const QByteArray USER_AGENT("Wget/1.13.4 (linux-gnu)");
 
 // Version
-static const QString VERSION_NUMBER("0.3.1");
+static const QString VERSION_NUMBER("0.4.0");
 
 #endif // DEFINITIONS_H

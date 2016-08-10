@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU Lesser General Public License,
+ * under the terms and conditions of the GNU General Public License,
  * version 3, as published by the Free Software Foundation.
  *
  * This program is distributed in the hope it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
  */
@@ -24,9 +24,10 @@ import "file:///usr/lib/qt4/imports/com/nokia/meego/UIConstants.js" as UI
 MySheet {
     id: root
 
-    property string resourceId
-    property string resourceTitle
+    property string videoId
+    property string videoTitle
     property string streamUrl
+    property bool listSubtitles
 
     showProgressIndicator: (streamModel.status == ResourcesRequest.Loading)
                            || (subtitleModel.status == ResourcesRequest.Loading)
@@ -111,7 +112,7 @@ MySheet {
                     onCheckedChanged: {
                         if (checked) {
                             if (subtitleModel.status != ResourcesRequest.Loading) {
-                                subtitleModel.list(root.resourceId);
+                                subtitleModel.list(root.videoId);
                             }
                         }
                         else {
@@ -205,8 +206,8 @@ MySheet {
         }
     }
 
-    onAccepted: Transfers.addDownloadTransfer(streamModel.service, resourceId, streamUrl ? "" : streamSelector.value.id,
-                                              streamUrl, resourceTitle, Settings.defaultCategory,
+    onAccepted: Transfers.addDownloadTransfer(streamModel.service, videoId, streamUrl ? "" : streamSelector.value.id,
+                                              streamUrl, videoTitle, Settings.defaultCategory,
                                               subtitleSwitch.checked ?
                                               subtitleModel.data(subtitleSelector.selectedIndex, "name") : "",
                                               commandField.text, commandSwitch.checked)
@@ -214,18 +215,21 @@ MySheet {
     onStatusChanged: {
         switch (status) {
         case DialogStatus.Opening: {
+            streamModel.clear();
+            streamSelector.selectedIndex = -1;
             subtitleModel.clear();
+            subtitleSelector.currentIndex = -1;
             subtitleSwitch.checked = false;
-            subtitleSwitch.enabled = Plugins.resourceTypeIsSupported(subtitleModel.service, Resources.SUBTITLE);
+            subtitleSwitch.enabled = listSubtitles;
             commandField.text = "";
             commandSwitch.checked = false;
             
             if (streamUrl) {
-                streamModel.clear();
                 streamModel.append(qsTr("Default format"), streamUrl);
+                streamSelector.selectedIndex = 0;
             }
             else {
-                streamModel.list(resourceId);
+                streamModel.list(videoId);
             }
             
             break;

@@ -417,7 +417,7 @@ maemo5 {
     TARGET.EPOCHEAPSIZE = 0x20000 0x8000000
     TARGET.EPOCSTACKSIZE = 0x14000
 
-    VERSION = 0.3.2
+    VERSION = 0.4.0
     ICON = desktop/symbian/cutetube2.svg
 
     MMP_RULES += "DEBUGGABLE_UDEBONLY"
@@ -447,6 +447,7 @@ maemo5 {
         src/symbian/maskeditem.h \
         src/symbian/maskeffect.h \
         src/symbian/mediakeycaptureitem.h \
+        src/symbian/networkaccessmanager.h \
         src/symbian/networkaccessmanagerfactory.h \
         src/symbian/screenorientationmodel.h \
         src/symbian/settings.h \
@@ -461,6 +462,7 @@ maemo5 {
         src/symbian/maskeditem.cpp \
         src/symbian/maskeffect.cpp \
         src/symbian/mediakeycaptureitem.cpp \
+        src/symbian/networkaccessmanager.cpp \
         src/symbian/networkaccessmanagerfactory.cpp \
         src/symbian/settings.cpp \
         src/symbian/transfer.cpp \
@@ -530,6 +532,7 @@ maemo5 {
         src/harmattan/definitions.h \
         src/harmattan/maskeditem.h \
         src/harmattan/maskeffect.h \
+        src/harmattan/networkaccessmanager.h \
         src/harmattan/networkaccessmanagerfactory.h \
         src/harmattan/screenorientationmodel.h \
         src/harmattan/screensaver.h \
@@ -541,10 +544,13 @@ maemo5 {
         src/harmattan/main.cpp \
         src/harmattan/maskeditem.cpp \
         src/harmattan/maskeffect.cpp \
+        src/harmattan/networkaccessmanager.cpp \
         src/harmattan/networkaccessmanagerfactory.cpp \
         src/harmattan/screensaver.cpp \
         src/harmattan/shareui.cpp \
         src/harmattan/transfer.cpp
+    
+    target.path = /opt/cutetube2/bin
 
     base_qml.files = $$files(src/harmattan/qml/*.qml)
     base_qml.path = /opt/cutetube2/qml
@@ -577,6 +583,7 @@ maemo5 {
     splash.path = /opt/cutetube2/splash
 
     INSTALLS += \
+        target \
         base_qml \
         dailymotion_qml \
         plugins_qml \
@@ -588,6 +595,151 @@ maemo5 {
         contentaction \
         splash
 
+} else:unix {
+    QT += widgets
+    
+    LIBS += -L/usr/lib -lqdailymotion -lqvimeo -lqyoutube
+    CONFIG += link_prl
+    PKGCONFIG += libqdailymotion libqvimeo libqyoutube
+    
+    INCLUDEPATH += \
+        src/desktop \
+        src/desktop/dailymotion \
+        src/desktop/plugins \
+        src/desktop/vimeo \
+        src/desktop/youtube
+    
+    HEADERS += \
+        src/base/transfermodel.h \
+        src/base/transferprioritymodel.h \
+        src/desktop/banner.h \
+        src/desktop/categorysettingstab.h \
+        src/desktop/commentdelegate.h \
+        src/desktop/customcommanddialog.h \
+        src/desktop/database.h \
+        src/desktop/definitions.h \
+        src/desktop/drawing.h \
+        src/desktop/generalsettingstab.h \
+        src/desktop/image.h \
+        src/desktop/imagecache.h \
+        src/desktop/mainwindow.h \
+        src/desktop/networksettingstab.h \
+        src/desktop/page.h \
+        src/desktop/pagestack.h \
+        src/desktop/playlistdelegate.h \
+        src/desktop/playlistthumbnail.h \
+        src/desktop/pluginsettingstab.h \
+        src/desktop/pluginssettingstab.h \
+        src/desktop/settings.h \
+        src/desktop/settingsdialog.h \
+        src/desktop/settingstab.h \
+        src/desktop/textbrowser.h \
+        src/desktop/transfer.h \
+        src/desktop/transferdelegate.h \
+        src/desktop/transfersettingstab.h \
+        src/desktop/transferswindow.h \
+        src/desktop/userdelegate.h \
+        src/desktop/videodelegate.h \
+        src/desktop/videoplayer.h \
+        src/desktop/videoplayerwindow.h \
+        src/desktop/videothumbnail.h \
+        src/desktop/dailymotion/dailymotioncategoriespage.h \
+        src/desktop/dailymotion/dailymotiondownloaddialog.h \
+        src/desktop/dailymotion/dailymotionplaylistspage.h \
+        src/desktop/dailymotion/dailymotionsearchdialog.h \
+        src/desktop/dailymotion/dailymotionuserspage.h \
+        src/desktop/dailymotion/dailymotionvideospage.h \
+        src/desktop/dailymotion/dailymotionview.h \
+        src/desktop/plugins/plugincategoriespage.h \
+        src/desktop/plugins/plugindownloaddialog.h \
+        src/desktop/plugins/pluginplaylistspage.h \
+        src/desktop/plugins/pluginsearchdialog.h \
+        src/desktop/plugins/pluginuserspage.h \
+        src/desktop/plugins/pluginvideospage.h \
+        src/desktop/plugins/pluginview.h \
+        src/desktop/vimeo/vimeocategoriespage.h \
+        src/desktop/vimeo/vimeodownloaddialog.h \
+        src/desktop/vimeo/vimeoplaylistspage.h \
+        src/desktop/vimeo/vimeosearchdialog.h \
+        src/desktop/vimeo/vimeouserspage.h \
+        src/desktop/vimeo/vimeovideospage.h \
+        src/desktop/vimeo/vimeoview.h \
+        src/desktop/youtube/youtubecategoriespage.h \
+        src/desktop/youtube/youtubecommentspage.h \
+        src/desktop/youtube/youtubedownloaddialog.h \
+        src/desktop/youtube/youtubeplaylistspage.h \
+        src/desktop/youtube/youtubesearchdialog.h \
+        src/desktop/youtube/youtubeuserpage.h \
+        src/desktop/youtube/youtubeuserspage.h \
+        src/desktop/youtube/youtubevideopage.h \
+        src/desktop/youtube/youtubevideospage.h \
+        src/desktop/youtube/youtubeview.h
+            
+    SOURCES += \
+        src/base/transfermodel.cpp \
+        src/desktop/banner.cpp \
+        src/desktop/categorysettingstab.cpp \
+        src/desktop/commentdelegate.cpp \
+        src/desktop/customcommanddialog.cpp \
+        src/desktop/generalsettingstab.cpp \
+        src/desktop/image.cpp \
+        src/desktop/imagecache.cpp \
+        src/desktop/main.cpp \
+        src/desktop/mainwindow.cpp \
+        src/desktop/networksettingstab.cpp \
+        src/desktop/page.cpp \
+        src/desktop/playlistdelegate.cpp \
+        src/desktop/playlistthumbnail.cpp \
+        src/desktop/pluginsettingstab.cpp \
+        src/desktop/pluginssettingstab.cpp \
+        src/desktop/settings.cpp \
+        src/desktop/settingsdialog.cpp \
+        src/desktop/settingstab.cpp \
+        src/desktop/textbrowser.cpp \
+        src/desktop/transfer.cpp \
+        src/desktop/transferdelegate.cpp \
+        src/desktop/transfersettingstab.cpp \
+        src/desktop/transferswindow.cpp \
+        src/desktop/userdelegate.cpp \
+        src/desktop/videodelegate.cpp \
+        src/desktop/videoplayer.cpp \
+        src/desktop/videoplayerwindow.cpp \
+        src/desktop/videothumbnail.cpp \
+        src/desktop/dailymotion/dailymotioncategoriespage.cpp \
+        src/desktop/dailymotion/dailymotiondownloaddialog.cpp \
+        src/desktop/dailymotion/dailymotionplaylistspage.cpp \
+        src/desktop/dailymotion/dailymotionsearchdialog.cpp \
+        src/desktop/dailymotion/dailymotionuserspage.cpp \
+        src/desktop/dailymotion/dailymotionvideospage.cpp \
+        src/desktop/dailymotion/dailymotionview.cpp \
+        src/desktop/plugins/plugincategoriespage.cpp \
+        src/desktop/plugins/plugindownloaddialog.cpp \
+        src/desktop/plugins/pluginplaylistspage.cpp \
+        src/desktop/plugins/pluginsearchdialog.cpp \
+        src/desktop/plugins/pluginuserspage.cpp \
+        src/desktop/plugins/pluginvideospage.cpp \
+        src/desktop/plugins/pluginview.cpp \
+        src/desktop/vimeo/vimeocategoriespage.cpp \
+        src/desktop/vimeo/vimeodownloaddialog.cpp \
+        src/desktop/vimeo/vimeoplaylistspage.cpp \
+        src/desktop/vimeo/vimeosearchdialog.cpp \
+        src/desktop/vimeo/vimeouserspage.cpp \
+        src/desktop/vimeo/vimeovideospage.cpp \
+        src/desktop/vimeo/vimeoview.cpp \
+        src/desktop/youtube/youtubecategoriespage.cpp \
+        src/desktop/youtube/youtubecommentspage.cpp \
+        src/desktop/youtube/youtubedownloaddialog.cpp \
+        src/desktop/youtube/youtubeplaylistspage.cpp \
+        src/desktop/youtube/youtubesearchdialog.cpp \
+        src/desktop/youtube/youtubeuserpage.cpp \
+        src/desktop/youtube/youtubeuserspage.cpp \
+        src/desktop/youtube/youtubevideopage.cpp \
+        src/desktop/youtube/youtubevideospage.cpp \
+        src/desktop/youtube/youtubeview.cpp
+    
+    target.path = /opt/cutetube2/bin
+    
+    INSTALLS += target
 }
 
 unix:!symbian {

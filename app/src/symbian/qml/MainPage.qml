@@ -298,8 +298,8 @@ MyPage {
                         .model.list("/me/subscriptions", {family_filter: Settings.safeSearchEnabled, limit: MAX_RESULTS});
                         break;
                     case 5:
-                        appWindow.pageStack.push(Qt.resolvedUrl("dailymotion/DailymotionVideosPage.qml"), {title: qsTr("Favourites")})
-                        .model.list("/me/favorites", {family_filter: Settings.safeSearchEnabled, limit: MAX_RESULTS});
+                        appWindow.pageStack.push(Qt.resolvedUrl("dailymotion/DailymotionVideosPage.qml"), {title: qsTr("Likes")})
+                        .model.list("/me/likes", {family_filter: Settings.safeSearchEnabled, limit: MAX_RESULTS});
                         break;
                     case 6:
                         appWindow.pageStack.push(Qt.resolvedUrl("dailymotion/DailymotionPlaylistsPage.qml"), {title: qsTr("Playlists")})
@@ -318,8 +318,8 @@ MyPage {
                 onCommentAdded: infoBanner.showMessage(qsTr("Your comment has been added"))
                 onUserSubscribed: infoBanner.showMessage(qsTr("You have subscribed to") + " " + user.username)
                 onUserUnsubscribed: infoBanner.showMessage(qsTr("You have unsubscribed to") + " " + user.username)
-                onVideoFavourited: infoBanner.showMessage("'" + video.title + "' " + qsTr("added to favourites"))
-                onVideoUnfavourited: infoBanner.showMessage("'" + video.title + "' " + qsTr("removed from favourites"))
+                onVideoFavourited: infoBanner.showMessage("'" + video.title + "' " + qsTr("added to likes"))
+                onVideoUnfavourited: infoBanner.showMessage("'" + video.title + "' " + qsTr("removed from likes"))
                 onVideoAddedToPlaylist: infoBanner.showMessage("'" + video.title + "' " + qsTr("added to playlist") + " '" + playlist.title + "'")
             }
         }        

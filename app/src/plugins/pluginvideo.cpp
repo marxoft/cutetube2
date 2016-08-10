@@ -41,8 +41,32 @@ PluginVideo::PluginVideo(const QString &service, const QVariantMap &video, QObje
 
 PluginVideo::PluginVideo(const PluginVideo *video, QObject *parent) :
     CTVideo(video, parent),
-    m_request(0)
+    m_request(0),
+    m_commentsId(video->commentsId()),
+    m_relatedVideosId(video->relatedVideosId())
 {
+}
+
+QString PluginVideo::commentsId() const {
+    return m_commentsId;
+}
+
+void PluginVideo::setCommentsId(const QString &i) {
+    if (i != commentsId()) {
+        m_commentsId = i;
+        emit commentsIdChanged();
+    }
+}
+
+QString PluginVideo::relatedVideosId() const {
+    return m_relatedVideosId;
+}
+
+void PluginVideo::setRelatedVideosId(const QString &i) {
+    if (i != relatedVideosId()) {
+        m_relatedVideosId = i;
+        emit relatedVideosIdChanged();
+    }
 }
 
 QString PluginVideo::errorString() const {
@@ -68,11 +92,14 @@ void PluginVideo::loadVideo(const QString &service, const QString &id) {
 
 void PluginVideo::loadVideo(const QString &service, const QVariantMap &video) {
     setService(service);
+    setCommentsId(video.value("commentsId").toString());
     setDate(video.value("date").toString());
     setDescription(video.value("description").toString());
     setDownloadable(video.value("downloadable", true).toBool());
+    setHasSubtitles(video.value("subtitles", false).toBool());
     setId(video.value("id").toString());
     setLargeThumbnailUrl(video.value("largeThumbnailUrl").toString());
+    setRelatedVideosId(video.value("relatedVideosId").toString());
     setStreamUrl(video.value("streamUrl").toString());
     setThumbnailUrl(video.value("thumbnailUrl").toString());
     setTitle(video.value("title").toString());
@@ -97,6 +124,8 @@ void PluginVideo::loadVideo(const QString &service, const QVariantMap &video) {
 
 void PluginVideo::loadVideo(PluginVideo *video) {
     CTVideo::loadVideo(video);
+    setCommentsId(video->commentsId());
+    setRelatedVideosId(video->relatedVideosId());
 }
 
 ResourcesRequest* PluginVideo::request() {

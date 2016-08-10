@@ -138,7 +138,7 @@ MyPage {
             titleText: qsTr("Priority")
             focusItem: view
             model: TransferPriorityModel {}
-            onAccepted: transferModel.setData(view.currentIndex, value, "priority")
+            onAccepted: Transfers.get(view.currentIndex).priority = value
         }
     }
 
@@ -149,7 +149,7 @@ MyPage {
             titleText: qsTr("Category")
             focusItem: view
             model: CategoryNameModel {}
-            onAccepted: transferModel.setData(view.currentIndex, value, "category")
+            onAccepted: Transfers.get(view.currentIndex).category = value
         }
     }
 }

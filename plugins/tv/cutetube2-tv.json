@@ -1,46 +1,41 @@
 {
     "type": "qt",
-    "version": 1,
+    "version": 2,
     "name": "TV",
     "resources": [
         {
-            "type": "stream",
-            "method": "list"
-        },
-
-        {
             "type": "category",
             "method": "list",
-            "label": "Channels by group"
-            "id": "ORDER BY title ASC"
+            "label": "Channels by genre"
+            "id": "http://marxoft.co.uk/api/cutetv/genres"
         },
         
         {
             "type": "video",
             "method": "list",
             "label": "All channels (ascending)"
-            "id": "ORDER BY title ASC LIMIT 0, 20"
+            "id": "http://marxoft.co.uk/api/cutetv/channels?sort=title"
         },
         
         {
             "type": "video",
             "method": "list",
             "label": "All channels (descending)"
-            "id": "ORDER BY title DESC LIMIT 0, 20"
+            "id": "http://marxoft.co.uk/api/cutetv/channels?sort=title&sortDescending=true"
         },        
         
         {
             "type": "video",
             "method": "search",
             "label": "Channels (ascending)"
-            "order": "ORDER BY title ASC LIMIT 0, 20"
+            "order": "title"
         },
         
         {
             "type": "video",
             "method": "search",
             "label": "Channels (descending)"
-            "order": "ORDER BY title DESC LIMIT 0, 20"
+            "order": "title&sortDescending=true"
         }
     ]
 }

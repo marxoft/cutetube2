@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU Lesser General Public License,
+ * under the terms and conditions of the GNU General Public License,
  * version 3, as published by the Free Software Foundation.
  *
  * This program is distributed in the hope it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
  */
@@ -111,9 +111,10 @@ MyPage {
                         enabled: video.downloadable
                         onClicked: {
                             dialogLoader.sourceComponent = downloadDialog;
-                            dialogLoader.item.resourceId = video.id;
-                            dialogLoader.item.resourceTitle = video.title;
+                            dialogLoader.item.videoId = video.id;
+                            dialogLoader.item.videoTitle = video.title;
                             dialogLoader.item.streamUrl = video.streamUrl;
+                            dialogLoader.item.listSubtitles = video.subtitles;
                             dialogLoader.item.open();
                         }
                     }
@@ -306,7 +307,14 @@ MyPage {
             title: qsTr("Related")
             tab: Component {
                 PluginVideosTab {
-                    Component.onCompleted: model.list(video.id)
+                    Component.onCompleted: {                        
+                        if (video.relatedVideosId) {
+                            model.list(video.relatedVideosId);
+                        }
+                        else {
+                            infoBanner.showMessage(qsTr("This video does not have any related videos"));
+                        }
+                    }
                 }
             }
         }
@@ -319,9 +327,9 @@ MyPage {
             title: qsTr("Comments")
             tab: Component {
                 PluginCommentsTab {
-                    Component.onCompleted: {
-                        if (Plugins.resourceTypeIsSupported(Settings.currentService, Resources.COMMENT)) {
-                            model.list(video.id);
+                    Component.onCompleted: {                        
+                        if (video.commentsId) {
+                            model.list(video.commentsId);
                         }
                         else {
                             infoBanner.showMessage(qsTr("This video does not have any comments"));

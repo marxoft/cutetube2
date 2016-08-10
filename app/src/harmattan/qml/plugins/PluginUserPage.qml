@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU Lesser General Public License,
+ * under the terms and conditions of the GNU General Public License,
  * version 3, as published by the Free Software Foundation.
  *
  * This program is distributed in the hope it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
  */
@@ -172,7 +172,14 @@ MyPage {
             title: user.username + "'s " + qsTr("videos")
             tab: Component {
                 PluginVideosTab {
-                    Component.onCompleted: model.list(user.id)
+                    Component.onCompleted: {                        
+                        if (user.videosId) {
+                            model.list(user.videosId);
+                        }
+                        else {
+                            infoBanner.showMessage(qsTr("This channel does not have any videos"));
+                        }
+                    }
                 }
             }
         }
@@ -185,9 +192,9 @@ MyPage {
             title: user.username + "'s " + qsTr("playlists")
             tab: Component {
                 PluginPlaylistsTab {
-                    Component.onCompleted: {
-                        if (Plugins.resourceTypeIsSupported(Settings.currentService, Resources.PLAYLIST)) {
-                            model.list(user.id);
+                    Component.onCompleted: {                        
+                        if (user.playlistsId) {
+                            model.list(user.playlistsId);
                         }
                         else {
                             infoBanner.showMessage(qsTr("This channel does not have any playlists"));

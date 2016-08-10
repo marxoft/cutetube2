@@ -71,7 +71,7 @@ int Transfers::count() const {
     return m_transfers.size();
 }
 
-void Transfers::addDownloadTransfer(const QString &service, const QString &resourceId, const QString &streamId,
+void Transfers::addDownloadTransfer(const QString &service, const QString &videoId, const QString &streamId,
                                     const QUrl &streamUrl, const QString &title, const QString &category,
                                     const QString &subtitlesLanguage, const QString &customCommand,
                                     bool customCommandOverrideEnabled) {
@@ -81,7 +81,7 @@ void Transfers::addDownloadTransfer(const QString &service, const QString &resou
     transfer->setDownloadPath(Settings::downloadPath() + ".incomplete/" + transfer->id());
     transfer->setFileName(title + ".mp4");
     transfer->setCategory(category);
-    transfer->setResourceId(resourceId);
+    transfer->setVideoId(videoId);
     transfer->setStreamId(streamId);
     transfer->setStreamUrl(streamUrl);
     transfer->setTitle(title);
@@ -177,7 +177,7 @@ void Transfers::save() {
         settings.setValue("priority", Transfer::Priority(transfer->priority()));
         settings.setValue("size", transfer->size());
         settings.setValue("service", transfer->service());
-        settings.setValue("resourceId", transfer->resourceId());
+        settings.setValue("videoId", transfer->videoId());
         settings.setValue("streamId", transfer->streamId());
         settings.setValue("streamUrl", transfer->streamUrl());
         settings.setValue("title", transfer->title());
@@ -201,7 +201,7 @@ void Transfers::restore() {
         transfer->setCategory(settings.value("category").toString());
         transfer->setPriority(Transfer::Priority(settings.value("priority", 1).toInt()));
         transfer->setSize(settings.value("size").toLongLong());
-        transfer->setResourceId(settings.value("resourceId").toString());
+        transfer->setVideoId(settings.value("videoId").toString());
         transfer->setStreamId(settings.value("streamId").toString());
         transfer->setStreamUrl(settings.value("streamUrl").toString());
         transfer->setTitle(settings.value("title").toString());

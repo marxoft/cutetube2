@@ -8,7 +8,7 @@ Standards-Version: 3.7.3
 
 Package: cutetube2-porntrex
 Architecture: armel
-Depends: ${shlibs:Depends}, ${misc:Depends}, cutetube2 (>= 0.3.0)
+Depends: ${shlibs:Depends}, ${misc:Depends}, cutetube2 (>= 0.4.0)
 Description: A plugin for cuteTube2 providing access to content at PornTrex
 XB-Maemo-Display-Name: cuteTube2-PornTrex
 XB-Maemo-Icon-26:

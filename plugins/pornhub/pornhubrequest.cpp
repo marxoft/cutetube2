@@ -197,6 +197,7 @@ void PornhubRequest::checkVideo() {
     video["duration"] = duration;
     video["id"] = id;
     video["largeThumbnailUrl"] = largeThumbnailUrl;
+    video["relatedVideosId"] = id;
     video["thumbnailUrl"] = thumbnailUrl;
     video["title"] = title;
     video["url"] = id;
@@ -282,6 +283,7 @@ void PornhubRequest::checkVideos() {
         item["duration"] = duration;
         item["id"] = id;
         item["largeThumbnailUrl"] = largeThumbnailUrl;
+        item["relatedVideosId"] = id;
         item["thumbnailUrl"] = thumbnailUrl;
         item["title"] = title;
         item["url"] = id;
@@ -356,7 +358,7 @@ void PornhubRequest::checkChannel() {
     const QString result = QString::fromUtf8(reply->readAll());
     const QString description = result.section("div class=\"content\">", 1, 1).remove(QRegExp("<[^>]*>"))
                                                                               .section("<", 0, 0);
-    const QString id = reply->url().toString() + "/videos?o=da";
+    const QString id = reply->url().toString();
     const QString thumbnailUrl = result.section("div class=\"avatar\">", 1, 1).section("src=\"", 1, 1)
                                                                               .section("\"", 0, 0);
     const QString username = result.section("div class=\"channelName", 1, 1).section("<h3>", 1, 1).section("<", 0, 0);
@@ -367,6 +369,7 @@ void PornhubRequest::checkChannel() {
     channel["largeThumbnailUrl"] = thumbnailUrl;
     channel["thumbnailUrl"] = thumbnailUrl;
     channel["username"] = username;
+    channel["videosId"] = id + "/videos?o=da";
     setResult(channel);
     setStatus(Ready);
     emit finished();
@@ -416,7 +419,7 @@ void PornhubRequest::checkMember() {
     const QString result = QString::fromUtf8(reply->readAll());
     const QString description = result.section("div id=\"infoVisible\">", 1, 1).remove(QRegExp("<[^>]*>"))
                                                                               .section("<", 0, 0);
-    const QString id = reply->url().toString() + "/videos/public";
+    const QString id = reply->url().toString();
     const QString thumbnailUrl = result.section("img id=\"getAvatar\">", 1, 1).section("src=\"", 1, 1)
                                                                               .section("\"", 0, 0);
     const QString username = result.section("div class=\"channelName", 1, 1).section("<h3>", 1, 1).section("<", 0, 0);
@@ -427,6 +430,7 @@ void PornhubRequest::checkMember() {
     member["largeThumbnailUrl"] = thumbnailUrl;
     member["thumbnailUrl"] = thumbnailUrl;
     member["username"] = username;
+    member["videosId"] = id + "/videos/public";
     setResult(member);
     setStatus(Ready);
     emit finished();
@@ -476,7 +480,7 @@ void PornhubRequest::checkPornstar() {
     const QString result = QString::fromUtf8(reply->readAll());
     const QString description = result.section("div id=\"bioBlock\">", 1, 1).remove(QRegExp("<[^>]*>"))
                                                                             .section("<", 0, 0);
-    const QString id = reply->url().toString() + "?o=cm";
+    const QString id = reply->url().toString();
     const QString thumbnailUrl = result.section("img itemprop=\"contentUrl\"", 1, 1).section("src=\"", 1, 1)
                                                                                     .section("\"", 0, 0);
     const QString username = result.section("span itemprop=\"name\">", 1, 1).section("<", 0, 0).trimmed();
@@ -487,6 +491,7 @@ void PornhubRequest::checkPornstar() {
     pornstar["largeThumbnailUrl"] = thumbnailUrl;
     pornstar["thumbnailUrl"] = thumbnailUrl;
     pornstar["username"] = username;
+    pornstar["videosId"] = id + "?o=cm";
     setResult(pornstar);
     setStatus(Ready);
     emit finished();
@@ -575,8 +580,7 @@ void PornhubRequest::checkChannels() {
     
     for (int i = 1; i < users.size(); i++) {
         const QString &user = users.at(i);
-        const QString id = QString("%1%2/videos?o=da").arg(BASE_URL)
-                                                      .arg(user.section("href=\"", 1, 1).section("\"", 0, 0));
+        const QString id = BASE_URL + user.section("href=\"", 1, 1).section("\"", 0, 0);
         const QString thumbnailUrl = user.section("src=\"", 2, 2).section("\"", 0, 0);
         const QString username = user.section("class=\"usernameLink\">", 1, 1).section("<", 0, 0);
         
@@ -585,6 +589,7 @@ void PornhubRequest::checkChannels() {
         item["largeThumbnailUrl"] = thumbnailUrl;
         item["thumbnailUrl"] = thumbnailUrl;
         item["username"] = username;
+        item["videosId"] = id + "/videos?o=da";
         items << item;
     }
     
@@ -647,8 +652,7 @@ void PornhubRequest::checkMembers() {
     
     for (int i = 1; i < users.size(); i++) {
         const QString &user = users.at(i);
-        const QString id = QString("%1%2/videos/public").arg(BASE_URL)
-                                                        .arg(user.section("href=\"", 1, 1).section("\"", 0, 0));
+        const QString id = BASE_URL + user.section("href=\"", 1, 1).section("\"", 0, 0);
         const QString thumbnailUrl = user.section("src=\"", 1, 1).section("\"", 0, 0);
         const QString username = user.section("alt=\"", 1, 1).section("\"", 0, 0);
         
@@ -657,6 +661,7 @@ void PornhubRequest::checkMembers() {
         item["largeThumbnailUrl"] = thumbnailUrl;
         item["thumbnailUrl"] = thumbnailUrl;
         item["username"] = username;
+        item["videosId"] = id + "/videos/public";
         items << item;
     }
     
@@ -719,7 +724,7 @@ void PornhubRequest::checkPornstars() {
     
     for (int i = 1; i < users.size(); i++) {
         const QString &user = users.at(i);
-        const QString id = QString("%1%2?o=cm").arg(BASE_URL).arg(user.section("href=\"", 1, 1).section("\"", 0, 0));
+        const QString id = BASE_URL + user.section("href=\"", 1, 1).section("\"", 0, 0);
         const QString thumbnailUrl = user.section("src=\"", 1, 1).section("\"", 0, 0);
         const QString username = user.section("alt=\"", 1, 1).section("\"", 0, 0);
         
@@ -728,6 +733,7 @@ void PornhubRequest::checkPornstars() {
         item["largeThumbnailUrl"] = thumbnailUrl;
         item["thumbnailUrl"] = thumbnailUrl;
         item["username"] = username;
+        item["videosId"] = id + "?o=cm";
         items << item;
     }
     
@@ -790,12 +796,12 @@ void PornhubRequest::checkCategories() {
     
     for (int i = 1; i < categories.size(); i++) {
         const QString &category = categories.at(i);
-        const QString id = QString("%1%2&o=cm").arg(BASE_URL)
-                                               .arg(category.section("href=\"", 1, 1).section("\"", 0, 0));
+        const QString id = BASE_URL + category.section("href=\"", 1, 1).section("\"", 0, 0);
         const QString title = category.section("alt=\"", 1, 1).section("\"", 0, 0);
         QVariantMap item;
         item["id"] = id;
         item["title"] = title;
+        item["videosId"] = id + "&o=cm";
         items << item;
     }
     

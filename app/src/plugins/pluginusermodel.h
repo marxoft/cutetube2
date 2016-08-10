@@ -35,9 +35,11 @@ public:
         DescriptionRole = Qt::UserRole + 1,
         IdRole,
         LargeThumbnailUrlRole,
+        PlaylistsIdRole,
         ServiceRole,
         ThumbnailUrlRole,
-        UsernameRole
+        UsernameRole,
+        VideosIdRole
     };
     
     explicit PluginUserModel(QObject *parent = 0);

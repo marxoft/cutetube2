@@ -57,6 +57,7 @@ Rectangle {
         }
         color: "#000"
         opacity: 0.8
+        visible: label.visible
     }
 
     Label {
@@ -67,6 +68,7 @@ Rectangle {
         verticalAlignment: Text.AlignVCenter
         font.pixelSize: Math.floor(parent.height / 6)
         color: "#fff"
+        visible: text != ""
     }
 
     MouseArea {

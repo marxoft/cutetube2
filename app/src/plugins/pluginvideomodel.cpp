@@ -22,14 +22,17 @@ PluginVideoModel::PluginVideoModel(QObject *parent) :
     QAbstractListModel(parent),
     m_request(0)
 {
+    m_roles[CommentsIdRole] = "commentsId";
     m_roles[DateRole] = "date";
     m_roles[DescriptionRole] = "description";
     m_roles[DownloadableRole] = "downloadable";
     m_roles[DurationRole] = "duration";
     m_roles[IdRole] = "id";
     m_roles[LargeThumbnailUrlRole] = "largeThumbnailUrl";
+    m_roles[RelatedVideosIdRole] = "relatedVideosId";
     m_roles[ServiceRole] = "service";
     m_roles[StreamUrlRole] = "streamUrl";
+    m_roles[SubtitlesRole] = "subtitles";
     m_roles[ThumbnailUrlRole] = "thumbnailUrl";
     m_roles[TitleRole] = "title";
     m_roles[UrlRole] = "url";

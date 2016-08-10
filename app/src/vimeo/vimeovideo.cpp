@@ -25,6 +25,7 @@ VimeoVideo::VimeoVideo(QObject *parent) :
     m_request(0),
     m_favourite(false)
 {
+    setHasSubtitles(true);
     setService(Resources::VIMEO);
     connect(Vimeo::instance(), SIGNAL(videoFavourited(VimeoVideo*)),
             this, SLOT(onVideoUpdated(VimeoVideo*)));
@@ -37,6 +38,7 @@ VimeoVideo::VimeoVideo(const QString &id, QObject *parent) :
     m_request(0),
     m_favourite(false)
 {
+    setHasSubtitles(true);
     setService(Resources::VIMEO);
     loadVideo(id);
     connect(Vimeo::instance(), SIGNAL(videoFavourited(VimeoVideo*)),
@@ -50,6 +52,7 @@ VimeoVideo::VimeoVideo(const QVariantMap &video, QObject *parent) :
     m_request(0),
     m_favourite(false)
 {
+    setHasSubtitles(true);
     setService(Resources::VIMEO);
     loadVideo(video);
     connect(Vimeo::instance(), SIGNAL(videoFavourited(VimeoVideo*)),

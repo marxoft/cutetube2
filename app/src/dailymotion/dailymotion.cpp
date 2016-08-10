@@ -43,17 +43,17 @@ const QStringList Dailymotion::COMMENT_FIELDS = QStringList() << "id" << "create
                                                 
 const QStringList Dailymotion::PLAYLIST_FIELDS = QStringList() << "id" << "created_time" << "description"
                                                                << "name" << "owner.id" << "owner.screenname"
-                                                               << "thumbnail_120_url" << "thumbnail_url"
+                                                               << "thumbnail_120_url" << "thumbnail_360_url"
                                                                << "videos_total";
 
-const QStringList Dailymotion::USER_FIELDS = QStringList() << "id" << "avatar_60_url" << "avatar_240_url"
-                                                           << "cover_150_url" << "cover_url" << "description"
+const QStringList Dailymotion::USER_FIELDS = QStringList() << "id" << "avatar_80_url" << "avatar_240_url"
+                                                           << "cover_150_url" << "cover_250_url" << "description"
                                                            << "fans_total" << "screenname" << "views_total";
 
 const QStringList Dailymotion::VIDEO_FIELDS = QStringList() << "id" << "created_time" << "description"
-                                                            << "duration" << "favorited_at" << "owner.id"
+                                                            << "duration" << "liked_at" << "owner.id"
                                                             << "owner.screenname" << "thumbnail_120_url"
-                                                            << "thumbnail_url" << "title" << "url" << "views_total";
+                                                            << "thumbnail_360_url" << "title" << "url" << "views_total";
                                                 
 const QRegExp Dailymotion::URL_REGEXP("(http(s|)://(www.|)dailymotion.com/|http://dai.ly/)\\w+", Qt::CaseInsensitive);
 

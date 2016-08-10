@@ -83,7 +83,7 @@ Q_SIGNALS:
     void usernameChanged();
     void videoIdChanged();
 
-protected:
+private:
     QString m_body;
     QString m_date;
     QString m_id;

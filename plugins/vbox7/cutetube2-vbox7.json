@@ -1,7 +1,7 @@
 {
     "type": "qt",
     "name": "VBOX7",
-    "version": 1,
+    "version": 2,
     "resources": [
         {
             "type": "user",
@@ -13,11 +13,6 @@
             "type": "video",
             "method": "get",
             "regExp": "http://vbox7\\.com/play:\\w+"
-        },
-        
-        {
-            "type": "stream",
-            "method": "list"
         },
 
         {

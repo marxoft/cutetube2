@@ -49,7 +49,7 @@ class Transfer : public QObject
 {
     Q_OBJECT
     
-    Q_PROPERTY(qint64 bytesTransferred READ bytesTransferred NOTIFY progressChanged)
+    Q_PROPERTY(qint64 bytesTransferred READ bytesTransferred NOTIFY bytesTransferredChanged)
     Q_PROPERTY(QString category READ category WRITE setCategory NOTIFY categoryChanged)
     Q_PROPERTY(QString customCommand READ customCommand WRITE setCustomCommand NOTIFY customCommandChanged)
     Q_PROPERTY(bool customCommandOverrideEnabled READ customCommandOverrideEnabled WRITE setCustomCommandOverrideEnabled
@@ -65,7 +65,6 @@ class Transfer : public QObject
     Q_PROPERTY(QString priorityString READ priorityString NOTIFY priorityChanged)
     Q_PROPERTY(int progress READ progress NOTIFY progressChanged)
     Q_PROPERTY(QString progressString READ progressString NOTIFY progressChanged)
-    Q_PROPERTY(QString resourceId READ resourceId WRITE setResourceId NOTIFY resourceIdChanged)
     Q_PROPERTY(QString service READ service NOTIFY serviceChanged)
     Q_PROPERTY(qint64 size READ size WRITE setSize NOTIFY sizeChanged)
     Q_PROPERTY(Status status READ status NOTIFY statusChanged)
@@ -75,6 +74,7 @@ class Transfer : public QObject
     Q_PROPERTY(QString title READ title WRITE setTitle NOTIFY titleChanged)
     Q_PROPERTY(TransferType transferType READ transferType WRITE setTransferType NOTIFY transferTypeChanged)
     Q_PROPERTY(QUrl url READ url NOTIFY statusChanged)
+    Q_PROPERTY(QString videoId READ videoId WRITE setVideoId NOTIFY videoIdChanged)
     
     Q_ENUMS(Priority Status TransferType)
     
@@ -140,9 +140,6 @@ public:
     int progress() const;
     QString progressString() const;
     
-    QString resourceId() const;
-    void setResourceId(const QString &ri);
-    
     QString service() const;
     
     qint64 size() const;
@@ -153,7 +150,6 @@ public:
     
     QString streamId() const;
     void setStreamId(const QString &si);
-    
     QUrl streamUrl() const;
     void setStreamUrl(const QUrl &url);
     
@@ -164,6 +160,9 @@ public:
     void setTransferType(TransferType type);
     
     QUrl url() const;
+    
+    QString videoId() const;
+    void setVideoId(const QString &vi);
     
 public Q_SLOTS:
     void queue();
@@ -202,6 +201,7 @@ private Q_SLOTS:
     void onCustomCommandError();
     
 Q_SIGNALS:
+    void bytesTransferredChanged();
     void categoryChanged();
     void customCommandChanged();
     void customCommandOverrideEnabledChanged();
@@ -212,7 +212,6 @@ Q_SIGNALS:
     void idChanged();
     void priorityChanged();
     void progressChanged();
-    void resourceIdChanged();
     void serviceChanged();
     void sizeChanged();
     void statusChanged();
@@ -220,6 +219,7 @@ Q_SIGNALS:
     void streamUrlChanged();
     void titleChanged();
     void transferTypeChanged();
+    void videoIdChanged();
 
 private:
     static TransferUI::Client *tuiClient;
@@ -253,9 +253,7 @@ private:
     Priority m_priority;
     
     int m_progress;
-    
-    QString m_resourceId;
-    
+        
     QString m_service;
     
     qint64 m_size;
@@ -266,12 +264,13 @@ private:
     Status m_status;
     
     QString m_streamId;
-    
     QUrl m_streamUrl;
     
     QString m_title;
     
     TransferType m_transferType;
+    
+    QString m_videoId;
     
     CommandList m_commands;
     

@@ -41,8 +41,20 @@ PluginPlaylist::PluginPlaylist(const QString &service, const QVariantMap &playli
 
 PluginPlaylist::PluginPlaylist(const PluginPlaylist *playlist, QObject *parent) :
     CTPlaylist(playlist, parent),
-    m_request(0)
+    m_request(0),
+    m_videosId(playlist->videosId())
 {
+}
+
+QString PluginPlaylist::videosId() const {
+    return m_videosId;
+}
+
+void PluginPlaylist::setVideosId(const QString &i) {
+    if (i != videosId()) {
+        m_videosId = i;
+        emit videosIdChanged();
+    }
 }
 
 QString PluginPlaylist::errorString() const {
@@ -76,11 +88,13 @@ void PluginPlaylist::loadPlaylist(const QString &service, const QVariantMap &pla
     setTitle(playlist.value("title").toString());
     setUserId(playlist.value("userId").toString());
     setUsername(playlist.value("username").toString());
-    setVideoCount(playlist.value("videoCount").toInt());    
+    setVideoCount(playlist.value("videoCount", -1).toInt());
+    setVideosId(playlist.value("videosId").toString());
 }
 
 void PluginPlaylist::loadPlaylist(PluginPlaylist *playlist) {
     CTPlaylist::loadPlaylist(playlist);
+    setVideosId(playlist->videosId());
 }
 
 ResourcesRequest* PluginPlaylist::request() {

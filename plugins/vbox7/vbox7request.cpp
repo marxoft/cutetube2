@@ -205,6 +205,7 @@ void Vbox7Request::checkUser() {
         user["thumbnailUrl"] = thumbnailUrl;
         user["url"] = url;
         user["username"] = username;
+        user["videosId"] = url;
         setErrorString(QString());
         setResult(user);
         setStatus(Ready);
@@ -301,6 +302,7 @@ void Vbox7Request::checkVideo() {
         video["duration"] = duration;
         video["id"] = url;
         video["largeThumbnailUrl"] = largeThumbnailUrl;
+        video["relatedVideosId"] = url;
         video["thumbnailUrl"] = thumbnailUrl;
         video["title"] = title;
         video["url"] = url;
@@ -401,6 +403,7 @@ void Vbox7Request::checkVideos() {
             item["duration"] = duration;
             item["id"] = id;
             item["largeThumbnailUrl"] = thumbnailUrl;
+            item["relatedVideosId"] = id;
             item["thumbnailUrl"] = thumbnailUrl;
             item["title"] = title;
             item["url"] = id;
@@ -429,6 +432,7 @@ void Vbox7Request::checkVideos() {
             item["duration"] = duration;
             item["id"] = id;
             item["largeThumbnailUrl"] = thumbnailUrl;
+            item["relatedVideosId"] = id;
             item["thumbnailUrl"] = thumbnailUrl;
             item["title"] = title;
             item["url"] = id;

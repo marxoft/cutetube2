@@ -37,7 +37,7 @@ public:
     int active() const;
     int count() const;
     
-    Q_INVOKABLE void addDownloadTransfer(const QString &service, const QString &resourceId, const QString &streamId,
+    Q_INVOKABLE void addDownloadTransfer(const QString &service, const QString &videoId, const QString &streamId,
                                          const QUrl &streamUrl, const QString &title, const QString &category,
                                          const QString &subtitlesLanguage = QString(),
                                          const QString &customCommand = QString(),

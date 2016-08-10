@@ -1,4 +1,4 @@
-QT += core network sql
+QT += core network
 QT -= gui
 CONFIG += plugin
 TARGET = cutetube2-tv
@@ -30,9 +30,6 @@ symbian {
 
     config.sources = "$$TARGET".json
     config.path = !:/cutetube2/plugins
-    
-    database.sources = "$$TARGET".db
-    database.path = !:/cutetube2/plugins
 
     lib.sources = "$$TARGET".dll
     lib.path = !:/sys/bin
@@ -44,7 +41,6 @@ symbian {
     DEPLOYMENT += \
         tv_deployment \
         config \
-        database \
         lib \
         stub
 
@@ -56,20 +52,12 @@ symbian {
     
     config.files = "$$TARGET".json
     config.path = /opt/cutetube2/plugins
-    
-    contentaction.files = "$$TARGET".xml
-    contentaction.path = /usr/share/contentaction
-    
-    database.files = "$$TARGET".db
-    database.path = /opt/cutetube2/plugins/"$$TARGET"
 
     target.path = /opt/cutetube2/plugins
     
     INSTALLS += \
         target \
-        config \
-        contentaction \
-        database
+        config
 
 } else:unix {
     INCLUDEPATH += /usr/include/cutetube2
@@ -79,14 +67,10 @@ symbian {
     
     config.files = "$$TARGET".json
     config.path = /opt/cutetube2/plugins
-    
-    database.files = "$$TARGET".db
-    database.path = /opt/cutetube2/plugins/"$$TARGET"
 
     target.path = /opt/cutetube2/plugins
     
     INSTALLS += \
         target \
-        config \
-        database
+        config
 }

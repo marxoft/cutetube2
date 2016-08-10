@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3 as
+ * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -229,7 +229,7 @@ MyPage {
                     else if (i >= 0) {
                         var v = data(i, "value");
                         videoPlayer.playUrl(v.url);
-                        formatLabel.text = v.height + "p";
+                        formatLabel.text = (v.height ? v.height + "p" : v.duration);
                     }
                     else {
                         dialogLoader.sourceComponent = streamDialog;
@@ -391,6 +391,7 @@ MyPage {
                     drag.axis: Drag.XAxis
                     drag.minimumX: -40
                     drag.maximumX: width - UI.PADDING_DOUBLE
+                    enabled: videoPlayer.seekable
                     onExited: posInsideMouseArea = false
                     onEntered: posInsideMouseArea = true
                     onPressed: {
@@ -457,19 +458,23 @@ MyPage {
 
                 if (service == Resources.YOUTUBE) {
                     dialogLoader.item.model = youtubeModel;
+                    youtubeModel.list(playbackQueue.data(playbackQueue.position, "id"));
                 }
                 else if (service == Resources.DAILYMOTION) {
                     dialogLoader.item.model = dailymotionModel;
+                    dailymotionModel.list(playbackQueue.data(playbackQueue.position, "id"));
                 }
                 else if (service == Resources.VIMEO) {
                     dialogLoader.item.model = vimeoModel;
+                    vimeoModel.list(playbackQueue.data(playbackQueue.position, "id"));
                 }
                 else {
                     dialogLoader.item.model = pluginModel;
                     pluginModel.service = service;
+                    pluginModel.list(playbackQueue.data(playbackQueue.position, "id"));
                 }
 
-                dialogLoader.item.model.list(playbackQueue.data(playbackQueue.position, "id"));
+                
                 dialogLoader.item.open();
             }
         }
@@ -594,7 +599,8 @@ MyPage {
             onAccepted: {
                 videoPlayer.playUrl(value.url);
                 formatLabel.text = (value.height ? value.height + "p" : value.description);
-                Settings.setDefaultPlaybackFormat(playbackQueue.data(playbackQueue.position, "service"), model.data(selectedIndex, "name"));
+                Settings.setDefaultPlaybackFormat(playbackQueue.data(playbackQueue.position, "service"),
+                model.data(selectedIndex, "name"));
             }
             onStatusChanged: if ((status == DialogStatus.Closing) && (model.status == 1)) model.cancel();
         }

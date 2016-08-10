@@ -221,10 +221,10 @@ MyPage {
 
             width: view.width
             height: view.height
-            title: user.username + "'s " + qsTr("favourites")
+            title: user.username + "'s " + qsTr("likes")
             tab: Component {
                 DailymotionVideosTab {
-                    Component.onCompleted: model.list("/user/" + user.id + "/favorites",
+                    Component.onCompleted: model.list("/user/" + user.id + "/likes",
                                                       {family_filter: Settings.safeSearchEnabled, limit: MAX_RESULTS})
                 }
             }

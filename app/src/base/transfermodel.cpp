@@ -26,6 +26,7 @@ TransferModel::TransferModel(QObject *parent) :
     m_roles[CustomCommandRole] = "customCommand";
     m_roles[CustomCommandOverrideEnabledRole] = "customCommandOverrideEnabled";
     m_roles[DownloadPathRole] = "downloadPath";
+    m_roles[DownloadSubtitlesRole] = "downloadSubtitles";
     m_roles[ErrorStringRole] = "errorString";
     m_roles[FileNameRole] = "fileName";
     m_roles[IdRole] = "id";
@@ -33,15 +34,16 @@ TransferModel::TransferModel(QObject *parent) :
     m_roles[PriorityStringRole] = "priorityString";
     m_roles[ProgressRole] = "progress";
     m_roles[ProgressStringRole] = "progressString";
-    m_roles[ResourceIdRole] = "resourceId";
     m_roles[ServiceRole] = "service";
     m_roles[SizeRole] = "size";
     m_roles[StatusRole] = "status";
     m_roles[StatusStringRole] = "statusString";
     m_roles[StreamIdRole] = "streamId";
+    m_roles[SubtitlesLanguageRole] = "subtitlesLanguage";
     m_roles[TitleRole] = "title";
     m_roles[TransferTypeRole] = "transferType";
     m_roles[UrlRole] = "url";
+    m_roles[VideoIdRole] = "videoId";
 #if QT_VERSION < 0x050000
     setRoleNames(m_roles);
 #endif
@@ -226,6 +228,7 @@ void TransferModel::onTransferAdded(Transfer *transfer) {
     connect(transfer, SIGNAL(titleChanged()), this, SLOT(onTransferTitleChanged()));
     connect(transfer, SIGNAL(categoryChanged()), this, SLOT(onTransferCategoryChanged()));
     connect(transfer, SIGNAL(priorityChanged()), this, SLOT(onTransferPriorityChanged()));
+    connect(transfer, SIGNAL(bytesTransferredChanged()), this, SLOT(onTransferProgressChanged()));
     connect(transfer, SIGNAL(progressChanged()), this, SLOT(onTransferProgressChanged()));
     connect(transfer, SIGNAL(sizeChanged()), this, SLOT(onTransferSizeChanged()));
     connect(transfer, SIGNAL(statusChanged()), this, SLOT(onTransferStatusChanged()));

@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU Lesser General Public License,
+ * under the terms and conditions of the GNU General Public License,
  * version 3, as published by the Free Software Foundation.
  *
  * This program is distributed in the hope it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
  * more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
  */
@@ -25,8 +25,8 @@ import "file:///usr/lib/qt4/imports/com/nokia/meego/UIConstants.js" as UI
 MySheet {
     id: root
 
-    property string resourceId
-    property string resourceTitle
+    property string videoId
+    property string videoTitle
 
     showProgressIndicator: (streamModel.status == QYouTube.StreamsRequest.Loading)
                            || (subtitleModel.status == QYouTube.SubtitlesRequest.Loading)
@@ -111,7 +111,7 @@ MySheet {
                     onCheckedChanged: {
                         if (checked) {
                             if (subtitleModel.status != QYouTube.SubtitlesRequest.Loading) {
-                                subtitleModel.list(root.resourceId);
+                                subtitleModel.list(root.videoId);
                             }
                         }
                         else {
@@ -208,19 +208,22 @@ MySheet {
         }
     }
     
-    onAccepted: Transfers.addDownloadTransfer(Resources.YOUTUBE, resourceId, streamSelector.value.id, "",
-                                              resourceTitle, Settings.defaultCategory,
+    onAccepted: Transfers.addDownloadTransfer(Resources.YOUTUBE, videoId, streamSelector.value.id, "",
+                                              videoTitle, Settings.defaultCategory,
                                               subtitleSwitch.checked ? Settings.subtitlesLanguage : "",
                                               commandField.text, commandSwitch.checked)
 
     onStatusChanged: {
         switch (status) {
         case DialogStatus.Opening: {
+            streamModel.clear();
+            streamSelector.selectedIndex = -1;
             subtitleSwitch.checked = false;
             subtitleModel.clear();
+            subtitleModel.selectedIndex = -1;
             commandField.text = "";
-            commandSwitch.checked = false;
-            streamModel.list(resourceId);
+            commandSwitch .checked = false;
+            streamModel.list(videoId);
             break;
         }
         case DialogStatus.Closing: {

@@ -34,6 +34,7 @@ public:
         CustomCommandRole,
         CustomCommandOverrideEnabledRole,
         DownloadPathRole,
+        DownloadSubtitlesRole,
         ErrorStringRole,
         FileNameRole,
         IdRole,
@@ -41,15 +42,16 @@ public:
         PriorityStringRole,
         ProgressRole,
         ProgressStringRole,
-        ResourceIdRole,
         ServiceRole,
         SizeRole,
         StatusRole,
         StatusStringRole,
         StreamIdRole,
+        SubtitlesLanguageRole,
         TitleRole,
         TransferTypeRole,
-        UrlRole
+        UrlRole,
+        VideoIdRole
     };
     
     explicit TransferModel(QObject *parent = 0);

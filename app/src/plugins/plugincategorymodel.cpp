@@ -137,7 +137,7 @@ void PluginCategoryModel::onRequestFinished() {
         
         foreach (const QVariant &v, result.value("items").toList()) {
             const QVariantMap category = v.toMap();
-            append(category.value("title").toString(), category.value("id").toString());
+            append(category.value("title").toString(), category);
         }
         
         m_next = result.value("next").toString();

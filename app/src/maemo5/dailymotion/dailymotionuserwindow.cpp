@@ -41,7 +41,7 @@
 DailymotionUserWindow::DailymotionUserWindow(const QString &id, StackedWindow *parent) :
     StackedWindow(parent),
     m_user(new DailymotionUser(this)),
-    m_model(new QStringListModel(QStringList() << tr("Videos") << tr("Favourites") << tr("Playlists")
+    m_model(new QStringListModel(QStringList() << tr("Videos") << tr("Likes") << tr("Playlists")
                                                << tr("Subscriptions"), this)),
     m_banner(new Banner(this)),
     m_view(new ListView(this)),
@@ -61,7 +61,7 @@ DailymotionUserWindow::DailymotionUserWindow(const QString &id, StackedWindow *p
 DailymotionUserWindow::DailymotionUserWindow(const DailymotionUser *user, StackedWindow *parent) :
     StackedWindow(parent),
     m_user(new DailymotionUser(user, this)),
-    m_model(new QStringListModel(QStringList() << tr("Videos") << tr("Favourites") << tr("Playlists")
+    m_model(new QStringListModel(QStringList() << tr("Videos") << tr("Likes") << tr("Playlists")
                                                << tr("Subscriptions"), this)),
     m_banner(new Banner(this)),
     m_view(new ListView(this)),
@@ -141,8 +141,8 @@ void DailymotionUserWindow::showFavourites() {
     filters["family_filter"] = Settings::safeSearchEnabled();
     
     DailymotionVideosWindow *window = new DailymotionVideosWindow(this);
-    window->setWindowTitle(tr("%1's favourites").arg(m_user->username()));
-    window->list(QString("/user/%1/favorites").arg(m_user->id()), filters);
+    window->setWindowTitle(tr("%1's likes").arg(m_user->username()));
+    window->list(QString("/user/%1/likes").arg(m_user->id()), filters);
     window->show();
 }
 

@@ -18,7 +18,6 @@
 #include "image.h"
 #include "listview.h"
 #include "navdelegate.h"
-#include "pluginmanager.h"
 #include "pluginplaylistswindow.h"
 #include "pluginplaylistwindow.h"
 #include "pluginuserswindow.h"
@@ -107,26 +106,30 @@ void PluginUserWindow::loadUserUi() {
 }
 
 void PluginUserWindow::showPlaylists() {
-    if (!PluginManager::instance()->resourceTypeIsSupported(m_user->service(), Resources::PLAYLIST)) {
+    const QString playlistsId = m_user->playlistsId();
+    
+    if (playlistsId.isEmpty()) {
         QMaemo5InformationBox::information(this, tr("This user does not have any playlists"));
         return;
     }
     
     PluginPlaylistsWindow *window = new PluginPlaylistsWindow(this);
     window->setWindowTitle(tr("%1's playlists").arg(m_user->username()));
-    window->list(m_user->service(), m_user->id());
+    window->list(m_user->service(), playlistsId);
     window->show();
 }
 
 void PluginUserWindow::showVideos() {
-    if (!PluginManager::instance()->resourceTypeIsSupported(m_user->service(), Resources::VIDEO)) {
+    const QString videosId = m_user->videosId();
+    
+    if (videosId.isEmpty()) {
         QMaemo5InformationBox::information(this, tr("This user does not have any videos"));
         return;
     }
     
     PluginVideosWindow *window = new PluginVideosWindow(this);
     window->setWindowTitle(tr("%1's videos").arg(m_user->username()));
-    window->list(m_user->service(), m_user->id());
+    window->list(m_user->service(), videosId);
     window->show();
 }
 

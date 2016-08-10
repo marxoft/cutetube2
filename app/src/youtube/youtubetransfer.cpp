@@ -34,7 +34,7 @@ void YouTubeTransfer::listStreams() {
         connect(m_streamsRequest, SIGNAL(finished()), this, SLOT(onStreamsRequestFinished()));
     }
     
-    m_streamsRequest->list(resourceId());
+    m_streamsRequest->list(videoId());
 }
 
 void YouTubeTransfer::listSubtitles() {
@@ -43,7 +43,7 @@ void YouTubeTransfer::listSubtitles() {
         connect(m_subtitlesRequest, SIGNAL(finished()), this, SLOT(onSubtitlesRequestFinished()));
     }
     
-    m_subtitlesRequest->list(resourceId());
+    m_subtitlesRequest->list(videoId());
 }
 
 void YouTubeTransfer::onStreamsRequestFinished() {

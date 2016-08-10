@@ -31,6 +31,7 @@ class CTVideo : public QObject
     Q_PROPERTY(QString id READ id NOTIFY idChanged)
     Q_PROPERTY(QUrl largeThumbnailUrl READ largeThumbnailUrl NOTIFY largeThumbnailUrlChanged)
     Q_PROPERTY(QString service READ service NOTIFY serviceChanged)
+    Q_PROPERTY(bool subtitles READ hasSubtitles NOTIFY subtitlesChanged)
     Q_PROPERTY(QUrl streamUrl READ streamUrl NOTIFY streamUrlChanged)
     Q_PROPERTY(QUrl thumbnailUrl READ thumbnailUrl NOTIFY thumbnailUrlChanged)
     Q_PROPERTY(QString title READ title NOTIFY titleChanged)
@@ -48,6 +49,8 @@ public:
     QString description() const;
         
     QString duration() const;
+    
+    bool hasSubtitles() const;
         
     QString id() const;
     
@@ -85,6 +88,8 @@ protected:
     
     void setDuration(const QString &d);
     
+    void setHasSubtitles(bool s);
+    
     void setId(const QString &i);
     
     void setLargeThumbnailUrl(const QUrl &u);
@@ -115,6 +120,7 @@ Q_SIGNALS:
     void largeThumbnailUrlChanged();
     void serviceChanged();
     void streamUrlChanged();
+    void subtitlesChanged();
     void thumbnailUrlChanged();
     void titleChanged();
     void urlChanged();
@@ -122,7 +128,7 @@ Q_SIGNALS:
     void usernameChanged();
     void viewCountChanged();
 
-protected:
+private:
     QString m_date;
     QString m_description;
     bool m_downloadable;
@@ -131,6 +137,7 @@ protected:
     QUrl m_largeThumbnailUrl;
     QString m_service;
     QUrl m_streamUrl;
+    bool m_subtitles;
     QUrl m_thumbnailUrl;
     QString m_title;
     QUrl m_url;

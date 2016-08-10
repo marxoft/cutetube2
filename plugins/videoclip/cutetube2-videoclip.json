@@ -1,7 +1,7 @@
 {
     "type": "qt",
     "name": "Videoclip.bg",
-    "version": 1,
+    "version": 2,
     "resources": [
         {
             "method": "get",
@@ -13,16 +13,6 @@
             "method": "get",
             "type": "video",
             "regExp": "http://(www\\.|)videoclip\\.bg/watch/\\d+"
-        },
-
-        {
-            "method": "list",
-            "type": "comment"
-        },
-
-        {
-            "method": "list",
-            "type": "stream"
         },
 
         {

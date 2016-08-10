@@ -1,13 +1,8 @@
 {
     "type": "qt",
     "name": "PornTrex",
-    "version": 1,
+    "version": 2,
     "resources": [
-        {
-            "method": "list",
-            "type": "stream"
-        },
-
         {
             "label": "Categories",
             "method": "list",

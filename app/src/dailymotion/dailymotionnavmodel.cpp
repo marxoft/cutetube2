@@ -30,7 +30,7 @@ void DailymotionNavModel::reload() {
     }
     else {
         setStringList(QStringList() << tr("Accounts") << tr("Search") << tr("Categories") << tr("My videos")
-                                    << tr("Latest videos") << tr("Favourites") << tr("Playlists")
+                                    << tr("Latest videos") << tr("Likes") << tr("Playlists")
                                     << tr("Subscriptions"));
     }
 }

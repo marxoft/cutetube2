@@ -56,18 +56,25 @@ void UserDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, 
     textRect.setTop(textRect.top() + 8);
     textRect.setBottom(textRect.bottom() - 8);
     
-    painter->drawText(textRect, Qt::AlignLeft | Qt::AlignTop,
+    const QVariant cv = index.data(m_subscriberCountRole);
+    
+    if (cv.isNull()) {
+        painter->drawText(textRect, Qt::AlignLeft | Qt::AlignVCenter,
                           painter->fontMetrics().elidedText(index.data(m_usernameRole).toString(),
                           Qt::ElideRight, textRect.width()));
-    painter->save();
-    
-    const int count = index.data(m_subscriberCountRole).toInt();
-    
-    painter->setFont(m_smallFont);
-    painter->setPen(QApplication::palette().color(QPalette::Mid));
-    painter->drawText(textRect, Qt::AlignLeft | Qt::AlignBottom,
-                      count > 0 ? tr("%1 subscribers").arg(Utils::formatLargeNumber(count)) : tr("No subscribers"));    
-    painter->restore();
+    }
+    else {
+        const int count = cv.toInt();
+        painter->drawText(textRect, Qt::AlignLeft | Qt::AlignTop,
+                          painter->fontMetrics().elidedText(index.data(m_usernameRole).toString(),
+                          Qt::ElideRight, textRect.width()));
+        painter->save();
+        painter->setFont(m_smallFont);
+        painter->setPen(QApplication::palette().color(QPalette::Mid));
+        painter->drawText(textRect, Qt::AlignLeft | Qt::AlignBottom,
+                          count > 0 ? tr("%1 subscribers").arg(Utils::formatLargeNumber(count)) : tr("No subscribers"));
+        painter->restore();
+    }
 }
 
 QSize UserDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &) const {

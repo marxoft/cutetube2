@@ -390,9 +390,8 @@ void VimeoVideoWindow::downloadRelatedVideo() {
 
         if (dialog.exec() == QDialog::Accepted) {
             Transfers::instance()->addDownloadTransfer(Resources::VIMEO, id, dialog.streamId(),
-                                                       QUrl(), title, dialog.category(),
-                                                       dialog.subtitlesLanguage(), dialog.customCommand(),
-                                                       dialog.customCommandOverrideEnabled());
+                                                       QUrl(), title, dialog.category(), dialog.subtitlesLanguage(),
+                                                       dialog.customCommand(), dialog.customCommandOverrideEnabled());
         }
     }
 }

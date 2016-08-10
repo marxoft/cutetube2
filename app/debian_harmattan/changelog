@@ -1,3 +1,8 @@
+cutetube2 (0.4.0) unstable; urgency=low
+  * Plugin API improvements.
+
+ -- Stuart Howarth <showarth@marxoft.co.uk>  Sun, 07 Aug 2016 21:31:36 +0100
+
 cutetube2 (0.3.1) unstable; urgency=low
   * New plugin API.
   * Replace save as audio feature with custom command.

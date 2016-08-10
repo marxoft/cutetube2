@@ -29,13 +29,13 @@ PluginTransfer::PluginTransfer(const QString &service, QObject *parent) :
 
 void PluginTransfer::listStreams() {
     if (ResourcesRequest *r = streamsRequest()) {
-        r->list(Resources::STREAM, resourceId());
+        r->list(Resources::STREAM, videoId());
     }
 }
 
 void PluginTransfer::listSubtitles() {
     if (ResourcesRequest *r = subtitlesRequest()) {
-        r->list(Resources::SUBTITLE, resourceId());
+        r->list(Resources::SUBTITLE, videoId());
     }
 }
 

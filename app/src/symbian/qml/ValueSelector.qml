@@ -31,6 +31,8 @@ ValueListItem {
     signal accepted
     signal rejected
 
+    subTitle: qsTr("None chosen")
+
     Loader {
         id: loader
     }
@@ -53,14 +55,21 @@ ValueListItem {
     }
 
     onSelectedIndexChanged: if (model) value = model.data(selectedIndex, "value");
-    onValueChanged: if (model) subTitle = model.data(Math.max(0, model.match("value", value)), "name");
+    onValueChanged: {
+        if ((value == undefined) || (!model)) {
+            subTitle = qsTr("None chosen")
+        }
+        else {
+            subTitle = model.data(Math.max(0, model.match("value", value)), "name");
+        }
+    }
     onClicked: {
         loader.sourceComponent = dialog;
         loader.item.open();
     }
 
     Component.onCompleted: {
-        if ((!value) && (model)) {
+        if ((value == undefined) && (model)) {
             value = model.data(Math.max(0, selectedIndex), "value");
         }
     }

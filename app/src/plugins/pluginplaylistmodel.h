@@ -42,7 +42,8 @@ public:
         TitleRole,
         UserIdRole,
         UsernameRole,
-        VideoCountRole
+        VideoCountRole,
+        VideosIdRole
     };
     
     explicit PluginPlaylistModel(QObject *parent = 0);

@@ -20,25 +20,11 @@ symbian {
     TARGET.EPOCHEAPSIZE = 0x20000 0x8000000
     TARGET.EPOCSTACKSIZE = 0x14000
 
-    DEFINES += QYOUTUBE_STATIC_LIBRARY
-    QT += script
-
-    INCLUDEPATH += \
-        ../src \
-        ../../../qyoutube/src
+    INCLUDEPATH += ../src
 
     HEADERS += \
         ../src/resourcesrequest.h \
-        ../src/serviceplugin.h \
-        ../../../qyoutube/src/qyoutube_global.h \
-        ../../../qyoutube/src/request.h \
-        ../../../qyoutube/src/request_p.h \
-        ../../../qyoutube/src/streamsrequest.h \
-        ../../../qyoutube/src/urls.h
-
-    SOURCES += \
-        ../../../qyoutube/src/request.cpp \
-        ../../../qyoutube/src/streamsrequest.cpp
+        ../src/serviceplugin.h
     
     vendorinfo += "%{\"Stuart Howarth\"}" ":\"Stuart Howarth\""
     videoclip_deployment.pkg_prerules += vendorinfo
@@ -60,25 +46,10 @@ symbian {
         stub
 
 } else:contains(MEEGO_EDITION,harmattan) {
-    DEFINES += QYOUTUBE_STATIC_LIBRARY
-    QT += script
-
-    INCLUDEPATH += \
-        ../src \
-        ../../../qyoutube/src
-
+    INCLUDEPATH += ../src
     HEADERS += \
         ../src/resourcesrequest.h \
-        ../src/serviceplugin.h \
-        ../../../qyoutube/src/qyoutube_global.h \
-        ../../../qyoutube/src/request.h \
-        ../../../qyoutube/src/request_p.h \
-        ../../../qyoutube/src/streamsrequest.h \
-        ../../../qyoutube/src/urls.h
-
-    SOURCES += \
-        ../../../qyoutube/src/request.cpp \
-        ../../../qyoutube/src/streamsrequest.cpp
+        ../src/serviceplugin.h
     
     config.files = "$$TARGET".json
     config.path = /opt/cutetube2/plugins
@@ -93,11 +64,7 @@ symbian {
         config \
         contentaction
 
-} else:unix {
-    LIBS += -L/usr/lib -lqyoutube
-    CONFIG += link_prl
-    PKGCONFIG += libqyoutube
-    
+} else:unix {    
     INCLUDEPATH += /usr/include/cutetube2
     HEADERS += \
         /usr/include/cutetube2/resourcesrequest.h \

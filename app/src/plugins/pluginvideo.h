@@ -24,6 +24,8 @@ class PluginVideo : public CTVideo
 {
     Q_OBJECT
     
+    Q_PROPERTY(QString commentsId READ commentsId NOTIFY commentsIdChanged)
+    Q_PROPERTY(QString relatedVideosId READ relatedVideosId NOTIFY relatedVideosIdChanged)
     Q_PROPERTY(QString errorString READ errorString NOTIFY statusChanged)
     Q_PROPERTY(ResourcesRequest::Status status READ status NOTIFY statusChanged)
 
@@ -33,6 +35,9 @@ public:
     explicit PluginVideo(const QString &service, const QVariantMap &video, QObject *parent = 0);
     explicit PluginVideo(const PluginVideo *video, QObject *parent = 0);
     
+    QString commentsId() const;
+    QString relatedVideosId() const;
+    
     QString errorString() const;
         
     ResourcesRequest::Status status() const;
@@ -40,17 +45,26 @@ public:
     Q_INVOKABLE void loadVideo(const QString &service, const QString &id);
     Q_INVOKABLE void loadVideo(const QString &service, const QVariantMap &video);
     Q_INVOKABLE void loadVideo(PluginVideo *video);
-            
+
+protected:
+    void setCommentsId(const QString &i);
+    void setRelatedVideosId(const QString &i);
+
 private Q_SLOTS:
     void onRequestFinished();
     
 Q_SIGNALS:
+    void commentsIdChanged();
+    void relatedVideosIdChanged();
     void statusChanged(ResourcesRequest::Status s);
 
 private:
     ResourcesRequest* request();
     
     ResourcesRequest *m_request;
+    
+    QString m_commentsId;
+    QString m_relatedVideosId;
 };
 
 #endif // PLUGINVIDEO_H

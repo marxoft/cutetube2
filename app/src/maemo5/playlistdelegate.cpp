@@ -52,21 +52,23 @@ void PlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
     drawCenteredImage(painter, imageRect, image);
     
     const int count = index.data(m_videoCountRole).toInt();
-                
-    QFont font;
-    QRect durationRect = imageRect;
-    const int durationHeight = durationRect.height() / 4;
-    font.setPixelSize(durationHeight);        
-    durationRect.setTop(durationRect.bottom() - durationHeight);
     
-    painter->save();
-    painter->setOpacity(0.8);
-    painter->fillRect(durationRect, Qt::black);
-    painter->setFont(font);
-    painter->setOpacity(1);
-    painter->setPen(Qt::white);
-    painter->drawText(durationRect, Qt::AlignCenter, count > 0 ? tr("%1 videos").arg(count) : tr("No videos"));
-    painter->restore();
+    if (count != -1) {
+        QFont font;
+        QRect durationRect = imageRect;
+        const int durationHeight = durationRect.height() / 4;
+        font.setPixelSize(durationHeight);        
+        durationRect.setTop(durationRect.bottom() - durationHeight);
+        
+        painter->save();
+        painter->setOpacity(0.8);
+        painter->fillRect(durationRect, Qt::black);
+        painter->setFont(font);
+        painter->setOpacity(1);
+        painter->setPen(Qt::white);
+        painter->drawText(durationRect, Qt::AlignCenter, count > 0 ? tr("%1 videos").arg(count) : tr("No videos"));
+        painter->restore();
+    }
     
     painter->save();
     painter->setPen(QApplication::palette().color(QPalette::Mid));
@@ -96,6 +98,7 @@ void PlaylistDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
     }
     
     if (!subTitle.isEmpty()) {
+        QFont font;
         font.setPointSize(13);
         painter->drawText(textRect, Qt::AlignLeft | Qt::AlignTop,
                           painter->fontMetrics().elidedText(index.data(m_titleRole).toString(),

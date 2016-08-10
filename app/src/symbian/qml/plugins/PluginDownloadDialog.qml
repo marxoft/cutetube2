@@ -23,9 +23,10 @@ import ".."
 MySheet {
     id: root
 
-    property string resourceId
-    property string resourceTitle
+    property string videoId
+    property string videoTitle
     property string streamUrl
+    property bool listSubtitles
 
     showProgressIndicator: (streamModel.status == ResourcesRequest.Loading)
                            || (subtitleModel.status == ResourcesRequest.Loading)
@@ -108,7 +109,7 @@ MySheet {
                     onCheckedChanged: {
                         if (checked) {
                             if (subtitleModel.status != ResourcesRequest.Loading) {
-                                subtitleModel.list(root.resourceId);
+                                subtitleModel.list(root.videoId);
                             }
                         }
                         else {
@@ -130,10 +131,9 @@ MySheet {
                         service: Settings.currentService
                         onStatusChanged: {
                             switch (status) {
-                            case ResourcesRequest.Loading: {
+                            case ResourcesRequest.Loading:
                                 subtitleSelector.showProgressIndicator = true;
                                 return;
-                            }
                             case ResourcesRequest.Ready:
                                 if (count > 0) {
                                     subtitleSelector.selectedIndex = Math.max(0, match("name",
@@ -168,24 +168,27 @@ MySheet {
         }
     }
 
-    onAccepted: Transfers.addDownloadTransfer(streamModel.service, resourceId, streamUrl ? "" : streamSelector.value.id,
-                                              streamUrl, resourceTitle, Settings.defaultCategory,
+    onAccepted: Transfers.addDownloadTransfer(streamModel.service, videoId, streamUrl ? "" : streamSelector.value.id,
+                                              streamUrl, videoTitle, Settings.defaultCategory,
                                               subtitleSwitch.checked ?
                                               subtitleModel.data(subtitleSelector.selectedIndex, "name") : "")
 
     onStatusChanged: {
         switch (status) {
         case DialogStatus.Open: {
+            streamModel.clear();
+            streamSelector.selectedIndex = -1;
             subtitleModel.clear();
+            subtitleSelector.selectedIndex = -1;
             subtitleSwitch.checked = false;
-            subtitleSwitch.enabled = Plugins.resourceTypeIsSupported(subtitleModel.service, Resources.SUBTITLE);
+            subtitleSwitch.enabled = listSubtitles;
             
             if (streamUrl) {
-                streamModel.clear();
                 streamModel.append(qsTr("Default format"), streamUrl);
+                streamSelector.selectedIndex = 0;
             }
             else {
-                streamModel.list(resourceId);
+                streamModel.list(videoId);
             }
             
             break;

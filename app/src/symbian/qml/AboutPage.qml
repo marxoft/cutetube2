@@ -78,6 +78,14 @@ MyPage {
                       + ": </font><u>showarth@marxoft.co.uk</u>"
                 link: "mailto:showarth@marxoft.co.uk?subject=cuteTube2 " + VERSION_NUMBER + " for Symbian"
             }
+
+            DrillDownDelegate {
+                x: -platformStyle.paddingLarge
+                width: parent.width + platformStyle.paddingLarge * 2
+                flickableMode: true
+                text: qsTr("Plugins")
+                onClicked: appWindow.pageStack.push(Qt.resolvedUrl("plugins/AboutPluginsPage.qml"))
+            }
         }
     }
 

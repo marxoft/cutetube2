@@ -22,7 +22,6 @@
 #include "listview.h"
 #include "plugincommentmodel.h"
 #include "plugindownloaddialog.h"
-#include "pluginmanager.h"
 #include "pluginplaybackdialog.h"
 #include "pluginplaylistwindow.h"
 #include "pluginuser.h"
@@ -233,14 +232,14 @@ void PluginVideoWindow::loadVideoUi() {
         m_dateLabel->show();
     }
     
-    if (PluginManager::instance()->resourceTypeIsSupported(m_video->service(), Resources::COMMENT)) {
+    if (!m_video->commentsId().isEmpty()) {
         m_tabBar->addTab(tr("Comments"));
     }
 }
 
 void PluginVideoWindow::getRelatedVideos() {
     m_relatedModel->setService(m_video->service());
-    m_relatedModel->list(m_video->id());
+    m_relatedModel->list(m_video->relatedVideosId());
 }
 
 void PluginVideoWindow::downloadVideo() {
@@ -249,7 +248,7 @@ void PluginVideoWindow::downloadVideo() {
     }
     
     PluginDownloadDialog dialog(m_video->service(), this);
-    dialog.list(m_video->id(), m_video->streamUrl().isEmpty());
+    dialog.list(m_video->id(), m_video->streamUrl().isEmpty(), m_video->hasSubtitles());
 
     if (dialog.exec() == QDialog::Accepted) {
         Transfers::instance()->addDownloadTransfer(m_video->service(), m_video->id(), dialog.streamId(),
@@ -298,15 +297,15 @@ void PluginVideoWindow::downloadRelatedVideo() {
         const QString id = index.data(PluginVideoModel::IdRole).toString();
         const QString title = index.data(PluginVideoModel::TitleRole).toString();
         const QUrl streamUrl = index.data(PluginVideoModel::StreamUrlRole).toString();
+        const bool subtitles = index.data(PluginVideoModel::SubtitlesRole).toBool();
         
         PluginDownloadDialog dialog(m_relatedModel->service(), this);
-        dialog.list(id, streamUrl.isEmpty());
+        dialog.list(id, streamUrl.isEmpty(), subtitles);
         
         if (dialog.exec() == QDialog::Accepted) {
             Transfers::instance()->addDownloadTransfer(m_relatedModel->service(), id, dialog.streamId(),
-                                                       streamUrl, title, dialog.category(),
-                                                       dialog.subtitlesLanguage(), dialog.customCommand(),
-                                                       dialog.customCommandOverrideEnabled());
+                                                       streamUrl, title, dialog.category(), dialog.subtitlesLanguage(),
+                                                       dialog.customCommand(), dialog.customCommandOverrideEnabled());
         }
     }
 }
@@ -397,7 +396,7 @@ void PluginVideoWindow::showComments() {
         connect(m_commentModel, SIGNAL(statusChanged(ResourcesRequest::Status)),
                 this, SLOT(onCommentModelStatusChanged(ResourcesRequest::Status)));
                 
-        m_commentModel->list(m_video->id());
+        m_commentModel->list(m_video->commentsId());
     }
     
     if ((m_commentModel->rowCount() == 0) && (m_commentModel->status() != ResourcesRequest::Loading)) {

@@ -129,8 +129,8 @@ void DailymotionView::showFavourites() {
     filters["limit"] = MAX_RESULTS;
     
     DailymotionVideosWindow *window = new DailymotionVideosWindow(StackedWindow::currentWindow());
-    window->setWindowTitle(tr("Favourites"));
-    window->list("/me/favorites", filters);
+    window->setWindowTitle(tr("Likes"));
+    window->list("/me/likes", filters);
     window->show();
 }
 
@@ -233,11 +233,11 @@ void DailymotionView::onUserUnsubscribed(DailymotionUser *user) {
 }
 
 void DailymotionView::onVideoFavourited(DailymotionVideo *video) {
-    QMaemo5InformationBox::information(this, tr("'%1' added to favourites").arg(video->title()));
+    QMaemo5InformationBox::information(this, tr("'%1' added to likes").arg(video->title()));
 }
 
 void DailymotionView::onVideoUnfavourited(DailymotionVideo *video) {
-    QMaemo5InformationBox::information(this, tr("'%1' removed from favourites").arg(video->title()));
+    QMaemo5InformationBox::information(this, tr("'%1' removed from likes").arg(video->title()));
 }
 
 void DailymotionView::onVideoAddedToPlaylist(DailymotionVideo *video, DailymotionPlaylist *playlist) {

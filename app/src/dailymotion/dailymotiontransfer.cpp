@@ -31,7 +31,7 @@ void DailymotionTransfer::listStreams() {
         connect(m_streamsRequest, SIGNAL(finished()), this, SLOT(onStreamsRequestFinished()));
     }
     
-    m_streamsRequest->list(resourceId());
+    m_streamsRequest->list(videoId());
 }
 
 void DailymotionTransfer::listSubtitles() {
@@ -40,7 +40,7 @@ void DailymotionTransfer::listSubtitles() {
         connect(m_subtitlesRequest, SIGNAL(finished()), this, SLOT(onSubtitlesRequestFinished()));
     }
     
-    m_subtitlesRequest->list(QString("/video/%1/subtitles").arg(resourceId()));
+    m_subtitlesRequest->list(QString("/video/%1/subtitles").arg(videoId()));
 }
 
 void DailymotionTransfer::onStreamsRequestFinished() {

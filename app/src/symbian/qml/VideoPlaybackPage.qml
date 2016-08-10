@@ -467,19 +467,22 @@ MyPage {
 
                 if (service == Resources.YOUTUBE) {
                     dialogLoader.item.model = youtubeModel;
+                    youtubeModel.list(playbackQueue.data(playbackQueue.position, "id"));
                 }
                 else if (service == Resources.DAILYMOTION) {
                     dialogLoader.item.model = dailymotionModel;
+                    dailymotionModel.list(playbackQueue.data(playbackQueue.position, "id"));
                 }
                 else if (service == Resources.VIMEO) {
                     dialogLoader.item.model = vimeoModel;
+                    vimeoModel.list(playbackQueue.data(playbackQueue.position, "id"));
                 }
                 else {
-                    dialogLoader.item.model = pluginModel;
                     pluginModel.service = service;
+                    dialogLoader.item.model = pluginModel;
+                    pluginModel.list(playbackQueue.data(playbackQueue.position, "id"));
                 }
-
-                dialogLoader.item.model.list(playbackQueue.data(playbackQueue.position, "id"));
+                
                 dialogLoader.item.open();
             }
         }
