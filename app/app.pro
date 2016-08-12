@@ -46,6 +46,8 @@ HEADERS += \
     src/dailymotion/dailymotionusermodel.h \
     src/dailymotion/dailymotionvideo.h \
     src/dailymotion/dailymotionvideomodel.h \
+    src/plugins/externalresourcesrequest.h \
+    src/plugins/externalserviceplugin.h \
     src/plugins/javascriptresourcesrequest.h \
     src/plugins/javascriptresourcesrequestglobalobject.h \
     src/plugins/javascriptserviceplugin.h \
@@ -133,6 +135,8 @@ SOURCES += \
     src/dailymotion/dailymotiontransfer.cpp \
     src/dailymotion/dailymotionvideo.cpp \
     src/dailymotion/dailymotionvideomodel.cpp \
+    src/plugins/externalresourcesrequest.cpp \
+    src/plugins/externalserviceplugin.cpp \
     src/plugins/javascriptresourcesrequest.cpp \
     src/plugins/javascriptresourcesrequestglobalobject.cpp \
     src/plugins/javascriptserviceplugin.cpp \

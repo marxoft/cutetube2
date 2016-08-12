@@ -17,6 +17,7 @@
 
 #include "pluginmanager.h"
 #include "definitions.h"
+#include "externalserviceplugin.h"
 #include "javascriptserviceplugin.h"
 #include "logger.h"
 #include <QDir>
@@ -121,14 +122,7 @@ int PluginManager::load() {
                     config = new ServicePluginConfig(this);
                     
                     if (config->load(info.absoluteFilePath())) {
-                        if (config->pluginType() == "js") {
-                            JavaScriptServicePlugin *js =
-                            new JavaScriptServicePlugin(config->id(), config->pluginFilePath(), this);
-                            m_plugins << ServicePluginPair(config, js);
-                            ++count;
-                            Logger::log("PluginManager::load(). JavaScript plugin loaded: " + config->id());
-                        }
-                        else {
+                        if (config->pluginType() == "qt") {
                             QPluginLoader loader(config->pluginFilePath());
                             QObject *obj = loader.instance();
                             
@@ -147,6 +141,20 @@ int PluginManager::load() {
                             else {
                                 Logger::log("PluginManager::load(). Qt plugin is NULL: " + config->id());
                             }
+                        }
+                        else if (config->pluginType() == "js") {
+                            JavaScriptServicePlugin *js =
+                            new JavaScriptServicePlugin(config->id(), config->pluginFilePath(), this);
+                            m_plugins << ServicePluginPair(config, js);
+                            ++count;
+                            Logger::log("PluginManager::load(). JavaScript plugin loaded: " + config->id());
+                        }
+                        else {
+                            ExternalServicePlugin *ext =
+                            new ExternalServicePlugin(config->id(), config->pluginFilePath(), this);
+                            m_plugins << ServicePluginPair(config, ext);
+                            ++count;
+                            Logger::log("PluginManager::load(). External plugin loaded: " + config->id());
                         }
                     }
                     else {

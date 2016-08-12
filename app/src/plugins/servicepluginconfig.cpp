@@ -95,11 +95,11 @@ bool ServicePluginConfig::load(const QString &filePath) {
     m_settings = config.value("settings").toList();
     m_version = qMax(1, config.value("version").toInt());
     
-    if (m_pluginType == "js") {
-        m_pluginFilePath = filePath.left(slash + 1) + m_id + ".js";
+    if (m_pluginType == "qt") {
+        m_pluginFilePath = filePath.left(slash + 1) + LIB_PREFIX + m_id + LIB_SUFFIX;
     }
     else {
-        m_pluginFilePath = filePath.left(slash + 1) + LIB_PREFIX + m_id + LIB_SUFFIX;
+        m_pluginFilePath = filePath.left(slash + 1) + m_id + "." + m_pluginType;
     }
 
     m_getResources.clear();
