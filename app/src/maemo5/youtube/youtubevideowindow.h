@@ -61,7 +61,6 @@ private Q_SLOTS:
     void playVideo();
     void setVideoFavourite();
     void shareVideo();
-    void watchVideoLater();
     
     void addRelatedVideoToPlaylist();
     void downloadRelatedVideo();
@@ -69,7 +68,6 @@ private Q_SLOTS:
     void setRelatedVideoFavourite();
     void shareRelatedVideo();
     void showRelatedVideo(const QModelIndex &index);
-    void watchRelatedVideoLater();
     
     void reload();
     
@@ -117,14 +115,12 @@ private:
     QAction *m_likeAction;
     QAction *m_dislikeAction;
     QAction *m_favouriteAction;
-    QAction *m_watchLaterAction;
     QAction *m_playlistAction;
     QAction *m_commentAction;
     QMenu *m_contextMenu;
     QAction *m_relatedDownloadAction;
     QAction *m_relatedShareAction;
     QAction *m_relatedFavouriteAction;
-    QAction *m_relatedWatchLaterAction;
     QAction *m_relatedPlaylistAction;
     QGridLayout *m_layout;
 };

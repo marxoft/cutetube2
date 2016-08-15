@@ -132,12 +132,6 @@ MyPage {
                     }
 
                     MenuItem {
-                        text: qsTr("Watch later")
-                        enabled: video.hasWriteScope
-                        onClicked: video.watchLater()
-                    }
-
-                    MenuItem {
                         text: qsTr("Add to playlist")
                         enabled: video.hasWriteScope
                         onClicked: {

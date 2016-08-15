@@ -81,14 +81,12 @@ YouTubeVideoWindow::YouTubeVideoWindow(const QString &id, StackedWindow *parent)
     m_likeAction(0),
     m_dislikeAction(0),
     m_favouriteAction(0),
-    m_watchLaterAction(0),
     m_playlistAction(0),
     m_commentAction(0),
     m_contextMenu(new QMenu(this)),
     m_relatedDownloadAction(new QAction(tr("Download"), this)),
     m_relatedShareAction(new QAction(tr("Copy URL"), this)),
     m_relatedFavouriteAction(0),
-    m_relatedWatchLaterAction(0),
     m_relatedPlaylistAction(0)
 {
     loadBaseUi();
@@ -129,14 +127,12 @@ YouTubeVideoWindow::YouTubeVideoWindow(const YouTubeVideo *video, StackedWindow 
     m_likeAction(0),
     m_dislikeAction(0),
     m_favouriteAction(0),
-    m_watchLaterAction(0),
     m_playlistAction(0),
     m_commentAction(0),
     m_contextMenu(new QMenu(this)),
     m_relatedDownloadAction(new QAction(tr("Download"), this)),
     m_relatedShareAction(new QAction(tr("Copy URL"), this)),
     m_relatedFavouriteAction(0),
-    m_relatedWatchLaterAction(0),
     m_relatedPlaylistAction(0)
 {
     loadBaseUi();
@@ -232,26 +228,20 @@ void YouTubeVideoWindow::loadBaseUi() {
             m_likeAction = new QAction(tr("Like"), this);
             m_dislikeAction = new QAction(tr("Dislike"), this);
             m_favouriteAction = new QAction(tr("Favourite"), this);
-            m_watchLaterAction = new QAction(tr("Watch later"), this);
             m_playlistAction = new QAction(tr("Add to playlist"), this);
             m_relatedFavouriteAction = new QAction(this);
-            m_relatedWatchLaterAction = new QAction(tr("Watch later"), this);
             m_relatedPlaylistAction = new QAction(tr("Add to playlist"), this);
             menuBar()->addAction(m_likeAction);
             menuBar()->addAction(m_dislikeAction);
             menuBar()->addAction(m_favouriteAction);
-            menuBar()->addAction(m_watchLaterAction);
             menuBar()->addAction(m_playlistAction);
             m_contextMenu->addAction(m_relatedFavouriteAction);
-            m_contextMenu->addAction(m_relatedWatchLaterAction);
             m_contextMenu->addAction(m_relatedPlaylistAction);
             connect(m_likeAction, SIGNAL(triggered()), this, SLOT(likeVideo()));
             connect(m_dislikeAction, SIGNAL(triggered()), this, SLOT(dislikeVideo()));
             connect(m_favouriteAction, SIGNAL(triggered()), this, SLOT(setVideoFavourite()));
-            connect(m_watchLaterAction, SIGNAL(triggered()), this, SLOT(watchVideoLater()));
             connect(m_playlistAction, SIGNAL(triggered()), this, SLOT(addVideoToPlaylist()));
             connect(m_relatedFavouriteAction, SIGNAL(triggered()), this, SLOT(setRelatedVideoFavourite()));
-            connect(m_relatedWatchLaterAction, SIGNAL(triggered()), this, SLOT(watchRelatedVideoLater()));
             connect(m_relatedPlaylistAction, SIGNAL(triggered()), this, SLOT(addRelatedVideoToPlaylist()));
             
             if (YouTube::hasScope(QYouTube::FORCE_SSL_SCOPE)) {
@@ -392,16 +382,6 @@ void YouTubeVideoWindow::setVideoFavourite() {
     }
 }
 
-void YouTubeVideoWindow::watchVideoLater() {
-    if (isBusy()) {
-        return;
-    }
-    
-    connect(m_video, SIGNAL(statusChanged(QYouTube::ResourcesRequest::Status)),
-                this, SLOT(onVideoUpdateStatusChanged(QYouTube::ResourcesRequest::Status)));
-    m_video->watchLater();
-}
-
 void YouTubeVideoWindow::addRelatedVideoToPlaylist() {
     if (isBusy()) {
         return;
@@ -489,18 +469,6 @@ void YouTubeVideoWindow::showRelatedVideo(const QModelIndex &index) {
     if (YouTubeVideo *video = m_relatedModel->get(index.row())) {
         YouTubeVideoWindow *window = new YouTubeVideoWindow(video, this);
         window->show();
-    }
-}
-
-void YouTubeVideoWindow::watchRelatedVideoLater() {
-    if (isBusy()) {
-        return;
-    }
-    
-    if (YouTubeVideo *video = m_relatedModel->get(m_relatedView->currentIndex().row())) {
-        connect(video, SIGNAL(statusChanged(QYouTube::ResourcesRequest::Status)),
-                this, SLOT(onVideoUpdateStatusChanged(QYouTube::ResourcesRequest::Status)));
-        video->watchLater();      
     }
 }
 

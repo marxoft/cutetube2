@@ -70,7 +70,6 @@ YouTubePlaylistWindow::YouTubePlaylistWindow(const QString &id, StackedWindow *p
     m_downloadAction(new QAction(tr("Download"), this)),
     m_shareAction(new QAction(tr("Copy URL"), this)),
     m_favouriteAction(0),
-    m_watchLaterAction(0),
     m_playlistAction(0),
     m_removeAction(0)
 {
@@ -105,7 +104,6 @@ YouTubePlaylistWindow::YouTubePlaylistWindow(const YouTubePlaylist *playlist, St
     m_downloadAction(new QAction(tr("Download"), this)),
     m_shareAction(new QAction(tr("Copy URL"), this)),
     m_favouriteAction(0),
-    m_watchLaterAction(0),
     m_playlistAction(0),
     m_removeAction(0)
 {
@@ -187,13 +185,10 @@ void YouTubePlaylistWindow::loadBaseUi() {
         if ((YouTube::hasScope(QYouTube::READ_WRITE_SCOPE))
             || (YouTube::hasScope(QYouTube::FORCE_SSL_SCOPE))) {
             m_favouriteAction = new QAction(this);
-            m_watchLaterAction = new QAction(tr("Watch later"), this);
             m_playlistAction = new QAction(tr("Add to playlist"), this);
             m_contextMenu->addAction(m_favouriteAction);
-            m_contextMenu->addAction(m_watchLaterAction);
             m_contextMenu->addAction(m_playlistAction);
             connect(m_favouriteAction, SIGNAL(triggered()), this, SLOT(setVideoFavourite()));
-            connect(m_watchLaterAction, SIGNAL(triggered()), this, SLOT(watchVideoLater()));
             connect(m_playlistAction, SIGNAL(triggered()), this, SLOT(addVideoToPlaylist()));
         }    
     }
@@ -351,18 +346,6 @@ void YouTubePlaylistWindow::showVideo(const QModelIndex &index) {
     if (const YouTubeVideo *video = m_model->get(index.row())) {
         YouTubeVideoWindow *window = new YouTubeVideoWindow(video, this);
         window->show();
-    }
-}
-
-void YouTubePlaylistWindow::watchVideoLater() {
-    if (isBusy()) {
-        return;
-    }
-    
-    if (YouTubeVideo *video = m_model->get(m_view->currentIndex().row())) {
-        connect(video, SIGNAL(statusChanged(QYouTube::ResourcesRequest::Status)),
-                this, SLOT(onVideoUpdateStatusChanged(QYouTube::ResourcesRequest::Status)));
-        video->watchLater();
     }
 }
 

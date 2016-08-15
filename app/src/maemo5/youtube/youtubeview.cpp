@@ -64,8 +64,6 @@ YouTubeView::YouTubeView(QWidget *parent) :
             this, SLOT(onVideoLiked(YouTubeVideo*)));
     connect(YouTube::instance(), SIGNAL(videoDisliked(YouTubeVideo*)),
             this, SLOT(onVideoDisliked(YouTubeVideo*)));
-    connect(YouTube::instance(), SIGNAL(videoWatchLater(YouTubeVideo*)),
-            this, SLOT(onVideoWatchLater(YouTubeVideo*)));
     connect(YouTube::instance(), SIGNAL(videoAddedToPlaylist(YouTubeVideo*, YouTubePlaylist*)),
             this, SLOT(onVideoAddedToPlaylist(YouTubeVideo*, YouTubePlaylist*)));
 }
@@ -253,38 +251,6 @@ void YouTubeView::showUploads() {
     window->show();
 }
 
-void YouTubeView::showWatchHistory() {
-    const QString playlistId = YouTube::relatedPlaylist("watchHistory");
-    
-    if (playlistId.isEmpty()) {
-        QMaemo5InformationBox::information(this, tr("This channel does not have any watch history"));
-        return;
-    }
-    
-    QVariantMap filters;
-    filters["playlistId"] = playlistId;
-    
-    QVariantMap params;
-    params["maxResults"] = MAX_RESULTS;
-    
-    YouTubeVideosWindow *window = new YouTubeVideosWindow(StackedWindow::currentWindow());
-    window->setWindowTitle(tr("Watch history"));
-    window->list("/playlistItems", QStringList() << "snippet", filters, params);
-    window->show();
-}
-
-void YouTubeView::showWatchLater() {
-    const QString playlistId = YouTube::relatedPlaylist("watchLater");
-    
-    if (playlistId.isEmpty()) {
-        QMaemo5InformationBox::information(this, tr("This channel does not have any watch later playlist"));
-        return;
-    }
-    
-    YouTubePlaylistWindow *window = new YouTubePlaylistWindow(playlistId, StackedWindow::currentWindow());
-    window->show();
-}
-
 void YouTubeView::onItemActivated(const QModelIndex &index) {
     switch (index.row()) {
     case 0:
@@ -306,15 +272,9 @@ void YouTubeView::onItemActivated(const QModelIndex &index) {
         showLikes();
         break;
     case 6:
-        showWatchLater();
-        break;
-    case 7:
-        showWatchHistory();
-        break;
-    case 8:
         showPlaylists();
         break;
-    case 9:
+    case 7:
         showSubscriptions();
         break;
     default:
@@ -348,10 +308,6 @@ void YouTubeView::onVideoLiked(YouTubeVideo *video) {
 
 void YouTubeView::onVideoDisliked(YouTubeVideo *video) {
     QMaemo5InformationBox::information(this, tr("You disliked '%1'").arg(video->title()));
-}
-
-void YouTubeView::onVideoWatchLater(YouTubeVideo *video) {
-    QMaemo5InformationBox::information(this, tr("'%1' added to your watch later playlist").arg(video->title()));
 }
 
 void YouTubeView::onVideoAddedToPlaylist(YouTubeVideo *video, YouTubePlaylist *playlist) {

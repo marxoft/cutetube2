@@ -50,7 +50,6 @@ YouTubeVideosWindow::YouTubeVideosWindow(StackedWindow *parent) :
     m_downloadAction(new QAction(tr("Download"), this)),
     m_shareAction(new QAction(tr("Copy URL"), this)),
     m_favouriteAction(0),
-    m_watchLaterAction(0),
     m_playlistAction(0),
     m_label(new QLabel(QString("<p align='center'; style='font-size: 40px; color: %1'>%2</p>")
                               .arg(palette().color(QPalette::Mid).name()).arg(tr("No videos found")), this))
@@ -90,13 +89,10 @@ YouTubeVideosWindow::YouTubeVideosWindow(StackedWindow *parent) :
         if ((YouTube::hasScope(QYouTube::READ_WRITE_SCOPE))
             || (YouTube::hasScope(QYouTube::FORCE_SSL_SCOPE))) {
             m_favouriteAction = new QAction(this);
-            m_watchLaterAction = new QAction(tr("Watch later"), this);
             m_playlistAction = new QAction(tr("Add to playlist"), this);
             m_contextMenu->addAction(m_favouriteAction);
-            m_contextMenu->addAction(m_watchLaterAction);
             m_contextMenu->addAction(m_playlistAction);
             connect(m_favouriteAction, SIGNAL(triggered()), this, SLOT(setVideoFavourite()));
-            connect(m_watchLaterAction, SIGNAL(triggered()), this, SLOT(watchVideoLater()));
             connect(m_playlistAction, SIGNAL(triggered()), this, SLOT(addVideoToPlaylist()));
         }
     }
@@ -199,18 +195,6 @@ void YouTubeVideosWindow::showVideo(const QModelIndex &index) {
     if (const YouTubeVideo *video = m_model->get(index.row())) {
         YouTubeVideoWindow *window = new YouTubeVideoWindow(video, this);
         window->show();
-    }
-}
-
-void YouTubeVideosWindow::watchVideoLater() {
-    if (isBusy()) {
-        return;
-    }
-    
-    if (YouTubeVideo *video = m_model->get(m_view->currentIndex().row())) {
-        connect(video, SIGNAL(statusChanged(QYouTube::ResourcesRequest::Status)),
-                this, SLOT(onVideoUpdateStatusChanged(QYouTube::ResourcesRequest::Status)));
-        video->watchLater();
     }
 }
 

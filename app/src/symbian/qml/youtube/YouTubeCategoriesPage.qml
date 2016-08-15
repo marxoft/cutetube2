@@ -50,7 +50,8 @@ MyPage {
 
             onStatusChanged: if (status == QYouTube.ResourcesRequest.Failed) infoBanner.showMessage(errorString);
         }
-        delegate: CategoryDelegate {
+        delegate: LabelDelegate {
+            text: name
             onClicked: appWindow.pageStack.push(Qt.resolvedUrl("YouTubeVideosPage.qml"), {title: name})
             .model.list("/videos", ["snippet", "contentDetails", "statistics"], {chart: "mostPopular"},
                         {videoCategoryId: value, regionCode: Qt.locale().name.split("_")[1], maxResults: MAX_RESULTS})

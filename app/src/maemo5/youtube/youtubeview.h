@@ -48,9 +48,7 @@ private:
     void showSearchDialog();
     void showSubscriptions();
     void showUploads();
-    void showWatchHistory();
-    void showWatchLater();
-    
+
 private Q_SLOTS:
     void onItemActivated(const QModelIndex &index);
     
@@ -63,7 +61,6 @@ private Q_SLOTS:
     void onVideoUnfavourited(YouTubeVideo *video);
     void onVideoLiked(YouTubeVideo *video);
     void onVideoDisliked(YouTubeVideo *video);
-    void onVideoWatchLater(YouTubeVideo *video);
     void onVideoAddedToPlaylist(YouTubeVideo *video, YouTubePlaylist *playlist);
     
 private:
