@@ -1,3 +1,11 @@
+cutetube2 (0.5.0) unstable; urgency=low
+  * Re-introduce support for plugins using executable scripts/binaries.
+  * Allow plugins to instruct the application to handle embedded YouTube/Dailymotion/Vimeo videos.
+  * Add more logging statements.
+  * Remove deprecated 'watch later' and 'watch history' features from YouTube.
+
+ -- Stuart Howarth <showarth@marxoft.co.uk>  Sun, 14 Aug 2016 17:29:36 +0100
+
 cutetube2 (0.4.0) unstable; urgency=low
   * Plugin API improvements.
 
