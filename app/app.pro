@@ -19,6 +19,7 @@ HEADERS += \
     src/base/json.h \
     src/base/localemodel.h \
     src/base/logger.h \
+    src/base/loggerverbositymodel.h \
     src/base/networkproxytypemodel.h \
     src/base/playlist.h \
     src/base/resources.h \
@@ -421,7 +422,7 @@ maemo5 {
     TARGET.EPOCHEAPSIZE = 0x20000 0x8000000
     TARGET.EPOCSTACKSIZE = 0x14000
 
-    VERSION = 0.4.0
+    VERSION = 0.5.0
     ICON = desktop/symbian/cutetube2.svg
 
     MMP_RULES += "DEBUGGABLE_UDEBONLY"
