@@ -15,6 +15,8 @@
  */
 
 #include "youtubetransfer.h"
+#include "logger.h"
+#include "resources.h"
 #include <qyoutube/streamsrequest.h>
 #include <qyoutube/subtitlesrequest.h>
 #if QT_VERSION >= 0x050000
@@ -26,24 +28,35 @@ YouTubeTransfer::YouTubeTransfer(QObject *parent) :
     m_streamsRequest(0),
     m_subtitlesRequest(0)
 {
+    setService(Resources::YOUTUBE);
 }
 
 void YouTubeTransfer::listStreams() {
+    Logger::log("YouTubeTransfer::listStreams(). ID: " + videoId(), Logger::MediumVerbosity);
+    streamsRequest()->list(videoId());
+}
+
+void YouTubeTransfer::listSubtitles() {
+    Logger::log("YouTubeTransfer::listSubtitles(). ID: " + videoId(), Logger::MediumVerbosity);
+    subtitlesRequest()->list(videoId());
+}
+
+QYouTube::StreamsRequest* YouTubeTransfer::streamsRequest() {
     if (!m_streamsRequest) {
         m_streamsRequest = new QYouTube::StreamsRequest(this);
         connect(m_streamsRequest, SIGNAL(finished()), this, SLOT(onStreamsRequestFinished()));
     }
     
-    m_streamsRequest->list(videoId());
+    return m_streamsRequest;
 }
 
-void YouTubeTransfer::listSubtitles() {
+QYouTube::SubtitlesRequest* YouTubeTransfer::subtitlesRequest() {
     if (!m_subtitlesRequest) {
         m_subtitlesRequest = new QYouTube::SubtitlesRequest(this);
         connect(m_subtitlesRequest, SIGNAL(finished()), this, SLOT(onSubtitlesRequestFinished()));
     }
     
-    m_subtitlesRequest->list(videoId());
+    return m_subtitlesRequest;
 }
 
 void YouTubeTransfer::onStreamsRequestFinished() {
@@ -61,6 +74,7 @@ void YouTubeTransfer::onStreamsRequestFinished() {
     }
     
     setErrorString(tr("No stream URL found"));
+    Logger::log("YouTubeTransfer::onStreamsRequestFinished(). Error: " + errorString());
     setStatus(Failed);
 }
 
@@ -84,6 +98,9 @@ void YouTubeTransfer::onSubtitlesRequestFinished() {
                 return;
             }
         }
+    }
+    else {
+        Logger::log("YouTubeTransfer::onSubtitlesRequestFinished(). Error: " + m_subtitlesRequest->errorString());
     }
     
     if (!executeCustomCommands()) {

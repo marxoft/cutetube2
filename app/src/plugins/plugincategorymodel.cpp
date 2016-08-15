@@ -16,6 +16,7 @@
  */
 
 #include "plugincategorymodel.h"
+#include "logger.h"
 #include "pluginmanager.h"
 #include "resources.h"
 
@@ -71,6 +72,7 @@ void PluginCategoryModel::list(const QString &resourceId) {
         return;
     }
     
+    Logger::log("PluginCategoryModel::list(). Resource ID: " + resourceId, Logger::MediumVerbosity);
     clear();
     m_resourceId = resourceId;
     m_query = QString();
@@ -86,6 +88,8 @@ void PluginCategoryModel::search(const QString &query, const QString &order) {
         return;
     }
     
+    Logger::log(QString("PluginCategoryModel::search(). Query: %1, Order: %2").arg(query).arg(order),
+                Logger::MediumVerbosity);
     clear();
     m_resourceId = QString();
     m_query = query;
@@ -104,6 +108,11 @@ void PluginCategoryModel::cancel() {
 }
 
 void PluginCategoryModel::reload() {
+    if (status() == ResourcesRequest::Loading) {
+        return;
+    }
+    
+    Logger::log("PluginCategoryModel::reload(). Resource ID: " + m_resourceId, Logger::MediumVerbosity);
     clear();
 
     if (ResourcesRequest *r = request()) {
@@ -141,6 +150,9 @@ void PluginCategoryModel::onRequestFinished() {
         }
         
         m_next = result.value("next").toString();
+    }
+    else {
+        Logger::log("PluginCategoryModel::onRequestFinished(). Error: " + errorString());
     }
     
     emit statusChanged(status());

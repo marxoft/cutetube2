@@ -291,6 +291,8 @@ Transfer::Status Transfer::status() const {
 void Transfer::setStatus(Status s) {
     if (s != status()) {
         m_status = s;
+        Logger::log(QString("Transfer::setStatus(). ID: %1, Status: %2").arg(id()).arg(statusString()),
+                    Logger::LowVerbosity);
         emit statusChanged();
         
         switch (s) {
@@ -505,6 +507,7 @@ void Transfer::cancel() {
 }
 
 void Transfer::startDownload(const QUrl &u) {
+    Logger::log("Transfer::startDownload(). URL: " + u.toString(), Logger::LowVerbosity);
     QDir().mkpath(downloadPath());
     
     if (!m_file.open(m_file.exists() ? QFile::Append : QFile::WriteOnly)) {
@@ -535,6 +538,7 @@ void Transfer::startDownload(const QUrl &u) {
 }
 
 void Transfer::followRedirect(const QUrl &u) {
+    Logger::log("Transfer::followRedirect(). URL: " + u.toString(), Logger::LowVerbosity);
     QDir().mkpath(downloadPath());
     
     if (!m_file.open(m_file.exists() ? QFile::Append : QFile::WriteOnly)) {
@@ -563,7 +567,9 @@ void Transfer::followRedirect(const QUrl &u) {
     connect(m_reply, SIGNAL(finished()), this, SLOT(onReplyFinished()));
 }
 
-void Transfer::startSubtitlesDownload(const QUrl &u) {    
+void Transfer::startSubtitlesDownload(const QUrl &u) {
+    Logger::log("Transfer::startSubtitlesDownload(). URL: " + u.toString(), Logger::LowVerbosity);
+    
     if (!m_nam) {
         m_nam = new QNetworkAccessManager(this);
         m_ownNetworkAccessManager = true;
@@ -576,6 +582,7 @@ void Transfer::startSubtitlesDownload(const QUrl &u) {
 }
 
 bool Transfer::executeCustomCommands() {
+    Logger::log("Transfer::executeCustomCommands()", Logger::LowVerbosity);
     m_commands.clear();
     QString command = customCommand();
     const QString defaultCommand = Settings::customTransferCommand();
@@ -585,8 +592,8 @@ bool Transfer::executeCustomCommands() {
         const QString workingDirectory = downloadPath();
         command.replace("%f", fileName());
         m_commands << Command(workingDirectory, command);
-        Logger::log(QString("Transfer::getCustomCommands(): Adding custom command: Working directory: %1, Command: %2")
-                           .arg(workingDirectory).arg(command));
+        Logger::log(QString("Transfer::executeCustomCommands(): Adding custom command: Working directory: %1, Command: %2")
+                           .arg(workingDirectory).arg(command), Logger::LowVerbosity);
     }
     
     if ((defaultEnabled) && ((command.isEmpty()) || (!customCommandOverrideEnabled()))) {
@@ -594,8 +601,8 @@ bool Transfer::executeCustomCommands() {
         command = defaultCommand;
         command.replace("%f", fileName());
         m_commands << Command(workingDirectory, command);
-        Logger::log(QString("Transfer::getCustomCommands(): Adding custom command: Working directory: %1, Command: %2")
-                           .arg(workingDirectory).arg(command));
+        Logger::log(QString("Transfer::executeCustomCommands(): Adding custom command: Working directory: %1, Command: %2")
+                           .arg(workingDirectory).arg(command), Logger::LowVerbosity);
     }
     
     if (!m_commands.isEmpty()) {
@@ -615,7 +622,7 @@ void Transfer::executeCustomCommand(const Command &command) {
     }
 
     Logger::log(QString("Transfer::executeCustomCommand(): Working directory: %1, Command: %2")
-                       .arg(command.workingDirectory).arg(command.command));
+                       .arg(command.workingDirectory).arg(command.command), Logger::LowVerbosity);
     
     if (QDir(command.workingDirectory).exists()) {
         m_process->setWorkingDirectory(command.workingDirectory);
@@ -625,6 +632,7 @@ void Transfer::executeCustomCommand(const Command &command) {
 }
 
 void Transfer::moveDownloadedFiles() {
+    Logger::log("Transfer::moveDownloadedFiles()", Logger::LowVerbosity);
     QDir destDir(Settings::instance()->downloadPath(category()));
     
     if (!destDir.mkpath(destDir.path())) {
@@ -669,8 +677,6 @@ void Transfer::onReplyMetaDataChanged() {
     if (bytes <= 0) {
         bytes = m_reply->rawHeader("Content-Length").toLongLong();
     }
-
-    Logger::log("Transfer::onReplyMetadataChanged(): Content-Length: " + QString::number(bytes));
     
     if (bytes > 0) {
         setSize(bytes + bytesTransferred());

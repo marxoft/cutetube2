@@ -20,6 +20,18 @@
 #include "selectionmodel.h"
 #include "resourcesrequest.h"
 
+namespace QDailymotion {
+    class StreamsRequest;
+}
+
+namespace QVimeo {
+    class StreamsRequest;
+}
+
+namespace QYouTube {
+    class StreamsRequest;
+}
+
 class PluginStreamModel : public SelectionModel
 {
     Q_OBJECT
@@ -46,18 +58,34 @@ public Q_SLOTS:
 
 private Q_SLOTS:
     void onRequestFinished();
+    void onDailymotionRequestFinished();
+    void onVimeoRequestFinished();
+    void onYouTubeRequestFinished();
     
 Q_SIGNALS:
     void serviceChanged();
     void statusChanged(ResourcesRequest::Status s);
         
 private:
-    ResourcesRequest *m_request;
-
+    void setErrorString(const QString &e);
+    
+    void setStatus(ResourcesRequest::Status s);
+    
     ResourcesRequest* request();
+    QDailymotion::StreamsRequest* dailymotionRequest();
+    QVimeo::StreamsRequest* vimeoRequest();
+    QYouTube::StreamsRequest* youtubeRequest();
+    
+    ResourcesRequest *m_request;
+    QDailymotion::StreamsRequest *m_dailymotionRequest;
+    QVimeo::StreamsRequest *m_vimeoRequest;
+    QYouTube::StreamsRequest *m_youtubeRequest;
 
+    QString m_errorString;
     QString m_service;
     QString m_resourceId;
+    
+    ResourcesRequest::Status m_status;
 };
     
 #endif // PLUGINSTREAMMODEL_H

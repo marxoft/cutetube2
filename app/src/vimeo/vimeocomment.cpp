@@ -15,8 +15,9 @@
  */
 
 #include "vimeocomment.h"
-#include "vimeo.h"
+#include "logger.h"
 #include "resources.h"
+#include "vimeo.h"
 #include <QDateTime>
 
 VimeoComment::VimeoComment(QObject *parent) :
@@ -84,8 +85,8 @@ void VimeoComment::addComment() {
         return;
     }
     
+    Logger::log("VimeoComment::addComment()", Logger::MediumVerbosity);
     initRequest();
-    
     QVariantMap resource;
     resource["text"] = body();
     m_request->insert(resource, QString("/videos/%1/comments").arg(videoId()));
@@ -121,7 +122,11 @@ void VimeoComment::onCommentRequestFinished() {
 void VimeoComment::onAddCommentRequestFinished() {
     if (m_request->status() == QVimeo::ResourcesRequest::Ready) {
         loadComment(m_request->result().toMap());
+        Logger::log("VimeoComment::onAddCommentRequestFinished(). Comment added. ID: " + id(), Logger::MediumVerbosity);
         emit Vimeo::instance()->commentAdded(this);
+    }
+    else {
+        Logger::log("VimeoComment::onAddCommentRequestFinished(). Error: " + errorString());
     }
     
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onAddCommentRequestFinished()));

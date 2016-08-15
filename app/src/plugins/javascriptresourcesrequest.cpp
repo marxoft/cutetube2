@@ -86,7 +86,7 @@ void JavaScriptResourcesRequest::initEngine() {
             return;
         }
         
-        Logger::log("JavaScriptResourcesRequest::initEngine(): JavaScript file evaluated OK");
+        Logger::log("JavaScriptResourcesRequest::initEngine(): JavaScript file evaluated OK", Logger::MediumVerbosity);
         m_evaluated = true;
         m_global = new JavaScriptResourcesRequestGlobalObject(m_engine);
         
@@ -303,7 +303,7 @@ void JavaScriptResourcesRequest::onRequestError(const QString &errorString) {
 }
 
 void JavaScriptResourcesRequest::onRequestFinished(const QVariant &result) {
-    Logger::log("JavaScriptResourcesRequest::onRequestFinished()");
+    Logger::log("JavaScriptResourcesRequest::onRequestFinished()", Logger::MediumVerbosity);
     setErrorString(QString());
     setResult(result);
     setStatus(Ready);

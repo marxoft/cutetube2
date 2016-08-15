@@ -15,6 +15,7 @@
  */
 
 #include "vimeostreammodel.h"
+#include "logger.h"
 
 VimeoStreamModel::VimeoStreamModel(QObject *parent) :
     SelectionModel(parent),
@@ -36,6 +37,7 @@ void VimeoStreamModel::list(const QString &id) {
         return;
     }
     
+    Logger::log("VimeoStreamModel::list(). ID: " + id, Logger::MediumVerbosity);
     clear();
     m_id = id;
     m_request->list(id);
@@ -47,6 +49,11 @@ void VimeoStreamModel::cancel() {
 }
 
 void VimeoStreamModel::reload() {
+    if (status() == QVimeo::StreamsRequest::Loading) {
+        return;
+    }
+    
+    Logger::log("VimeoStreamModel::list(). ID: " + m_id, Logger::HighVerbosity);
     clear();
     m_request->list(m_id);
     emit statusChanged(status());
@@ -59,6 +66,9 @@ void VimeoStreamModel::onRequestFinished() {
             append(QString("%1p %2").arg(stream.value("height").toInt()).arg(stream.value("description").toString()),
                    stream);
         }
+    }
+    else {
+        Logger::log("VimeoStreamModel::onRequestFinished(). Error: " + errorString());
     }
     
     emit statusChanged(status());

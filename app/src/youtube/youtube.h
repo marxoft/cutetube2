@@ -135,7 +135,6 @@ Q_SIGNALS:
     void videoLiked(YouTubeVideo *video);
     void videoFavourited(YouTubeVideo *video);
     void videoUnfavourited(YouTubeVideo *video);
-    void videoWatchLater(YouTubeVideo *video);
 
 private:
     YouTube();

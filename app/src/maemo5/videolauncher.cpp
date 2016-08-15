@@ -15,6 +15,7 @@
  */
 
 #include "videolauncher.h"
+#include "logger.h"
 #include "settings.h"
 #include <QProcess>
 #include <QDBusConnection>
@@ -28,17 +29,28 @@ VideoLauncher::VideoLauncher(QObject *parent) :
 
 bool VideoLauncher::playVideo(const QString &url) {
     const QString player = Settings::videoPlayer();
+    Logger::log(QString("VideoLauncher::playVideo(). URL: %1, Player: %2").arg(url).arg(player), Logger::LowVerbosity);
     
     if (player == "other") {
-        return QProcess::startDetached(Settings::videoPlayerCommand().replace("%u", url));
+        const QString command = Settings::videoPlayerCommand().replace("%u", url);
+        
+        if (!QProcess::startDetached(command)) {
+            Logger::log(QString("VideoLauncher::playVideo(). Error playing URL: %1 with command: %2")
+                               .arg(url).arg(command));
+            return false;
+        }
     }
     else if (player == "mplayer") {
-        return QProcess::startDetached("/usr/bin/mplayer", QStringList() << "-cache" << "2048" << "-fs" << url);
+        if (!QProcess::startDetached("/usr/bin/mplayer", QStringList() << "-cache" << "2048" << "-fs" << url)) {
+            Logger::log(QString("VideoLauncher::playVideo(). Error playing URL: %1 with mplayer").arg(url));
+            return false;
+        }
     }
     else {
         QDBusConnection bus = QDBusConnection::sessionBus();
         QDBusInterface dbus_iface("com.nokia." + player, "/com/nokia/" + player, "com.nokia." + player, bus);
         dbus_iface.call("mime_open", url);
-        return true;
     }
+    
+    return true;
 }

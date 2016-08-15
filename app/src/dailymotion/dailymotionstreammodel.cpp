@@ -15,6 +15,7 @@
  */
 
 #include "dailymotionstreammodel.h"
+#include "logger.h"
 
 DailymotionStreamModel::DailymotionStreamModel(QObject *parent) :
     SelectionModel(parent),
@@ -36,6 +37,7 @@ void DailymotionStreamModel::list(const QString &id) {
         return;
     }
     
+    Logger::log("DailymotionStreamModel::list(). ID: " + id, Logger::MediumVerbosity);
     clear();
     m_id = id;
     m_request->list(id);
@@ -47,6 +49,11 @@ void DailymotionStreamModel::cancel() {
 }
 
 void DailymotionStreamModel::reload() {
+    if (status() == QDailymotion::StreamsRequest::Loading) {
+        return;
+    }
+    
+    Logger::log("DailymotionStreamModel::reload(). ID: " + m_id, Logger::MediumVerbosity);
     clear();
     m_request->list(m_id);
     emit statusChanged(status());
@@ -59,6 +66,9 @@ void DailymotionStreamModel::onRequestFinished() {
             append(QString("%1p %2").arg(stream.value("height").toInt()).arg(stream.value("description").toString()),
                    stream);
         }
+    }
+    else {
+        Logger::log("DailymotionStreamModel::onRequestFinished(). Error: " + errorString());
     }
     
     emit statusChanged(status());

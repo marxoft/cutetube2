@@ -15,6 +15,7 @@
  */
 
 #include "vimeocategorymodel.h"
+#include "logger.h"
 #include "vimeo.h"
 
 VimeoCategoryModel::VimeoCategoryModel(QObject *parent) :
@@ -29,7 +30,7 @@ VimeoCategoryModel::VimeoCategoryModel(QObject *parent) :
 }
 
 QString VimeoCategoryModel::errorString() const {
-    return m_request->errorString();
+    return Vimeo::getErrorString(m_request->result().toMap());
 }
 
 QVimeo::ResourcesRequest::Status VimeoCategoryModel::status() const {
@@ -41,6 +42,7 @@ void VimeoCategoryModel::list(const QString &resourcePath, const QVariantMap &fi
         return;
     }
     
+    Logger::log("VimeoCategoryModel::list(). Resource path: " + resourcePath, Logger::HighVerbosity);
     clear();
     m_resourcePath = resourcePath;
     m_filters = filters;
@@ -57,6 +59,7 @@ void VimeoCategoryModel::reload() {
         return;
     }
     
+    Logger::log("VimeoCategoryModel::reload(). Resource path: " + m_resourcePath, Logger::HighVerbosity);
     clear();
     m_request->list(m_resourcePath, m_filters);
     emit statusChanged(status());
@@ -68,6 +71,9 @@ void VimeoCategoryModel::onRequestFinished() {
             const QVariantMap category = v.toMap();
             append(category.value("name").toString(), category.value("uri").toString().section('/', -1));
         }
+    }
+    else {
+        Logger::log("VimeoCategoryModel::onRequestFinished(). Error: " + errorString());
     }
     
     emit statusChanged(status());

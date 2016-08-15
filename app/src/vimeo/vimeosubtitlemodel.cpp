@@ -15,16 +15,23 @@
  */
 
 #include "vimeosubtitlemodel.h"
+#include "logger.h"
+#include "vimeo.h"
 
 VimeoSubtitleModel::VimeoSubtitleModel(QObject *parent) :
     SelectionModel(parent),
     m_request(new QVimeo::ResourcesRequest(this))
 {
+    m_request->setClientId(Vimeo::clientId());
+    m_request->setClientSecret(Vimeo::clientSecret());
+    m_request->setAccessToken(Vimeo::accessToken());
+    
+    connect(m_request, SIGNAL(accessTokenChanged(QString)), Vimeo::instance(), SLOT(setAccessToken(QString)));
     connect(m_request, SIGNAL(finished()), this, SLOT(onRequestFinished()));
 }
 
 QString VimeoSubtitleModel::errorString() const {
-    return m_request->errorString();
+    return Vimeo::getErrorString(m_request->result().toMap());
 }
 
 QVimeo::ResourcesRequest::Status VimeoSubtitleModel::status() const {
@@ -36,6 +43,7 @@ void VimeoSubtitleModel::list(const QString &id) {
         return;
     }
     
+    Logger::log("VimeoSubtitleModel::list(). ID: " + id, Logger::MediumVerbosity);
     clear();
     m_id = id;
     m_request->list(QString("/videos/%1/texttracks").arg(id));
@@ -47,6 +55,11 @@ void VimeoSubtitleModel::cancel() {
 }
 
 void VimeoSubtitleModel::reload() {
+    if (status() == QVimeo::ResourcesRequest::Loading) {
+        return;
+    }
+    
+    Logger::log("VimeoSubtitleModel::reload(). ID: " + m_id, Logger::MediumVerbosity);
     clear();
     m_request->list(m_id);
     emit statusChanged(status());
@@ -54,10 +67,13 @@ void VimeoSubtitleModel::reload() {
 
 void VimeoSubtitleModel::onRequestFinished() {
     if (m_request->status() == QVimeo::ResourcesRequest::Ready) {
-        foreach (const QVariant &v, m_request->result().toList()) {
+        foreach (const QVariant &v, m_request->result().toMap().value("items").toList()) {
             const QVariantMap subtitle = v.toMap();
-            append(subtitle.value("language").toString(), subtitle);
+            append(subtitle.value("name").toString(), subtitle);
         }
+    }
+    else {
+        Logger::log("VimeoSubtitleModel::onRequestFinished(). Error: " + errorString());
     }
     
     emit statusChanged(status());

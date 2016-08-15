@@ -16,6 +16,7 @@
 
 #include "dailymotionvideo.h"
 #include "dailymotion.h"
+#include "logger.h"
 #include "resources.h"
 #include "utils.h"
 #include <QDateTime>
@@ -131,6 +132,7 @@ void DailymotionVideo::favourite() {
         return;
     }
     
+    Logger::log("DailymotionVideo::favourite(). ID: " + id(), Logger::MediumVerbosity);
     initRequest();
     m_request->insert("/me/likes/" + id());
     connect(m_request, SIGNAL(finished()), this, SLOT(onFavouriteRequestFinished()));
@@ -142,6 +144,7 @@ void DailymotionVideo::unfavourite() {
         return;
     }
     
+    Logger::log("DailymotionVideo::unfavourite(). ID: " + id(), Logger::MediumVerbosity);
     initRequest();
     m_request->del("/me/likes/" + id());
     connect(m_request, SIGNAL(finished()), this, SLOT(onUnfavouriteRequestFinished()));
@@ -173,7 +176,12 @@ void DailymotionVideo::onVideoRequestFinished() {
 void DailymotionVideo::onFavouriteRequestFinished() {
     if (m_request->status() == QDailymotion::ResourcesRequest::Ready) {
         setFavourite(true);
+        Logger::log("DailymotionVideo::onFavouriteRequestFinished(). Video favourited. ID: " + id(),
+                    Logger::MediumVerbosity);
         emit Dailymotion::instance()->videoFavourited(this);
+    }
+    else {
+        Logger::log("DailymotionVideo::onFavouriteRequestFinished(). Error: " + errorString());
     }
     
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onFavouriteRequestFinished()));
@@ -183,7 +191,12 @@ void DailymotionVideo::onFavouriteRequestFinished() {
 void DailymotionVideo::onUnfavouriteRequestFinished() {
     if (m_request->status() == QDailymotion::ResourcesRequest::Ready) {
         setFavourite(false);
+        Logger::log("DailymotionVideo::onUnfavouriteRequestFinished(). Video unfavourited. ID: " + id(),
+                    Logger::MediumVerbosity);
         emit Dailymotion::instance()->videoUnfavourited(this);
+    }
+    else {
+        Logger::log("DailymotionVideo::onUnfavouriteRequestFinished(). Error: " + errorString());
     }
     
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onUnfavouriteRequestFinished()));

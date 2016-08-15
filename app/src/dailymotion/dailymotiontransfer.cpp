@@ -15,6 +15,9 @@
  */
 
 #include "dailymotiontransfer.h"
+#include "dailymotion.h"
+#include "logger.h"
+#include "resources.h"
 #include <qdailymotion/resourcesrequest.h>
 #include <qdailymotion/streamsrequest.h>
 
@@ -23,24 +26,45 @@ DailymotionTransfer::DailymotionTransfer(QObject *parent) :
     m_streamsRequest(0),
     m_subtitlesRequest(0)
 {
+    setService(Resources::DAILYMOTION);
 }
 
 void DailymotionTransfer::listStreams() {
+    Logger::log("DailymotionTransfer::listStreams(). ID: " + videoId(), Logger::MediumVerbosity);
+    streamsRequest()->list(videoId());
+}
+
+void DailymotionTransfer::listSubtitles() {
+    Logger::log("DailymotionTransfer::listSubtitles(). ID: " + videoId(), Logger::MediumVerbosity);
+    subtitlesRequest()->list(QString("/video/%1/subtitles").arg(videoId()), QVariantMap(),
+                             Dailymotion::SUBTITLE_FIELDS);
+}
+
+QDailymotion::StreamsRequest* DailymotionTransfer::streamsRequest() {
     if (!m_streamsRequest) {
         m_streamsRequest = new QDailymotion::StreamsRequest(this);
         connect(m_streamsRequest, SIGNAL(finished()), this, SLOT(onStreamsRequestFinished()));
     }
     
-    m_streamsRequest->list(videoId());
+    return m_streamsRequest;
 }
 
-void DailymotionTransfer::listSubtitles() {
+QDailymotion::ResourcesRequest* DailymotionTransfer::subtitlesRequest() {
     if (!m_subtitlesRequest) {
         m_subtitlesRequest = new QDailymotion::ResourcesRequest(this);
+        m_subtitlesRequest->setClientId(Dailymotion::clientId());
+        m_subtitlesRequest->setClientSecret(Dailymotion::clientSecret());
+        m_subtitlesRequest->setAccessToken(Dailymotion::accessToken());
+        m_subtitlesRequest->setRefreshToken(Dailymotion::refreshToken());
+        
+        connect(m_subtitlesRequest, SIGNAL(accessTokenChanged(QString)),
+                Dailymotion::instance(), SLOT(setAccessToken(QString)));
+        connect(m_subtitlesRequest, SIGNAL(refreshTokenChanged(QString)),
+                Dailymotion::instance(), SLOT(setRefreshToken(QString)));
         connect(m_subtitlesRequest, SIGNAL(finished()), this, SLOT(onSubtitlesRequestFinished()));
     }
     
-    m_subtitlesRequest->list(QString("/video/%1/subtitles").arg(videoId()));
+    return m_subtitlesRequest;
 }
 
 void DailymotionTransfer::onStreamsRequestFinished() {
@@ -55,6 +79,9 @@ void DailymotionTransfer::onStreamsRequestFinished() {
                 return;
             }
         }
+    }
+    else {
+        Logger::log("DailymotionTransfer::onStreamsRequestFinished(). Error: " + m_streamsRequest->errorString());
     }
     
     setErrorString(tr("No stream URL found"));
@@ -73,6 +100,10 @@ void DailymotionTransfer::onSubtitlesRequestFinished() {
                 return;
             }
         }
+    }
+    else {
+        Logger::log("DailymotionTransfer::onSubtitlesRequestFinished(). Error: "
+                    + Dailymotion::getErrorString(m_subtitlesRequest->result().toMap()));
     }
     
     if (!executeCustomCommands()) {

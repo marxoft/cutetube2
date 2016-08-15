@@ -31,21 +31,17 @@ static bool displayNameLessThan(const ServicePluginPair &pair, const ServicePlug
 PluginManager* PluginManager::self = 0;
 
 PluginManager::PluginManager(QObject *parent) :
-    QObject(parent)
+    QObject(parent),
+    m_lastLoaded(QDateTime::fromTime_t(0))
 {
-    if (!self) {
-        self = this;
-    }
 }
 
 PluginManager::~PluginManager() {
-    if (self == this) {
-        self = 0;
-    }
+    self = 0;
 }
 
 PluginManager* PluginManager::instance() {
-    return self ? self : new PluginManager;
+    return self ? self : self = new PluginManager;
 }
 
 ServicePluginList PluginManager::plugins() const {
@@ -55,36 +51,37 @@ ServicePluginList PluginManager::plugins() const {
 ServicePluginConfig* PluginManager::getConfigForService(const QString &service) const {
     foreach (const ServicePluginPair &pair, m_plugins) {
         if (pair.config->id() == service) {
-            Logger::log("PluginManager::getConfigForService(). PluginFound: " + service);
+            Logger::log("PluginManager::getConfigForService(). PluginFound: " + service, Logger::HighVerbosity);
             return pair.config;
         }
     }
     
-    Logger::log("PluginManager::getConfigForService(). No Plugin found");
+    Logger::log("PluginManager::getConfigForService(). No Plugin found", Logger::HighVerbosity);
     return 0;
 }
 
 ServicePluginConfig* PluginManager::getConfigByFilePath(const QString &filePath) const {
     foreach (const ServicePluginPair &pair, m_plugins) {
         if (pair.config->filePath() == filePath) {
-            Logger::log("PluginManager::getConfigByFilePath(). PluginFound: " + pair.config->id());
+            Logger::log("PluginManager::getConfigByFilePath(). PluginFound: " + pair.config->id(),
+                        Logger::HighVerbosity);
             return pair.config;
         }
     }
     
-    Logger::log("PluginManager::getConfigByFilePath(). No Plugin found");
+    Logger::log("PluginManager::getConfigByFilePath(). No Plugin found", Logger::HighVerbosity);
     return 0;
 }
 
 ServicePlugin* PluginManager::getPluginForService(const QString &service) const {
     foreach (const ServicePluginPair &pair, m_plugins) {
         if (pair.config->id() == service) {
-            Logger::log("PluginManager::getPluginForService(). PluginFound: " + service);
+            Logger::log("PluginManager::getPluginForService(). PluginFound: " + service, Logger::HighVerbosity);
             return pair.plugin;
         }
     }
     
-    Logger::log("PluginManager::getPluginForService(). No Plugin found");
+    Logger::log("PluginManager::getPluginForService(). No Plugin found", Logger::HighVerbosity);
     return 0;
 }
 
@@ -107,7 +104,7 @@ bool PluginManager::resourceTypeIsSupported(const QString &service, const QStrin
 
 int PluginManager::load() {
     Logger::log("PluginManager::load(): Loading plugins modified since "
-                + m_lastLoaded.toString(Qt::ISODate));
+                + m_lastLoaded.toString(Qt::ISODate), Logger::LowVerbosity);
     int count = 0;
     QDir dir;
     
@@ -130,7 +127,8 @@ int PluginManager::load() {
                                 if (ServicePlugin *plugin = qobject_cast<ServicePlugin*>(obj)) {
                                     m_plugins << ServicePluginPair(config, plugin);
                                     ++count;
-                                    Logger::log("PluginManager::load(). Qt Plugin loaded: " + config->id());
+                                    Logger::log("PluginManager::load(). Qt Plugin loaded: " + config->id(),
+                                                Logger::MediumVerbosity);
                                 }
                                 else {
                                     loader.unload();
@@ -147,14 +145,16 @@ int PluginManager::load() {
                             new JavaScriptServicePlugin(config->id(), config->pluginFilePath(), this);
                             m_plugins << ServicePluginPair(config, js);
                             ++count;
-                            Logger::log("PluginManager::load(). JavaScript plugin loaded: " + config->id());
+                            Logger::log("PluginManager::load(). JavaScript plugin loaded: " + config->id(),
+                                        Logger::MediumVerbosity);
                         }
                         else {
                             ExternalServicePlugin *ext =
                             new ExternalServicePlugin(config->id(), config->pluginFilePath(), this);
                             m_plugins << ServicePluginPair(config, ext);
                             ++count;
-                            Logger::log("PluginManager::load(). External plugin loaded: " + config->id());
+                            Logger::log("PluginManager::load(). External plugin loaded: " + config->id(),
+                                        Logger::MediumVerbosity);
                         }
                     }
                     else {
@@ -168,7 +168,7 @@ int PluginManager::load() {
         }
     }
 
-    Logger::log(QString("PluginManager::load() %1 new plugins loaded").arg(count));
+    Logger::log(QString("PluginManager::load() %1 plugins loaded").arg(count), Logger::LowVerbosity);
 
     if (count > 0) {
         qSort(m_plugins.begin(), m_plugins.end(), displayNameLessThan);

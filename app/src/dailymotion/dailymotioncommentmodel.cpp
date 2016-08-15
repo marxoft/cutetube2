@@ -16,6 +16,7 @@
 
 #include "dailymotioncommentmodel.h"
 #include "dailymotion.h"
+#include "logger.h"
 
 DailymotionCommentModel::DailymotionCommentModel(QObject *parent) :
     QAbstractListModel(parent),
@@ -133,6 +134,7 @@ void DailymotionCommentModel::list(const QString &resourcePath, const QVariantMa
         return;
     }
     
+    Logger::log("DailymotionCommentModel::list(). Resource path: " + resourcePath, Logger::HighVerbosity);
     clear();
     m_resourcePath = resourcePath;
     m_filters = filters;
@@ -156,6 +158,11 @@ void DailymotionCommentModel::cancel() {
 }
 
 void DailymotionCommentModel::reload() {
+    if (status() == QDailymotion::ResourcesRequest::Loading) {
+        return;
+    }
+    
+    Logger::log("DailymotionCommentModel::reload(). Resource path: " + m_resourcePath, Logger::HighVerbosity);
     clear();
     m_request->list(m_resourcePath,  m_filters, Dailymotion::COMMENT_FIELDS);
     emit statusChanged(status());
@@ -203,6 +210,9 @@ void DailymotionCommentModel::onRequestFinished() {
             endInsertRows();
             emit countChanged(rowCount());
         }
+    }
+    else {
+        Logger::log("DailymotionCommentModel::onRequestFinished(). Error: " + errorString());
     }
     
     emit statusChanged(status());

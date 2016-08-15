@@ -21,6 +21,21 @@
 
 class ResourcesRequest;
 
+namespace QDailymotion {
+    class ResourcesRequest;
+    class StreamsRequest;
+}
+
+namespace QVimeo {
+    class ResourcesRequest;
+    class StreamsRequest;
+}
+
+namespace QYouTube {
+    class StreamsRequest;
+    class SubtitlesRequest;
+}
+
 class PluginTransfer : public Transfer
 {
     Q_OBJECT
@@ -31,6 +46,12 @@ public:
 private Q_SLOTS:
     void onStreamsRequestFinished();
     void onSubtitlesRequestFinished();
+    void onDailymotionStreamsRequestFinished();
+    void onDailymotionSubtitlesRequestFinished();
+    void onVimeoStreamsRequestFinished();
+    void onVimeoSubtitlesRequestFinished();
+    void onYouTubeStreamsRequestFinished();
+    void onYouTubeSubtitlesRequestFinished();
 
 private:
     void listStreams();
@@ -38,9 +59,21 @@ private:
 
     ResourcesRequest* streamsRequest();
     ResourcesRequest* subtitlesRequest();
+    QDailymotion::StreamsRequest* dailymotionStreamsRequest();
+    QDailymotion::ResourcesRequest* dailymotionSubtitlesRequest();
+    QVimeo::StreamsRequest* vimeoStreamsRequest();
+    QVimeo::ResourcesRequest* vimeoSubtitlesRequest();
+    QYouTube::StreamsRequest* youtubeStreamsRequest();
+    QYouTube::SubtitlesRequest* youtubeSubtitlesRequest();
     
     ResourcesRequest *m_streamsRequest;
     ResourcesRequest *m_subtitlesRequest;
+    QDailymotion::StreamsRequest *m_dailymotionStreamsRequest;
+    QDailymotion::ResourcesRequest *m_dailymotionSubtitlesRequest;
+    QVimeo::StreamsRequest *m_vimeoStreamsRequest;
+    QVimeo::ResourcesRequest *m_vimeoSubtitlesRequest;
+    QYouTube::StreamsRequest *m_youtubeStreamsRequest;
+    QYouTube::SubtitlesRequest *m_youtubeSubtitlesRequest;
 };
     
 #endif // PLUGINTRANSFER_H

@@ -15,10 +15,12 @@
  */
 
 #include "videolauncher.h"
-#include <QTemporaryFile>
+#include "definitions.h"
+#include "logger.h"
 #include <QDesktopServices>
-#include <QTimer>
 #include <QDir>
+#include <QFile>
+#include <QTextStream>
 #include <QUrl>
 
 VideoLauncher::VideoLauncher(QObject *parent) :
@@ -27,15 +29,30 @@ VideoLauncher::VideoLauncher(QObject *parent) :
 }
 
 bool VideoLauncher::playVideo(const QString &url) {
-    bool ok = false;
-    QTemporaryFile *temp = new QTemporaryFile;
-    temp->setFileName(QDir::tempPath() + "/cutetube2.ram");
-    
-    if ((temp->open()) && (temp->write(QByteArray::fromPercentEncoding(url.toUtf8())) > 0)) {
-        ok = QDesktopServices::openUrl(QUrl::fromLocalFile(temp->fileName()));
+    if (!QDir().mkpath(APP_CONFIG_PATH)) {
+        Logger::log(QString("VideoLauncher::playVideo(). URL: %1. Cannot create directory: %2")
+                           .arg(url).arg(APP_CONFIG_PATH));
+        return false;
     }
     
-    temp->close();
-    QTimer::singleShot(10000, temp, SLOT(deleteLater()));
-    return ok;
+    QFile file(APP_CONFIG_PATH + "video.ram");
+    
+    if (!file.open(QFile::WriteOnly | QFile::Text)) {
+        Logger::log(QString("VideoLauncher::playVideo(). URL: %1, Cannot write to file: %2. Error: %3")
+                           .arg(url).arg(file.fileName()).arg(file.errorString()));
+        return false;
+    }
+    
+    QTextStream stream(&file);
+    stream << url;
+    file.close();
+    
+    if (!QDesktopServices::openUrl(QUrl::fromLocalFile(file.fileName()))) {
+        Logger::log(QString("VideoLauncher::playVideo(). URL: %1. No handler for file: %2")
+                           .arg(url).arg(file.fileName()));
+        return false;
+    }
+    
+    Logger::log("VideoLauncher::playVideo(). URL " + url, Logger::LowVerbosity);
+    return true;
 }

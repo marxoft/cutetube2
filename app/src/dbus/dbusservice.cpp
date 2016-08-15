@@ -15,6 +15,7 @@
  */
 
 #include "dbusservice.h"
+#include "logger.h"
 #include "resources.h"
 #include <QDBusConnection>
 #include <QStringList>
@@ -32,6 +33,7 @@ QVariantMap DBusService::requestedResource() const {
 }
 
 bool DBusService::showResource(const QString &url) {
+    Logger::log("DBusService::showResource(). URL: " + url, Logger::MediumVerbosity);
     const QVariantMap resource = Resources::getResourceFromUrl(url);
     
     if (resource.isEmpty()) {

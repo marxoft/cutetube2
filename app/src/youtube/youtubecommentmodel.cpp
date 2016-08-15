@@ -15,6 +15,7 @@
  */
 
 #include "youtubecommentmodel.h"
+#include "logger.h"
 #include "youtube.h"
 
 YouTubeCommentModel::YouTubeCommentModel(QObject *parent) :
@@ -131,12 +132,12 @@ YouTubeComment* YouTubeCommentModel::get(int row) const {
 }
 
 void YouTubeCommentModel::list(const QString &resourcePath, const QStringList &part, const QVariantMap &filters,
-                             const QVariantMap &params) {
-
+                               const QVariantMap &params) {
     if (status() == QYouTube::ResourcesRequest::Loading) {
         return;
     }
     
+    Logger::log("YouTubeCommentModel::list(). Resource path: " + resourcePath, Logger::HighVerbosity);
     clear();
     m_resourcePath = resourcePath;
     m_part = part;
@@ -162,6 +163,11 @@ void YouTubeCommentModel::cancel() {
 }
 
 void YouTubeCommentModel::reload() {
+    if (status() == QYouTube::ResourcesRequest::Loading) {
+        return;
+    }
+    
+    Logger::log("YouTubeCommentModel::reload(). Resource path: " + m_resourcePath, Logger::HighVerbosity);
     clear();
     m_request->list(m_resourcePath, m_part, m_filters, m_params);
     emit statusChanged(status());
@@ -222,6 +228,9 @@ void YouTubeCommentModel::onRequestFinished() {
             
             emit countChanged(rowCount());      
         }
+    }
+    else {
+        Logger::log("YouTubeCommentModel::onRequestFinished(). Error: " + errorString());
     }
     
     emit statusChanged(status());

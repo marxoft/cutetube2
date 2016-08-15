@@ -15,6 +15,7 @@
  */
 
 #include "youtubevideo.h"
+#include "logger.h"
 #include "resources.h"
 #include "youtube.h"
 #include <QDateTime>
@@ -281,8 +282,8 @@ void YouTubeVideo::favourite() {
         return;
     }
     
+    Logger::log("YouTubeVideo::favourite(). ID: " + id(), Logger::MediumVerbosity);
     initRequest();
-    
     QVariantMap resource;
     QVariantMap snippet;
     QVariantMap resourceId;
@@ -302,6 +303,7 @@ void YouTubeVideo::unfavourite() {
         return;
     }
     
+    Logger::log("YouTubeVideo::unfavourite(). ID: " + id(), Logger::MediumVerbosity);
     initRequest();
     m_request->del(favouriteId(), "/playlistItems");
     connect(m_request, SIGNAL(finished()), this, SLOT(onUnfavouriteRequestFinished()));
@@ -313,8 +315,8 @@ void YouTubeVideo::dislike() {
         return;
     }
     
+    Logger::log("YouTubeVideo::dislike(). ID: " + id(), Logger::MediumVerbosity);
     initRequest();
-    
     QVariantMap params;
     params["id"] = id();
     params["rating"] = "dislike";
@@ -329,35 +331,14 @@ void YouTubeVideo::like() {
         return;
     }
     
+    Logger::log("YouTubeVideo::like(). ID: " + id(), Logger::MediumVerbosity);
     initRequest();
-    
     QVariantMap params;
     params["id"] = id();
     params["rating"] = "like";
     
     m_request->insert(QVariantMap(), "/videos/rate", QStringList(), params);
     connect(m_request, SIGNAL(finished()), this, SLOT(onLikeRequestFinished()));
-    emit statusChanged(status());
-}
-
-void YouTubeVideo::watchLater() {
-    if (status() == QYouTube::ResourcesRequest::Loading) {
-        return;
-    }
-    
-    initRequest();
-    
-    QVariantMap resource;
-    QVariantMap snippet;
-    QVariantMap resourceId;
-    resourceId["kind"] = "youtube#video";
-    resourceId["videoId"] = id();
-    snippet["playlistId"] = YouTube::relatedPlaylist("watchLater");
-    snippet["resourceId"] = resourceId;
-    resource["snippet"] = snippet;
-    
-    m_request->insert(resource, "/playlistItems", QStringList() << "snippet");
-    connect(m_request, SIGNAL(finished()), this, SLOT(onWatchLaterRequestFinished()));
     emit statusChanged(status());
 }
 
@@ -393,7 +374,12 @@ void YouTubeVideo::onFavouriteRequestFinished() {
         setFavourite(true);
         setFavouriteCount(favouriteCount() + 1);
         setFavouriteId(m_request->result().toMap().value("id").toString());
+        Logger::log("YouTubeVideo::onFavouriteRequestFinished(). Video favourited. ID: " + id(),
+                    Logger::MediumVerbosity);
         emit YouTube::instance()->videoFavourited(this);
+    }
+    else {
+        Logger::log("YouTubeVideo::onFavouriteRequestFinished(). Error: " + errorString());
     }
     
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onFavouriteRequestFinished()));
@@ -405,7 +391,12 @@ void YouTubeVideo::onUnfavouriteRequestFinished() {
         setFavourite(false);
         setFavouriteCount(favouriteCount() - 1);
         setFavouriteId(QString());
+        Logger::log("YouTubeVideo::onUnfavouriteRequestFinished(). Video unfavourited. ID: " + id(),
+                    Logger::MediumVerbosity);
         emit YouTube::instance()->videoUnfavourited(this);
+    }
+    else {
+        Logger::log("YouTubeVideo::onFavouriteRequestFinished(). Error: " + errorString());
     }
     
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onUnfavouriteRequestFinished()));
@@ -417,7 +408,11 @@ void YouTubeVideo::onLikeRequestFinished() {
         setLiked(true);
         setLikeCount(likeCount() + 1);
         setDisliked(false);
+        Logger::log("YouTubeVideo::onLikeRequestFinished(). Video liked. ID: " + id(), Logger::MediumVerbosity);
         emit YouTube::instance()->videoLiked(this);
+    }
+    else {
+        Logger::log("YouTubeVideo::onLikeRequestFinished(). Error: " + errorString());
     }
     
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onLikeRequestFinished()));
@@ -429,19 +424,14 @@ void YouTubeVideo::onDislikeRequestFinished() {
         setDisliked(true);
         setDislikeCount(dislikeCount() + 1);
         setLiked(false);
+        Logger::log("YouTubeVideo::onDislikeRequestFinished(). Video disliked. ID: " + id(), Logger::MediumVerbosity);
         emit YouTube::instance()->videoDisliked(this);
+    }
+    else {
+        Logger::log("YouTubeVideo::onDislikeRequestFinished(). Error: " + errorString());
     }
     
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onDislikeRequestFinished()));
-    emit statusChanged(status());
-}
-
-void YouTubeVideo::onWatchLaterRequestFinished() {
-    if (m_request->status() == QYouTube::ResourcesRequest::Ready) {
-        emit YouTube::instance()->videoWatchLater(this);
-    }
-    
-    disconnect(m_request, SIGNAL(finished()), this, SLOT(onWatchLaterRequestFinished()));
     emit statusChanged(status());
 }
 

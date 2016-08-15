@@ -30,7 +30,6 @@ void YouTubeNavModel::reload() {
     }
     else {
         setStringList(QStringList() << tr("Accounts") << tr("Search") << tr("Categories") << tr("My videos")
-                                    << tr("Favourites") << tr("Likes") << tr("Watch later") << tr("Watch history")
-                                    << tr("Playlists") << tr("Subscriptions"));
+                                    << tr("Favourites") << tr("Likes") << tr("Playlists") << tr("Subscriptions"));
     }
 }

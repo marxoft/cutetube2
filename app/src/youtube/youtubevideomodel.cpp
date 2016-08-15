@@ -15,6 +15,7 @@
  */
 
 #include "youtubevideomodel.h"
+#include "logger.h"
 #include "youtube.h"
 #include "youtubeplaylist.h"
 
@@ -150,11 +151,11 @@ YouTubeVideo* YouTubeVideoModel::get(int row) const {
 
 void YouTubeVideoModel::list(const QString &resourcePath, const QStringList &part, const QVariantMap &filters,
                              const QVariantMap &params) {
-
     if (status() == QYouTube::ResourcesRequest::Loading) {
         return;
     }
     
+    Logger::log("YouTubeVideoModel::list(). Resource path: " + resourcePath, Logger::HighVerbosity);
     clear();
     m_resourcePath = resourcePath;
     m_part = part;
@@ -171,10 +172,6 @@ void YouTubeVideoModel::list(const QString &resourcePath, const QStringList &par
                     this, SLOT(onVideoFavourited(YouTubeVideo*)));
             connect(YouTube::instance(), SIGNAL(videoUnfavourited(YouTubeVideo*)),
                     this, SLOT(onVideoUnfavourited(YouTubeVideo*)));
-        }
-        else if (filters.value("playlistId") == YouTube::relatedPlaylist("watchLater")) {
-            connect(YouTube::instance(), SIGNAL(videoWatchLater(YouTubeVideo*)),
-                    this, SLOT(onVideoWatchLater(YouTubeVideo*)));
         }
         else {
             connect(YouTube::instance(), SIGNAL(videoAddedToPlaylist(YouTubeVideo*, YouTubePlaylist*)),
@@ -201,6 +198,11 @@ void YouTubeVideoModel::cancel() {
 }
 
 void YouTubeVideoModel::reload() {
+    if (status() == QYouTube::ResourcesRequest::Loading) {
+        return;
+    }
+    
+    Logger::log("YouTubeVideoModel::reload(). Resource path: " + m_resourcePath, Logger::HighVerbosity);
     clear();
     m_request->list(m_resourcePath, m_part, m_filters, m_params);
     emit statusChanged(status());
@@ -292,6 +294,9 @@ void YouTubeVideoModel::onRequestFinished() {
             }
         }
     }
+    else {
+        Logger::log("YouTubeVideoModel::onRequestFinished(). Error: " + errorString());
+    }
 
     emit statusChanged(status());
 }
@@ -325,6 +330,9 @@ void YouTubeVideoModel::onContentRequestFinished() {
             }
         }
     }
+    else {
+        Logger::log("YouTubeVideoModel::onContentRequestFinished(). Error: " + errorString());
+    }
 
     emit statusChanged(status());
 }
@@ -355,8 +363,4 @@ void YouTubeVideoModel::onVideoUnfavourited(YouTubeVideo *video) {
     if (!list.isEmpty()) {
         remove(list.first().row());
     }
-}
-
-void YouTubeVideoModel::onVideoWatchLater(YouTubeVideo *video) {
-    insert(0, new YouTubeVideo(video, this));
 }

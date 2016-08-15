@@ -46,6 +46,8 @@ const QStringList Dailymotion::PLAYLIST_FIELDS = QStringList() << "id" << "creat
                                                                << "thumbnail_120_url" << "thumbnail_360_url"
                                                                << "videos_total";
 
+const QStringList Dailymotion::SUBTITLE_FIELDS = QStringList() << "id" << "language" << "url";
+
 const QStringList Dailymotion::USER_FIELDS = QStringList() << "id" << "avatar_80_url" << "avatar_240_url"
                                                            << "cover_150_url" << "cover_250_url" << "description"
                                                            << "fans_total" << "screenname" << "views_total";
@@ -126,6 +128,8 @@ QString Dailymotion::userId() {
 }
 
 void Dailymotion::setUserId(const QString &id) {
+    Logger::log("Dailymotion::setUserId(). ID: " + id, Logger::MediumVerbosity);
+    
     if (id != userId()) {
         QSettings().setValue("Dailymotion/userId", id);
         subscriptionCache.ids.clear();
@@ -159,6 +163,7 @@ QString Dailymotion::accessToken() {
 }
 
 void Dailymotion::setAccessToken(const QString &token) {
+    Logger::log("Dailymotion::setAccessToken(). Token: " + token, Logger::MediumVerbosity);
     QSqlQuery query = getDatabase().exec(QString("UPDATE dailymotionAccounts SET accessToken = '%1' WHERE userId = '%2'")
                                                 .arg(token).arg(userId()));
 
@@ -191,6 +196,7 @@ QString Dailymotion::refreshToken() {
 }
 
 void Dailymotion::setRefreshToken(const QString &token) {
+    Logger::log("Dailymotion::setRefreshToken(). Token: " + token, Logger::MediumVerbosity);
     QSqlQuery query = getDatabase().exec(QString("UPDATE dailymotionAccounts SET refreshToken = '%1' WHERE userId = '%2'")
                                                 .arg(token).arg(userId()));
 
@@ -207,6 +213,8 @@ QString Dailymotion::clientId() {
 }
 
 void Dailymotion::setClientId(const QString &id) {
+    Logger::log("Dailymotion::setClientId(). ID: " + id, Logger::MediumVerbosity);
+    
     if (id != clientId()) {
         QSettings().setValue("Dailymotion/clientId", id);
 
@@ -221,6 +229,8 @@ QString Dailymotion::clientSecret() {
 }
 
 void Dailymotion::setClientSecret(const QString &secret) {
+    Logger::log("Dailymotion::setClientSecret(). Secret: " + secret, Logger::MediumVerbosity);
+    
     if (secret != clientSecret()) {
         QSettings().setValue("Dailymotion/clientSecret", secret);
 
@@ -235,6 +245,8 @@ QString Dailymotion::redirectUri() {
 }
 
 void Dailymotion::setRedirectUri(const QString &uri) {
+    Logger::log("Dailymotion::setRedirectUri(). URI: " + uri, Logger::MediumVerbosity);
+    
     if (uri != redirectUri()) {
         QSettings().setValue("Dailymotion/redirectUri", uri);
 
@@ -249,6 +261,8 @@ QStringList Dailymotion::scopes() {
 }
 
 void Dailymotion::setScopes(const QStringList &s) {
+    Logger::log("Dailymotion::setScopes(). Scopes: " + s.join(", "), Logger::MediumVerbosity);
+    
     if (s != scopes()) {
         QSettings().setValue("Dailymotion/scopes", s);
 
@@ -258,7 +272,7 @@ void Dailymotion::setScopes(const QStringList &s) {
     }
 }
 
-bool Dailymotion::hasScope(const QString &scope) {
+bool Dailymotion::hasScope(const QString &scope) {    
     if (userId().isEmpty()) {
         return false;
     }

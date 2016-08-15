@@ -17,13 +17,45 @@
 
 #include "logger.h"
 #include <QDateTime>
+#include <QFile>
+#include <QTextStream>
 #include <iostream>
 
+QString Logger::fn;
 int Logger::vb = 0;
 
 Logger::Logger(QObject *parent) :
     QObject(parent)
 {
+}
+
+QString Logger::fileName() {
+    return fn;
+}
+
+void Logger::setFileName(const QString &f) {
+    fn = f;
+}
+
+QString Logger::text() {
+    QString output;
+    
+    if (!fn.isEmpty()) {
+        QFile file(fn);
+        
+        if (file.open(QFile::ReadOnly | QFile::Text)) {
+            QTextStream stream(&file);
+
+            while (!stream.atEnd()) {
+                output.append(stream.readLine());
+                output.append("\n");
+            }
+
+            file.close();
+        }
+    }
+    
+    return output;
 }
 
 int Logger::verbosity() {
@@ -34,9 +66,30 @@ void Logger::setVerbosity(int v) {
     vb = v;
 }
 
+void Logger::clear() {
+    if (!fn.isEmpty()) {
+        QFile::remove(fn);
+    }
+}
+
 void Logger::log(const QString &message, int minimumVerbosity) {
     if (minimumVerbosity <= vb) {
-        std::cout << QString("%1: %2\n").arg(QDateTime::currentDateTime().toString(Qt::ISODate)).arg(message)
-                                        .toUtf8().constData();
+        const QString date = QDateTime::currentDateTime().toString(Qt::ISODate);
+        QString output = QString("%1: %2\n").arg(date).arg(message);
+        
+        if (!fn.isEmpty()) {
+            QFile file(fn);
+            
+            if (file.open(QFile::Append | QFile::Text)) {
+                QTextStream stream(&file);
+                stream << output;
+                file.close();
+                return;
+            }
+            
+            output = tr("%1: Cannot write to log file '%2'. Error: %3").arg(date).arg(fn).arg(file.errorString());
+        }
+        
+        std::cout << output.toUtf8().constData();
     }
 }

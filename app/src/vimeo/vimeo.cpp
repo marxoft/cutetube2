@@ -95,6 +95,8 @@ QString Vimeo::userId() {
 }
 
 void Vimeo::setUserId(const QString &id) {
+    Logger::log("Vimeo::setUserId(). ID: " + id, Logger::MediumVerbosity);
+    
     if (id != userId()) {
         QSettings().setValue("Vimeo/userId", id);
         subscriptionCache.ids.clear();
@@ -128,6 +130,7 @@ QString Vimeo::accessToken() {
 }
 
 void Vimeo::setAccessToken(const QString &token) {
+    Logger::log("Vimeo::setAccessToken(). Token: " + token, Logger::MediumVerbosity);
     QSqlQuery query = getDatabase().exec(QString("UPDATE vimeoAccounts SET accessToken = '%1' WHERE userId = '%2'")
                                                 .arg(token).arg(userId()));
 
@@ -144,6 +147,8 @@ QString Vimeo::clientId() {
 }
 
 void Vimeo::setClientId(const QString &id) {
+    Logger::log("Vimeo::setClientId(). ID: " + id, Logger::MediumVerbosity);
+    
     if (id != clientId()) {
         QSettings().setValue("Vimeo/clientId", id);
 
@@ -158,6 +163,8 @@ QString Vimeo::clientSecret() {
 }
 
 void Vimeo::setClientSecret(const QString &secret) {
+    Logger::log("Vimeo::setClientSecret(). Secret: " + secret, Logger::MediumVerbosity);
+    
     if (secret != clientSecret()) {
         QSettings().setValue("Vimeo/clientSecret", secret);
 
@@ -172,6 +179,8 @@ QString Vimeo::redirectUri() {
 }
 
 void Vimeo::setRedirectUri(const QString &uri) {
+    Logger::log("Vimeo::setRedirectUri(). URI: " + uri, Logger::MediumVerbosity);
+    
     if (uri != redirectUri()) {
         QSettings().setValue("Vimeo/redirectUri", uri);
 
@@ -186,6 +195,8 @@ QStringList Vimeo::scopes() {
 }
 
 void Vimeo::setScopes(const QStringList &s) {
+    Logger::log("Vimeo::setScopes(). Scopes: " + s.join(", "), Logger::MediumVerbosity);
+    
     if (s != scopes()) {
         QSettings().setValue("Vimeo/scopes", s);
 

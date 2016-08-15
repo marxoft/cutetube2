@@ -16,6 +16,7 @@
 
 #include "dailymotionplaylist.h"
 #include "dailymotion.h"
+#include "logger.h"
 #include "dailymotionvideo.h"
 #include "resources.h"
 #include <QDateTime>
@@ -108,6 +109,8 @@ void DailymotionPlaylist::addVideo(DailymotionVideo *video) {
         return;
     }
     
+    Logger::log(QString("DailymotionPlaylist::addVideo(). Video ID: %1, Playlist ID: %2").arg(video->id()).arg(id()),
+                Logger::MediumVerbosity);
     initRequest();
     m_video = video;
     
@@ -140,6 +143,8 @@ void DailymotionPlaylist::removeVideo(DailymotionVideo *video) {
         return;
     }
     
+    Logger::log(QString("DailymotionPlaylist::removeVideo(). Video ID: %1, Playlist ID: %2").arg(video->id()).arg(id()),
+                Logger::MediumVerbosity);
     initRequest();
     m_video = video;
     m_request->del(QString("/playlist/%1/videos/%2").arg(id()).arg(m_video->id()));
@@ -174,6 +179,8 @@ void DailymotionPlaylist::onCreatePlaylistRequestFinished() {
     
     if (m_request->status() == QDailymotion::ResourcesRequest::Ready) {
         loadPlaylist(m_request->result().toMap());
+        Logger::log("DailymotionPlaylist::onCreatePlaylistRequestFinished(). Playlist created. ID: " + id(),
+                    Logger::MediumVerbosity);
         emit Dailymotion::instance()->playlistCreated(this);
         
         if (m_video) {
@@ -181,6 +188,9 @@ void DailymotionPlaylist::onCreatePlaylistRequestFinished() {
             connect(m_request, SIGNAL(finished()), this, SLOT(onAddVideoRequestFinished()));
             return;
         }
+    }
+    else {
+        Logger::log("DailymotionPlaylist::onCreatePlaylistRequestFinished(). Error: " + errorString());
     }
     
     emit statusChanged(status());
@@ -196,12 +206,15 @@ void DailymotionPlaylist::onAddVideoRequestFinished() {
                 setLargeThumbnailUrl(m_video->largeThumbnailUrl());
             }
             
+            Logger::log(QString("DailymotionPlaylist::onAddVideoRequestFinished(). Video added. Video ID: %1, Playlist ID: %2").arg(m_video->id()).arg(id()), Logger::MediumVerbosity);
             emit Dailymotion::instance()->videoAddedToPlaylist(m_video, this);
         }
     }
+    else {
+        Logger::log("DailymotionPlaylist::onAddVideoRequestFinished(). Error: " + errorString());
+    }
     
     m_video = 0;
-    
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onAddVideoRequestFinished()));
     emit statusChanged(status());
 }
@@ -211,12 +224,15 @@ void DailymotionPlaylist::onRemoveVideoRequestFinished() {
         setVideoCount(qMax(0, videoCount() - 1));
         
         if (m_video) {
+            Logger::log(QString("DailymotionPlaylist::onRemoveVideoRequestFinished(). Video removed. Video ID: %1, Playlist ID: %2").arg(m_video->id()).arg(id()), Logger::MediumVerbosity);
             emit Dailymotion::instance()->videoRemovedFromPlaylist(m_video, this);
         }
     }
+    else {
+        Logger::log("DailymotionPlaylist::onRemoveVideoRequestFinished(). Error: " + errorString());
+    }
     
     m_video = 0;
-    
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onRemoveVideoRequestFinished()));
     emit statusChanged(status());
 }

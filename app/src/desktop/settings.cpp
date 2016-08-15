@@ -253,6 +253,34 @@ void Settings::setLocale(const QString &name) {
     }
 }
 
+QString Settings::loggerFileName() {
+    return value("Logger/fileName", APP_CONFIG_PATH + "log").toString();
+}
+
+void Settings::setLoggerFileName(const QString &fileName) {
+    if (fileName != loggerFileName()) {
+        setValue("Logger/fileName", fileName);
+        
+        if (self) {
+            emit self->loggerFileNameChanged(fileName);
+        }
+    }
+}
+
+int Settings::loggerVerbosity() {
+    return value("Logger/verbosity", 0).toInt();
+}
+
+void Settings::setLoggerVerbosity(int verbosity) {
+    if (verbosity != loggerVerbosity()) {
+        setValue("Logger/verbosity", verbosity);
+        
+        if (self) {
+            emit self->loggerVerbosityChanged(verbosity);
+        }
+    }
+}
+
 QByteArray Settings::mainWindowGeometry() {
     return value("UI/mainWindowGeometry").toByteArray();
 }

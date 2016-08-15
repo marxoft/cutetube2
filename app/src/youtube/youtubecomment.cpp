@@ -15,8 +15,9 @@
  */
 
 #include "youtubecomment.h"
-#include "youtube.h"
+#include "logger.h"
 #include "resources.h"
+#include "youtube.h"
 #include <QDateTime>
 
 YouTubeComment::YouTubeComment(QObject *parent) :
@@ -105,8 +106,8 @@ void YouTubeComment::addComment() {
         return;
     }
     
+    Logger::log("YouTubeComment::addComment()", Logger::MediumVerbosity);
     initRequest();
-    
     QVariantMap resource;
     QVariantMap snippet;
     
@@ -175,7 +176,12 @@ void YouTubeComment::onAddCommentRequestFinished() {
             loadComment(result);
         }
         
+        Logger::log("YouTubeComment::onAddCommentRequestFinished(). Comment added. ID: " + id(),
+                    Logger::MediumVerbosity);
         emit YouTube::instance()->commentAdded(this);
+    }
+    else {
+        Logger::log("YouTubeComment::onAddCommentRequestFinished(). Error: " + errorString());
     }
     
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onAddCommentRequestFinished()));

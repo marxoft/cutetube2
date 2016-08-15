@@ -68,8 +68,6 @@ public Q_SLOTS:
     void like();
     void dislike();
     
-    void watchLater();
-    
 private:
     void initRequest();
     
@@ -91,7 +89,6 @@ private Q_SLOTS:
     void onUnfavouriteRequestFinished();
     void onLikeRequestFinished();
     void onDislikeRequestFinished();
-    void onWatchLaterRequestFinished();
     void onVideoUpdated(YouTubeVideo *video);
     
 Q_SIGNALS:

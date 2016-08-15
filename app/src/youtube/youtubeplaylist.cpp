@@ -15,6 +15,7 @@
  */
 
 #include "youtubeplaylist.h"
+#include "logger.h"
 #include "resources.h"
 #include "youtube.h"
 #include "youtubevideo.h"
@@ -132,6 +133,8 @@ void YouTubePlaylist::addVideo(YouTubeVideo *video) {
         return;
     }
     
+    Logger::log(QString("YouTubePlaylist::addVideo(). Video ID: %1, Playlist ID: %2").arg(video->id()).arg(id()),
+                Logger::MediumVerbosity);
     initRequest();
     m_video = video;
     
@@ -179,6 +182,8 @@ void YouTubePlaylist::removeVideo(YouTubeVideo *video) {
         return;
     }
     
+    Logger::log(QString("YouTubePlaylist::removeVideo(). Video ID: %1, Playlist ID: %2").arg(video->id()).arg(id()),
+                Logger::MediumVerbosity);
     initRequest();
     m_video = video;
     m_request->del(m_video->playlistItemId(), "/playlistItems");
@@ -218,6 +223,8 @@ void YouTubePlaylist::onCreatePlaylistRequestFinished() {
     
     if (m_request->status() == QYouTube::ResourcesRequest::Ready) {
         loadPlaylist(m_request->result().toMap());
+        Logger::log("YouTubePlaylist::onCreatePlaylistRequestFinished(). Playlist created. ID: " + id(),
+                    Logger::MediumVerbosity);
         emit YouTube::instance()->playlistCreated(this);
         
         if (m_video) {
@@ -235,6 +242,9 @@ void YouTubePlaylist::onCreatePlaylistRequestFinished() {
             return;
         }
     }
+    else {
+        Logger::log("YouTubePlaylist::onCreatePlaylistRequestFinished(). Error: " + errorString());
+    }
         
     emit statusChanged(status());
 }
@@ -249,12 +259,15 @@ void YouTubePlaylist::onAddVideoRequestFinished() {
                 setLargeThumbnailUrl(m_video->largeThumbnailUrl());
             }
             
+            Logger::log(QString("YouTubePlaylist::onAddVideoRequestFinished(). Video added. Video ID: %1, Playlist ID: %2").arg(m_video->id()).arg(id()), Logger::MediumVerbosity);
             emit YouTube::instance()->videoAddedToPlaylist(m_video, this);
         }
     }
+    else {
+        Logger::log("YouTubePlaylist::onAddVideoRequestFinished(). Error: " + errorString());
+    }
     
     m_video = 0;
-    
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onAddVideoRequestFinished()));
     emit statusChanged(status());
 }
@@ -264,12 +277,15 @@ void YouTubePlaylist::onRemoveVideoRequestFinished() {
         setVideoCount(qMax(0, videoCount() - 1));
         
         if (m_video) {
+            Logger::log(QString("YouTubePlaylist::onRemoveVideoRequestFinished(). Video removed. Video ID: %1, Playlist ID: %2").arg(m_video->id()).arg(id()), Logger::MediumVerbosity);
             emit YouTube::instance()->videoRemovedFromPlaylist(m_video, this);
         }
     }
+    else {
+        Logger::log("YouTubePlaylist::onRemoveVideoRequestFinished(). Error: " + errorString());
+    }
     
     m_video = 0;
-    
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onRemoveVideoRequestFinished()));
     emit statusChanged(status());
 }

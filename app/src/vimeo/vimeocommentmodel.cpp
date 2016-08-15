@@ -15,6 +15,7 @@
  */
 
 #include "vimeocommentmodel.h"
+#include "logger.h"
 #include "vimeo.h"
 
 VimeoCommentModel::VimeoCommentModel(QObject *parent) :
@@ -130,6 +131,7 @@ void VimeoCommentModel::list(const QString &resourcePath, const QVariantMap &fil
         return;
     }
     
+    Logger::log("VimeoCommentModel::list(). Resource path: " + resourcePath, Logger::HighVerbosity);
     clear();
     m_resourcePath = resourcePath;
     m_filters = filters;
@@ -153,6 +155,11 @@ void VimeoCommentModel::cancel() {
 }
 
 void VimeoCommentModel::reload() {
+    if (status() == QVimeo::ResourcesRequest::Loading) {
+        return;
+    }
+    
+    Logger::log("VimeoCommentModel::reload(). Resource path: " + m_resourcePath, Logger::HighVerbosity);
     clear();
     m_request->list(m_resourcePath, m_filters);
     emit statusChanged(status());
@@ -200,6 +207,9 @@ void VimeoCommentModel::onRequestFinished() {
             endInsertRows();
             emit countChanged(rowCount());
         }
+    }
+    else {
+        Logger::log("VimeoCommentModel::onRequestFinished(). Error: " + errorString());
     }
     
     emit statusChanged(status());

@@ -16,6 +16,7 @@
 
 #include "dailymotionaccountmodel.h"
 #include "dailymotion.h"
+#include "logger.h"
 #include <QSqlRecord>
 #include <QSqlField>
 #include <QSqlError>
@@ -67,7 +68,7 @@ QVariant DailymotionAccountModel::data(int row, const QByteArray &role) const {
 
 bool DailymotionAccountModel::addAccount(const QString &userId, const QString &username, const QString &accessToken,
                                          const QString &refreshToken, const QString &scopes) {
-                                     
+    Logger::log(QString("DailymotionAccountModel::addAccount(). User ID: %1, Username: %2, Access token: %3, Refresh token: %4, Scopes: %5").arg(userId).arg(username).arg(accessToken).arg(refreshToken).arg(scopes), Logger::LowVerbosity);
     QSqlField userIdField("userId", QVariant::String);
     userIdField.setValue(userId);
     
@@ -115,6 +116,8 @@ bool DailymotionAccountModel::addAccount(const QString &userId, const QString &u
 
 bool DailymotionAccountModel::removeAccount(int row) {
     const QString userId = data(index(row, 0)).toString();
+    Logger::log(QString("DailymotionAccountModel::removeAccount(). Row: %1, User ID: %2").arg(row).arg(userId),
+                Logger::MediumVerbosity);
     
     if (removeRows(row, 1)) {
         if (userId == Dailymotion::userId()) {
@@ -134,7 +137,9 @@ bool DailymotionAccountModel::removeAccount(int row) {
 }
 
 bool DailymotionAccountModel::selectAccount(int row) {
-    QString userId = data(index(row, 0)).toString();
+    const QString userId = data(index(row, 0)).toString();
+    Logger::log(QString("DailymotionAccountModel::selectAccount(). Row: %1, User ID: %2").arg(row).arg(userId),
+                Logger::MediumVerbosity);
     
     if (!userId.isEmpty()) {
         Dailymotion::setUserId(userId);

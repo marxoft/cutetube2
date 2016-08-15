@@ -17,6 +17,7 @@
 #include "transfers.h"
 #include "dailymotiontransfer.h"
 #include "definitions.h"
+#include "logger.h"
 #include "plugintransfer.h"
 #include "resources.h"
 #include "settings.h"
@@ -75,6 +76,8 @@ void Transfers::addDownloadTransfer(const QString &service, const QString &video
                                     const QUrl &streamUrl, const QString &title, const QString &category,
                                     const QString &subtitlesLanguage, const QString &customCommand,
                                     bool customCommandOverrideEnabled) {
+    Logger::log(QString("Transfers::addDownloadTransfer(). Service: %1, Video ID: %2, Stream ID: %3, Stream URL: %4, Title: %5, Category: %6, Subtitles: %7, Command: %8").arg(service).arg(videoId).arg(streamId).arg(streamUrl.toString())
+                                                  .arg(title).arg(category).arg(subtitlesLanguage).arg(customCommand));
     Transfer *transfer = createTransfer(service, this);
     transfer->setNetworkAccessManager(m_nam);
     transfer->setId(Utils::createId());
@@ -131,6 +134,8 @@ bool Transfers::start() {
 }
 
 bool Transfers::pause() {
+    Logger::log("Transfers::pause()", Logger::HighVerbosity);
+    
     foreach (Transfer *transfer, m_transfers) {
         transfer->pause();
     }
@@ -139,6 +144,8 @@ bool Transfers::pause() {
 }
 
 bool Transfers::start(const QString &id) {
+    Logger::log("Transfers::start(). ID: " + id, Logger::HighVerbosity);
+    
     if (Transfer *transfer = get(id)) {
         transfer->queue();
         return true;
@@ -148,6 +155,8 @@ bool Transfers::start(const QString &id) {
 }
 
 bool Transfers::pause(const QString &id) {
+    Logger::log("Transfers::pause(). ID: " + id, Logger::HighVerbosity);
+    
     if (Transfer *transfer = get(id)) {
         transfer->pause();
         return true;
@@ -157,6 +166,8 @@ bool Transfers::pause(const QString &id) {
 }
 
 bool Transfers::cancel(const QString &id) {
+    Logger::log("Transfers::cancel(). ID: " + id, Logger::HighVerbosity);
+    
     if (Transfer *transfer = get(id)) {
         transfer->cancel();
         return true;
@@ -168,9 +179,12 @@ bool Transfers::cancel(const QString &id) {
 void Transfers::save() {
     QSettings settings(APP_CONFIG_PATH + "transfers.conf", QSettings::IniFormat);
     settings.clear();
+    settings.beginWriteArray("transfers");
     
-    foreach (const Transfer *transfer, m_transfers) {
-        settings.beginGroup(transfer->id());
+    for (int i = 0; i < m_transfers.size(); i++) {
+        const Transfer *transfer = m_transfers.at(i);
+        settings.setArrayIndex(i);
+        settings.setValue("id", transfer->id());
         settings.setValue("downloadPath", transfer->downloadPath());
         settings.setValue("fileName", transfer->fileName());
         settings.setValue("category", transfer->category());
@@ -185,17 +199,21 @@ void Transfers::save() {
         settings.setValue("customCommandOverrideEnabled", transfer->customCommandOverrideEnabled());
         settings.setValue("downloadSubtitles", transfer->downloadSubtitles());
         settings.setValue("subtitlesLanguage", transfer->subtitlesLanguage());
-        settings.endGroup();
     }
+    
+    settings.endArray();
+    Logger::log(QString("Transfers::save(). %1 transfers saved").arg(m_transfers.size()), Logger::LowVerbosity);
 }
 
 void Transfers::restore() {
     QSettings settings(APP_CONFIG_PATH + "transfers.conf", QSettings::IniFormat);
+    const int size = settings.beginReadArray("transfers");
+    Logger::log(QString("Transfers::restore(). %1 transfers restored").arg(size), Logger::LowVerbosity);
 
-    foreach (const QString &group, settings.childGroups()) {
-        settings.beginGroup(group);
+    for (int i = 0; i < size; i++) {
+        settings.setArrayIndex(i);
         Transfer *transfer = createTransfer(settings.value("service", Resources::YOUTUBE).toString(), this);
-        transfer->setId(group);
+        transfer->setId(settings.value("id").toString());
         transfer->setDownloadPath(settings.value("downloadPath").toString());
         transfer->setFileName(settings.value("fileName").toString());
         transfer->setCategory(settings.value("category").toString());
@@ -208,9 +226,7 @@ void Transfers::restore() {
         transfer->setCustomCommand(settings.value("customCommand").toString());
         transfer->setCustomCommandOverrideEnabled(settings.value("customCommandOverrideEnabled", false).toBool());
         transfer->setDownloadSubtitles(settings.value("downloadSubtitles", false).toBool());
-        transfer->setSubtitlesLanguage(settings.value("subtitlesLanguage").toString());
-        settings.endGroup();
-        
+        transfer->setSubtitlesLanguage(settings.value("subtitlesLanguage").toString());        
         connect(transfer, SIGNAL(statusChanged()), this, SLOT(onTransferStatusChanged()));
     
         m_transfers << transfer;
@@ -221,6 +237,8 @@ void Transfers::restore() {
             transfer->queue();
         }
     }
+    
+    settings.endArray();
 }
 
 void Transfers::getNextTransfers() {
@@ -233,6 +251,8 @@ void Transfers::getNextTransfers() {
                     addActiveTransfer(transfer);
                 }
                 else {
+                    Logger::log("Transfers::getNextTransfers(). Maximum concurrent transfers reached",
+                                Logger::MediumVerbosity);
                     return;
                 }
             }
@@ -256,11 +276,13 @@ void Transfers::removeTransfer(Transfer *transfer) {
 }
 
 void Transfers::addActiveTransfer(Transfer *transfer) {
+    Logger::log("Transfers::addActiveTransfer(). ID: " + transfer->id(), Logger::MediumVerbosity);
     m_active << transfer;
     emit activeChanged(active());
 }
 
 void Transfers::removeActiveTransfer(Transfer *transfer) {
+    Logger::log("Transfers::removeActiveTransfer(). ID: " + transfer->id(), Logger::MediumVerbosity);
     m_active.removeOne(transfer);
     emit activeChanged(active());
 }

@@ -15,16 +15,25 @@
  */
 
 #include "dailymotionsubtitlemodel.h"
+#include "dailymotion.h"
+#include "logger.h"
 
 DailymotionSubtitleModel::DailymotionSubtitleModel(QObject *parent) :
     SelectionModel(parent),
     m_request(new QDailymotion::ResourcesRequest(this))
 {
+    m_request->setClientId(Dailymotion::clientId());
+    m_request->setClientSecret(Dailymotion::clientSecret());
+    m_request->setAccessToken(Dailymotion::accessToken());
+    m_request->setRefreshToken(Dailymotion::refreshToken());
+    
+    connect(m_request, SIGNAL(accessTokenChanged(QString)), Dailymotion::instance(), SLOT(setAccessToken(QString)));
+    connect(m_request, SIGNAL(refreshTokenChanged(QString)), Dailymotion::instance(), SLOT(setRefreshToken(QString)));
     connect(m_request, SIGNAL(finished()), this, SLOT(onRequestFinished()));
 }
 
 QString DailymotionSubtitleModel::errorString() const {
-    return m_request->errorString();
+    return Dailymotion::getErrorString(m_request->result().toMap());
 }
 
 QDailymotion::ResourcesRequest::Status DailymotionSubtitleModel::status() const {
@@ -36,9 +45,10 @@ void DailymotionSubtitleModel::list(const QString &id) {
         return;
     }
     
+    Logger::log("DailymotionSubtitleModel::list(). ID: " + id, Logger::MediumVerbosity);
     clear();
     m_id = id;
-    m_request->list(QString("/video/%1/subtitles").arg(id), QVariantMap(), QStringList() << "id" << "language" << "url");
+    m_request->list(QString("/video/%1/subtitles").arg(id), QVariantMap(), Dailymotion::SUBTITLE_FIELDS);
     emit statusChanged(status());
 }
 
@@ -47,6 +57,11 @@ void DailymotionSubtitleModel::cancel() {
 }
 
 void DailymotionSubtitleModel::reload() {
+    if (status() == QDailymotion::ResourcesRequest::Loading) {
+        return;
+    }
+    
+    Logger::log("DailymotionSubtitleModel::reload(). ID: " + m_id, Logger::MediumVerbosity);
     clear();
     m_request->list(m_id);
     emit statusChanged(status());
@@ -54,10 +69,13 @@ void DailymotionSubtitleModel::reload() {
 
 void DailymotionSubtitleModel::onRequestFinished() {
     if (m_request->status() == QDailymotion::ResourcesRequest::Ready) {
-        foreach (const QVariant &v, m_request->result().toList()) {
+        foreach (const QVariant &v, m_request->result().toMap().value("list").toList()) {
             const QVariantMap subtitle = v.toMap();
             append(subtitle.value("language").toString(), subtitle);
         }
+    }
+    else {
+        Logger::log("DailymotionSubtitleModel::onRequestFinished(). Error: " + errorString());
     }
     
     emit statusChanged(status());

@@ -16,6 +16,7 @@
 
 #include "dailymotionuser.h"
 #include "dailymotion.h"
+#include "logger.h"
 #include "resources.h"
 
 DailymotionUser::DailymotionUser(QObject *parent) :
@@ -187,6 +188,7 @@ void DailymotionUser::checkIfSubscribed() {
         return;
     }
     
+    Logger::log("DailymotionUser::checkIfSubscribed(). ID: " + id(), Logger::MediumVerbosity);
     initRequest();
     Dailymotion::subscriptionCache.filters["limit"] = 50;
     Dailymotion::subscriptionCache.filters["family_filter"] = false;
@@ -200,6 +202,7 @@ void DailymotionUser::subscribe() {
         return;
     }
     
+    Logger::log("DailymotionUser::subscribed(). ID: " + id(), Logger::MediumVerbosity);
     initRequest();
     m_request->insert("/me/following/" + id());
     connect(m_request, SIGNAL(finished()), this, SLOT(onSubscribeRequestFinished()));
@@ -211,6 +214,7 @@ void DailymotionUser::unsubscribe() {
         return;
     }
     
+    Logger::log("DailymotionUser::unsubscribed(). ID: " + id(), Logger::MediumVerbosity);
     initRequest();
     m_request->del("/me/following/" + id());
     connect(m_request, SIGNAL(finished()), this, SLOT(onUnsubscribeRequestFinished()));
@@ -258,6 +262,9 @@ void DailymotionUser::onSubscribeCheckRequestFinished() {
         checkIfSubscribed();
         return;
     }
+    else {
+        Logger::log("DailymotionUser::onSubcribeCheckRequestFinished(). Error: " + errorString());
+    }
     
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onUserRequestFinished()));
     emit statusChanged(status());
@@ -268,7 +275,12 @@ void DailymotionUser::onSubscribeRequestFinished() {
         setSubscribed(true);
         setSubscriberCount(subscriberCount() + 1);
         Dailymotion::subscriptionCache.ids.append(id());
+        Logger::log("DailymotionUser::onSubscribeRequestFinished(). Subscription added. ID: " + id(),
+                    Logger::MediumVerbosity);
         emit Dailymotion::instance()->userSubscribed(this);
+    }
+    else {
+        Logger::log("DailymotionUser::onSubscribeRequestFinished(). Error: " + errorString());
     }
     
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onSubscribeRequestFinished()));
@@ -280,7 +292,12 @@ void DailymotionUser::onUnsubscribeRequestFinished() {
         setSubscribed(false);
         setSubscriberCount(subscriberCount() - 1);
         Dailymotion::subscriptionCache.ids.removeOne(id());
+        Logger::log("DailymotionUser::onUnsubscribeRequestFinished(). Subscription removed. ID: " + id(),
+                    Logger::MediumVerbosity);
         emit Dailymotion::instance()->userUnsubscribed(this);
+    }
+    else {
+        Logger::log("DailymotionUser::onUnsubscribeRequestFinished(). Error: " + errorString());
     }
     
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onUnsubscribeRequestFinished()));

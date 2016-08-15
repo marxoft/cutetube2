@@ -16,6 +16,7 @@
 
 #include "dailymotionplaylistmodel.h"
 #include "dailymotion.h"
+#include "logger.h"
 
 DailymotionPlaylistModel::DailymotionPlaylistModel(QObject *parent) :
     QAbstractListModel(parent),
@@ -133,6 +134,7 @@ void DailymotionPlaylistModel::list(const QString &resourcePath, const QVariantM
         return;
     }
     
+    Logger::log("DailymotionPlaylistModel::list(). Resource path: " + resourcePath, Logger::HighVerbosity);
     clear();
     m_resourcePath = resourcePath;
     m_filters = filters;
@@ -165,6 +167,11 @@ void DailymotionPlaylistModel::cancel() {
 }
 
 void DailymotionPlaylistModel::reload() {
+    if (status() == QDailymotion::ResourcesRequest::Loading) {
+        return;
+    }
+    
+    Logger::log("DailymotionPlaylistModel::reload(). Resource path: " + m_resourcePath, Logger::HighVerbosity);
     clear();
     m_request->list(m_resourcePath, m_filters, Dailymotion::PLAYLIST_FIELDS);
     emit statusChanged(status());
@@ -212,6 +219,9 @@ void DailymotionPlaylistModel::onRequestFinished() {
             endInsertRows();
             emit countChanged(rowCount());
         }
+    }
+    else {
+        Logger::log("DailymotionPlaylistModel::onRequestFinished(). Error: " + errorString());
     }
     
     emit statusChanged(status());

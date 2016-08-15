@@ -15,6 +15,7 @@
  */
 
 #include "youtubeuser.h"
+#include "logger.h"
 #include "resources.h"
 #include "youtube.h"
 
@@ -232,8 +233,8 @@ void YouTubeUser::checkIfSubscribed() {
         return;
     }
     
+    Logger::log("YouTubeUser::checkIfSubscribed(). ID: " + id(), Logger::MediumVerbosity);
     initRequest();
-    
     QVariantMap filters;
     filters["mine"] = true;
     
@@ -254,8 +255,8 @@ void YouTubeUser::subscribe() {
         return;
     }
     
+    Logger::log("YouTubeUser::subscribe(). ID: " + id(), Logger::MediumVerbosity);
     initRequest();
-        
     QVariantMap resource;
     QVariantMap snippet;
     QVariantMap resourceId;
@@ -274,6 +275,7 @@ void YouTubeUser::unsubscribe() {
         return;
     }
     
+    Logger::log("YouTubeUser::unsubscribe(). ID: " + id(), Logger::MediumVerbosity);
     initRequest();
     m_request->del(subscriptionId(), "/subscriptions");
     connect(m_request, SIGNAL(finished()), this, SLOT(onUnsubscribeRequestFinished()));
@@ -325,6 +327,9 @@ void YouTubeUser::onSubscribeCheckRequestFinished() {
         checkIfSubscribed();
         return;
     }
+    else {
+        Logger::log("YouTubeUser::onSubscribeCheckRequestFinished(). Error: " + errorString());
+    }
     
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onUserRequestFinished()));
     emit statusChanged(status());
@@ -336,7 +341,12 @@ void YouTubeUser::onSubscribeRequestFinished() {
         setSubscriberCount(subscriberCount() + 1);
         setSubscriptionId(m_request->result().toMap().value("id").toString());
         YouTube::subscriptionCache.ids.insert(id(), subscriptionId());
+        Logger::log("YouTubeUser::onSubscribeRequestFinished(). Subscription added. ID: " + id(),
+                    Logger::MediumVerbosity);
         emit YouTube::instance()->userSubscribed(this);
+    }
+    else {
+        Logger::log("YouTubeUser::onSubscribeRequestFinished(). Error: " + errorString());
     }
     
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onSubscribeRequestFinished()));
@@ -349,7 +359,12 @@ void YouTubeUser::onUnsubscribeRequestFinished() {
         setSubscriberCount(subscriberCount() - 1);
         setSubscriptionId(QString());
         YouTube::subscriptionCache.ids.remove(id());
+        Logger::log("YouTubeUser::onUnsubscribeRequestFinished(). Subscription removed. ID: " + id(),
+                    Logger::MediumVerbosity);
         emit YouTube::instance()->userUnsubscribed(this);
+    }
+    else {
+        Logger::log("YouTubeUser::onUnsubscribeRequestFinished(). Error: " + errorString());
     }
     
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onUnsubscribeRequestFinished()));

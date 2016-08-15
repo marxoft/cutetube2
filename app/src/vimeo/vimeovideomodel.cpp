@@ -15,6 +15,7 @@
  */
 
 #include "vimeovideomodel.h"
+#include "logger.h"
 #include "vimeo.h"
 #include "vimeoplaylist.h"
 
@@ -137,6 +138,7 @@ void VimeoVideoModel::list(const QString &resourcePath, const QVariantMap &filte
         return;
     }
     
+    Logger::log("VimeoVideoModel::list(). Resource path: " + resourcePath, Logger::HighVerbosity);
     clear();
     m_resourcePath = resourcePath;
     m_filters = filters;
@@ -179,6 +181,11 @@ void VimeoVideoModel::cancel() {
 }
 
 void VimeoVideoModel::reload() {
+    if (status() == QVimeo::ResourcesRequest::Loading) {
+        return;
+    }
+    
+    Logger::log("VimeoVideoModel::reload(). Resource path: " + m_resourcePath, Logger::HighVerbosity);
     clear();
     m_request->list(m_resourcePath, m_filters);
     emit statusChanged(status());
@@ -233,6 +240,9 @@ void VimeoVideoModel::onRequestFinished() {
             endInsertRows();
             emit countChanged(rowCount());
         }
+    }
+    else {
+        Logger::log("VimeoVideoModel::onRequestFinished(). Error: " + errorString());
     }
     
     emit statusChanged(status());

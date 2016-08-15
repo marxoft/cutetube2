@@ -26,6 +26,7 @@
 #include "vimeoview.h"
 #include "youtubeview.h"
 #include <QActionGroup>
+#include <QApplication>
 #include <QMenu>
 #include <QMenuBar>
 #include <QMessageBox>
@@ -125,7 +126,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_toolBar->addAction(m_playerAction);
 
     connect(m_pluginsAction, SIGNAL(triggered()), this, SLOT(loadPlugins()));
-    connect(m_quitAction, SIGNAL(triggered()), this, SLOT(close()));
+    connect(m_quitAction, SIGNAL(triggered()), QApplication::instance(), SLOT(closeAllWindows()));
     connect(m_transfersAction, SIGNAL(triggered()), this, SLOT(showTransfers()));
     connect(m_playerAction, SIGNAL(triggered()), this, SLOT(showVideoPlayer()));
     connect(m_settingsAction, SIGNAL(triggered()), this, SLOT(showSettingsDialog()));

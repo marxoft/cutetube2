@@ -16,6 +16,7 @@
 
 #include "dailymotioncategorymodel.h"
 #include "dailymotion.h"
+#include "logger.h"
 
 DailymotionCategoryModel::DailymotionCategoryModel(QObject *parent) :
     SelectionModel(parent),
@@ -25,7 +26,7 @@ DailymotionCategoryModel::DailymotionCategoryModel(QObject *parent) :
 }
 
 QString DailymotionCategoryModel::errorString() const {
-    return m_request->errorString();
+    return Dailymotion::getErrorString(m_request->result().toMap());
 }
 
 QDailymotion::ResourcesRequest::Status DailymotionCategoryModel::status() const {
@@ -37,6 +38,7 @@ void DailymotionCategoryModel::list(const QString &resourcePath, const QVariantM
         return;
     }
     
+    Logger::log("DailymotionCategoryModel::list(). Resource path: " + resourcePath, Logger::HighVerbosity);
     clear();
     m_resourcePath = resourcePath;
     m_filters = filters;
@@ -53,6 +55,7 @@ void DailymotionCategoryModel::reload() {
         return;
     }
     
+    Logger::log("DailymotionCategoryModel::reload(). Resource path: " + m_resourcePath, Logger::HighVerbosity);
     clear();
     m_request->list(m_resourcePath, m_filters, Dailymotion::CATEGORY_FIELDS);
     emit statusChanged(status());
@@ -64,6 +67,9 @@ void DailymotionCategoryModel::onRequestFinished() {
             const QVariantMap category = v.toMap();
             append(category.value("name").toString(), category.value("id").toString());
         }
+    }
+    else {
+        Logger::log("DailymotionCategoryModel::onRequestFinished(). Error: " + errorString());
     }
     
     emit statusChanged(status());

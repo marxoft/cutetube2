@@ -67,7 +67,7 @@ bool VideoPlayer::play(const QString &url) {
     }
     
     command.replace("%u", url);
-    Logger::log(QString("VideoPlayer::play(): URL: %1. Command: %2").arg(url).arg(command));
+    Logger::log(QString("VideoPlayer::play(): URL: %1. Command: %2").arg(url).arg(command), Logger::LowVerbosity);
     setErrorString(QString());
     setStatus(Playing);
     m_process->start(command);
@@ -76,7 +76,7 @@ bool VideoPlayer::play(const QString &url) {
 
 bool VideoPlayer::stop() {
     if ((m_process) && (m_process->state() == QProcess::Running)) {
-        Logger::log("VideoPlayer::stop(): Terminating player process");
+        Logger::log("VideoPlayer::stop(): Terminating player process", Logger::LowVerbosity);
         m_process->terminate();
         return true;
     }

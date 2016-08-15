@@ -15,6 +15,7 @@
  */
 
 #include "vimeouser.h"
+#include "logger.h"
 #include "resources.h"
 #include "vimeo.h"
 
@@ -143,6 +144,7 @@ void VimeoUser::checkIfSubscribed() {
         return;
     }
     
+    Logger::log("VimeoUser::checkIfSubscribed(). ID: " + id(), Logger::MediumVerbosity);
     initRequest();
     Vimeo::subscriptionCache.filters["per_page"] = 50;
     m_request->list("/me/following", Vimeo::subscriptionCache.filters);
@@ -155,6 +157,7 @@ void VimeoUser::subscribe() {
         return;
     }
     
+    Logger::log("VimeoUser::subscribe(). ID: " + id(), Logger::MediumVerbosity);
     initRequest();
     m_request->insert("/me/following/" + id());
     connect(m_request, SIGNAL(finished()), this, SLOT(onSubscribeRequestFinished()));
@@ -166,6 +169,7 @@ void VimeoUser::unsubscribe() {
         return;
     }
     
+    Logger::log("VimeoUser::unsubscribe(). ID: " + id(), Logger::MediumVerbosity);
     initRequest();
     m_request->del("/me/following/" + id());
     connect(m_request, SIGNAL(finished()), this, SLOT(onUnsubscribeRequestFinished()));
@@ -211,6 +215,9 @@ void VimeoUser::onSubscribeCheckRequestFinished() {
         checkIfSubscribed();
         return;
     }
+    else {
+        Logger::log("VimeoUser::onSubscribeCheckFinished(). Error: " + errorString());
+    }
     
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onUserRequestFinished()));
     emit statusChanged(status());
@@ -221,7 +228,12 @@ void VimeoUser::onSubscribeRequestFinished() {
         setSubscribed(true);
         setSubscriberCount(subscriberCount() + 1);
         Vimeo::subscriptionCache.ids.append(id());
+        Logger::log("VimeoUser::onSubscribeRequestFinished(). Subscription added. ID: " + id(),
+                    Logger::MediumVerbosity);
         emit Vimeo::instance()->userSubscribed(this);
+    }
+    else {
+        Logger::log("VimeoUser::onSubscribeRequestFinished(). Error: " + errorString());
     }
     
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onSubscribeRequestFinished()));
@@ -233,7 +245,12 @@ void VimeoUser::onUnsubscribeRequestFinished() {
         setSubscribed(false);
         setSubscriberCount(subscriberCount() - 1);
         Vimeo::subscriptionCache.ids.removeOne(id());
+        Logger::log("VimeoUser::onUnsubscribeRequestFinished(). Subscription removed. ID: " + id(),
+                    Logger::MediumVerbosity);
         emit Vimeo::instance()->userUnsubscribed(this);
+    }
+    else {
+        Logger::log("VimeoUser::onUnsubscribeRequestFinished(). Error: " + errorString());
     }
     
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onUnsubscribeRequestFinished()));

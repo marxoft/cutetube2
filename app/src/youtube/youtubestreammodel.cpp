@@ -15,6 +15,7 @@
  */
 
 #include "youtubestreammodel.h"
+#include "logger.h"
 
 YouTubeStreamModel::YouTubeStreamModel(QObject *parent) :
     SelectionModel(parent),
@@ -36,6 +37,7 @@ void YouTubeStreamModel::list(const QString &id) {
         return;
     }
     
+    Logger::log("YouTubeStreamModel::list(). ID: " + id, Logger::MediumVerbosity);
     clear();
     m_id = id;
     m_request->list(id);
@@ -47,6 +49,11 @@ void YouTubeStreamModel::cancel() {
 }
 
 void YouTubeStreamModel::reload() {
+    if (status() == QYouTube::StreamsRequest::Loading) {
+        return;
+    }
+    
+    Logger::log("YouTubeStreamModel::reload(). ID: " + m_id, Logger::MediumVerbosity);
     clear();
     m_request->list(m_id);
     emit statusChanged(status());
@@ -59,6 +66,9 @@ void YouTubeStreamModel::onRequestFinished() {
             append(QString("%1p %2").arg(stream.value("height").toInt()).arg(stream.value("description").toString()),
                    stream);
         }
+    }
+    else {
+        Logger::log("YouTubeStreamModel::onRequestFinished(). Error: " + errorString());
     }
     
     emit statusChanged(status());

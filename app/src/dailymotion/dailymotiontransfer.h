@@ -40,6 +40,9 @@ private Q_SLOTS:
     void onSubtitlesRequestFinished();
 
 private:
+    QDailymotion::StreamsRequest* streamsRequest();
+    QDailymotion::ResourcesRequest* subtitlesRequest();
+    
     QDailymotion::StreamsRequest *m_streamsRequest;
     QDailymotion::ResourcesRequest *m_subtitlesRequest;
 };

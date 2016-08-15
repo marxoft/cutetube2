@@ -20,6 +20,18 @@
 #include "selectionmodel.h"
 #include "resourcesrequest.h"
 
+namespace QDailymotion {
+    class ResourcesRequest;
+}
+
+namespace QVimeo {
+    class ResourcesRequest;
+}
+
+namespace QYouTube {
+    class SubtitlesRequest;
+}
+
 class PluginSubtitleModel : public SelectionModel
 {
     Q_OBJECT
@@ -35,7 +47,7 @@ public:
     
     QString service() const;
     void setService(const QString &s);
-        
+    
     ResourcesRequest::Status status() const;
     
     Q_INVOKABLE void list(const QString &resourceId);
@@ -46,18 +58,34 @@ public Q_SLOTS:
 
 private Q_SLOTS:
     void onRequestFinished();
+    void onDailymotionRequestFinished();
+    void onVimeoRequestFinished();
+    void onYouTubeRequestFinished();
     
 Q_SIGNALS:
     void serviceChanged();
     void statusChanged(ResourcesRequest::Status s);
         
 private:
+    void setErrorString(const QString &e);
+    
+    void setStatus(ResourcesRequest::Status s);
+    
     ResourcesRequest* request();
+    QDailymotion::ResourcesRequest* dailymotionRequest();
+    QVimeo::ResourcesRequest* vimeoRequest();
+    QYouTube::SubtitlesRequest* youtubeRequest();
     
     ResourcesRequest *m_request;
+    QDailymotion::ResourcesRequest *m_dailymotionRequest;
+    QVimeo::ResourcesRequest *m_vimeoRequest;
+    QYouTube::SubtitlesRequest *m_youtubeRequest;
 
+    QString m_errorString;
     QString m_service;
     QString m_resourceId;
+    
+    ResourcesRequest::Status m_status;
 };
     
 #endif // PLUGINSUBTITLEMODEL_H

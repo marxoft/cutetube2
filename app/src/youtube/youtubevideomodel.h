@@ -102,7 +102,6 @@ private Q_SLOTS:
     void onVideoRemovedFromPlaylist(YouTubeVideo *video, YouTubePlaylist *playlist);
     void onVideoFavourited(YouTubeVideo *video);
     void onVideoUnfavourited(YouTubeVideo *video);
-    void onVideoWatchLater(YouTubeVideo *video);
     
 Q_SIGNALS:
     void countChanged(int count);

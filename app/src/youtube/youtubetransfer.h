@@ -40,6 +40,9 @@ private Q_SLOTS:
     void onSubtitlesRequestFinished();
 
 private:
+    QYouTube::StreamsRequest* streamsRequest();
+    QYouTube::SubtitlesRequest* subtitlesRequest();
+    
     QYouTube::StreamsRequest *m_streamsRequest;
     QYouTube::SubtitlesRequest *m_subtitlesRequest;
 };

@@ -21,7 +21,7 @@ import cuteTube 2.0
 MyPage {
     id: root
 
-    title: qsTr("Media/content")
+    title: qsTr("General")
     tools: ToolBarLayout {
 
         BackToolButton {}
@@ -55,6 +55,7 @@ MyPage {
             DrillDownDelegate {
                 width: parent.width
                 text: qsTr("Categories")
+                flickableMode: true
                 onClicked: appWindow.pageStack.push(Qt.resolvedUrl("CategoriesPage.qml"))
             }
             

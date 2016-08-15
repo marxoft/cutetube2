@@ -15,6 +15,7 @@
  */
 
 #include "pluginusermodel.h"
+#include "logger.h"
 #include "pluginmanager.h"
 #include "resources.h"
 
@@ -142,6 +143,7 @@ void PluginUserModel::list(const QString &resourceId) {
         return;
     }
     
+    Logger::log("PluginUserModel::list(). Resource ID: " + resourceId, Logger::MediumVerbosity);
     clear();
     m_resourceId = resourceId;
     m_query = QString();
@@ -157,6 +159,8 @@ void PluginUserModel::search(const QString &query, const QString &order) {
         return;
     }
     
+    Logger::log(QString("PluginUserModel::search(). Query: %1, Order: %2").arg(query).arg(order),
+                Logger::MediumVerbosity);
     clear();
     m_resourceId = QString();
     m_query = query;
@@ -186,6 +190,11 @@ void PluginUserModel::cancel() {
 }
 
 void PluginUserModel::reload() {
+    if (status() == ResourcesRequest::Loading) {
+        return;
+    }
+    
+    Logger::log("PluginUserModel::reload(). Resource ID: " + m_resourceId, Logger::MediumVerbosity);
     clear();
 
     if (ResourcesRequest *r = request()) {
@@ -255,6 +264,9 @@ void PluginUserModel::onRequestFinished() {
             emit countChanged(rowCount());
                 
         }
+    }
+    else {
+        Logger::log("PluginUserModel::onRequestFinished(). Error: " + errorString());
     }
     
     emit statusChanged(status());

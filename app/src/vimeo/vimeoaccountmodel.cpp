@@ -15,6 +15,7 @@
  */
 
 #include "vimeoaccountmodel.h"
+#include "logger.h"
 #include "vimeo.h"
 #include <QSqlRecord>
 #include <QSqlField>
@@ -66,7 +67,8 @@ QVariant VimeoAccountModel::data(int row, const QByteArray &role) const {
 
 bool VimeoAccountModel::addAccount(const QString &userId, const QString &username, const QString &accessToken,
                                    const QString &scopes) {
-                                     
+    Logger::log(QString("VimeoAccountModel::addAccount(). User ID: %1, Username: %2, Access token: %3, Scopes: %4")
+                       .arg(userId).arg(username).arg(accessToken).arg(scopes), Logger::LowVerbosity);
     QSqlField userIdField("userId", QVariant::String);
     userIdField.setValue(userId);
     
@@ -109,7 +111,9 @@ bool VimeoAccountModel::addAccount(const QString &userId, const QString &usernam
 }
 
 bool VimeoAccountModel::removeAccount(int row) {
-    QString userId = data(index(row, 0)).toString();
+    const QString userId = data(index(row, 0)).toString();
+    Logger::log(QString("VimeoAccountModel::removeAccount(). Row: %1, User ID: %2").arg(row).arg(userId),
+                Logger::MediumVerbosity);
     
     if (removeRows(row, 1)) {
         if (userId == Vimeo::userId()) {
@@ -129,7 +133,9 @@ bool VimeoAccountModel::removeAccount(int row) {
 }
 
 bool VimeoAccountModel::selectAccount(int row) {
-    QString userId = data(index(row, 0)).toString();
+    const QString userId = data(index(row, 0)).toString();
+    Logger::log(QString("VimeoAccountModel::selectAccount(). Row: %1, User ID: %2").arg(row).arg(userId),
+                Logger::MediumVerbosity);
     
     if (!userId.isEmpty()) {
         Vimeo::setUserId(userId);

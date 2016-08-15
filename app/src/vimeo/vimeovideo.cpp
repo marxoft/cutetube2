@@ -15,6 +15,7 @@
  */
 
 #include "vimeovideo.h"
+#include "logger.h"
 #include "resources.h"
 #include "utils.h"
 #include "vimeo.h"
@@ -142,6 +143,7 @@ void VimeoVideo::favourite() {
         return;
     }
     
+    Logger::log("VimeoVideo::favourite(). ID: " + id(), Logger::MediumVerbosity);
     initRequest();
     m_request->insert("/me/likes/" + id());
     connect(m_request, SIGNAL(finished()), this, SLOT(onFavouriteRequestFinished()));
@@ -153,6 +155,7 @@ void VimeoVideo::unfavourite() {
         return;
     }
     
+    Logger::log("VimeoVideo::unfavourite(). ID: " + id(), Logger::MediumVerbosity);
     initRequest();
     m_request->del("/me/likes/" + id());
     connect(m_request, SIGNAL(finished()), this, SLOT(onUnfavouriteRequestFinished()));
@@ -164,6 +167,7 @@ void VimeoVideo::watchLater() {
         return;
     }
     
+    Logger::log("VimeoVideo::watchLater(). ID: " + id(), Logger::MediumVerbosity);
     initRequest();
     m_request->insert("/me/watchlater/" + id());
     connect(m_request, SIGNAL(finished()), this, SLOT(onWatchLaterRequestFinished()));
@@ -194,7 +198,11 @@ void VimeoVideo::onFavouriteRequestFinished() {
     if (m_request->status() == QVimeo::ResourcesRequest::Ready) {
         setFavourite(true);
         setFavouriteCount(favouriteCount() + 1);
+        Logger::log("VimeoVideo::onFavouriteRequestFinished(). Video favourited. ID: " + id(), Logger::MediumVerbosity);
         emit Vimeo::instance()->videoFavourited(this);
+    }
+    else {
+        Logger::log("VimeoVideo::onFavouriteRequestFinished(). Error: " + errorString());
     }
     
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onFavouriteRequestFinished()));
@@ -205,7 +213,12 @@ void VimeoVideo::onUnfavouriteRequestFinished() {
     if (m_request->status() == QVimeo::ResourcesRequest::Ready) {
         setFavourite(false);
         setFavouriteCount(favouriteCount() - 1);
+        Logger::log("VimeoVideo::onUnavouriteRequestFinished(). Video unfavourited. ID: " + id(),
+                    Logger::MediumVerbosity);
         emit Vimeo::instance()->videoUnfavourited(this);
+    }
+    else {
+        Logger::log("VimeoVideo::onUnfavouriteRequestFinished(). Error: " + errorString());
     }
     
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onUnfavouriteRequestFinished()));
@@ -214,7 +227,12 @@ void VimeoVideo::onUnfavouriteRequestFinished() {
 
 void VimeoVideo::onWatchLaterRequestFinished() {
     if (m_request->status() == QVimeo::ResourcesRequest::Ready) {
+        Logger::log("VimeoVideo::onWatchLaterRequestFinished(). Video added to 'watch later' playlist. ID: " + id(),
+                    Logger::MediumVerbosity);
         emit Vimeo::instance()->videoWatchLater(this);
+    }
+    else {
+        Logger::log("VimeoVideo::onWatchLaterRequestFinished(). Error: " + errorString());
     }
     
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onWatchLaterRequestFinished()));

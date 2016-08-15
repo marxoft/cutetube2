@@ -15,6 +15,8 @@
  */
 
 #include "vimeotransfer.h"
+#include "logger.h"
+#include "resources.h"
 #include "vimeo.h"
 #include <qvimeo/resourcesrequest.h>
 #include <qvimeo/streamsrequest.h>
@@ -24,27 +26,41 @@ VimeoTransfer::VimeoTransfer(QObject *parent) :
     m_streamsRequest(0),
     m_subtitlesRequest(0)
 {
+    setService(Resources::VIMEO);
 }
 
 void VimeoTransfer::listStreams() {
+    Logger::log("VimeoTransfer::listStreams(). ID: " + videoId(), Logger::MediumVerbosity);
+    streamsRequest()->list(videoId());
+}
+
+void VimeoTransfer::listSubtitles() {
+    Logger::log("VimeoTransfer::listSubtitles(). ID: " + videoId(), Logger::MediumVerbosity);
+    subtitlesRequest()->list(QString("/videos/%1/texttracks").arg(videoId()));
+}
+
+QVimeo::StreamsRequest* VimeoTransfer::streamsRequest() {
     if (!m_streamsRequest) {
         m_streamsRequest = new QVimeo::StreamsRequest(this);
         connect(m_streamsRequest, SIGNAL(finished()), this, SLOT(onStreamsRequestFinished()));
     }
     
-    m_streamsRequest->list(videoId());
+    return m_streamsRequest;
 }
 
-void VimeoTransfer::listSubtitles() {
+QVimeo::ResourcesRequest* VimeoTransfer::subtitlesRequest() {
     if (!m_subtitlesRequest) {
         m_subtitlesRequest = new QVimeo::ResourcesRequest(this);
         m_subtitlesRequest->setClientId(Vimeo::clientId());
         m_subtitlesRequest->setClientSecret(Vimeo::clientSecret());
         m_subtitlesRequest->setAccessToken(Vimeo::accessToken());
+        
+        connect(m_subtitlesRequest, SIGNAL(accessTokenChanged(QString)),
+                Vimeo::instance(), SLOT(setAccessToken(QString)));
         connect(m_subtitlesRequest, SIGNAL(finished()), this, SLOT(onSubtitlesRequestFinished()));
     }
     
-    m_subtitlesRequest->list(QString("/videos/%1/texttracks").arg(videoId()));
+    return m_subtitlesRequest;
 }
 
 void VimeoTransfer::onStreamsRequestFinished() {
@@ -62,6 +78,7 @@ void VimeoTransfer::onStreamsRequestFinished() {
     }
     
     setErrorString(tr("No stream URL found"));
+    Logger::log("VimeoTransfer::onStreamsRequestFinished(). Error: " + errorString());
     setStatus(Failed);
 }
 
@@ -77,6 +94,10 @@ void VimeoTransfer::onSubtitlesRequestFinished() {
                 return;
             }
         }
+    }
+    else {
+        Logger::log("VimeoTransfer::onSubtitlesRequestFinished(). Error: "
+                    + Vimeo::getErrorString(m_subtitlesRequest->result().toMap()));
     }
     
     if (!executeCustomCommands()) {

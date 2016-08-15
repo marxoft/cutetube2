@@ -85,7 +85,7 @@ bool ServicePluginConfig::load(const QString &filePath) {
         return false;
     }
 
-    Logger::log("ServicePluginConfig::load(): Config file loaded: " + filePath);    
+    Logger::log("ServicePluginConfig::load(): Config file loaded: " + filePath, Logger::MediumVerbosity);    
     const int slash = filePath.lastIndexOf("/");
     const QString fileName = filePath.mid(slash + 1);
     const int dot = fileName.lastIndexOf(".");

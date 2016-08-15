@@ -24,18 +24,41 @@ class Logger : public QObject
 {
     Q_OBJECT
 
+    Q_PROPERTY(QString fileName READ fileName WRITE setFileName)
+    Q_PROPERTY(QString text READ text)
     Q_PROPERTY(int verbosity READ verbosity WRITE setVerbosity)
+    
+    Q_ENUMS(Verbosity)
 
 public:
+    enum Verbosity {
+        NoVerbosity = 0,
+        LowestVerbosity,
+        LowVerbosity,
+        MediumVerbosity,
+        HighVerbosity,
+        HighestVerbosity
+    };
+    
     explicit Logger(QObject *parent = 0);
 
+    static QString fileName();
+    
+    static QString text();
+    
     static int verbosity();
-    static void setVerbosity(int v);
 
 public Q_SLOTS:
-    static void log(const QString &message, int minimumVerbosity = 1);
+    static void setFileName(const QString &f);
+
+    static void setVerbosity(int v);
+
+    static void clear();
+
+    static void log(const QString &message, int minimumVerbosity = LowestVerbosity);
 
 private:
+    static QString fn;
     static int vb;
 };
 

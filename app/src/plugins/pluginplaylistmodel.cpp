@@ -16,6 +16,7 @@
  */
 
 #include "pluginplaylistmodel.h"
+#include "logger.h"
 #include "pluginmanager.h"
 #include "resources.h"
 
@@ -146,6 +147,7 @@ void PluginPlaylistModel::list(const QString &resourceId) {
         return;
     }
     
+    Logger::log("PluginPlaylistModel::list(). Resource ID: " + resourceId, Logger::MediumVerbosity);
     clear();
     m_resourceId = resourceId;
     m_query = QString();
@@ -161,6 +163,8 @@ void PluginPlaylistModel::search(const QString &query, const QString &order) {
         return;
     }
     
+    Logger::log(QString("PluginPlaylistModel::search(). Query: %1, Order: %2").arg(query).arg(order),
+                Logger::MediumVerbosity);
     clear();
     m_resourceId = QString();
     m_query = query;
@@ -188,6 +192,11 @@ void PluginPlaylistModel::cancel() {
 }
 
 void PluginPlaylistModel::reload() {
+    if (status() == ResourcesRequest::Loading) {
+        return;
+    }
+    
+    Logger::log("PluginPlaylistModel::reload(). Resource ID: " + m_resourceId, Logger::MediumVerbosity);
     clear();
 
     if (ResourcesRequest *r = request()) {
@@ -256,6 +265,9 @@ void PluginPlaylistModel::onRequestFinished() {
             endInsertRows();
             emit countChanged(rowCount());
         }
+    }
+    else {
+        Logger::log("PluginPlaylistModel::onRequestFinished(). Error: " + errorString());
     }
     
     emit statusChanged(status());

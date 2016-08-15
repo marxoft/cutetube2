@@ -16,6 +16,8 @@
 
 #include "dailymotioncomment.h"
 #include "dailymotion.h"
+#include "dailymotion.h"
+#include "logger.h"
 #include "resources.h"
 #include <QDateTime>
 
@@ -82,8 +84,8 @@ void DailymotionComment::addComment() {
         return;
     }
     
+    Logger::log("DailymotionComment::addComment()", Logger::MediumVerbosity);
     initRequest();
-    
     QVariantMap resource;
     resource["message"] = body();
     m_request->insert(resource, QString("/video/%1/comments").arg(videoId()));
@@ -121,7 +123,12 @@ void DailymotionComment::onCommentRequestFinished() {
 void DailymotionComment::onAddCommentRequestFinished() {
     if (m_request->status() == QDailymotion::ResourcesRequest::Ready) {
         loadComment(m_request->result().toMap());
+        Logger::log("DailymotionComment::onAddCommentRequestFinished(). Comment added. ID: " + id(),
+                    Logger::MediumVerbosity);
         emit Dailymotion::instance()->commentAdded(this);
+    }
+    else {
+        Logger::log("DailymotionComment::onAddCommentRequestFinished(). Error: " + errorString());
     }
     
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onAddCommentRequestFinished()));

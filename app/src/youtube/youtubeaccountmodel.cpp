@@ -15,6 +15,7 @@
  */
 
 #include "youtubeaccountmodel.h"
+#include "logger.h"
 #include "json.h"
 #include "youtube.h"
 #include <QSqlRecord>
@@ -70,7 +71,7 @@ QVariant YouTubeAccountModel::data(int row, const QByteArray &role) const {
 bool YouTubeAccountModel::addAccount(const QString &userId, const QString &username,
                                      const QVariantMap &relatedPlaylists, const QString &accessToken,
                                      const QString &refreshToken, const QString &scopes) {
-                                     
+    Logger::log(QString("YouTubeAccountModel::addAccount(). User ID: %1, Username: %2, Access token: %3, Refresh token: %4, Scopes: %5").arg(userId).arg(username).arg(accessToken).arg(refreshToken).arg(scopes), Logger::LowVerbosity);
     QSqlField userIdField("userId", QVariant::String);
     userIdField.setValue(userId);
     
@@ -122,7 +123,9 @@ bool YouTubeAccountModel::addAccount(const QString &userId, const QString &usern
 }
 
 bool YouTubeAccountModel::removeAccount(int row) {
-    QString userId = data(index(row, 0)).toString();
+    const QString userId = data(index(row, 0)).toString();
+    Logger::log(QString("YouTubeAccountModel::removeAccount(). Row: %1, User ID: %2").arg(row).arg(userId),
+                Logger::MediumVerbosity);
     
     if (removeRows(row, 1)) {
         if (userId == YouTube::userId()) {
@@ -142,7 +145,9 @@ bool YouTubeAccountModel::removeAccount(int row) {
 }
 
 bool YouTubeAccountModel::selectAccount(int row) {
-    QString userId = data(index(row, 0)).toString();
+    const QString userId = data(index(row, 0)).toString();
+    Logger::log(QString("YouTubeAccountModel::selectAccount(). Row: %1, User ID: %2").arg(row).arg(userId),
+                Logger::MediumVerbosity);
     
     if (!userId.isEmpty()) {
         YouTube::setUserId(userId);

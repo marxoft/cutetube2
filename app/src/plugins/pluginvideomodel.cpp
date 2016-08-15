@@ -15,6 +15,7 @@
  */
 
 #include "pluginvideomodel.h"
+#include "logger.h"
 #include "pluginmanager.h"
 #include "resources.h"
 
@@ -151,6 +152,7 @@ void PluginVideoModel::list(const QString &resourceId) {
         return;
     }
     
+    Logger::log("PluginVideoModel::list(). Resource ID: " + resourceId, Logger::MediumVerbosity);
     clear();
     m_resourceId = resourceId;
     m_query = QString();
@@ -166,6 +168,8 @@ void PluginVideoModel::search(const QString &query, const QString &order) {
         return;
     }
     
+    Logger::log(QString("PluginVideoModel::search(). Query: %1, Order: %2").arg(query).arg(order),
+                Logger::MediumVerbosity);
     clear();
     m_resourceId = QString();
     m_query = query;
@@ -195,6 +199,11 @@ void PluginVideoModel::cancel() {
 }
 
 void PluginVideoModel::reload() {
+    if (status() == ResourcesRequest::Loading) {
+        return;
+    }
+    
+    Logger::log("PluginVideoModel::reload(). Resource ID: " + m_resourceId, Logger::MediumVerbosity);
     clear();
 
     if (ResourcesRequest *r = request()) {
@@ -264,6 +273,9 @@ void PluginVideoModel::onRequestFinished() {
             emit countChanged(rowCount());
                 
         }
+    }
+    else {
+        Logger::log("PluginVideoModel::onRequestFinished(). Error: " + errorString());
     }
     
     emit statusChanged(status());

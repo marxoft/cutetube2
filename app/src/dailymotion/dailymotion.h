@@ -56,6 +56,7 @@ public:
     static const QStringList CATEGORY_FIELDS;
     static const QStringList COMMENT_FIELDS;
     static const QStringList PLAYLIST_FIELDS;
+    static const QStringList SUBTITLE_FIELDS;
     static const QStringList USER_FIELDS;
     static const QStringList VIDEO_FIELDS;
     

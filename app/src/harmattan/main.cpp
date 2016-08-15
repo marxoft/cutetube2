@@ -35,6 +35,7 @@
 #include "dbusservice.h"
 #include "definitions.h"
 #include "localemodel.h"
+#include "logger.h"
 #include "maskeditem.h"
 #include "mediakeycaptureitem.h"
 #include "networkaccessmanagerfactory.h"
@@ -200,16 +201,21 @@ Q_DECL_EXPORT int main(int argc, char *argv[]) {
     app.setOrganizationName("cuteTube2");
     app.setApplicationName("cuteTube2");
 
-    QApplication app(argc, argv);
-    app.setOrganizationName("cuteTube2");
-    app.setApplicationName("cuteTube2");
-
+    const QStringList args = app.arguments();
+    const int verbosity = args.indexOf("-v") + 1;
+    
+    if ((verbosity > 1) && (verbosity < args.size())) {
+        Logger::setVerbosity(qMax(1, args.at(verbosity).toInt()));
+    }
+    else {
+        Logger::setFileName(Settings::loggerFileName());
+        Logger::setVerbosity(Settings::loggerVerbosity());
+    }
+    
     QSslConfiguration config = QSslConfiguration::defaultConfiguration();
     config.setProtocol(QSsl::TlsV1);
     QSslConfiguration::setDefaultConfiguration(config);
-
-    //Logger::setVerbosity(10);
-
+    
     QScopedPointer<Settings> settings(Settings::instance());
     QScopedPointer<Clipboard> clipboard(Clipboard::instance());
     QScopedPointer<Dailymotion> dailymotion(Dailymotion::instance());
@@ -219,6 +225,7 @@ Q_DECL_EXPORT int main(int argc, char *argv[]) {
     QScopedPointer<YouTube> youtube(YouTube::instance());
     
     DBusService dbus;
+    Logger logger;
     NetworkAccessManagerFactory factory;
     Resources resources;
     ShareUi shareui;
@@ -239,6 +246,7 @@ Q_DECL_EXPORT int main(int argc, char *argv[]) {
     context->setContextProperty("CookieJar", factory.cookieJar());
     context->setContextProperty("Dailymotion", dailymotion.data());
     context->setContextProperty("DBus", &dbus);
+    context->setContextProperty("Logger", &logger);
     context->setContextProperty("MainWindow", &view);
     context->setContextProperty("Plugins", plugins.data());
     context->setContextProperty("Resources", &resources);

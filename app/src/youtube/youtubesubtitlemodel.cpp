@@ -15,6 +15,7 @@
  */
 
 #include "youtubesubtitlemodel.h"
+#include "logger.h"
 
 YouTubeSubtitleModel::YouTubeSubtitleModel(QObject *parent) :
     SelectionModel(parent),
@@ -36,6 +37,7 @@ void YouTubeSubtitleModel::list(const QString &id) {
         return;
     }
     
+    Logger::log("YouTubeSubtitleModel::list(). ID: " + id, Logger::MediumVerbosity);
     clear();
     m_id = id;
     m_request->list(id);
@@ -47,6 +49,11 @@ void YouTubeSubtitleModel::cancel() {
 }
 
 void YouTubeSubtitleModel::reload() {
+    if (status() == QYouTube::SubtitlesRequest::Loading) {
+        return;
+    }
+    
+    Logger::log("YouTubeSubtitleModel::reload(). ID: " + m_id, Logger::MediumVerbosity);
     clear();
     m_request->list(m_id);
     emit statusChanged(status());
@@ -58,6 +65,9 @@ void YouTubeSubtitleModel::onRequestFinished() {
             const QVariantMap subtitle = v.toMap();
             append(subtitle.value("translatedLanguage").toString(), subtitle);
         }
+    }
+    else {
+        Logger::log("YouTubeSubtitleModel::onRequestFinished(). Error: " + errorString());
     }
     
     emit statusChanged(status());

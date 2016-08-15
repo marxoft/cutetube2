@@ -15,6 +15,7 @@
  */
 
 #include "youtubecategorymodel.h"
+#include "logger.h"
 #include "youtube.h"
 
 YouTubeCategoryModel::YouTubeCategoryModel(QObject *parent) :
@@ -26,7 +27,7 @@ YouTubeCategoryModel::YouTubeCategoryModel(QObject *parent) :
 }
 
 QString YouTubeCategoryModel::errorString() const {
-    return m_request->errorString();
+    return YouTube::getErrorString(m_request->result().toMap());
 }
 
 QYouTube::ResourcesRequest::Status YouTubeCategoryModel::status() const {
@@ -39,6 +40,7 @@ void YouTubeCategoryModel::list(const QString &resourcePath, const QStringList &
         return;
     }
     
+    Logger::log("YouTubeCategoryModel::list(). Resource path: " + resourcePath, Logger::HighVerbosity);
     clear();
     m_resourcePath = resourcePath;
     m_part = part;
@@ -57,6 +59,7 @@ void YouTubeCategoryModel::reload() {
         return;
     }
     
+    Logger::log("YouTubeCategoryModel::reload(). Resource path: " + m_resourcePath, Logger::HighVerbosity);
     clear();
     m_request->list(m_resourcePath, m_part, m_filters, m_params);
     emit statusChanged(status());
@@ -68,6 +71,9 @@ void YouTubeCategoryModel::onRequestFinished() {
             const QVariantMap category = v.toMap();
             append(category.value("snippet").toMap().value("title").toString(), category.value("id").toString());
         }
+    }
+    else {
+        Logger::log("YouTubeCategoryModel::onRequestFinished(). Error: " + errorString());
     }
     
     emit statusChanged(status());

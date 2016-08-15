@@ -15,6 +15,7 @@
  */
 
 #include "vimeousermodel.h"
+#include "logger.h"
 #include "vimeo.h"
 
 VimeoUserModel::VimeoUserModel(QObject *parent) :
@@ -130,6 +131,7 @@ void VimeoUserModel::list(const QString &resourcePath, const QVariantMap &filter
         return;
     }
     
+    Logger::log("VimeoUserModel::list(). Resource path: " + resourcePath, Logger::HighVerbosity);
     clear();
     m_resourcePath = resourcePath;
     m_filters = filters;
@@ -162,6 +164,11 @@ void VimeoUserModel::cancel() {
 }
 
 void VimeoUserModel::reload() {
+    if (status() == QVimeo::ResourcesRequest::Loading) {
+        return;
+    }
+    
+    Logger::log("VimeoUserModel::reload(). Resource path: " + m_resourcePath, Logger::HighVerbosity);
     clear();
     m_request->list(m_resourcePath, m_filters);
     emit statusChanged(status());
@@ -209,6 +216,9 @@ void VimeoUserModel::onRequestFinished() {
             endInsertRows();
             emit countChanged(rowCount());
         }
+    }
+    else {
+        Logger::log("VimeoUserModel::onRequestFinished(). Error: " + errorString());
     }
     
     emit statusChanged(status());

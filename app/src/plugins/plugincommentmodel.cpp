@@ -16,6 +16,7 @@
  */
 
 #include "plugincommentmodel.h"
+#include "logger.h"
 #include "pluginmanager.h"
 #include "resources.h"
 
@@ -142,6 +143,7 @@ void PluginCommentModel::list(const QString &resourceId) {
         return;
     }
     
+    Logger::log("PluginCommentModel::list(). Resource ID: " + resourceId, Logger::MediumVerbosity);
     clear();
     m_resourceId = resourceId;
     m_query = QString();
@@ -157,6 +159,8 @@ void PluginCommentModel::search(const QString &query, const QString &order) {
         return;
     }
     
+    Logger::log(QString("PluginCommentModel::search(). Query: %1, Order: %2").arg(query).arg(order),
+                Logger::MediumVerbosity);
     clear();
     m_resourceId = QString();
     m_query = query;
@@ -186,6 +190,11 @@ void PluginCommentModel::cancel() {
 }
 
 void PluginCommentModel::reload() {
+    if (status() == ResourcesRequest::Loading) {
+        return;
+    }
+    
+    Logger::log("PluginCommentModel::reload(). Resource ID: " + m_resourceId, Logger::MediumVerbosity);
     clear();
 
     if (ResourcesRequest *r = request()) {
@@ -255,6 +264,9 @@ void PluginCommentModel::onRequestFinished() {
             emit countChanged(rowCount());
                 
         }
+    }
+    else {
+        Logger::log("PluginCommentModel::onRequestFinished(). Error: " + errorString());
     }
     
     emit statusChanged(status());

@@ -195,6 +195,8 @@ QString YouTube::userId() {
 }
 
 void YouTube::setUserId(const QString &id) {
+    Logger::log("YouTube::setUserId(). ID: " + id, Logger::MediumVerbosity);
+    
     if (id != userId()) {
         QSettings().setValue("YouTube/userId", id);
         subscriptionCache.ids.clear();
@@ -228,6 +230,7 @@ QString YouTube::accessToken() {
 }
 
 void YouTube::setAccessToken(const QString &token) {
+    Logger::log("YouTube::setAccessToken(). Token: " + token, Logger::MediumVerbosity);
     QSqlQuery query = getDatabase().exec(QString("UPDATE youtubeAccounts SET accessToken = '%1' WHERE userId = '%2'")
                                                 .arg(token).arg(userId()));
 
@@ -260,6 +263,7 @@ QString YouTube::refreshToken() {
 }
 
 void YouTube::setRefreshToken(const QString &token) {
+    Logger::log("YouTube::setRefreshToken(). Token: " + token, Logger::MediumVerbosity);
     QSqlQuery query = getDatabase().exec(QString("UPDATE youtubeAccounts SET refreshToken = '%1' WHERE userId = '%2'")
                                                 .arg(token).arg(userId()));
 
@@ -308,6 +312,8 @@ QString YouTube::apiKey() {
 }
 
 void YouTube::setApiKey(const QString &key) {
+    Logger::log("YouTube::setApiKey(). Key: " + key, Logger::MediumVerbosity);
+    
     if (key != apiKey()) {
         QSettings().setValue("YouTube/apiKey", key);
 
@@ -322,6 +328,8 @@ QString YouTube::clientId() {
 }
 
 void YouTube::setClientId(const QString &id) {
+    Logger::log("YouTube::setClientId(). ID: " + id, Logger::MediumVerbosity);
+    
     if (id != clientId()) {
         QSettings().setValue("YouTube/clientId", id);
 
@@ -336,6 +344,8 @@ QString YouTube::clientSecret() {
 }
 
 void YouTube::setClientSecret(const QString &secret) {
+    Logger::log("YouTube::setClientSecret(). Secret: " + secret, Logger::MediumVerbosity);
+    
     if (secret != clientSecret()) {
         QSettings().setValue("YouTube/clientSecret", secret);
 
@@ -350,6 +360,8 @@ QStringList YouTube::scopes() {
 }
 
 void YouTube::setScopes(const QStringList &s) {
+    Logger::log("YouTube::setScopes(). Scopes: " + s.join(", "), Logger::MediumVerbosity);
+    
     if (s != scopes()) {
         QSettings().setValue("YouTube/scopes", s);
 

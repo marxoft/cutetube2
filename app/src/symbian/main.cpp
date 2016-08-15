@@ -33,6 +33,7 @@
 #include "database.h"
 #include "definitions.h"
 #include "localemodel.h"
+#include "loggerverbositymodel.h"
 #include "maskeditem.h"
 #include "mediakeycaptureitem.h"
 #include "networkaccessmanagerfactory.h"
@@ -120,6 +121,7 @@ inline void registerTypes() {
     qmlRegisterType<DailymotionVideo>("cuteTube", 2, 0, "DailymotionVideo");
     qmlRegisterType<DailymotionVideoModel>("cuteTube", 2, 0, "DailymotionVideoModel");
     qmlRegisterType<LocaleModel>("cuteTube", 2, 0, "LocaleModel");
+    qmlRegisterType<LoggerVerbosityModel>("cuteTube", 2, 0, "LoggerVerbosityModel");
     qmlRegisterType<MaskedItem>("cuteTube", 2, 0, "MaskedItem");
     qmlRegisterType<NetworkProxyTypeModel>("cuteTube", 2, 0, "NetworkProxyTypeModel");
     qmlRegisterType<PluginCategoryModel>("cuteTube", 2, 0, "PluginCategoryModel");
@@ -204,8 +206,6 @@ Q_DECL_EXPORT int main(int argc, char *argv[]) {
     config.setPeerVerifyMode(QSslSocket::VerifyNone);
     QSslConfiguration::setDefaultConfiguration(config);
 
-    //Logger::setVerbosity(10);
-
     QScopedPointer<Settings> settings(Settings::instance());
     QScopedPointer<Clipboard> clipboard(Clipboard::instance());
     QScopedPointer<Dailymotion> dailymotion(Dailymotion::instance());
@@ -214,11 +214,15 @@ Q_DECL_EXPORT int main(int argc, char *argv[]) {
     QScopedPointer<Vimeo> vimeo(Vimeo::instance());
     QScopedPointer<YouTube> youtube(YouTube::instance());
 
+    Logger logger;
     MediakeyCaptureItem volumeKeys;
     NetworkAccessManagerFactory factory;
     Resources resources;
     Utils utils;
     VideoLauncher launcher;
+    
+    Logger::setFileName(Settings::loggerFileName());
+    Logger::setVerbosity(Settings::loggerVerbosity());
     
     initDatabase();
     registerTypes();
@@ -233,6 +237,7 @@ Q_DECL_EXPORT int main(int argc, char *argv[]) {
     context->setContextProperty("Clipboard", clipboard.data());
     context->setContextProperty("CookieJar", factory.cookieJar());
     context->setContextProperty("Dailymotion", dailymotion.data());
+    context->setContextProperty("Logger", &logger);
     context->setContextProperty("Plugins", plugins.data());
     context->setContextProperty("Resources", &resources);
     context->setContextProperty("Settings", settings.data());
@@ -253,6 +258,8 @@ Q_DECL_EXPORT int main(int argc, char *argv[]) {
     view.showFullScreen();
     
     QObject::connect(&app, SIGNAL(aboutToQuit()), transfers.data(), SLOT(save()));
+    QObject::connect(settings.data(), SIGNAL(loggerFileNameChanged(QString)), &logger, SLOT(setFileName(QString)));
+    QObject::connect(settings.data(), SIGNAL(loggerVerbosityChanged(int)), &logger, SLOT(setVerbosity(int)));
     
     return app.exec();
 }

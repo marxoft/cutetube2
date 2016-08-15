@@ -41,6 +41,8 @@ class Settings : public QObject
                NOTIFY customTransferCommandEnabledChanged)
     Q_PROPERTY(QString downloadPath READ downloadPath WRITE setDownloadPath NOTIFY downloadPathChanged)
     Q_PROPERTY(QString locale READ locale WRITE setLocale NOTIFY localeChanged)
+    Q_PROPERTY(QString loggerFileName READ loggerFileName WRITE setLoggerFileName NOTIFY loggerFileNameChanged)
+    Q_PROPERTY(int loggerVerbosity READ loggerVerbosity WRITE setLoggerVerbosity NOTIFY loggerVerbosityChanged)
     Q_PROPERTY(QByteArray mainWindowGeometry READ mainWindowGeometry WRITE setMainWindowGeometry)
     Q_PROPERTY(QByteArray mainWindowState READ mainWindowState WRITE setMainWindowState)
     Q_PROPERTY(int maximumConcurrentTransfers READ maximumConcurrentTransfers WRITE setMaximumConcurrentTransfers
@@ -100,6 +102,9 @@ public:
     
     static QString locale();
     
+    static QString loggerFileName();
+    static int loggerVerbosity();
+    
     static QByteArray mainWindowGeometry();
     static QByteArray mainWindowState();
         
@@ -156,6 +161,9 @@ public Q_SLOTS:
     
     static void setLocale(const QString &name);
     
+    static void setLoggerFileName(const QString &fileName);
+    static void setLoggerVerbosity(int verbosity);
+    
     static void setMainWindowGeometry(const QByteArray &geometry);
     static void setMainWindowState(const QByteArray &state);
     
@@ -203,6 +211,8 @@ Q_SIGNALS:
     void downloadFormatsChanged();
     void downloadPathChanged(const QString &path);
     void localeChanged(const QString &locale);
+    void loggerFileNameChanged(const QString &fileName);
+    void loggerVerbosityChanged(int verbosity);
     void maximumConcurrentTransfersChanged(int maximum);
     void networkProxyChanged();
     void playbackFormatsChanged();

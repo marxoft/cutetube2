@@ -15,6 +15,7 @@
  */
 
 #include "vimeoplaylist.h"
+#include "logger.h"
 #include "resources.h"
 #include "vimeo.h"
 #include "vimeovideo.h"
@@ -134,6 +135,8 @@ void VimeoPlaylist::addVideo(VimeoVideo *video) {
         return;
     }
     
+    Logger::log(QString("VimeoPlaylist::addVideo(). Video ID: %1, Playlist ID: %2").arg(video->id()).arg(id()),
+                Logger::MediumVerbosity);
     initRequest();
     m_video = video;
     
@@ -171,6 +174,8 @@ void VimeoPlaylist::removeVideo(VimeoVideo *video) {
         return;
     }
     
+    Logger::log(QString("VimeoPlaylist::removeVideo(). Video ID: %1, Playlist ID: %2").arg(video->id()).arg(id()),
+                Logger::MediumVerbosity);
     initRequest();
     m_video = video;    
     m_request->del(QString("/albums/%1/videos/%2").arg(id()).arg(m_video->id()));
@@ -203,6 +208,8 @@ void VimeoPlaylist::onCreatePlaylistRequestFinished() {
     
     if (m_request->status() == QVimeo::ResourcesRequest::Ready) {
         loadPlaylist(m_request->result().toMap());
+        Logger::log("VimeoPlaylist::onCreatePlaylistRequestFinished(). Playlist created. ID: " + id(),
+                    Logger::MediumVerbosity);
         emit Vimeo::instance()->playlistCreated(this);
         
         if (m_video) {
@@ -210,6 +217,9 @@ void VimeoPlaylist::onCreatePlaylistRequestFinished() {
             connect(m_request, SIGNAL(finished()), this, SLOT(onAddVideoRequestFinished()));
             return;
         }
+    }
+    else {
+        Logger::log("VimeoPlaylist::onCreatePlaylistRequestFinished(). Error: " + errorString());
     }
         
     emit statusChanged(status());
@@ -225,12 +235,15 @@ void VimeoPlaylist::onAddVideoRequestFinished() {
                 setLargeThumbnailUrl(m_video->largeThumbnailUrl());
             }
             
+            Logger::log(QString("VimeoPlaylist::onAddVideoRequestFinished(). Video added. Video ID: %1, Playlist ID: %2").arg(m_video->id()).arg(id()), Logger::MediumVerbosity);
             emit Vimeo::instance()->videoAddedToPlaylist(m_video, this);
         }
     }
+    else {
+        Logger::log("VimeoPlaylist::onAddVideoRequestFinished(). Error: " + errorString());
+    }
     
     m_video = 0;
-    
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onAddVideoRequestFinished()));
     emit statusChanged(status());
 }
@@ -240,12 +253,15 @@ void VimeoPlaylist::onRemoveVideoRequestFinished() {
         setVideoCount(qMax(0, videoCount() - 1));
         
         if (m_video) {
+            Logger::log(QString("VimeoPlaylist::onRemoveVideoRequestFinished(). Video removed. Video ID: %1, Playlist ID: %2").arg(m_video->id()).arg(id()), Logger::MediumVerbosity);
             emit Vimeo::instance()->videoRemovedFromPlaylist(m_video, this);
         }
     }
+    else {
+        Logger::log("VimeoPlaylist::onRemoveVideoRequestFinished(). Error: " + errorString());
+    }
     
     m_video = 0;
-    
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onRemoveVideoRequestFinished()));
     emit statusChanged(status());
 }

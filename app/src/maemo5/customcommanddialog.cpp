@@ -31,9 +31,9 @@ CustomCommandDialog::CustomCommandDialog(QWidget *parent) :
     setWindowTitle(tr("Set custom command"));
     
     m_layout->addWidget(new QLabel(tr("Command"), this), 0, 0);
-    m_layout->addWidget(m_commandEdit, 0, 0);
-    m_layout->addWidget(m_overrideCheckBox, 1, 0);
-    m_layout->addWidget(m_buttonBox, 1, 1);
+    m_layout->addWidget(m_commandEdit, 1, 0);
+    m_layout->addWidget(m_overrideCheckBox, 2, 0);
+    m_layout->addWidget(m_buttonBox, 2, 1);
     m_layout->setColumnStretch(0, 1);
     
     connect(m_buttonBox, SIGNAL(accepted()), this, SLOT(accept()));

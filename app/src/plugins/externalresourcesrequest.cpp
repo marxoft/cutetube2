@@ -92,7 +92,7 @@ bool ExternalResourcesRequest::del(const QString &sourceType, const QString &sou
     switch (pr->state()) {
     case QProcess::Starting:
     case QProcess::Running:
-        Logger::log("ExternalResourcesRequest::del(). Invoking command: " + command);
+        Logger::log("ExternalResourcesRequest::del(). Invoking command: " + command, Logger::MediumVerbosity);
         return true;
     default:
         Logger::log("ExternalResourcesRequest::del(). Error invoking command: " + command);
@@ -113,7 +113,7 @@ bool ExternalResourcesRequest::get(const QString &resourceType, const QString &r
     switch (pr->state()) {
     case QProcess::Starting:
     case QProcess::Running:
-        Logger::log("ExternalResourcesRequest::get(). Invoking command: " + command);
+        Logger::log("ExternalResourcesRequest::get(). Invoking command: " + command, Logger::MediumVerbosity);
         return true;
     default:
         Logger::log("ExternalResourcesRequest::get(). Error invoking command: " + command);
@@ -137,7 +137,7 @@ bool ExternalResourcesRequest::insert(const QString &sourceType, const QString &
     switch (pr->state()) {
     case QProcess::Starting:
     case QProcess::Running:
-        Logger::log("ExternalResourcesRequest::insert(). Invoking command: " + command);
+        Logger::log("ExternalResourcesRequest::insert(). Invoking command: " + command, Logger::MediumVerbosity);
         return true;
     default:
         Logger::log("ExternalResourcesRequest::insert(). Error invoking command: " + command);
@@ -158,7 +158,7 @@ bool ExternalResourcesRequest::list(const QString &resourceType, const QString &
     switch (pr->state()) {
     case QProcess::Starting:
     case QProcess::Running:
-        Logger::log("ExternalResourcesRequest::list(). Invoking command: " + command);
+        Logger::log("ExternalResourcesRequest::list(). Invoking command: " + command, Logger::MediumVerbosity);
         return true;
     default:
         Logger::log("ExternalResourcesRequest::list(). Error invoking command: " + command);
@@ -180,7 +180,7 @@ bool ExternalResourcesRequest::search(const QString &resourceType, const QString
     switch (pr->state()) {
     case QProcess::Starting:
     case QProcess::Running:
-        Logger::log("ExternalResourcesRequest::search(). Invoking command: " + command);
+        Logger::log("ExternalResourcesRequest::search(). Invoking command: " + command, Logger::MediumVerbosity);
         return true;
     default:
         Logger::log("ExternalResourcesRequest::search(). Error invoking command: " + command);
@@ -198,11 +198,11 @@ void ExternalResourcesRequest::onRequestError() {
 }
 
 void ExternalResourcesRequest::onRequestFinished(int exitCode) {
-    Logger::log("ExternalResourcesRequest::onRequestFinished(). Exit code: " + QString::number(exitCode));
     const QVariant result = QtJson::Json::parse(QString::fromUtf8(m_process->readAllStandardOutput()));
     setResult(result);
     
     if (exitCode == 0) {
+        Logger::log("ExternalResourcesRequest::onRequestFinished(). Exit code 0", Logger::MediumVerbosity);
         setErrorString(QString());
         setStatus(Ready);
     }
@@ -221,6 +221,8 @@ void ExternalResourcesRequest::onRequestFinished(int exitCode) {
             setErrorString(m_process->errorString());
         }
         
+        Logger::log(QString("ExternalResourcesRequest::onRequestFinished(). Exit code: %1, Error: %2")
+                           .arg(exitCode).arg(errorString()));
         setStatus(Failed);
     }
     

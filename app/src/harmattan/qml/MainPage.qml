@@ -183,19 +183,10 @@ MyPage {
                                     {maxResults: MAX_RESULTS});
                         break;
                     case 6:
-                        appWindow.pageStack.push(Qt.resolvedUrl("youtube/YouTubePlaylistPage.qml"))
-                        .load(YouTube.relatedPlaylist("watchLater"));
-                        break;
-                    case 7:
-                        appWindow.pageStack.push(Qt.resolvedUrl("youtube/YouTubeVideosPage.qml"), {title: qsTr("Watch history")})
-                        .model.list("/playlistItems", ["snippet"], {playlistId: YouTube.relatedPlaylist("watchHistory")},
-                                    {maxResults: MAX_RESULTS});
-                        break;
-                    case 8:
                         appWindow.pageStack.push(Qt.resolvedUrl("youtube/YouTubePlaylistsPage.qml"))
                         .model.list("/playlists", ["snippet", "contentDetails"], {mine: true}, {maxResults: MAX_RESULTS});
                         break;
-                    case 9:
+                    case 7:
                         appWindow.pageStack.push(Qt.resolvedUrl("youtube/YouTubeUsersPage.qml"), {title: qsTr("Subscriptions")})
                         .model.list("/subscriptions", ["snippet"], {mine: true}, {sort: "unread", maxResults: MAX_RESULTS});
                         break;
@@ -212,7 +203,6 @@ MyPage {
                 onVideoUnfavourited: infoBanner.showMessage("'" + video.title + "' " + qsTr("removed from favourites"))
                 onVideoLiked: infoBanner.showMessage(qsTr("You liked") + " '" + video.title + "'")
                 onVideoDisliked: infoBanner.showMessage(qsTr("You disliked") + " '" + video.title + "'")
-                onVideoWatchLater: infoBanner.showMessage("'" + video.title + "' " + qsTr("added to your watch later playlist"))
                 onVideoAddedToPlaylist: infoBanner.showMessage("'" + video.title + "' " + qsTr("added to playlist") + " '" + playlist.title + "'")
             }
         }

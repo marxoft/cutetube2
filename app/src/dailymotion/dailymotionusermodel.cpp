@@ -16,6 +16,7 @@
 
 #include "dailymotionusermodel.h"
 #include "dailymotion.h"
+#include "logger.h"
 
 DailymotionUserModel::DailymotionUserModel(QObject *parent) :
     QAbstractListModel(parent),
@@ -133,6 +134,7 @@ void DailymotionUserModel::list(const QString &resourcePath, const QVariantMap &
         return;
     }
     
+    Logger::log("DailymotionUserModel::list(). Resource path: " + resourcePath, Logger::HighVerbosity);
     clear();
     m_resourcePath = resourcePath;
     m_filters = filters;
@@ -165,6 +167,11 @@ void DailymotionUserModel::cancel() {
 }
 
 void DailymotionUserModel::reload() {
+    if (status() == QDailymotion::ResourcesRequest::Loading) {
+        return;
+    }
+    
+    Logger::log("DailymotionUserModel::reload(). Resource path: " + m_resourcePath, Logger::HighVerbosity);
     clear();
     m_request->list(m_resourcePath,  m_filters, Dailymotion::USER_FIELDS);
     emit statusChanged(status());
@@ -212,6 +219,9 @@ void DailymotionUserModel::onRequestFinished() {
             endInsertRows();
             emit countChanged(rowCount());
         }
+    }
+    else {
+        Logger::log("DailymotionUserModel::onRequestFinished(). Error: " + errorString());
     }
     
     emit statusChanged(status());

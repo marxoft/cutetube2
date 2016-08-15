@@ -33,13 +33,18 @@ Q_DECL_EXPORT int main(int argc, char *argv[]) {
     app.setOrganizationName("cuteTube2");
     app.setApplicationName("cuteTube2");
     app.setApplicationVersion(VERSION_NUMBER);
-
+    
     const QStringList args = app.arguments();
-
-    if (args.contains("--log")) {
-        Logger::setVerbosity(10);
+    const int verbosity = args.indexOf("-v") + 1;
+    
+    if ((verbosity > 1) && (verbosity < args.size())) {
+        Logger::setVerbosity(qMax(1, args.at(verbosity).toInt()));
     }
-
+    else {
+        Logger::setFileName(Settings::loggerFileName());
+        Logger::setVerbosity(Settings::loggerVerbosity());
+    }
+    
     QScopedPointer<Settings> settings(Settings::instance());
     QScopedPointer<Clipboard> clipboard(Clipboard::instance());
     QScopedPointer<Dailymotion> dailymotion(Dailymotion::instance());
@@ -47,7 +52,7 @@ Q_DECL_EXPORT int main(int argc, char *argv[]) {
     QScopedPointer<Transfers> transfers(Transfers::instance());
     QScopedPointer<Vimeo> vimeo(Vimeo::instance());
     QScopedPointer<YouTube> youtube(YouTube::instance());
-    DBusService dbus;
+    DBusService dbus;    
     
     initDatabase();
     Settings::setNetworkProxy();

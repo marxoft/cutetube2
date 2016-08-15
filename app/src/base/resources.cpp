@@ -16,6 +16,7 @@
 
 #include "resources.h"
 #include "dailymotion.h"
+#include "logger.h"
 #include "pluginmanager.h"
 #include "utils.h"
 #include "vimeo.h"
@@ -194,6 +195,7 @@ QString Resources::subtitleConstant() {
 }
 
 QVariantMap Resources::getResourceFromUrl(QString url) {
+    Logger::log("Resources::getResourceFromUrl. URL: " + url, Logger::MediumVerbosity);
     url = Utils::unescape(url);
     QVariantMap result;
 

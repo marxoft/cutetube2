@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -16,6 +16,7 @@
  */
 
 #include "clipboard.h"
+#include "logger.h"
 #include <QApplication>
 #include <QClipboard>
 
@@ -71,6 +72,7 @@ void Clipboard::setEnabled(bool enabled) {
 
 void Clipboard::onTextChanged() {
     const QString text = QApplication::clipboard()->text();
+    Logger::log("Clipboard::onTextChanged(). Text: " + text, Logger::HighVerbosity);
 
     if (!text.isEmpty()) {
         emit textChanged(text);

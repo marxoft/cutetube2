@@ -55,6 +55,6 @@ static const int MAX_RESULTS = 20;
 static const QByteArray USER_AGENT("Wget/1.13.4 (linux-gnu)");
 
 // Version
-static const QString VERSION_NUMBER("0.4.0");
+static const QString VERSION_NUMBER("0.5.0");
 
 #endif // DEFINITIONS_H

@@ -39,6 +39,8 @@ class Settings : public QObject
                NOTIFY customTransferCommandEnabledChanged)
     Q_PROPERTY(QString downloadPath READ downloadPath WRITE setDownloadPath NOTIFY downloadPathChanged)
     Q_PROPERTY(QString locale READ locale WRITE setLocale NOTIFY localeChanged)
+    Q_PROPERTY(QString loggerFileName READ loggerFileName WRITE setLoggerFileName NOTIFY loggerFileNameChanged)
+    Q_PROPERTY(int loggerVerbosity READ loggerVerbosity WRITE setLoggerVerbosity NOTIFY loggerVerbosityChanged)
     Q_PROPERTY(int maximumConcurrentTransfers READ maximumConcurrentTransfers WRITE setMaximumConcurrentTransfers
                NOTIFY maximumConcurrentTransfersChanged)
     Q_PROPERTY(bool networkProxyEnabled READ networkProxyEnabled WRITE setNetworkProxyEnabled
@@ -85,6 +87,9 @@ public:
     Q_INVOKABLE static QString downloadPath(const QString &category);
     
     static QString locale();
+    
+    static QString loggerFileName();
+    static int loggerVerbosity();
             
     static int maximumConcurrentTransfers();
     
@@ -132,6 +137,9 @@ public Q_SLOTS:
     
     static void setLocale(const QString &name);
     
+    static void setLoggerFileName(const QString &fileName);
+    static void setLoggerVerbosity(int verbosity);
+    
     static void setMaximumConcurrentTransfers(int maximum);
     
     static void setNetworkProxy();
@@ -170,6 +178,8 @@ Q_SIGNALS:
     void downloadFormatsChanged();
     void downloadPathChanged(const QString &path);
     void localeChanged(const QString &locale);
+    void loggerFileNameChanged(const QString &fileName);
+    void loggerVerbosityChanged(int verbosity);
     void maximumConcurrentTransfersChanged(int maximum);
     void networkProxyChanged();
     void playbackFormatsChanged();

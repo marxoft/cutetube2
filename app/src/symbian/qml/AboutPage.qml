@@ -46,7 +46,7 @@ MyPage {
             Image {
                 id: icon
 
-                x: parent.width / 2 - width / 2
+                x: Math.floor((parent.width - width) / 2)
                 source: "images/cutetube2.svg"
             }
 

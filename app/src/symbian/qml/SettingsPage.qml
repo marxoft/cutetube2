@@ -30,14 +30,14 @@ MyPage {
         id: view
 
         anchors.fill: parent
-        model: [qsTr("Media/content"), qsTr("Transfers"), qsTr("Network"), qsTr("Appearance"),
+        model: [qsTr("General"), qsTr("Transfers"), qsTr("Network"), qsTr("Logging"), qsTr("Appearance"),
                 qsTr("Plugins"), qsTr("About")]
         delegate: DrillDownDelegate {
             text: modelData
             onClicked: {
                 switch (index) {
                 case 0:
-                    appWindow.pageStack.push(Qt.resolvedUrl("MediaSettingsPage.qml"));
+                    appWindow.pageStack.push(Qt.resolvedUrl("GeneralSettingsPage.qml"));
                     break;
                 case 1:
                     appWindow.pageStack.push(Qt.resolvedUrl("TransfersSettingsPage.qml"));
@@ -46,12 +46,15 @@ MyPage {
                     appWindow.pageStack.push(Qt.resolvedUrl("NetworkSettingsPage.qml"));
                     break;
                 case 3:
-                    appWindow.pageStack.push(Qt.resolvedUrl("AppearanceSettingsPage.qml"));
+                    appWindow.pageStack.push(Qt.resolvedUrl("LoggingSettingsPage.qml"));
                     break;
                 case 4:
-                    appWindow.pageStack.push(Qt.resolvedUrl("plugins/PluginsSettingsPage.qml"));
+                    appWindow.pageStack.push(Qt.resolvedUrl("AppearanceSettingsPage.qml"));
                     break;
                 case 5:
+                    appWindow.pageStack.push(Qt.resolvedUrl("plugins/PluginsSettingsPage.qml"));
+                    break;
+                case 6:
                     appWindow.pageStack.push(Qt.resolvedUrl("AboutPage.qml"));
                     break;
                 default:

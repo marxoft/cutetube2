@@ -15,6 +15,7 @@
  */
 
 #include "youtubeplaylistmodel.h"
+#include "logger.h"
 #include "youtube.h"
 
 YouTubePlaylistModel::YouTubePlaylistModel(QObject *parent) :
@@ -135,12 +136,12 @@ YouTubePlaylist* YouTubePlaylistModel::get(int row) const {
 }
 
 void YouTubePlaylistModel::list(const QString &resourcePath, const QStringList &part, const QVariantMap &filters,
-                             const QVariantMap &params) {
-
+                                const QVariantMap &params) {
     if (status() == QYouTube::ResourcesRequest::Loading) {
         return;
     }
     
+    Logger::log("YouTubePlaylistModel::list(). Resource path: " + resourcePath, Logger::HighVerbosity);
     clear();
     m_resourcePath = resourcePath;
     m_part = part;
@@ -175,6 +176,11 @@ void YouTubePlaylistModel::cancel() {
 }
 
 void YouTubePlaylistModel::reload() {
+    if (status() == QYouTube::ResourcesRequest::Loading) {
+        return;
+    }
+    
+    Logger::log("YouTubePlaylistModel::reload(). Resource path: " + m_resourcePath, Logger::HighVerbosity);
     clear();
     m_request->list(m_resourcePath, m_part, m_filters, m_params);
     emit statusChanged(status());
@@ -266,6 +272,9 @@ void YouTubePlaylistModel::onRequestFinished() {
             }
         }
     }
+    else {
+        Logger::log("YouTubePlaylistModel::onRequestFinished(). Error: " + errorString());
+    }
 
     emit statusChanged(status());
 }
@@ -297,6 +306,9 @@ void YouTubePlaylistModel::onContentRequestFinished() {
                 emit countChanged(rowCount());
             }
         }
+    }
+    else {
+        Logger::log("YouTubePlaylistModel::onContentRequestFinished(). Error: " + errorString());
     }
 
     emit statusChanged(status());

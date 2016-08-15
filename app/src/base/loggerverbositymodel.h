@@ -14,37 +14,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VIMEOTRANSFER_H
-#define VIMEOTRANSFER_H
+#ifndef LOGGERVERBOSITYMODEL_H
+#define LOGGERVERBOSITYMODEL_H
 
-#include "transfer.h"
+#include "selectionmodel.h"
+#include "logger.h"
 
-namespace QVimeo {
-    class ResourcesRequest;
-    class StreamsRequest;
-}
-
-class VimeoTransfer : public Transfer
+class LoggerVerbosityModel : public SelectionModel
 {
     Q_OBJECT
     
 public:
-    explicit VimeoTransfer(QObject *parent = 0);
-    
-private:
-    void listStreams();
-    void listSubtitles();
-
-private Q_SLOTS:
-    void onStreamsRequestFinished();
-    void onSubtitlesRequestFinished();
-
-private:
-    QVimeo::StreamsRequest* streamsRequest();
-    QVimeo::ResourcesRequest* subtitlesRequest();
-    
-    QVimeo::StreamsRequest *m_streamsRequest;
-    QVimeo::ResourcesRequest *m_subtitlesRequest;
+    explicit LoggerVerbosityModel(QObject *parent = 0) :
+        SelectionModel(parent)
+    {
+        append(tr("No logging"), Logger::NoVerbosity);
+        append(tr("Lowest"), Logger::LowestVerbosity);
+        append(tr("Low"), Logger::LowVerbosity);
+        append(tr("Medium"), Logger::MediumVerbosity);
+        append(tr("High"), Logger::HighVerbosity);
+        append(tr("Highest"), Logger::HighestVerbosity);
+    }
 };
-    
-#endif // VIMEOTRANSFER_H
+
+#endif // LOGGERVERBOSITYMODEL_H
