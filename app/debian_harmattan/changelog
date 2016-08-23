@@ -1,3 +1,8 @@
+cutetube2 (0.5.1) unstable; urgency=low
+  * Fix retrieval of Dailymotion videos.
+
+ -- Stuart Howarth <showarth@marxoft.co.uk>  Tue, 23 Aug 2016 15:10:31 +0100
+
 cutetube2 (0.5.0) unstable; urgency=low
   * Re-introduce support for plugins using executable scripts/binaries.
   * Allow plugins to instruct the application to handle embedded YouTube/Dailymotion/Vimeo videos.
