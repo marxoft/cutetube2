@@ -53,7 +53,7 @@ const QStringList Dailymotion::USER_FIELDS = QStringList() << "id" << "avatar_80
                                                            << "fans_total" << "screenname" << "views_total";
 
 const QStringList Dailymotion::VIDEO_FIELDS = QStringList() << "id" << "created_time" << "description"
-                                                            << "duration" << "liked_at" << "owner.id"
+                                                            << "duration" << "favorited_at" << "owner.id"
                                                             << "owner.screenname" << "thumbnail_120_url"
                                                             << "thumbnail_360_url" << "title" << "url" << "views_total";
                                                 

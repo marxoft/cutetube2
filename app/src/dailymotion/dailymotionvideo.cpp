@@ -111,7 +111,7 @@ void DailymotionVideo::loadVideo(const QVariantMap &video) {
     setDate(QDateTime::fromTime_t(video.value("created_time").toLongLong()).toString("dd MMM yyyy"));
     setDescription(video.value("description").toString());
     setDuration(Utils::formatSecs(video.value("duration").toLongLong()));
-    setFavourite(video.value("liked_at").toLongLong() > 0);
+    setFavourite(video.value("favorited_at").toLongLong() > 0);
     setId(video.value("id").toString());
     setLargeThumbnailUrl(video.value("thumbnail_360_url").toString());
     setUrl(video.value("url").toString());
