@@ -63,6 +63,6 @@ static const QColor ACTIVE_COLOR("#0881cb");
 static const QString ACTIVE_COLOR_STRING("color7");
 
 // Version
-static const QString VERSION_NUMBER("0.5.0");
+static const QString VERSION_NUMBER("0.5.1");
 
 #endif // DEFINITIONS_H
