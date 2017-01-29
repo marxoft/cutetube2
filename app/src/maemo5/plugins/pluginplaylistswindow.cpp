@@ -19,7 +19,6 @@
 #include "listview.h"
 #include "playlistdelegate.h"
 #include "pluginplaylistwindow.h"
-#include "settings.h"
 #include <QLabel>
 #include <QMessageBox>
 #include <QVBoxLayout>

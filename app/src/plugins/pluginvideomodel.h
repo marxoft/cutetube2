@@ -101,8 +101,8 @@ private:
     
     ResourcesRequest *m_request;
     
-    QString m_resourceId;
     QString m_service;
+    QString m_resourceId;
     QString m_query;
     QString m_order;
     QString m_next;

@@ -18,7 +18,6 @@
 #include "imagecache.h"
 #include "listview.h"
 #include "pluginuserwindow.h"
-#include "settings.h"
 #include "userdelegate.h"
 #include <QLabel>
 #include <QMessageBox>

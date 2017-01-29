@@ -560,7 +560,7 @@ void Transfer::executeCustomCommand(const Command &command) {
 
 void Transfer::moveDownloadedFiles() {
     Logger::log("Transfer::moveDownloadedFiles()", Logger::LowVerbosity);
-    QDir destDir(Settings::instance()->downloadPath(category()));
+    QDir destDir(Settings::downloadPath(category()));
     
     if (!destDir.mkpath(destDir.path())) {
         setErrorString(tr("Cannot make download path %1").arg(destDir.path()));

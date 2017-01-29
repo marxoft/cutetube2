@@ -101,7 +101,7 @@ private:
     QString m_query;
     QString m_order;
     QString m_next;
-        
+    
     QList<PluginPlaylist*> m_items;
     
     QHash<int, QByteArray> m_roles;

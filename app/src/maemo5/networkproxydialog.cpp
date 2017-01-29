@@ -36,6 +36,7 @@ NetworkProxyDialog::NetworkProxyDialog(QWidget *parent) :
     m_passEdit(new QLineEdit(this))
 {
     setWindowTitle(tr("Network proxy"));
+    setMinimumHeight(360);
     
     m_proxyTypeSelector->setModel(new NetworkProxyTypeModel(this));
     m_proxyTypeSelector->setValue(Settings::networkProxyType());

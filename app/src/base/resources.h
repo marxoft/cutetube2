@@ -85,7 +85,7 @@ class Resources : public QObject
     Q_PROPERTY(QString COMMENT READ commentConstant CONSTANT)
     Q_PROPERTY(QString STREAM READ streamConstant CONSTANT)
     Q_PROPERTY(QString SUBTITLE READ subtitleConstant CONSTANT)
-        
+    
 public:
     explicit Resources(QObject *parent = 0);
     

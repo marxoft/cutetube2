@@ -2,8 +2,10 @@
     <interface name="org.marxoft.cutetube2">
     <method name="showResource">
         <arg name="url" type="s" direction="in" />
+        <arg name="success" type="b" direction="out" />
     </method>
     <method name="showResource">
         <arg name="url" type="as" direction="in" />
+        <arg name="success" type="b" direction="out" />
     </method>
 </node>

@@ -215,10 +215,8 @@ void VimeoUser::onSubscribeCheckRequestFinished() {
         checkIfSubscribed();
         return;
     }
-    else {
-        Logger::log("VimeoUser::onSubscribeCheckFinished(). Error: " + errorString());
-    }
     
+    Logger::log("VimeoUser::onSubscribeCheckFinished(). Error: " + errorString());
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onUserRequestFinished()));
     emit statusChanged(status());
 }

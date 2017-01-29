@@ -14,40 +14,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef COMMENTDELEGATE_H
-#define COMMENTDELEGATE_H
+#ifndef CATEGORYDELEGATE_H
+#define CATEGORYDELEGATE_H
 
 #include <QStyledItemDelegate>
 
-class ImageCache;
-
-class CommentDelegate : public QStyledItemDelegate
+class CategoryDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
     
 public:
-    explicit CommentDelegate(ImageCache *cache, int bodyRole, int dateRole, int thumbnailRole, int usernameRole,
-                             QObject *parent = 0);
-    
-    bool editorEvent(QEvent *event, QAbstractItemModel *, const QStyleOptionViewItem &option,
-                     const QModelIndex &index);
+    explicit CategoryDelegate(QObject *parent = 0);
     
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-    
-    QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
-    
-Q_SIGNALS:
-    void thumbnailClicked(const QModelIndex &index);
-    
-private:
-    ImageCache *m_cache;
-    
-    int m_bodyRole;
-    int m_dateRole;
-    int m_thumbnailRole;
-    int m_usernameRole;
-    
-    int m_pressedRow;
 };
 
-#endif // COMMENTDELEGATE_H
+#endif // CATEGORYDELEGATE_H

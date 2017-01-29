@@ -71,13 +71,16 @@ MySheet {
                                                                             Settings.defaultDownloadFormat(service)));
                                 }
                                 else {
+                                    root.reject();
                                     infoBanner.showMessage(qsTr("No streams found"));
                                 }
 
                                 break;
-                            case ResourcesRequest.Failed:
+                            case ResourcesRequest.Failed: {
+                                root.reject();
                                 infoBanner.showMessage(errorString);
                                 break;
+                            }
                             default:
                                 break;
                             }

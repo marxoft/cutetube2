@@ -69,13 +69,16 @@ MySheet {
                                                                             Settings.defaultDownloadFormat(Resources.DAILYMOTION)));
                                 }
                                 else {
+                                    root.reject();
                                     infoBanner.showMessage(qsTr("No streams found"));
                                 }
 
                                 break;
-                            case QDailymotion.StreamsRequest.Failed:
+                            case QDailymotion.StreamsRequest.Failed: {
+                                root.reject();
                                 infoBanner.showMessage(errorString);
                                 break;
+                            }
                             default:
                                 break;
                             }

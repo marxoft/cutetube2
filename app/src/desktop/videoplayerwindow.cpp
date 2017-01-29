@@ -256,6 +256,10 @@ YouTubeStreamModel* VideoPlayerWindow::youtubeModel() {
 }
 
 void VideoPlayerWindow::onFormatChanged(int index) {
+    if (const CTVideo *video = m_playlistModel->get(currentIndex())) {
+        Settings::setDefaultPlaybackFormat(video->service(), m_formatSelector->currentText());
+    }
+    
     m_player->play(m_formatSelector->itemData(index).toMap().value("url").toString());
 }
 

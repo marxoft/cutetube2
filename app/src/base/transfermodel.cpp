@@ -16,7 +16,6 @@
 
 #include "transfermodel.h"
 #include "transfers.h"
-#include "utils.h"
 
 TransferModel::TransferModel(QObject *parent) :
     QAbstractListModel(parent)

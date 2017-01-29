@@ -238,8 +238,15 @@ void PluginVideoWindow::loadVideoUi() {
 }
 
 void PluginVideoWindow::getRelatedVideos() {
-    m_relatedModel->setService(m_video->service());
-    m_relatedModel->list(m_video->relatedVideosId());
+    const QString id = m_video->relatedVideosId();
+    
+    if (!id.isEmpty()) {
+        m_relatedModel->setService(m_video->service());
+        m_relatedModel->list(id);
+    }
+    else {
+        m_stack->setCurrentWidget(m_noVideosLabel);
+    }
 }
 
 void PluginVideoWindow::downloadVideo() {
@@ -452,9 +459,12 @@ void PluginVideoWindow::showUser(const QModelIndex &index) {
         return;
     }
     
-    PluginUserWindow *window = new PluginUserWindow(m_video->service(),
-                                                    index.data(PluginCommentModel::UserIdRole).toString(), this);
-    window->show();
+    const QString id = index.data(PluginCommentModel::UserIdRole).toString();
+    
+    if (!id.isEmpty()) {
+        PluginUserWindow *window = new PluginUserWindow(m_video->service(), id, this);
+        window->show();
+    }
 }
 
 void PluginVideoWindow::onImageReady() {

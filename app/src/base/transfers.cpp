@@ -33,15 +33,16 @@ inline static Transfer* createTransfer(const QString &service, QObject *parent =
     if (service == Resources::YOUTUBE) {
         return new YouTubeTransfer(parent);
     }
-    else if (service == Resources::DAILYMOTION) {
+    
+    if (service == Resources::DAILYMOTION) {
         return new DailymotionTransfer(parent);
     }
-    else if (service == Resources::VIMEO) {
+    
+    if (service == Resources::VIMEO) {
         return new VimeoTransfer(parent);
     }
-    else {
-        return new PluginTransfer(service, parent);
-    }
+    
+    return new PluginTransfer(service, parent);
 }
 
 Transfers::Transfers() :

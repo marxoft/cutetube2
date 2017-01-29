@@ -34,7 +34,7 @@ public:
     explicit DailymotionComment(const DailymotionComment *comment, QObject *parent = 0);
     
     QString errorString() const;
-        
+    
     QDailymotion::ResourcesRequest::Status status() const;
     
     Q_INVOKABLE void loadComment(const QString &id);

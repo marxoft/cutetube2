@@ -49,7 +49,7 @@ YouTubeVideosPage::YouTubeVideosPage(QWidget *parent) :
             this, SLOT(onModelStatusChanged(QYouTube::ResourcesRequest::Status)));
     connect(m_cache, SIGNAL(imageReady()), this, SLOT(onImageReady()));
     connect(m_delegate, SIGNAL(thumbnailClicked(QModelIndex)), this, SLOT(playVideo(QModelIndex)));
-    connect(m_view, SIGNAL(clicked(QModelIndex)), this, SLOT(showVideo(QModelIndex)));
+    //connect(m_view, SIGNAL(clicked(QModelIndex)), this, SLOT(showVideo(QModelIndex)));
     connect(m_view, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenu(QPoint)));
 }
 

@@ -327,10 +327,8 @@ void YouTubeUser::onSubscribeCheckRequestFinished() {
         checkIfSubscribed();
         return;
     }
-    else {
-        Logger::log("YouTubeUser::onSubscribeCheckRequestFinished(). Error: " + errorString());
-    }
     
+    Logger::log("YouTubeUser::onSubscribeCheckRequestFinished(). Error: " + errorString());
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onUserRequestFinished()));
     emit statusChanged(status());
 }

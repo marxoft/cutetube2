@@ -14,15 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "navdelegate.h"
+#include "categorydelegate.h"
 #include <QPainter>
 
-NavDelegate::NavDelegate(QObject *parent) :
+CategoryDelegate::CategoryDelegate(QObject *parent) :
     QStyledItemDelegate(parent)
 {
 }
 
-void NavDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const {
+void CategoryDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const {
     if ((option.state) & (QStyle::State_Selected)) {
         painter->drawImage(option.rect, QImage("/etc/hildon/theme/images/TouchListBackgroundPressed.png"));
     }
@@ -30,15 +30,9 @@ void NavDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, c
         painter->drawImage(option.rect, QImage("/etc/hildon/theme/images/TouchListBackgroundNormal.png"));
     }
     
-    QRect iconRect = option.rect;
-    iconRect.moveLeft(iconRect.right() - 56);
-    iconRect.moveTop(iconRect.top() + (iconRect.height() - 48) / 2);
-    iconRect.setSize(QSize(48, 48));
-    painter->drawImage(iconRect, QImage("/usr/share/icons/hicolor/48x48/hildon/general_forward.png"));
-    
     QRect textRect = option.rect;
     textRect.moveLeft(textRect.left() + 8);
-    textRect.setRight(iconRect.left() - 8);
+    textRect.setRight(textRect.right() - 8);
     
     const QString text = painter->fontMetrics().elidedText(index.data(Qt::DisplayRole).toString(), Qt::ElideRight,
                                                            textRect.width());

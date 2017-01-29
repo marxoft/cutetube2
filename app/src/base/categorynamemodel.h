@@ -28,7 +28,7 @@ public:
     explicit CategoryNameModel(QObject *parent = 0) :
         SelectionModel(parent)
     {
-        foreach (QString category, Settings::instance()->categoryNames()) {
+        foreach (const QString &category, Settings::categoryNames()) {
             append(category, category);
         }
         
@@ -39,7 +39,7 @@ public Q_SLOTS:
     inline void reload() {
         clear();
         
-        foreach (QString category, Settings::instance()->categoryNames()) {
+        foreach (const QString &category, Settings::categoryNames()) {
             append(category, category);
         }
     };

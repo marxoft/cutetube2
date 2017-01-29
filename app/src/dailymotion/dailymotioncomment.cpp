@@ -16,7 +16,6 @@
 
 #include "dailymotioncomment.h"
 #include "dailymotion.h"
-#include "dailymotion.h"
 #include "logger.h"
 #include "resources.h"
 #include <QDateTime>

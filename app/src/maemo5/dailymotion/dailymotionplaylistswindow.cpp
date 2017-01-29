@@ -19,7 +19,6 @@
 #include "imagecache.h"
 #include "listview.h"
 #include "playlistdelegate.h"
-#include "settings.h"
 #include <QLabel>
 #include <QMessageBox>
 #include <QVBoxLayout>

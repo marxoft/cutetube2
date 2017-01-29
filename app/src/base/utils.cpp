@@ -90,9 +90,9 @@ bool Utils::isLocalFile(const QUrl &url) {
 }
 
 QString Utils::toRichText(QString s) {
-    s.replace("&", "&amp;").replace("<", "&lt;").replace(QRegExp("[\n\r]"), "<br>");
+    s.replace("&", "&amp;").replace("< ", "&lt; ").replace(QRegExp("[\n\r]"), "<br>");
     
-    QRegExp re("((http(s|)://|[\\w-_\\.]+@)[^\\s<:\"']+)");
+    QRegExp re("(http(s|)://[^\\s<:\"']+|[\\w-_\\.]+@[\\w-_]+\\.[a-zA-Z]+)");
     int pos = 0;
 
     while ((pos = re.indexIn(s, pos)) != -1) {

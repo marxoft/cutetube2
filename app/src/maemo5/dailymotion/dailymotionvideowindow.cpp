@@ -426,7 +426,7 @@ void DailymotionVideoWindow::showRelatedVideo(const QModelIndex &index) {
         return;
     }
     
-    if (DailymotionVideo *video = m_relatedModel->get(index.row())) {
+    if (const DailymotionVideo *video = m_relatedModel->get(index.row())) {
         DailymotionVideoWindow *window = new DailymotionVideoWindow(video, this);
         window->show();
     }

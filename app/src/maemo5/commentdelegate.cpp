@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Stuart Howarth <showarth@marxoft.co.uk>
+ * Copyright (C) 2015 Stuart Howarth <showarth@marxoft.co.uk>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as
@@ -31,7 +31,6 @@ CommentDelegate::CommentDelegate(ImageCache *cache, int bodyRole, int dateRole, 
     m_usernameRole(usernameRole),
     m_pressedRow(-1)
 {
-    m_smallFont.setPointSize(13);
 }
 
 bool CommentDelegate::editorEvent(QEvent *event, QAbstractItemModel *, const QStyleOptionViewItem &option,
@@ -40,8 +39,8 @@ bool CommentDelegate::editorEvent(QEvent *event, QAbstractItemModel *, const QSt
         QMouseEvent *mouse = static_cast<QMouseEvent*>(event);
 
         QRect imageRect = option.rect;
-        imageRect.setLeft(imageRect.left() + 24);
-        imageRect.setTop(imageRect.top() + 16);
+        imageRect.setLeft(imageRect.left() + 8);
+        imageRect.setTop(imageRect.top() + 8);
         imageRect.setWidth(40);
         imageRect.setHeight(40);
 
@@ -55,8 +54,8 @@ bool CommentDelegate::editorEvent(QEvent *event, QAbstractItemModel *, const QSt
             QMouseEvent *mouse = static_cast<QMouseEvent*>(event);
 
             QRect imageRect = option.rect;
-            imageRect.setLeft(imageRect.left() + 24);
-            imageRect.setTop(imageRect.top() + 16);
+            imageRect.setLeft(imageRect.left() + 8);
+            imageRect.setTop(imageRect.top() + 8);
             imageRect.setWidth(40);
             imageRect.setHeight(40);
 
@@ -75,29 +74,32 @@ bool CommentDelegate::editorEvent(QEvent *event, QAbstractItemModel *, const QSt
 
 void CommentDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
                                   const QModelIndex &index) const {
-    const QPixmap background("/etc/hildon/theme/images/ContactsAppletBubble.png");
-    
-    if (!background.isNull()) {
-        qDrawBorderPixmap(painter, option.rect, QMargins(30, 60, 30, 30), background);
-    }
         
     QRect imageRect = option.rect;
-    imageRect.setLeft(imageRect.left() + 24);
-    imageRect.setTop(imageRect.top() + 16);
+    imageRect.setLeft(imageRect.left() + 8);
+    imageRect.setTop(imageRect.top() + 8);
     imageRect.setWidth(40);
     imageRect.setHeight(40);
     
-    const QImage image = m_cache->image(index.data(m_thumbnailRole).toString(), QSize(40, 40));
+    QImage image = m_cache->image(index.data(m_thumbnailRole).toString(), QSize(40, 40));
+    
+    if (image.isNull()) {
+        image = QImage("/usr/share/icons/hicolor/48x48/hildon/general_default_avatar.png")
+            .scaled(40, 40, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    }
+    
     drawCenteredImage(painter, imageRect, image);
     
     QRect textRect = option.rect;
     textRect.setLeft(imageRect.right() + 8);
-    textRect.setRight(textRect.right() - 16);
-    textRect.setTop(textRect.top() + 16);
+    textRect.setRight(textRect.right() - 8);
+    textRect.setTop(textRect.top() + 8);
     textRect.setHeight(40);
     
     painter->save();
-    painter->setFont(m_smallFont);
+    QFont font;
+    font.setPointSize(13);
+    painter->setFont(font);
     painter->setPen(QApplication::palette().color(QPalette::Mid));
     painter->drawText(textRect, Qt::AlignVCenter | Qt::TextWordWrap,
                       QString(tr("by %1 on %2").arg(index.data(m_usernameRole).toString())
@@ -105,19 +107,18 @@ void CommentDelegate::paint(QPainter *painter, const QStyleOptionViewItem &optio
     
     textRect = option.rect;
     textRect.setLeft(imageRect.left());
-    textRect.setRight(textRect.right() - 16);
+    textRect.setRight(textRect.right() - 8);
     textRect.setTop(imageRect.bottom() + 8);
-    textRect.setBottom(textRect.bottom() - 16);
+    textRect.setBottom(textRect.bottom() - 8);
     
-    painter->setPen(QApplication::palette().color(background.isNull() ? QPalette::Text : QPalette::Dark));
-    painter->drawText(textRect, Qt::TextWordWrap, index.data(m_bodyRole).toString());
     painter->restore();
+    painter->drawText(textRect, Qt::TextWordWrap, index.data(m_bodyRole).toString());
 }
 
 QSize CommentDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const {
-    return QSize(option.rect.width(), QFontMetrics(m_smallFont).boundingRect(QRect(option.rect.left() + 72,
-                                                                             option.rect.top() + 64,
-                                                                             option.rect.width() - 40,
-                                                                             1000),
-                 Qt::TextWordWrap, index.data(m_bodyRole).toString()).height() + 80);
+    return QSize(option.rect.width(), option.fontMetrics.boundingRect(QRect(option.rect.left() + 8,
+                                                                            option.rect.top() + 56,
+                                                                            option.rect.width() - 16,
+                                                                            1000),
+                 Qt::TextWordWrap, index.data(m_bodyRole).toString()).height() + 64);
 }

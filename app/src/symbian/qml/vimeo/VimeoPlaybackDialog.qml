@@ -38,13 +38,16 @@ ValueDialog {
                     root.selectedIndex = Math.max(0, match("name", Settings.defaultPlaybackFormat(Resources.VIMEO)));
                 }
                 else {
+                    root.reject();
                     infoBanner.showMessage(qsTr("No streams found"));
                 }
 
                 break;
-            case QVimeo.StreamsRequest.Failed:
+            case QVimeo.StreamsRequest.Failed: {
+                root.reject();
                 infoBanner.showMessage(errorString);
                 break;
+            }
             default:
                 break;
             }

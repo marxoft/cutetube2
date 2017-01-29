@@ -69,11 +69,13 @@ MySheet {
                                                                             Settings.defaultDownloadFormat(Resources.YOUTUBE)));
                                 }
                                 else {
+                                    root.reject();
                                     infoBanner.showMessage(qsTr("No streams found"));
                                 }
 
                                 break;
                             case QYouTube.StreamsRequest.Failed: {
+                                root.reject();
                                 infoBanner.showMessage(errorString);
                                 break;
                             }

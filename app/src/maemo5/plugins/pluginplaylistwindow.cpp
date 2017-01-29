@@ -203,8 +203,18 @@ void PluginPlaylistWindow::loadUserUi() {
 }
 
 void PluginPlaylistWindow::getVideos() {
-    m_model->setService(m_playlist->service());
-    m_model->list(m_playlist->videosId());
+    const QString id = m_playlist->videosId();
+    
+    if (!id.isEmpty()) {
+        m_model->setService(m_playlist->service());
+        m_model->list(id);
+        m_noVideosLabel->hide();
+        m_view->show();
+    }
+    else {
+        m_view->hide();
+        m_noVideosLabel->show();
+    }
 }
 
 void PluginPlaylistWindow::playPlaylist() {

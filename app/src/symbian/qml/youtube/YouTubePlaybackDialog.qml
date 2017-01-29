@@ -38,11 +38,13 @@ ValueDialog {
                     root.selectedIndex = Math.max(0, match("name", Settings.defaultPlaybackFormat(Resources.YOUTUBE)));
                 }
                 else {
+                    root.reject();
                     infoBanner.showMessage(qsTr("No streams found"));
                 }
 
                 break;
             case QYouTube.StreamsRequest.Failed: {
+                root.reject();
                 infoBanner.showMessage(errorString);
                 break;
             }

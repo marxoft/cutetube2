@@ -86,7 +86,7 @@ bool VimeoAccountModel::addAccount(const QString &userId, const QString &usernam
     record.append(usernameField);
     record.append(accessTokenField);
     record.append(scopesField);
-    
+        
     const int count = rowCount();
     
     for (int i = 0; i < count; i++) {
@@ -102,6 +102,7 @@ bool VimeoAccountModel::addAccount(const QString &userId, const QString &usernam
     
     if (insertRecord(-1, record)) {
         Vimeo::setUserId(userId);
+        const int count = rowCount();
         emit dataChanged(index(0, 0), index(count - 1, columnCount() - 1));
         emit countChanged(count);
         return true;

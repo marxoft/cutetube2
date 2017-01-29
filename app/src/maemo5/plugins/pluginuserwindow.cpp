@@ -24,7 +24,6 @@
 #include "pluginvideoswindow.h"
 #include "pluginvideowindow.h"
 #include "resources.h"
-#include "settings.h"
 #include "textbrowser.h"
 #include "utils.h"
 #include <QScrollArea>

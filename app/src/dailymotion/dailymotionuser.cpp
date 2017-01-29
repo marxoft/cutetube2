@@ -202,7 +202,7 @@ void DailymotionUser::subscribe() {
         return;
     }
     
-    Logger::log("DailymotionUser::subscribed(). ID: " + id(), Logger::MediumVerbosity);
+    Logger::log("DailymotionUser::subscribe(). ID: " + id(), Logger::MediumVerbosity);
     initRequest();
     m_request->insert("/me/following/" + id());
     connect(m_request, SIGNAL(finished()), this, SLOT(onSubscribeRequestFinished()));
@@ -214,7 +214,7 @@ void DailymotionUser::unsubscribe() {
         return;
     }
     
-    Logger::log("DailymotionUser::unsubscribed(). ID: " + id(), Logger::MediumVerbosity);
+    Logger::log("DailymotionUser::unsubscribe(). ID: " + id(), Logger::MediumVerbosity);
     initRequest();
     m_request->del("/me/following/" + id());
     connect(m_request, SIGNAL(finished()), this, SLOT(onUnsubscribeRequestFinished()));
@@ -262,10 +262,8 @@ void DailymotionUser::onSubscribeCheckRequestFinished() {
         checkIfSubscribed();
         return;
     }
-    else {
-        Logger::log("DailymotionUser::onSubcribeCheckRequestFinished(). Error: " + errorString());
-    }
     
+    Logger::log("DailymotionUser::onSubcribeCheckRequestFinished(). Error: " + errorString());
     disconnect(m_request, SIGNAL(finished()), this, SLOT(onUserRequestFinished()));
     emit statusChanged(status());
 }

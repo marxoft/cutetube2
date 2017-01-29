@@ -90,7 +90,7 @@ bool DailymotionAccountModel::addAccount(const QString &userId, const QString &u
     record.append(accessTokenField);
     record.append(refreshTokenField);
     record.append(scopesField);
-    
+        
     const int count = rowCount();
     
     for (int i = 0; i < count; i++) {
@@ -106,6 +106,7 @@ bool DailymotionAccountModel::addAccount(const QString &userId, const QString &u
     
     if (insertRecord(-1, record)) {
         Dailymotion::setUserId(userId);
+        const int count = rowCount();
         emit dataChanged(index(0, 0), index(count - 1, columnCount() - 1));
         emit countChanged(count);
         return true;
