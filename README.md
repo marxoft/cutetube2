@@ -1,4 +1,4 @@
-#cuteTube2
+# cuteTube2
 
 cuteTube2 is a fully-featured client for YouTube, Dailymotion and Vimeo that can be extended via plugins.
 
