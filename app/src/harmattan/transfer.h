@@ -104,6 +104,7 @@ public:
     };
     
     explicit Transfer(QObject *parent = 0);
+    ~Transfer();
     
     void setNetworkAccessManager(QNetworkAccessManager *manager);
     

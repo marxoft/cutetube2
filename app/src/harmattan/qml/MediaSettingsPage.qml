@@ -95,6 +95,8 @@ MyPage {
                 x: UI.PADDING_DOUBLE
                 width: parent.width - UI.PADDING_DOUBLE * 2
                 text: Settings.videoPlayerCommand
+                onTextChanged: Settings.videoPlayerCommand = text
+                onAccepted: platformCloseSoftwareInputPanel()
             }
             
             Item {

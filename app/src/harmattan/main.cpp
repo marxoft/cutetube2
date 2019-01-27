@@ -37,7 +37,7 @@
 #include "localemodel.h"
 #include "logger.h"
 #include "maskeditem.h"
-#include "mediakeycaptureitem.h"
+//#include "mediakeycaptureitem.h"
 #include "networkaccessmanagerfactory.h"
 #include "networkproxytypemodel.h"
 #include "plugincategorymodel.h"
@@ -54,6 +54,7 @@
 #include "pluginvideomodel.h"
 #include "resources.h"
 #include "screenorientationmodel.h"
+#include "screensaver.h"
 #include "searchhistorymodel.h"
 #include "servicemodel.h"
 #include "settings.h"
@@ -142,6 +143,7 @@ inline void registerTypes() {
     qmlRegisterType<PluginVideo>("cuteTube", 2, 0, "PluginVideo");
     qmlRegisterType<PluginVideoModel>("cuteTube", 2, 0, "PluginVideoModel");
     qmlRegisterType<ScreenOrientationModel>("cuteTube", 2, 0, "ScreenOrientationModel");
+    qmlRegisterType<ScreenSaver>("cuteTube", 2, 0, "ScreenSaver");
     qmlRegisterType<SearchHistoryModel>("cuteTube", 2, 0, "SearchHistoryModel");
     qmlRegisterType<SelectionModel>("cuteTube", 2, 0, "SelectionModel");
     qmlRegisterType<ServiceModel>("cuteTube", 2, 0, "ServiceModel");

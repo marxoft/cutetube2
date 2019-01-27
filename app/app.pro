@@ -542,7 +542,12 @@ maemo5 {
         src/harmattan/screenorientationmodel.h \
         src/harmattan/screensaver.h \
         src/harmattan/shareui.h \
-        src/harmattan/transfer.h
+        src/harmattan/transfer.h \
+        src/harmattan/videoplayermodel.h \
+        src/harmattan/videolauncher.h \
+        src/harmattan/settings.h \
+        src/harmattan/screenorientationmodel.h \
+        src/harmattan/database.h
         
     SOURCES += \
         src/harmattan/cookiejar.cpp \
@@ -553,7 +558,9 @@ maemo5 {
         src/harmattan/networkaccessmanagerfactory.cpp \
         src/harmattan/screensaver.cpp \
         src/harmattan/shareui.cpp \
-        src/harmattan/transfer.cpp
+        src/harmattan/transfer.cpp \
+        src/harmattan/videolauncher.cpp \
+        src/harmattan/settings.cpp
     
     target.path = /opt/cutetube2/bin
 

@@ -21,8 +21,8 @@
 
 class LocaleModel : public SelectionModel
 {
-    Q_OBJECT
-    
+
+
 public:
     explicit LocaleModel(QObject *parent = 0) :
         SelectionModel(parent)

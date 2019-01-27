@@ -36,7 +36,7 @@ Settings* Settings::instance() {
 }
 
 QColor Settings::activeColor() {
-    return value("Appearance/activeColor", QColor("#0881cb")).toColor();
+    return value("Appearance/activeColor", QColor("#0881cb")).value<QColor>();
 }
 
 void Settings::setActiveColor(const QColor &color) {
@@ -528,6 +528,20 @@ void Settings::setVideoPlayer(const QString &player) {
 
         if (self) {
             emit self->videoPlayerChanged(player.toLower());
+        }
+    }
+}
+
+QString Settings::videoPlayerCommand() {
+    return value("Content/videoPlayerCommand").toString();
+}
+
+void Settings::setVideoPlayerCommand(const QString &command) {
+    if (command != videoPlayerCommand()) {
+        setValue("Content/videoPlayerCommand", command);
+
+        if (self) {
+            emit self->videoPlayerCommandChanged(command);
         }
     }
 }

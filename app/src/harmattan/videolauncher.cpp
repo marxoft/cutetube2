@@ -28,9 +28,10 @@ bool VideoLauncher::playVideo(const QString &url) {
     const QString &player = Settings::videoPlayer();
 
     if (player == "other") {
-        return QProcess::startDetatched(Settings::videoPlayerCommand().replace("%u", url));
+        return QProcess::startDetached(Settings::videoPlayerCommand().replace("%u", url));
     }
     else {
-        return ContentAction::Action::launcherAction(player + ".desktop", QStringList(url)).trigger();
+        ContentAction::Action::launcherAction(player + ".desktop", QStringList(url)).trigger();
+        return true;
     }
 }

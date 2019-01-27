@@ -20,6 +20,7 @@
 #include <QObject>
 #include <QStringList>
 #include <QVariant>
+#include <QColor>
 
 struct Category {
     QString name;
@@ -64,6 +65,8 @@ class Settings : public QObject
     Q_PROPERTY(QString subtitlesLanguage READ subtitlesLanguage WRITE setSubtitlesLanguage
                NOTIFY subtitlesLanguageChanged)
     Q_PROPERTY(QString videoPlayer READ videoPlayer WRITE setVideoPlayer NOTIFY videoPlayerChanged)
+    Q_PROPERTY(QString videoPlayerCommand READ videoPlayerCommand WRITE setVideoPlayerCommand
+               NOTIFY videoPlayerCommandChanged)
     
 public:
     ~Settings();
@@ -123,6 +126,7 @@ public:
     Q_INVOKABLE static QVariant value(const QString &key, const QVariant &defaultValue = QVariant());
     
     static QString videoPlayer();
+    static QString videoPlayerCommand();
     
 public Q_SLOTS:
     static void setActiveColor(const QColor &color);
@@ -176,6 +180,7 @@ public Q_SLOTS:
     static void setValue(const QString &key, const QVariant &value);
     
     static void setVideoPlayer(const QString &player);
+    static void setVideoPlayerCommand(const QString &command);
     
 Q_SIGNALS:
     void activeColorChanged(const QColor &color);
@@ -201,6 +206,7 @@ Q_SIGNALS:
     void subtitlesEnabledChanged(bool enabled);
     void subtitlesLanguageChanged(const QString &language);
     void videoPlayerChanged(const QString &player);
+    void videoPlayerCommandChanged(const QString &command);
 
 private:
     Settings();
